@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>富時代地產 CRM</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#c9a84c;--gold-light:#f0d080;--navy:#0f2744;--navy-mid:#1a3a5c;--navy-light:#234d73;
+  --cream:#faf8f3;--cream2:#f3efe6;--white:#ffffff;--text:#1a2533;--text-soft:#5a6a7a;--text-muted:#8a9aaa;
+  --success:#2e7d52;--success-bg:#edf7f2;--danger:#c0392b;--danger-bg:#fdf0ee;
+  --shadow:0 4px 24px rgba(15,39,68,0.10);--radius:14px;--radius-sm:8px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{font-family:'Noto Sans TC',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;line-height:1.6}
+.login-page{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:1.5rem;background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 60%,#1e4d6b 100%)}
+.login-page::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9a84c' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");pointer-events:none}
+.login-box{background:var(--white);border-radius:24px;box-shadow:0 24px 80px rgba(0,0,0,0.35);max-width:420px;width:100%;overflow:hidden;animation:loginSlide .6s cubic-bezier(.22,.68,0,1.2)}
+@keyframes loginSlide{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
+.login-header{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-light) 100%);padding:2.5rem 2rem;text-align:center;position:relative;overflow:hidden}
+.login-header::after{content:'';position:absolute;bottom:-30px;left:50%;transform:translateX(-50%);width:200px;height:60px;background:var(--white);border-radius:50%}
+.logo-mark{width:72px;height:72px;background:linear-gradient(135deg,var(--gold) 0%,#e8c060 100%);border-radius:20px;display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:36px;color:var(--white);margin:0 auto 1rem;box-shadow:0 8px 24px rgba(201,168,76,0.4)}
+.login-header h1{color:var(--white);font-size:22px;font-weight:700;letter-spacing:.05em;position:relative;z-index:1}
+.login-header p{color:rgba(255,255,255,0.65);font-size:13px;margin-top:.25rem;position:relative;z-index:1}
+.login-body{padding:2.5rem 2rem 2rem}
+.alert{padding:.875rem 1rem;border-radius:var(--radius-sm);margin-bottom:1.25rem;font-size:14px;font-weight:500;display:none}
+.alert.active{display:block}
+.alert-error{background:var(--danger-bg);color:var(--danger);border:1px solid #f5c6c3}
+.alert-success{background:var(--success-bg);color:var(--success);border:1px solid #c3e6d4}
+.alert-info{background:#e3f0fb;color:#1565c0;border:1px solid #b3d4f5}
+label{display:block;font-size:12px;font-weight:700;color:var(--navy);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.5rem;margin-top:1.25rem}
+label:first-child{margin-top:0}
+select,input,textarea{width:100%;padding:.875rem 1rem;border:2px solid #e8edf2;border-radius:var(--radius-sm);font-size:15px;font-family:inherit;background:var(--cream);color:var(--text);transition:border-color .2s,box-shadow .2s;outline:none;appearance:none}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235a6a7a' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .875rem center;padding-right:2.5rem}
+select:focus,input:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.15);background:var(--white)}
+textarea{min-height:90px;resize:vertical;line-height:1.6}
+.btn{width:100%;padding:1rem;border:none;border-radius:var(--radius-sm);font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .2s;letter-spacing:.03em}
+.btn-primary{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-light) 100%);color:var(--white);margin-top:1.5rem;box-shadow:0 4px 16px rgba(15,39,68,.25)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(15,39,68,.32)}
+.btn-primary:active{transform:scale(.98)}
+.btn-secondary{background:var(--cream2);color:var(--navy);border:2px solid #dde3ea;margin-top:0}
+.btn-secondary:hover{background:var(--cream);border-color:var(--gold)}
+.btn-danger-outline{background:white;color:var(--danger);border:2px solid #f5c6c3;margin-top:0}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+/* SETUP BANNER */
+.setup-banner{background:linear-gradient(135deg,#fff3cd,#fff8e1);border:2px solid #ffc107;border-radius:var(--radius);padding:1.25rem;margin-bottom:1.25rem;display:none}
+.setup-banner.show{display:block}
+.setup-banner h4{color:#856404;font-size:15px;margin-bottom:.5rem}
+.setup-banner p{color:#856404;font-size:13px;line-height:1.7}
+.setup-banner input{margin-top:.75rem;background:white}
+/* APP */
+.app{display:none}
+.app.active{display:flex;flex-direction:column;min-height:100vh}
+.header{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 100%);padding:.875rem 1.25rem;color:var(--white);position:sticky;top:0;z-index:1000;box-shadow:0 2px 20px rgba(0,0,0,.2)}
+.header-inner{display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto;gap:1rem}
+.header-brand{display:flex;align-items:center;gap:.75rem}
+.header-logo{width:40px;height:40px;background:linear-gradient(135deg,var(--gold),#e8c060);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:18px;color:white;flex-shrink:0}
+.header-name{font-weight:700;font-size:15px}
+.header-role{font-size:11px;opacity:.7;margin-top:.1rem}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:#4caf50;display:inline-block;margin-right:4px;animation:pulse 2s infinite}
+.sync-dot.offline{background:#f44336;animation:none}
+.sync-dot.syncing{background:#ff9800;animation:spin 1s linear infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.logout-btn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:white;padding:.5rem .875rem;border-radius:20px;cursor:pointer;font-size:13px;font-family:inherit;transition:background .2s;white-space:nowrap}
+.logout-btn:hover{background:rgba(255,255,255,.22)}
+.nav-tabs{background:var(--white);display:flex;border-bottom:2px solid var(--cream2);position:sticky;top:68px;z-index:999;box-shadow:0 2px 12px rgba(15,39,68,.06)}
+.nav-tabs button{flex:1;min-width:70px;padding:.875rem .4rem;background:none;border:none;border-bottom:3px solid transparent;color:var(--text-soft);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .2s;white-space:nowrap}
+.nav-tabs button.active{color:var(--navy);border-bottom-color:var(--gold);font-weight:700}
+.nav-tabs button:hover:not(.active){color:var(--navy);background:var(--cream)}
+.container{padding:1.5rem 1rem 5rem;max-width:1200px;margin:0 auto;flex:1}
+.page{display:none}
+.page.active{display:block;animation:pageIn .3s ease}
+@keyframes pageIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+/* CARDS */
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.875rem;margin-bottom:1.5rem}
+@media(min-width:640px){.stats-grid{grid-template-columns:repeat(4,1fr)}}
+.stat-card{background:var(--white);padding:1.25rem;border-radius:var(--radius);box-shadow:var(--shadow);position:relative;overflow:hidden;transition:transform .2s}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--gold-light))}
+.stat-card:hover{transform:translateY(-2px)}
+.stat-value{font-size:30px;font-weight:900;color:var(--navy);line-height:1;margin-bottom:.375rem}
+.stat-label{color:var(--text-muted);font-size:12px;font-weight:500}
+.card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:1.25rem;overflow:hidden}
+.card-header{padding:1.25rem 1.5rem;border-bottom:2px solid var(--cream2);display:flex;align-items:center;gap:.75rem}
+.card-header h3{font-size:16px;font-weight:700;color:var(--navy)}
+.card-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--gold),#e8c060);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.card-body{padding:1.5rem}
+/* FORM */
+.form-grid{display:grid;grid-template-columns:1fr}
+@media(min-width:640px){.form-grid.two{grid-template-columns:1fr 1fr;gap:0 1rem}}
+.form-group{margin-bottom:1rem}
+.form-group.highlight{background:linear-gradient(135deg,#fffbf0,#fff8e7);padding:1.25rem;border-radius:var(--radius);border:2px solid var(--gold-light);margin-bottom:1.5rem}
+.button-row{display:flex;gap:.75rem;margin-top:1.5rem}
+.button-row .btn{flex:1;margin-top:0}
+/* LIST */
+.customer-item{padding:1.25rem 1.5rem;border-bottom:1px solid var(--cream2);transition:background .15s;cursor:pointer}
+.customer-item:last-child{border-bottom:none}
+.customer-item:hover{background:var(--cream)}
+.customer-head{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin-bottom:.375rem}
+.customer-name{font-weight:700;color:var(--navy);font-size:15px}
+.customer-meta{font-size:13px;color:var(--text-soft);margin:.2rem 0}
+.badge{display:inline-block;padding:.3rem .7rem;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.03em;white-space:nowrap}
+.badge-1{background:#e3f0fb;color:#1565c0}.badge-2{background:#fff3e0;color:#e65100}
+.badge-3{background:#f3e5f5;color:#6a1b9a}.badge-4{background:#e8f5e9;color:#2e7d32}
+.badge-5{background:#fbe9e7;color:#bf360c}.badge-6{background:#e0f2f1;color:#00695c}
+.badge-7{background:#f3e5f5;color:#4a148c}.badge-8{background:#fff8e1;color:#f57f17}
+.empty-state{padding:3rem;text-align:center;color:var(--text-muted)}
+.empty-icon{font-size:40px;margin-bottom:.75rem}
+/* RANKING */
+.rank-item{display:flex;align-items:center;gap:1rem;padding:1rem 1.5rem;border-bottom:1px solid var(--cream2)}
+.rank-item:last-child{border-bottom:none}
+.rank-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;flex-shrink:0}
+.rank-1 .rank-num{background:linear-gradient(135deg,#ffd700,#ffb300);color:white}
+.rank-2 .rank-num{background:linear-gradient(135deg,#b0bec5,#90a4ae);color:white}
+.rank-3 .rank-num{background:linear-gradient(135deg,#bc8a5f,#a0714f);color:white}
+.rank-item:not(.rank-1):not(.rank-2):not(.rank-3) .rank-num{background:var(--cream2);color:var(--text-soft)}
+.rank-info{flex:1}.rank-name{font-weight:700;color:var(--navy);font-size:15px}
+.rank-detail{font-size:13px;color:var(--text-soft)}
+.rank-bar-wrap{width:80px;text-align:right}.rank-pct{font-size:13px;font-weight:700;color:var(--navy)}
+.rank-bar{height:6px;background:var(--cream2);border-radius:3px;margin-top:4px;overflow:hidden}
+.rank-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-light));border-radius:3px;transition:width .6s ease}
+.filter-bar{display:flex;gap:.75rem;flex-wrap:wrap;padding:1.25rem 1.5rem;border-bottom:2px solid var(--cream2)}
+.filter-bar .form-group{flex:1;min-width:140px;margin:0}
+.filter-bar label{margin-top:0}
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(15,39,68,.6);z-index:2000;padding:1rem;align-items:center;justify-content:center}
+.modal-overlay.active{display:flex}
+.modal{background:var(--white);border-radius:20px;max-width:640px;width:100%;max-height:92vh;overflow-y:auto;animation:loginSlide .3s cubic-bezier(.22,.68,0,1.2)}
+.modal-head{padding:1.25rem 1.5rem;border-bottom:2px solid var(--cream2);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--white);z-index:1}
+.modal-head h3{font-size:17px;font-weight:700;color:var(--navy)}
+.modal-close{background:none;border:none;font-size:24px;cursor:pointer;color:var(--text-muted);line-height:1;padding:.25rem}
+.modal-body{padding:1.5rem}
+.detail-row{display:grid;grid-template-columns:130px 1fr;gap:.5rem 1rem;padding:.625rem 0;border-bottom:1px solid var(--cream2);font-size:14px}
+.detail-row:last-child{border-bottom:none}
+.detail-label{color:var(--text-muted);font-weight:600}
+.detail-value{color:var(--text);word-break:break-word}
+.modal-actions{display:flex;gap:.75rem;padding:1rem 1.5rem;border-top:2px solid var(--cream2)}
+.modal-actions .btn{margin-top:0}
+/* LOADING */
+.loading-overlay{display:none;position:fixed;inset:0;background:rgba(15,39,68,.4);z-index:3000;align-items:center;justify-content:center}
+.loading-overlay.active{display:flex}
+.loading-box{background:white;border-radius:16px;padding:2rem;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,.2)}
+.spinner{width:40px;height:40px;border:4px solid var(--cream2);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 1rem}
+/* CLAUDE PAGE */
+.cmd-chip{display:flex;align-items:center;justify-content:space-between;background:var(--cream);border:1.5px solid #dde5ed;border-radius:var(--radius-sm);padding:.75rem 1rem;margin-bottom:.5rem;cursor:pointer;transition:all .15s;gap:.5rem}
+.cmd-chip:hover{background:var(--cream2);border-color:var(--gold)}
+.cmd-text{font-size:14px;color:var(--text);flex:1}
+.cmd-copy{font-size:11px;color:var(--text-muted);white-space:nowrap;background:white;padding:.2rem .5rem;border-radius:4px;border:1px solid #dde5ed}
+.cmd-category{font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.06em;text-transform:uppercase;padding:.5rem 0 .25rem;margin-top:.5rem}
+.guide-step{display:flex;gap:1rem;padding:.875rem 0;border-bottom:1px solid var(--cream2);align-items:flex-start}
+.guide-step:last-child{border-bottom:none}
+.guide-num{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#e8c060);color:white;font-weight:900;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.1rem}
+.code-box{background:var(--navy);color:#a8d4f0;padding:1rem;border-radius:var(--radius-sm);font-size:12px;line-height:1.7;margin-top:.625rem;cursor:pointer;word-break:break-all;white-space:pre-wrap}
+.code-box:hover{opacity:.85}
+@media(max-width:480px){
+  .nav-tabs button{font-size:11px;padding:.75rem .2rem}
+  .container{padding:1rem .75rem 4rem}
+  .card-body{padding:1.25rem 1rem}
+  .filter-bar{padding:1rem}
+  .detail-row{grid-template-columns:110px 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-box">
+    <div class="spinner"></div>
+    <div id="loadingText" style="color:var(--navy);font-weight:600">處理中...</div>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div class="login-page" id="loginPage">
+  <div class="login-box">
+    <div class="login-header">
+      <div class="logo-mark">富</div>
+      <h1>富時代地產</h1>
+      <p>CRM 客戶管理系統</p>
+    </div>
+    <div class="login-body">
+      <div class="alert alert-error" id="loginError"></div>
+
+      <!-- 首次設定提示（只有管理員才看到） -->
+      <div class="setup-banner" id="setupBanner">
+        <h4>⚙️ 首次設定：請貼入 Google Sheets 網址</h4>
+        <p>請依照說明文件取得 Apps Script 網址，貼入下方後儲存。設定一次，所有人永久使用。</p>
+        <input type="text" id="apiUrlInput" placeholder="貼入 Apps Script 網址（https://script.google.com/...）">
+        <button class="btn btn-primary" style="margin-top:.75rem" onclick="saveApiUrl()">💾 儲存網址</button>
+      </div>
+
+      <div class="form-group">
+        <label>選擇身份</label>
+        <select id="userSelect">
+          <option value="">── 請選擇 ──</option>
+          <optgroup label="👑 管理層">
+            <option>總經理</option><option>CRM營運長</option><option>知識長</option><option>AI訓練長</option>
+          </optgroup>
+          <optgroup label="👨‍💼 業務團隊">
+            <option>阮智偉</option><option>廖一龍</option><option>鄭采崴</option><option>張書菡</option>
+            <option>余建翰</option><option>王鈞志</option><option>吳玉如</option><option>商國泰</option>
+            <option>郭淑真</option><option>高亞琦</option><option>陳淑美</option><option>侯明智</option>
+            <option>許亞茵</option><option>曾素蘭</option><option>林紫君</option><option>黃中興</option>
+            <option>黃彥程</option><option>孫運迪</option><option>劉常裕</option><option>施向宇</option>
+            <option>莊環蔭</option><option>廉海桃</option><option>劉晁綱</option><option>游馥宇</option>
+          </optgroup>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>密碼</label>
+        <input type="password" id="passwordInput" placeholder="請輸入密碼" onkeydown="if(event.key==='Enter')login()">
+      </div>
+      <div id="apiStatus" style="font-size:13px;color:var(--text-muted);text-align:center;margin-bottom:.5rem"></div>
+      <button class="btn btn-primary" onclick="login()">🔐 登入系統</button>
+      <div style="text-align:center;margin-top:1rem">
+        <button onclick="showResetUrl()" style="background:none;border:none;color:var(--text-muted);font-size:12px;cursor:pointer;font-family:inherit;text-decoration:underline">⚙️ 重新設定雲端網址</button>
+      </div>
+      <div id="resetUrlBox" style="display:none;margin-top:1rem;padding:1rem;background:#f8fafc;border:2px solid #e1e8f0;border-radius:var(--radius-sm)">
+        <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:.5rem">貼入新的 Apps Script 網址</div>
+        <input type="text" id="apiUrlInput" placeholder="https://script.google.com/macros/s/..." style="margin-bottom:.75rem">
+        <button class="btn btn-primary" style="margin-top:0" onclick="saveApiUrl()">💾 儲存網址</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="mainApp">
+  <div class="header">
+    <div class="header-inner">
+      <div class="header-brand">
+        <div class="header-logo">富</div>
+        <div>
+          <div class="header-name" id="userName"></div>
+          <div class="header-role" style="font-size:11px;opacity:.7;margin-top:.1rem">
+            <span class="sync-dot" id="syncDot"></span>
+            <span id="syncStatus">已連線</span>
+          </div>
+        </div>
+      </div>
+      <button class="logout-btn" onclick="logout()">登出</button>
+    </div>
+  </div>
+  <nav class="nav-tabs">
+    <button class="active" onclick="showPage('dashboard',this)">📊 儀表板</button>
+    <button onclick="showPage('newCustomer',this)">➕ 新增</button>
+    <button onclick="showPage('customerList',this)">📋 列表</button>
+    <button onclick="showPage('reports',this)" id="reportsTab">📈 報表</button>
+    <button onclick="showPage('claude',this)">🤖 Claude</button>
+  </nav>
+  <div class="container">
+
+    <!-- DASHBOARD -->
+    <div id="dashboard" class="page active">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-value" id="totalCustomers">—</div><div class="stat-label">總客戶數</div></div>
+        <div class="stat-card"><div class="stat-value" id="monthlyNew">—</div><div class="stat-label">本月新增</div></div>
+        <div class="stat-card"><div class="stat-value" id="nearClosing">—</div><div class="stat-label">即將成交</div></div>
+        <div class="stat-card"><div class="stat-value" id="monthlyClosing">—</div><div class="stat-label">本月成交</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-icon">🎯</div><h3>成交八部曲 — 客戶階段分布</h3></div>
+        <div class="card-body"><div class="stats-grid" id="stagesGrid"></div></div>
+      </div>
+      <div class="card" id="recentCard">
+        <div class="card-header"><div class="card-icon">🕐</div><h3>最新客戶動態</h3></div>
+        <div id="recentList"><div class="empty-state"><div class="empty-icon">📋</div>載入中...</div></div>
+      </div>
+    </div>
+
+    <!-- NEW CUSTOMER -->
+    <div id="newCustomer" class="page">
+      <div class="alert alert-success" id="successAlert">✅ 客戶資料已成功儲存並同步到雲端！</div>
+      <form id="customerForm">
+        <div class="form-group highlight">
+          <label>👨‍💼 負責業務 *</label>
+          <select id="salesPerson" required></select>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-icon">1</div><h3>一部曲：客戶開發</h3></div>
+          <div class="card-body">
+            <div class="form-grid two">
+              <div class="form-group"><label>客戶姓名 *</label><input type="text" id="customerName" placeholder="請輸入客戶姓名" required></div>
+              <div class="form-group"><label>聯絡方式</label><input type="text" id="contactInfo" placeholder="電話 / Email"></div>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group"><label>名單來源</label><select id="leadSource"><option value="">請選擇</option><option>緣故</option><option>轉介紹</option><option>社群經營</option><option>展場活動</option><option>網路廣告</option><option>其他</option></select></div>
+              <div class="form-group"><label>名單獲取來源</label><input type="text" id="leadSourceDetail" placeholder="例：爬山、朋友介紹"></div>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group"><label>名單獲取方式 *</label><select id="acquisitionMethod" required><option value="">請選擇</option><option>主動搭訕</option><option>經過介紹</option><option>活動認識</option><option>線上接觸</option></select></div>
+              <div class="form-group"><label>創建日期 *</label><input type="date" id="creationDate" required></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-icon">2</div><h3>二部曲：初步接觸（建立信任）</h3></div>
+          <div class="card-body">
+            <div class="form-grid two">
+              <div class="form-group"><label>信任感評分 (1–10)</label><input type="number" id="trustScore" min="1" max="10" placeholder="1–10"></div>
+              <div class="form-group"><label>專業形象評分 (1–10)</label><input type="number" id="professionalScore" min="1" max="10" placeholder="1–10"></div>
+            </div>
+            <div class="form-group"><label>當前信任狀態</label><select id="currentStatus"><option value="">請選擇</option><option>基礎信任(1-4分)</option><option>中階信任(5-7分)</option><option>高度信任(8-10分)</option></select></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-icon">3</div><h3>三部曲：需求分析（顧問診斷）</h3></div>
+          <div class="card-body">
+            <div class="form-group"><label>痛點分析</label><textarea id="painPoints" placeholder="薪鮮人、月光族、租屋族... 客戶的痛點是什麼？"></textarea></div>
+            <div class="form-group"><label>人生藍圖規劃表完成度 (%)</label><input type="number" id="blueprintCompletion" min="0" max="100" placeholder="0–100"></div>
+            <div class="form-group"><label>客戶需求</label><textarea id="customerNeeds" placeholder="預算、坪數、地點、格局等詳細需求"></textarea></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-icon">4</div><h3>四部曲：產品匹配（專業推薦）</h3></div>
+          <div class="card-body">
+            <div class="form-group"><label>推薦物件</label><textarea id="recommendedProperty" placeholder="推薦的房屋物件資訊、特色、優勢"></textarea></div>
+            <div class="form-grid two">
+              <div class="form-group"><label>帶看狀態</label><select id="viewingStatus"><option value="">尚未帶看</option><option>已預約</option><option>已帶看</option><option>已完整解說</option></select></div>
+              <div class="form-group" style="align-self:end"></div>
+            </div>
+            <div class="form-group"><label>產品優勢說明</label><textarea id="productAdvantages" placeholder="為什麼這個物件適合客戶？"></textarea></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-icon">5</div><h3>五部曲：異議處理（顧問解答）</h3></div>
+          <div class="card-body">
+            <div class="form-group"><label>客戶異議問題</label><textarea id="objections" placeholder="客戶提出的疑慮或問題"></textarea></div>
+            <div class="form-group"><label>顧問解決方案</label><textarea id="solutions" placeholder="提供的解決方案和數據支持"></textarea></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-icon">6</div><h3>六部曲：成交締結（下定與簽約）</h3></div>
+          <div class="card-body">
+            <div class="form-grid two">
+              <div class="form-group"><label>簽約狀態</label><select id="contractStatus"><option>未簽約</option><option>已下定</option><option>已簽約</option><option>已付款</option></select></div>
+              <div class="form-group"><label>成交金額（萬元）</label><input type="text" id="dealAmount" placeholder="例：1500"></div>
+            </div>
+            <div class="form-group"><label>簽約日期</label><input type="date" id="contractDate"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-icon">7</div><h3>七部曲：售後服務（信任加分）</h3></div>
+          <div class="card-body">
+            <div class="form-group"><label>滿意度評分 (1–10)</label><input type="number" id="satisfactionScore" min="1" max="10" placeholder="1–10"></div>
+            <div class="form-group"><label>售後服務記錄</label><textarea id="afterSalesService" placeholder="提供的售後服務內容"></textarea></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-icon">8</div><h3>八部曲：轉介紹（裂變式開發）</h3></div>
+          <div class="card-body">
+            <div class="form-grid two">
+              <div class="form-group"><label>轉介紹數量</label><input type="number" id="referralCount" min="0" placeholder="人數"></div>
+              <div class="form-group"><label>備註</label><input type="text" id="notes" placeholder="其他備注"></div>
+            </div>
+            <div class="form-group"><label>轉介紹名單</label><textarea id="referralList" placeholder="客戶介紹的親友名單（姓名、關係、聯絡方式）"></textarea></div>
+          </div>
+        </div>
+        <div class="button-row">
+          <button type="submit" class="btn btn-primary" id="saveBtn">☁️ 儲存並同步</button>
+          <button type="button" class="btn btn-secondary" onclick="clearForm()">🔄 清除</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- CUSTOMER LIST -->
+    <div id="customerList" class="page">
+      <div class="card">
+        <div class="filter-bar">
+          <div class="form-group" style="flex:2;min-width:160px">
+            <label>搜尋客戶</label>
+            <input type="text" id="searchInput" placeholder="姓名、聯絡方式..." oninput="renderCustomers()">
+          </div>
+          <div class="form-group" id="filterSalesGroup" style="display:none;flex:1;min-width:120px">
+            <label>業務篩選</label>
+            <select id="filterSales" onchange="renderCustomers()"><option value="">全部業務</option></select>
+          </div>
+          <div class="form-group" style="flex:1;min-width:120px">
+            <label>階段篩選</label>
+            <select id="filterStage" onchange="renderCustomers()">
+              <option value="">全部階段</option>
+              <option value="1">一部曲：客戶開發</option><option value="2">二部曲：初步接觸</option>
+              <option value="3">三部曲：需求分析</option><option value="4">四部曲：產品匹配</option>
+              <option value="5">五部曲：異議處理</option><option value="6">六部曲：成交締結</option>
+              <option value="7">七部曲：售後服務</option><option value="8">八部曲：轉介紹</option>
+            </select>
+          </div>
+        </div>
+        <div style="padding:.75rem 1.5rem;border-bottom:1px solid var(--cream2);display:flex;align-items:center;justify-content:space-between">
+          <span id="listCount" style="font-size:13px;color:var(--text-muted)">載入中...</span>
+          <button onclick="fetchCustomers()" style="background:none;border:none;color:var(--navy);font-size:13px;cursor:pointer;font-family:inherit;font-weight:600">🔄 重新整理</button>
+        </div>
+        <div id="customerListContainer"><div class="empty-state"><div class="empty-icon">⏳</div>載入中...</div></div>
+      </div>
+    </div>
+
+    <!-- REPORTS -->
+    <div id="reports" class="page">
+      <div class="card">
+        <div class="card-header"><div class="card-icon">🏆</div><h3>業務排行榜</h3></div>
+        <div id="salesRankingContainer"><div class="empty-state"><div class="empty-icon">📊</div>載入中...</div></div>
+      </div>
+    </div>
+
+    <!-- CLAUDE AI -->
+    <div id="claude" class="page">
+      <div class="card">
+        <div class="card-header"><div class="card-icon">📤</div><h3>導出資料給 Claude 分析</h3></div>
+        <div class="card-body">
+          <div class="form-grid two">
+            <div class="form-group" id="exportScopeGroup">
+              <label>導出範圍</label>
+              <select id="exportScope"><option value="mine">我的客戶</option></select>
+            </div>
+            <div class="form-group">
+              <label>格式</label>
+              <select id="exportFormat"><option value="full">完整資料（推薦）</option><option value="summary">摘要版</option></select>
+            </div>
+          </div>
+          <div class="button-row">
+            <button class="btn btn-secondary" onclick="previewExport()">👁 生成預覽</button>
+            <button class="btn btn-primary" onclick="copyExport()">📋 複製給 Claude</button>
+          </div>
+          <div style="background:#f8fafc;border:2px solid #e1e8f0;border-radius:var(--radius-sm);padding:1rem;margin-top:1rem;min-height:60px">
+            <div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:.5rem">預覽</div>
+            <div id="exportPreview" style="font-size:12px;color:var(--text-soft);white-space:pre;font-family:monospace">點擊「生成預覽」查看...</div>
+          </div>
+          <div class="alert alert-success" id="copyAlert" style="margin-top:.75rem">✅ 已複製！貼到 Claude 對話即可開始分析 🎉</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-icon">⚡</div><h3>常用 Claude 提問指令</h3></div>
+        <div class="card-body" style="padding:1rem"><div id="quickCommandList"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL / EDIT MODAL -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modalTitle">客戶詳情</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-actions" id="modalActions"></div>
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal" style="max-width:360px">
+    <div class="modal-head"><h3>確認刪除</h3><button class="modal-close" onclick="document.getElementById('confirmModal').classList.remove('active')">✕</button></div>
+    <div class="modal-body">
+      <p style="color:var(--text-soft);font-size:15px">確定要刪除這筆客戶資料嗎？此操作無法復原。</p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="document.getElementById('confirmModal').classList.remove('active')">取消</button>
+      <button class="btn btn-danger-outline" id="confirmDeleteBtn">確認刪除</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════
+// 富時代地產 CRM — 雲端版
+// 資料即時同步到 Google Sheets
+// ════════════════════════════════════════════════
+
+var API_URL_KEY = 'futime_api_url';
+var HARDCODED_API_URL = 'https://script.google.com/macros/s/AKfycbw7fvIqClTZUIM_GrELnORNMFUEo4BuGPzkbJgopPSHrh-1fIGw9z6DFn8r5ssfF3QD/exec';
+var currentUser = null, currentRole = null;
+var customers = []; // 本地快取
+var MANAGERS = ['總經理','CRM營運長','知識長','AI訓練長'];
+var SALES = ['阮智偉','廖一龍','鄭采崴','張書菡','余建翰','王鈞志','吳玉如','商國泰','郭淑真','高亞琦','陳淑美','侯明智','許亞茵','曾素蘭','林紫君','黃中興','黃彥程','孫運迪','劉常裕','施向宇','莊環蔭','廉海桃','劉晁綱','游馥宇'];
+var PASSWORDS = {'總經理':'boss2026','CRM營運長':'crm2026','知識長':'know2026','AI訓練長':'ai2026'};
+var STAGE_NAMES = ['','客戶開發','初步接觸','需求分析','產品匹配','異議處理','成交締結','售後服務','轉介紹'];
+
+// ── 取得 API URL ──
+function getApiUrl() { return HARDCODED_API_URL; }
+function showResetUrl() {
+  var box = document.getElementById('resetUrlBox');
+  box.style.display = box.style.display === 'none' ? 'block' : 'none';
+  document.getElementById('setupBanner').classList.remove('show');
+}
+
+function saveApiUrl() {
+  var input = document.getElementById('apiUrlInput');
+  if (!input) return;
+  var url = (input.value || '').trim();
+  if (!url) { alert('請先貼入網址'); return; }
+  if (url.indexOf('script.google.com') === -1) { alert('網址格式不對，請重新複製 Apps Script 網址'); return; }
+  try { localStorage.setItem(API_URL_KEY, url); } catch(e) {}
+  document.getElementById('setupBanner').classList.remove('show');
+  document.getElementById('resetUrlBox').style.display = 'none';
+  document.getElementById('apiStatus').textContent = '✅ 雲端已設定，請登入';
+  alert('✅ 設定完成！請選擇身份登入');
+}
+
+// ── 呼叫 Google Apps Script API ──
+function callAPI(payload, callback) {
+  var url = getApiUrl();
+  if (!url) { callback({ success: false, error: '尚未設定 API 網址' }); return; }
+  setSyncing(true);
+  fetch(url, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+    headers: { 'Content-Type': 'text/plain' } // 避免 CORS preflight
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) { setSyncing(false); callback(data); })
+  .catch(function(err) { setSyncing(false); setOffline(); callback({ success: false, error: err.toString() }); });
+}
+
+function setSyncing(v) {
+  var dot = document.getElementById('syncDot');
+  var txt = document.getElementById('syncStatus');
+  if (!dot) return;
+  if (v) { dot.className='sync-dot syncing'; txt.textContent='同步中...'; }
+  else    { dot.className='sync-dot'; txt.textContent='已連線'; }
+}
+function setOffline() {
+  var dot = document.getElementById('syncDot');
+  var txt = document.getElementById('syncStatus');
+  if (!dot) return;
+  dot.className='sync-dot offline'; txt.textContent='連線失敗';
+}
+
+// ── 登入 ──
+function login() {
+  var u = document.getElementById('userSelect').value;
+  var p = document.getElementById('passwordInput').value;
+  var showErr = function(m) {
+    var e = document.getElementById('loginError');
+    e.textContent = m; e.classList.add('active');
+    setTimeout(function(){ e.classList.remove('active'); }, 3000);
+  };
+  if (!u) return showErr('🔒 請選擇身份');
+  if (!p) return showErr('🔒 請輸入密碼');
+  var ok = MANAGERS.indexOf(u) !== -1 ? p === PASSWORDS[u] : p === 'sales2026';
+  if (!ok) return showErr('🔒 帳號或密碼錯誤');
+  currentUser = u;
+  currentRole = MANAGERS.indexOf(u) !== -1 ? 'manager' : 'sales';
+  enterApp();
+}
+
+function enterApp() {
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('mainApp').classList.add('active');
+  document.getElementById('userName').textContent = currentUser;
+  initApp();
+  fetchCustomers();
+}
+
+function logout() {
+  currentUser = null; currentRole = null; customers = [];
+  document.getElementById('loginPage').style.display = 'flex';
+  document.getElementById('mainApp').classList.remove('active');
+  document.getElementById('userSelect').value = '';
+  document.getElementById('passwordInput').value = '';
+}
+
+function initApp() {
+  // 業務選擇器
+  var sp = document.getElementById('salesPerson');
+  if (currentRole === 'manager') {
+    sp.innerHTML = '<option value="">── 請選擇業務人員 ──</option>';
+    SALES.forEach(function(s){ sp.innerHTML += '<option>'+s+'</option>'; });
+    document.getElementById('filterSalesGroup').style.display = 'block';
+    var fs = document.getElementById('filterSales');
+    fs.innerHTML = '<option value="">全部業務</option>';
+    SALES.forEach(function(s){ fs.innerHTML += '<option>'+s+'</option>'; });
+    document.getElementById('reportsTab').style.display = '';
+    document.getElementById('exportScope').innerHTML = '<option value="all">全部客戶</option><option value="mine">我的客戶</option>';
+  } else {
+    sp.innerHTML = '<option value="'+currentUser+'" selected>'+currentUser+'</option>';
+    sp.disabled = true;
+    document.getElementById('reportsTab').style.display = 'none';
+  }
+  document.getElementById('creationDate').valueAsDate = new Date();
+  document.getElementById('customerForm').addEventListener('submit', function(e){ e.preventDefault(); saveCustomer(); });
+  buildQuickCommands();
+}
+
+// ── 從雲端載入客戶 ──
+function fetchCustomers() {
+  callAPI({ action: 'getAll', role: currentRole, user: currentUser }, function(res) {
+    if (res.success) {
+      customers = res.customers;
+      renderDashboard();
+      renderCustomers();
+      renderReports();
+      renderRecent();
+    } else {
+      showToast('⚠️ 載入失敗：'+res.error);
+    }
+  });
+}
+
+// ── 判斷階段 ──
+function stageOf(c) {
+  if (c.referralList || c.referralCount) return 8;
+  if (c.satisfactionScore || c.afterSalesService) return 7;
+  if (c.contractStatus === '已簽約' || c.contractStatus === '已付款') return 6;
+  if (c.objections || c.solutions) return 5;
+  if (c.recommendedProperty || c.viewingStatus) return 4;
+  if (c.painPoints || c.customerNeeds || c.blueprintCompletion) return 3;
+  if (c.trustScore || c.professionalScore || c.currentStatus) return 2;
+  return 1;
+}
+
+// ── 儀表板 ──
+function renderDashboard() {
+  var mc = customers;
+  var now = new Date();
+  document.getElementById('totalCustomers').textContent = mc.length;
+  document.getElementById('monthlyNew').textContent = mc.filter(function(c){
+    var d = new Date(c.creationDate); return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
+  }).length;
+  document.getElementById('nearClosing').textContent = mc.filter(function(c){ var s=stageOf(c); return s===5||s===6; }).length;
+  document.getElementById('monthlyClosing').textContent = mc.filter(function(c){ return c.contractStatus==='已簽約'||c.contractStatus==='已付款'; }).length;
+  var count = {};
+  mc.forEach(function(c){ var s=stageOf(c); count[s]=(count[s]||0)+1; });
+  var html = '';
+  for (var i=1;i<=8;i++) html += '<div class="stat-card"><div class="stat-value">'+(count[i]||0)+'</div><div class="stat-label">'+i+'️⃣ '+STAGE_NAMES[i]+'</div></div>';
+  document.getElementById('stagesGrid').innerHTML = html;
+}
+
+function renderRecent() {
+  var sorted = customers.slice().sort(function(a,b){ return (b.id||0)-(a.id||0); }).slice(0,5);
+  if (!sorted.length) { document.getElementById('recentList').innerHTML='<div class="empty-state"><div class="empty-icon">📋</div>尚無資料</div>'; return; }
+  document.getElementById('recentList').innerHTML = sorted.map(function(c){
+    var s = stageOf(c);
+    return '<div class="customer-item" onclick="showDetail(\''+c.id+'\')">'+
+      '<div class="customer-head"><span class="customer-name">'+c.customerName+'</span><span class="badge badge-'+s+'">'+STAGE_NAMES[s]+'</span></div>'+
+      '<div class="customer-meta">👤 '+c.salesPerson+' ｜ '+c.creationDate+'</div></div>';
+  }).join('');
+}
+
+// ── 新增客戶 ──
+function saveCustomer() {
+  var sp = document.getElementById('salesPerson').value;
+  var cn = document.getElementById('customerName').value;
+  if (!sp) return alert('請選擇負責業務');
+  if (!cn) return alert('請輸入客戶姓名');
+  var v = function(id){ return document.getElementById(id).value; };
+  var c = {
+    salesPerson:sp, customerName:cn, contactInfo:v('contactInfo'), leadSource:v('leadSource'),
+    leadSourceDetail:v('leadSourceDetail'), acquisitionMethod:v('acquisitionMethod'), creationDate:v('creationDate'),
+    trustScore:v('trustScore'), professionalScore:v('professionalScore'), currentStatus:v('currentStatus'),
+    painPoints:v('painPoints'), blueprintCompletion:v('blueprintCompletion'), customerNeeds:v('customerNeeds'),
+    recommendedProperty:v('recommendedProperty'), viewingStatus:v('viewingStatus'), productAdvantages:v('productAdvantages'),
+    objections:v('objections'), solutions:v('solutions'), contractStatus:v('contractStatus'),
+    dealAmount:v('dealAmount'), contractDate:v('contractDate'), satisfactionScore:v('satisfactionScore'),
+    afterSalesService:v('afterSalesService'), referralList:v('referralList'), referralCount:v('referralCount'), notes:v('notes')
+  };
+  var btn = document.getElementById('saveBtn');
+  btn.disabled = true; btn.textContent = '⏳ 儲存中...';
+  callAPI({ action: 'save', customer: c }, function(res) {
+    btn.disabled = false; btn.textContent = '☁️ 儲存並同步';
+    if (res.success) {
+      var a = document.getElementById('successAlert');
+      a.classList.add('active');
+      setTimeout(function(){ a.classList.remove('active'); }, 3000);
+      clearForm();
+      fetchCustomers();
+    } else {
+      showToast('❌ 儲存失敗：'+res.error);
+    }
+  });
+}
+
+function clearForm() {
+  document.getElementById('customerForm').reset();
+  document.getElementById('creationDate').valueAsDate = new Date();
+  if (currentRole === 'sales') document.getElementById('salesPerson').value = currentUser;
+}
+
+// ── 客戶列表 ──
+function renderCustomers() {
+  var mc = customers.slice();
+  var fs = document.getElementById('filterSales').value || '';
+  var fst = document.getElementById('filterStage').value || '';
+  var sr = (document.getElementById('searchInput').value || '').toLowerCase();
+  if (fs) mc = mc.filter(function(c){ return c.salesPerson === fs; });
+  if (fst) mc = mc.filter(function(c){ return stageOf(c) === parseInt(fst); });
+  if (sr) mc = mc.filter(function(c){ return (c.customerName+' '+(c.contactInfo||'')).toLowerCase().indexOf(sr) !== -1; });
+  document.getElementById('listCount').textContent = '共 '+mc.length+' 筆';
+  var con = document.getElementById('customerListContainer');
+  if (!mc.length) { con.innerHTML='<div class="empty-state"><div class="empty-icon">🔍</div>沒有符合的客戶</div>'; return; }
+  con.innerHTML = mc.map(function(c){
+    var s = stageOf(c);
+    var manInfo = currentRole==='manager' ? '<div class="customer-meta">👤 '+c.salesPerson+'</div>' : '';
+    return '<div class="customer-item" onclick="showDetail(\''+c.id+'\')">'+
+      '<div class="customer-head"><span class="customer-name">'+c.customerName+'</span><span class="badge badge-'+s+'">'+s+'️⃣ '+STAGE_NAMES[s]+'</span></div>'+
+      manInfo+
+      '<div class="customer-meta">📞 '+(c.contactInfo||'—')+' ｜ 來源：'+(c.leadSource||'—')+'</div>'+
+      '<div class="customer-meta">信任：'+(c.trustScore?c.trustScore+'/10':'—')+' ｜ '+(c.contractStatus||'未簽約')+(c.dealAmount?' ｜ '+c.dealAmount+'萬':'')+'</div>'+
+      '</div>';
+  }).join('');
+}
+
+// ── 詳情彈窗 ──
+function showDetail(id) {
+  var c = customers.find(function(x){ return x.id===id; });
+  if (!c) return;
+  var s = stageOf(c);
+  document.getElementById('modalTitle').textContent = c.customerName+' — '+STAGE_NAMES[s];
+  var rows = [
+    ['負責業務',c.salesPerson],['聯絡方式',c.contactInfo],['名單來源',c.leadSource],
+    ['獲取來源',c.leadSourceDetail],['獲取方式',c.acquisitionMethod],['創建日期',c.creationDate],
+    ['信任評分',c.trustScore?c.trustScore+'/10':''],['專業評分',c.professionalScore?c.professionalScore+'/10':''],
+    ['信任狀態',c.currentStatus],['痛點分析',c.painPoints],['藍圖完成度',c.blueprintCompletion?c.blueprintCompletion+'%':''],
+    ['客戶需求',c.customerNeeds],['推薦物件',c.recommendedProperty],['帶看狀態',c.viewingStatus],
+    ['產品優勢',c.productAdvantages],['客戶異議',c.objections],['解決方案',c.solutions],
+    ['簽約狀態',c.contractStatus],['成交金額',c.dealAmount?c.dealAmount+'萬':''],['簽約日期',c.contractDate],
+    ['滿意度',c.satisfactionScore?c.satisfactionScore+'/10':''],['售後服務',c.afterSalesService],
+    ['轉介紹名單',c.referralList],['轉介紹數量',c.referralCount],['備註',c.notes]
+  ];
+  document.getElementById('modalBody').innerHTML = rows.filter(function(r){ return r[1]; }).map(function(r){
+    return '<div class="detail-row"><div class="detail-label">'+r[0]+'</div><div class="detail-value">'+r[1]+'</div></div>';
+  }).join('');
+  // 操作按鈕（管理層或自己的客戶才能刪除）
+  var canDelete = currentRole==='manager' || c.salesPerson===currentUser;
+  document.getElementById('modalActions').innerHTML = canDelete
+    ? '<button class="btn btn-danger-outline" onclick="confirmDelete(\''+id+'\')">🗑 刪除此客戶</button>'
+    : '';
+  document.getElementById('detailModal').classList.add('active');
+}
+function closeModal() { document.getElementById('detailModal').classList.remove('active'); }
+document.getElementById('detailModal').addEventListener('click', function(e){ if(e.target===this) closeModal(); });
+
+// ── 刪除 ──
+function confirmDelete(id) {
+  document.getElementById('detailModal').classList.remove('active');
+  document.getElementById('confirmModal').classList.add('active');
+  document.getElementById('confirmDeleteBtn').onclick = function() {
+    document.getElementById('confirmModal').classList.remove('active');
+    callAPI({ action: 'delete', id: id }, function(res) {
+      if (res.success) { showToast('✅ 已刪除'); fetchCustomers(); }
+      else showToast('❌ 刪除失敗：'+res.error);
+    });
+  };
+}
+
+// ── 報表 ──
+function renderReports() {
+  var stats = {};
+  customers.forEach(function(c){
+    var n = c.salesPerson||'未指定';
+    if (!stats[n]) stats[n] = {total:0, closed:0};
+    stats[n].total++;
+    if (c.contractStatus==='已簽約'||c.contractStatus==='已付款') stats[n].closed++;
+  });
+  var ranking = Object.keys(stats).map(function(n){ var s=stats[n]; return {name:n,total:s.total,closed:s.closed,rate:s.total?Math.round(s.closed/s.total*100):0}; });
+  ranking.sort(function(a,b){ return b.total-a.total||b.closed-a.closed; });
+  var maxTotal = ranking.length ? ranking[0].total : 1;
+  var con = document.getElementById('salesRankingContainer');
+  if (!ranking.length) { con.innerHTML='<div class="empty-state"><div class="empty-icon">📊</div>尚無資料</div>'; return; }
+  con.innerHTML = ranking.map(function(r,i){
+    var cls = 'rank-item'+(i<3?' rank-'+(i+1):'');
+    return '<div class="'+cls+'"><div class="rank-num">'+(i+1)+'</div>'+
+      '<div class="rank-info"><div class="rank-name">'+r.name+'</div>'+
+      '<div class="rank-detail">客戶 '+r.total+' ｜ 成交 '+r.closed+' ｜ 轉換率 '+r.rate+'%</div></div>'+
+      '<div class="rank-bar-wrap"><div class="rank-pct">'+r.total+'人</div>'+
+      '<div class="rank-bar"><div class="rank-fill" style="width:'+Math.round(r.total/maxTotal*100)+'%"></div></div></div></div>';
+  }).join('');
+}
+
+// ── 切換頁面 ──
+function showPage(name, btn) {
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  document.getElementById(name).classList.add('active');
+  document.querySelectorAll('.nav-tabs button').forEach(function(b){ b.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+}
+
+// ── Claude 匯出 ──
+var QUICK_COMMANDS = [
+  {cat:'📊 業績查詢',cmds:['幫我統計每位業務的客戶數量，從高到低排列','本月新增了哪些客戶？按業務分組列出','目前成交金額最高的前5筆是哪些？','計算每位業務的成交轉換率']},
+  {cat:'🎯 階段分析',cmds:['列出目前在五部曲（異議處理）的所有客戶','哪些客戶在六部曲（成交締結）？附上負責業務','找出已下定但尚未正式簽約的客戶']},
+  {cat:'🔍 跟進建議',cmds:['哪些客戶的信任評分低於6分，需要加強關係？','哪些已帶看客戶還沒有成交？建議跟進策略','轉介紹數量最多的客戶是哪幾位？']},
+  {cat:'📈 趨勢分析',cmds:['分析各名單來源的效果，哪個來源轉換率最高？','給我一份完整的本月業績月報']}
+];
+
+function buildQuickCommands() {
+  var html = '';
+  QUICK_COMMANDS.forEach(function(g){
+    html += '<div class="cmd-category">'+g.cat+'</div>';
+    g.cmds.forEach(function(cmd){
+      html += '<div class="cmd-chip" onclick="copyCmd(this.dataset.cmd)" data-cmd="'+cmd.replace(/"/g,'&quot;')+'"><span class="cmd-text">'+cmd+'</span><span class="cmd-copy">複製</span></div>';
+    });
+  });
+  document.getElementById('quickCommandList').innerHTML = html;
+}
+
+function copyCmd(text) {
+  navigator.clipboard.writeText(text).catch(function(){});
+  showToast('✅ 已複製指令！');
+}
+
+function getExportText() {
+  var scope = document.getElementById('exportScope').value;
+  var format = document.getElementById('exportFormat').value;
+  var data = scope==='all' ? customers : customers.filter(function(c){ return c.salesPerson===currentUser; });
+  var now = new Date();
+  var closed = data.filter(function(c){ return c.contractStatus==='已簽約'||c.contractStatus==='已付款'; });
+  var totalAmt = closed.reduce(function(s,c){ return s+(parseFloat(c.dealAmount)||0); }, 0);
+  var count = {}; data.forEach(function(c){ var s=stageOf(c); count[s]=(count[s]||0)+1; });
+  var txt = '════════════════════════════════\n富時代地產 CRM 資料庫\n';
+  txt += '導出時間：'+now.toLocaleString('zh-TW')+'\n導出人員：'+currentUser+'\n════════════════════════════════\n\n';
+  txt += '【統計摘要】\n・總客戶數：'+data.length+' 人\n';
+  txt += '・成交客戶：'+closed.length+' 人（轉換率 '+(data.length?Math.round(closed.length/data.length*100):0)+'%）\n';
+  txt += '・成交總金額：'+totalAmt+' 萬元\n\n【八部曲分布】\n';
+  for (var i=1;i<=8;i++) txt += '・'+i+'️⃣ '+STAGE_NAMES[i]+'：'+(count[i]||0)+' 人\n';
+  txt += '\n';
+  if (format==='full') {
+    txt += '【客戶完整資料】\n────────────────────────────────\n';
+    data.forEach(function(c,idx){
+      var s=stageOf(c);
+      txt += '['+(idx+1)+'] '+c.customerName+' ｜ '+STAGE_NAMES[s]+' ｜ 負責：'+c.salesPerson+'\n';
+      if(c.contactInfo) txt+='  聯絡：'+c.contactInfo+'\n';
+      if(c.leadSource) txt+='  來源：'+c.leadSource+(c.leadSourceDetail?' / '+c.leadSourceDetail:'')+'\n';
+      if(c.trustScore) txt+='  信任：'+c.trustScore+'/10 ｜ 專業：'+(c.professionalScore||'-')+'/10\n';
+      if(c.painPoints) txt+='  痛點：'+c.painPoints+'\n';
+      if(c.customerNeeds) txt+='  需求：'+c.customerNeeds+'\n';
+      if(c.contractStatus&&c.contractStatus!=='未簽約') txt+='  簽約：'+c.contractStatus+(c.dealAmount?' ｜ '+c.dealAmount+'萬':'')+'\n';
+      if(c.notes) txt+='  備註：'+c.notes+'\n';
+      txt += '────────────────────────────────\n';
+    });
+  } else {
+    txt += '【客戶摘要清單】\n';
+    data.forEach(function(c,i){
+      txt += (i+1)+'. '+c.customerName+' ｜ '+STAGE_NAMES[stageOf(c)]+' ｜ '+c.salesPerson;
+      if(c.contractStatus&&c.contractStatus!=='未簽約') txt+=' ｜ '+c.contractStatus;
+      if(c.dealAmount) txt+=' '+c.dealAmount+'萬';
+      txt += '\n';
+    });
+  }
+  txt += '\n【以上為完整資料，請根據需求進行分析】';
+  return txt;
+}
+
+function previewExport() {
+  var txt = getExportText();
+  var lines = txt.split('\n');
+  document.getElementById('exportPreview').textContent = lines.slice(0,15).join('\n')+(lines.length>15?'\n...(共'+lines.length+'行)':'');
+}
+
+function copyExport() {
+  var txt = getExportText();
+  navigator.clipboard.writeText(txt).then(function(){
+    var a = document.getElementById('copyAlert'); a.classList.add('active');
+    setTimeout(function(){ a.classList.remove('active'); }, 3500);
+  }).catch(function(){
+    var ta = document.createElement('textarea'); ta.value=txt;
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+    var a = document.getElementById('copyAlert'); a.classList.add('active');
+    setTimeout(function(){ a.classList.remove('active'); }, 3500);
+  });
+}
+
+// ── Toast 通知 ──
+var toastTimer = null;
+function showToast(msg) {
+  var t = document.getElementById('crm-toast');
+  if (!t) {
+    t = document.createElement('div'); t.id='crm-toast';
+    t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0f2744;color:white;padding:.75rem 1.5rem;border-radius:24px;font-size:14px;font-weight:600;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,.25);white-space:nowrap;transition:opacity .3s;pointer-events:none';
+    document.body.appendChild(t);
+  }
+  t.textContent=msg; t.style.opacity='1';
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(function(){ t.style.opacity='0'; }, 2800);
+}
+
+// ── 頁面載入 ──
+(function(){
+  document.getElementById('apiStatus').textContent = '✅ 雲端已設定，請登入';
+})();
+</script>
+</body>
+</html>
