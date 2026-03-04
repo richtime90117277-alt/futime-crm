@@ -95,8 +95,8 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
 .stat-card:hover{transform:translateY(-2px)}
 .stat-value{font-size:30px;font-weight:900;color:var(--navy);line-height:1;margin-bottom:.375rem}
 .stat-label{color:var(--text-muted);font-size:12px;font-weight:500}
-.card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:1.25rem;overflow:hidden}
-.card-header{padding:1.25rem 1.5rem;border-bottom:2px solid var(--cream2);display:flex;align-items:center;gap:.75rem}
+.card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:1.25rem;overflow:visible}
+.card-header{padding:1.25rem 1.5rem;border-bottom:2px solid var(--cream2);display:flex;align-items:center;gap:.75rem;border-radius:var(--radius) var(--radius) 0 0}
 .card-header h3{font-size:16px;font-weight:700;color:var(--navy)}
 .card-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--gold),#e8c060);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
 .card-body{padding:1.5rem}
@@ -358,13 +358,11 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
               <div class="ms-wrap" id="ms_trustCheck">
                 <div class="ms-display" onclick="toggleMs('ms_trustCheck')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div>
                 <div class="ms-dropdown">
-                  <label class="ms-opt"><input type="checkbox" value="客戶願意分享個人需求財務狀況或購屋計劃">客戶願意分享個人需求、財務狀況或購屋計劃</label>
-                  <label class="ms-opt"><input type="checkbox" value="客戶會主動回覆訊息">客戶會主動回覆訊息</label>
-                  <label class="ms-opt"><input type="checkbox" value="客戶在詢問時給出完整答案">客戶在詢問時給出完整答案</label>
-                  <label class="ms-opt"><input type="checkbox" value="感覺像朋友聊天而非單向推銷">感覺像朋友聊天，而非單向推銷</label>
-                  <label class="ms-opt"><input type="checkbox" value="對話中輕鬆有笑聲">對話中輕鬆、有笑聲或聊聊</label>
-                  <label class="ms-opt"><input type="checkbox" value="客戶主動詢問下次見面時間">客戶主動詢問下次見面時間</label>
-                  <label class="ms-opt"><input type="checkbox" value="客戶介紹家人或朋友認識">客戶介紹家人或朋友認識</label>
+                  <label class="ms-opt"><input type="checkbox" value="客戶主動分享財務需求與購屋計劃">客戶主動分享財務狀況、需求或購屋計劃</label>
+                  <label class="ms-opt"><input type="checkbox" value="客戶回覆訊息速度快且積極">客戶回覆訊息速度快且積極</label>
+                  <label class="ms-opt"><input type="checkbox" value="客戶提問時給予完整且真實的資訊">客戶提問時給予完整且真實的資訊</label>
+                  <label class="ms-opt"><input type="checkbox" value="互動氛圍輕鬆自然如朋友般交流">互動氛圍輕鬆自然，如朋友般交流</label>
+                  <label class="ms-opt"><input type="checkbox" value="客戶主動提及家人或重要他人參與討論">客戶主動提及家人或重要他人一起參與討論</label>
                 </div>
               </div>
             </div>
@@ -372,15 +370,12 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
               <label>專業形象檢核（已達成項目）</label>
               <div class="ms-wrap" id="ms_proCheck">
                 <div class="ms-display" onclick="toggleMs('ms_proCheck')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div>
-                <div class="ms-dropdown">
-                  <label class="ms-opt"><input type="checkbox" value="有針對市場產品貸款提出數據與案例">有針對市場、產品或貸款方案，提出客觀數據與案例</label>
-                  <label class="ms-opt"><input type="checkbox" value="客戶回應原來如此等學習性語句">客戶回應「原來如此」、「我不知道這個」等學習性語句</label>
-                  <label class="ms-opt"><input type="checkbox" value="客戶聽完後能重複或理解重點">客戶聽完後能重複或理解重點</label>
-                  <label class="ms-opt"><input type="checkbox" value="提出客戶沒想到但很有幫助的建議">提出「客戶沒有想到但很有幫助」的提醒或建議</label>
-                  <label class="ms-opt"><input type="checkbox" value="客戶產生更高的依賴感">客戶因此產生更高的依賴感</label>
-                  <label class="ms-opt"><input type="checkbox" value="客戶主動分享你的名片或介紹給他人">客戶主動分享你的名片或介紹給他人</label>
-                  <label class="ms-opt"><input type="checkbox" value="客戶對你的建議不再質疑直接採納">客戶對你的建議不再質疑、直接採納</label>
-                  <label class="ms-opt"><input type="checkbox" value="客戶願意透露更深層的財務或家庭狀況">客戶願意透露更深層的財務或家庭狀況</label>
+                <div class="ms-dropdown" style="min-width:320px;left:0;right:auto">
+                  <label class="ms-opt"><input type="checkbox" value="有針對市場產品貸款提出數據與案例">是否有針對市場、產品或貸款方案，提出客觀數據與案例？</label>
+                  <label class="ms-opt"><input type="checkbox" value="客戶回應原來如此等學習性語句">客戶是否回應「原來如此」、「我不知道這個」等學習性語句？</label>
+                  <label class="ms-opt"><input type="checkbox" value="客戶聽完後能重複或理解重點">客戶聽完後是否能重複或理解重點？</label>
+                  <label class="ms-opt"><input type="checkbox" value="提出客戶沒想到但很有幫助的建議">是否有提出「客戶沒有想到但很有幫助」的提醒或建議？</label>
+                  <label class="ms-opt"><input type="checkbox" value="客戶產生更高的依賴感">客戶是否因此產生更高的依賴感？</label>
                 </div>
               </div>
             </div>
@@ -418,6 +413,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
                   <div class="ms-group">📈 股票族群</div>
                   <label class="ms-opt"><input type="checkbox" value="股票族-投資績效穩定性">投資績效穩定性</label>
                   <label class="ms-opt"><input type="checkbox" value="股票族-投資心理與生活平衡">投資心理與生活平衡</label>
+                  <label class="ms-opt"><input type="checkbox" value="股票族-資產缺乏多元配置">資產缺乏多元配置</label>
                   <div class="ms-group">🏦 定存族群</div>
                   <label class="ms-opt"><input type="checkbox" value="定存族-通膨侵蝕購買力">通膨侵蝕購買力</label>
                 </div>
@@ -454,17 +450,90 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
           </div>
         </div>
         <div class="card">
-          <div class="card-header"><div class="card-icon">7</div><h3>七部曲：售後服務（信任加分）</h3></div>
+          <div class="card-header"><div class="card-icon">7</div><h3>七部曲：售後服務（客戶受到顧問價值）</h3></div>
           <div class="card-body">
-            <div class="form-group"><label>滿意度評分 (1–10)</label><input type="number" id="satisfactionScore" min="1" max="10" placeholder="1–10"></div>
-            <div class="form-group"><label>售後服務記錄</label><textarea id="afterSalesService" placeholder="提供的售後服務內容"></textarea></div>
+            <div class="form-grid two">
+              <div class="form-group">
+                <label>貸款協助（銀行+專員）</label>
+                <input type="text" id="loanHelp" placeholder="例：台新、又庭、一籠">
+              </div>
+              <div class="form-group">
+                <label>租賃代管服務業務</label>
+                <input type="text" id="rentalMgmt" placeholder="例：富邦方字">
+              </div>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group">
+                <label>裝潢建議</label>
+                <select id="decorAdvice">
+                  <option value="">請選擇</option>
+                  <option>是</option><option>否</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>定期資產檢視</label>
+                <select id="assetReview">
+                  <option value="">請選擇</option>
+                  <option>是</option><option>否</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group">
+                <label>滿意度評分 (1–10)</label>
+                <input type="number" id="satisfactionScore" min="1" max="10" placeholder="1–10">
+              </div>
+              <div class="form-group">
+                <label>客戶滿意度調查表分數</label>
+                <input type="number" id="satisfactionSurvey" min="0" max="100" placeholder="分數">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>售後服務記錄</label>
+              <textarea id="afterSalesService" placeholder="提供的售後服務內容"></textarea>
+            </div>
           </div>
         </div>
         <div class="card">
-          <div class="card-header"><div class="card-icon">8</div><h3>八部曲：轉介紹（裂變式開發）</h3></div>
+          <div class="card-header"><div class="card-icon">8</div><h3>八部曲：轉介紹裂變（變式開發）</h3></div>
           <div class="card-body">
-            <div class="form-group"><label>轉介紹數量</label><input type="number" id="referralCount" min="0" placeholder="人數"></div>
-            <div class="form-group"><label>轉介紹名單</label><textarea id="referralList" placeholder="客戶介紹的親友名單（姓名、關係、聯絡方式）"></textarea></div>
+            <div class="form-group">
+              <label>邀請朋友參加活動（活動名稱+日期+人名）</label>
+              <textarea id="referralEvent" placeholder="例：9/20 研討會、山友大嫂、郵局兒子已婚大四女兒"></textarea>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group">
+                <label>保持聯繫</label>
+                <select id="keepInTouch">
+                  <option value="">請選擇</option>
+                  <option>有</option><option>否</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>轉介紹獎勵</label>
+                <input type="text" id="referralReward" placeholder="例：送中秋禮盒、請客吃飯、介紹獎金">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>轉介紹名單</label>
+              <textarea id="referralList" placeholder="客戶介紹的親友名單（姓名、關係、聯絡方式）"></textarea>
+            </div>
+            <div class="form-group">
+              <label>轉介紹數量</label>
+              <input type="number" id="referralCount" min="0" placeholder="人數">
+            </div>
+            <div class="form-group">
+              <label>轉介紹效果</label>
+              <div class="ms-wrap" id="ms_referralEffect">
+                <div class="ms-display" onclick="toggleMs('ms_referralEffect')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div>
+                <div class="ms-dropdown">
+                  <label class="ms-opt"><input type="checkbox" value="客戶已聯繫">客戶已聯繫</label>
+                  <label class="ms-opt"><input type="checkbox" value="已形成">已形成</label>
+                  <label class="ms-opt"><input type="checkbox" value="已購買">已購買</label>
+                  <label class="ms-opt"><input type="checkbox" value="持續追蹤中">持續追蹤中</label>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <div class="card">
@@ -827,8 +896,8 @@ function fetchCustomers() {
 
 // ── 判斷階段 ──
 function stageOf(c) {
-  if (c.referralList || c.referralCount) return 8;
-  if (c.satisfactionScore || c.afterSalesService) return 7;
+  if (c.referralList || c.referralCount || c.referralEvent || c.referralEffect) return 8;
+  if (c.satisfactionScore || c.afterSalesService || c.loanHelp || c.decorAdvice) return 7;
   if (c.contractStatus === '已簽約' || c.contractStatus === '已付款') return 6;
   if (c.objections || c.solutions) return 5;
   if (c.recommendedProperty || c.viewingStatus) return 4;
@@ -941,7 +1010,12 @@ function saveCustomer() {
     recommendedProperty:v('recommendedProperty'), viewingStatus:v('viewingStatus'), productAdvantages:v('productAdvantages'),
     objections:v('objections'), solutions:v('solutions'), contractStatus:v('contractStatus'),
     dealAmount:v('dealAmount'), contractDate:v('contractDate'), satisfactionScore:v('satisfactionScore'),
-    afterSalesService:v('afterSalesService'), referralList:v('referralList'), referralCount:v('referralCount'), notes:v('notes')
+    satisfactionSurvey:v('satisfactionSurvey'), loanHelp:v('loanHelp'), rentalMgmt:v('rentalMgmt'),
+    decorAdvice:v('decorAdvice'), assetReview:v('assetReview'),
+    afterSalesService:v('afterSalesService'),
+    referralEvent:v('referralEvent'), keepInTouch:v('keepInTouch'), referralReward:v('referralReward'),
+    referralList:v('referralList'), referralCount:v('referralCount'),
+    referralEffect:getMsValue('ms_referralEffect'), notes:v('notes')
   };
   var btn = document.getElementById('saveBtn');
   btn.disabled = true; btn.textContent = '⏳ 儲存中...';
@@ -1010,8 +1084,15 @@ function showDetail(id) {
     ['客戶需求',c.customerNeeds],['推薦物件',c.recommendedProperty],['帶看狀態',c.viewingStatus],
     ['產品優勢',c.productAdvantages],['客戶異議',c.objections],['解決方案',c.solutions],
     ['簽約狀態',c.contractStatus],['成交金額',c.dealAmount?c.dealAmount+'萬':''],['簽約日期',c.contractDate],
-    ['滿意度',c.satisfactionScore?c.satisfactionScore+'/10':''],['售後服務',c.afterSalesService],
-    ['轉介紹名單',c.referralList],['轉介紹數量',c.referralCount],['備註',c.notes]
+    ['滿意度',c.satisfactionScore?c.satisfactionScore+'/10':''],
+    ['客戶滿意度調查表',c.satisfactionSurvey],
+    ['貸款協助',c.loanHelp],['租賃代管',c.rentalMgmt],
+    ['裝潢建議',c.decorAdvice],['定期資產檢視',c.assetReview],
+    ['售後服務',c.afterSalesService],
+    ['活動邀約',c.referralEvent],['保持聯繫',c.keepInTouch],
+    ['轉介紹獎勵',c.referralReward],
+    ['轉介紹名單',c.referralList],['轉介紹數量',c.referralCount],
+    ['轉介紹效果',c.referralEffect],['備註',c.notes]
   ];
   document.getElementById('modalBody').innerHTML = rows.filter(function(r){ return r[1]; }).map(function(r){
     return '<div class="detail-row"><div class="detail-label">'+r[0]+'</div><div class="detail-value">'+r[1]+'</div></div>';
