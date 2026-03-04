@@ -320,39 +320,6 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
         <div class="card">
           <div class="card-header"><div class="card-icon">2</div><h3>二部曲：初步接觸（建立信任）</h3></div>
           <div class="card-body">
-            <div class="form-grid two">
-              <div class="form-group">
-                <label>信任感評分</label>
-                <select id="trustScore">
-                  <option value="">請選擇</option>
-                  <option value="1">1分 — 完全陌生</option>
-                  <option value="2">2分 — 略有接觸</option>
-                  <option value="3">3分 — 基礎信任</option>
-                  <option value="4">4分 — 中高信任</option>
-                  <option value="5">5分 — 高度信任</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>專業形象評分</label>
-                <select id="professionalScore">
-                  <option value="">請選擇</option>
-                  <option value="1">1分 — 未建立</option>
-                  <option value="2">2分 — 略有印象</option>
-                  <option value="3">3分 — 有基礎形象</option>
-                  <option value="4">4分 — 專業可信</option>
-                  <option value="5">5分 — 高度專業</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-group">
-              <label>當前信任狀態</label>
-              <select id="currentStatus">
-                <option value="">請選擇</option>
-                <option>基礎信任(1-2分)</option>
-                <option>中階信任(3-4分)</option>
-                <option>高度信任(5分)</option>
-              </select>
-            </div>
             <div class="form-group">
               <label>信任檢核（已達成項目）</label>
               <div class="ms-wrap" id="ms_trustCheck">
@@ -370,7 +337,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
               <label>專業形象檢核（已達成項目）</label>
               <div class="ms-wrap" id="ms_proCheck">
                 <div class="ms-display" onclick="toggleMs('ms_proCheck')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div>
-                <div class="ms-dropdown" style="min-width:320px;left:0;right:auto">
+                <div class="ms-dropdown">
                   <label class="ms-opt"><input type="checkbox" value="有針對市場產品貸款提出數據與案例">是否有針對市場、產品或貸款方案，提出客觀數據與案例？</label>
                   <label class="ms-opt"><input type="checkbox" value="客戶回應原來如此等學習性語句">客戶是否回應「原來如此」、「我不知道這個」等學習性語句？</label>
                   <label class="ms-opt"><input type="checkbox" value="客戶聽完後能重複或理解重點">客戶聽完後是否能重複或理解重點？</label>
@@ -379,6 +346,17 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
                 </div>
               </div>
             </div>
+            <div class="form-group">
+              <label>當前信任狀態</label>
+              <select id="currentStatus">
+                <option value="">請選擇</option>
+                <option>基礎信任(1-4分)</option>
+                <option>稱定信任(5-7分)</option>
+                <option>高度信任(8-10分)</option>
+              </select>
+            </div>
+            <input type="hidden" id="trustScore" value="">
+            <input type="hidden" id="professionalScore" value="">
           </div>
         </div>
         <div class="card">
