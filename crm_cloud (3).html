@@ -972,7 +972,10 @@ function getChecked(name) { return ''; }
 function setChecked(name, val) {}
 
 // ── 新增客戶 ──
+var _saving = false;
 function saveCustomer() {
+  if (_saving) return;
+  _saving = true;
   var sp = document.getElementById('salesPerson').value;
   var cn = document.getElementById('customerName').value;
   if (!sp) return alert('請選擇負責業務');
@@ -999,6 +1002,7 @@ function saveCustomer() {
   if (btn.disabled) return;
   btn.disabled = true; btn.textContent = '⏳ 儲存中...';
   callAPI({ action: 'save', customer: c }, function(res) {
+    _saving = false;
     btn.disabled = false; btn.textContent = '☁️ 儲存並同步';
     if (res.success) {
       var a = document.getElementById('successAlert');
