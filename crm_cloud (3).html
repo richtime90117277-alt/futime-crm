@@ -1102,7 +1102,7 @@ function showEdit(id) {
   var salesOpts = SALES.map(function(s){ return '<option'+(s===c.salesPerson?' selected':'')+'>'+s+'</option>'; }).join('');
   var srcOpts = ['','緣故','轉介紹','社群經營','展場活動','網路廣告','其他'].map(function(s){ return '<option'+(s===c.leadSource?' selected':'')+'>'+s+'</option>'; }).join('');
   var acqOpts = ['','主動搭訕','經過介紹','活動認識','線上接觸'].map(function(s){ return '<option'+(s===c.acquisitionMethod?' selected':'')+'>'+s+'</option>'; }).join('');
-  var statusOpts = ['','基礎信任(1-4分)','中度信任(5-7分)','高度信任(8-10分)'].map(function(s){ return '<option'+(s===c.currentStatus?' selected':'')+'>'+s+'</option>'; }).join('');
+  var statusOpts = ['','基礎信任(1-4分)','中度信任(5-7分)','高度信任(8-10分)','中階信任(5-7分)','稱定信任(5-7分)'].map(function(s){ return '<option'+(s===c.currentStatus?' selected':'')+'>'+s+'</option>'; }).join('');
   var viewOpts = ['','已預約','已帶看','已完整解說'].map(function(s){ return '<option'+(s===c.viewingStatus?' selected':'')+'>'+s+'</option>'; }).join('');
   var contractOpts = ['未簽約','已下定','已簽約','已付款'].map(function(s){ return '<option'+(s===c.contractStatus?' selected':'')+'>'+s+'</option>'; }).join('');
 
@@ -1247,7 +1247,10 @@ function saveEdit(id) {
 }
 
 function closeModal() { document.getElementById('detailModal').classList.remove('active'); }
-function closeEditModal() { document.getElementById('editModal').classList.remove('active'); }
+function closeEditModal() { 
+  document.getElementById('editModal').classList.remove('active'); 
+  document.getElementById('editModalBody').innerHTML = '';
+}
 document.getElementById('detailModal').addEventListener('click', function(e){ if(e.target===this) closeModal(); });
 document.getElementById('editModal').addEventListener('click', function(e){ if(e.target===this) closeEditModal(); });
 
