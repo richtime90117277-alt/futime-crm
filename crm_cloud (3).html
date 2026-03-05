@@ -1095,7 +1095,6 @@ function showDetail(id) {
 function showEdit(id) {
   var sid = id.toString();
   var c = customers.find(function(x){ return x.id && x.id.toString()===sid; });
-  alert('showEdit id='+sid+'\n找到='+( c ? c.customerName : '找不到，共'+customers.length+'筆，第一筆='+( customers[0]?customers[0].id+' 型態='+typeof customers[0].id:'空')));
   if (!c) return;
   document.getElementById('detailModal').classList.remove('active');
 
@@ -1105,7 +1104,9 @@ function showEdit(id) {
   var acqOpts = ['','主動搭訕','經過介紹','活動認識','線上接觸'].map(function(s){ return '<option'+(s===c.acquisitionMethod?' selected':'')+'>'+s+'</option>'; }).join('');
   var statusOpts = ['','基礎信任(1-4分)','中度信任(5-7分)','高度信任(8-10分)','中階信任(5-7分)','稱定信任(5-7分)'].map(function(s){ return '<option'+(s===c.currentStatus?' selected':'')+'>'+s+'</option>'; }).join('');
   var viewOpts = ['','已預約','已帶看','已完整解說'].map(function(s){ return '<option'+(s===c.viewingStatus?' selected':'')+'>'+s+'</option>'; }).join('');
-  var contractOpts = ['未簽約','已下定','已簽約','已付款'].map(function(s){ return '<option'+(s===c.contractStatus?' selected':'')+'>'+s+'</option>'; }).join('');
+  var decorOpts = ['','是','否'].map(function(s){ return '<option'+(s===c.decorAdvice?' selected':'')+'>'+s+'</option>'; }).join('');
+  var assetOpts = ['','是','否'].map(function(s){ return '<option'+(s===c.assetReview?' selected':'')+'>'+s+'</option>'; }).join('');
+  var keepOpts = ['','有','否'].map(function(s){ return '<option'+(s===c.keepInTouch?' selected':'')+'>'+s+'</option>'; }).join('');
 
   var html = '<div style="display:grid;gap:.75rem">';
   function ef(label, id, val, type) {
@@ -1175,8 +1176,8 @@ function showEdit(id) {
   html += ef('租賃代管服務業務','rentalMgmt',c.rentalMgmt);
   html += '</div>';
   html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
-  html += sel('裝潢建議','decorAdvice',['','是','否']);
-  html += sel('定期資產檢視','assetReview',['','是','否']);
+  html += sel('裝潢建議','decorAdvice',decorOpts);
+  html += sel('定期資產檢視','assetReview',assetOpts);
   html += '</div>';
   html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
   html += ef('滿意度 (1-10)','satisfactionScore',c.satisfactionScore,'number');
@@ -1187,7 +1188,7 @@ function showEdit(id) {
   html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem;margin-top:.25rem">八部曲：轉介紹裂變</div>';
   html += ta('邀請朋友參加活動（活動名+日期+人名）','referralEvent',c.referralEvent);
   html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
-  html += sel('保持聯繫','keepInTouch',['','有','否']);
+  html += sel('保持聯繫','keepInTouch',keepOpts);
   html += ef('轉介紹獎勵','referralReward',c.referralReward);
   html += '</div>';
   html += ta('轉介紹名單','referralList',c.referralList);
