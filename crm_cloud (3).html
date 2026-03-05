@@ -1205,7 +1205,8 @@ function showEdit(id) {
 }
 
 function saveEdit(id) {
-  var c = customers.find(function(x){ return x.id===id; });
+  var sid = id.toString();
+  var c = customers.find(function(x){ return x.id && x.id.toString()===sid; });
   if (!c) return;
   var gv = function(fid){ var el=document.getElementById('e_'+fid); return el?el.value:''; };
   var cn = gv('customerName');
