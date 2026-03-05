@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0048)file:///C:/Users/User/Downloads/crm_cloud_6.html -->
+<!-- saved from url=(0048)file:///C:/Users/User/Downloads/crm_cloud_8.html -->
 <html lang="zh-TW"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1075,8 +1075,10 @@ function showDetail(id) {
 
 // ── 編輯彈窗 ──
 function showEdit(id) {
+  alert('showEdit 被呼叫 id='+id);
   var sid = id.toString();
   var c = customers.find(function(x){ return x.id && x.id.toString()===sid; });
+  alert('找到客戶=' + (c ? c.customerName : '找不到，共'+customers.length+'筆'));
   if (!c) return;
   document.getElementById('detailModal').classList.remove('active');
 
