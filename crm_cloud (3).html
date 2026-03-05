@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- saved from url=(0048)file:///C:/Users/User/Downloads/crm_cloud_8.html -->
-<html lang="zh-TW"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>富時代地產 CRM</title>
-<link href="./富時代地產 CRM_files/css2" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=DM+Serif+Display&display=swap" rel="stylesheet">
 <style>
 :root{
   --gold:#c9a84c;--gold-light:#f0d080;--navy:#0f2744;--navy-mid:#1a3a5c;--navy-light:#234d73;
@@ -207,13 +207,26 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
 
       <div class="form-group">
         <label>選擇身份</label>
-        <select id="userSelect"><option value="">── 請選擇 ──</option><optgroup label="👑 管理層"><option>總經理</option><option>CRM營運長</option><option>知識長</option><option>AI訓練長</option></optgroup><optgroup label="👨‍💼 業務團隊"><option>阮智偉</option><option>廖一龍</option><option>鄭采崴</option><option>張書菡</option><option>余建翰</option><option>王鈞志</option><option>吳玉如</option><option>商國泰</option><option>郭淑真</option><option>高亞琦</option><option>陳淑美</option><option>侯明智</option><option>許亞茵</option><option>曾素蘭</option><option>林紫君</option><option>黃中興</option><option>黃彥程</option><option>孫運迪</option><option>陳丰彥</option><option>劉常裕</option><option>施向宇</option><option>莊環蔭</option><option>廉海桃</option><option>劉晁綱</option><option>游馥宇</option></optgroup></select>
+        <select id="userSelect">
+          <option value="">── 請選擇 ──</option>
+          <optgroup label="👑 管理層">
+            <option>總經理</option><option>CRM營運長</option><option>知識長</option><option>AI訓練長</option>
+          </optgroup>
+          <optgroup label="👨‍💼 業務團隊">
+            <option>阮智偉</option><option>廖一龍</option><option>鄭采崴</option><option>張書菡</option>
+            <option>余建翰</option><option>王鈞志</option><option>吳玉如</option><option>商國泰</option>
+            <option>郭淑真</option><option>高亞琦</option><option>陳淑美</option><option>侯明智</option>
+            <option>許亞茵</option><option>曾素蘭</option><option>林紫君</option><option>黃中興</option>
+            <option>黃彥程</option><option>孫運迪</option><option>陳丰彥</option><option>劉常裕</option><option>施向宇</option>
+            <option>莊環蔭</option><option>廉海桃</option><option>劉晁綱</option><option>游馥宇</option>
+          </optgroup>
+        </select>
       </div>
       <div class="form-group">
         <label>密碼</label>
-        <input type="password" id="passwordInput" placeholder="請輸入密碼" onkeydown="if(event.key===&#39;Enter&#39;)login()">
+        <input type="password" id="passwordInput" placeholder="請輸入密碼" onkeydown="if(event.key==='Enter')login()">
       </div>
-      <div id="apiStatus" style="font-size:13px;color:var(--text-muted);text-align:center;margin-bottom:.5rem">✅ 雲端已設定，請登入</div>
+      <div id="apiStatus" style="font-size:13px;color:var(--text-muted);text-align:center;margin-bottom:.5rem"></div>
       <button class="btn btn-primary" onclick="login()">🔐 登入系統</button>
       <div style="text-align:center;margin-top:1rem">
         <button onclick="showResetUrl()" style="background:none;border:none;color:var(--text-muted);font-size:12px;cursor:pointer;font-family:inherit;text-decoration:underline">⚙️ 重新設定雲端網址</button>
@@ -245,12 +258,12 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
     </div>
   </div>
   <nav class="nav-tabs">
-    <button class="active" onclick="showPage(&#39;dashboard&#39;,this)">📊 儀表板</button>
-    <button onclick="showPage(&#39;newCustomer&#39;,this)">➕ 新增</button>
-    <button onclick="showPage(&#39;customerList&#39;,this)">📋 列表</button>
-    <button onclick="showPage(&#39;reports&#39;,this)" id="reportsTab">📈 報表</button>
-    <button onclick="showPage(&#39;claude&#39;,this)">🤖 Claude</button>
-    <button onclick="showPage(&#39;staffMgmt&#39;,this)" id="staffTab">👥 業務</button>
+    <button class="active" onclick="showPage('dashboard',this)">📊 儀表板</button>
+    <button onclick="showPage('newCustomer',this)">➕ 新增</button>
+    <button onclick="showPage('customerList',this)">📋 列表</button>
+    <button onclick="showPage('reports',this)" id="reportsTab">📈 報表</button>
+    <button onclick="showPage('claude',this)">🤖 Claude</button>
+    <button onclick="showPage('staffMgmt',this)" id="staffTab">👥 業務</button>
   </nav>
   <div class="container">
 
@@ -278,13 +291,13 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
       <form id="customerForm">
         <div class="form-group highlight">
           <label>👨‍💼 負責業務 *</label>
-          <select id="salesPerson" required=""></select>
+          <select id="salesPerson" required></select>
         </div>
         <div class="card">
           <div class="card-header"><div class="card-icon">1</div><h3>一部曲：客戶開發</h3></div>
           <div class="card-body">
             <div class="form-grid two">
-              <div class="form-group"><label>客戶姓名 *</label><input type="text" id="customerName" placeholder="請輸入客戶姓名" required=""></div>
+              <div class="form-group"><label>客戶姓名 *</label><input type="text" id="customerName" placeholder="請輸入客戶姓名" required></div>
               <div class="form-group"><label>聯絡方式</label><input type="text" id="contactInfo" placeholder="電話 / Email"></div>
             </div>
             <div class="form-grid two">
@@ -299,7 +312,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
               <div class="form-group"><label>來源細節</label><input type="text" id="leadSourceDetail" placeholder="例：爬山、FB/IG、咖啡展"></div>
             </div>
             <div class="form-grid two">
-              <div class="form-group"><label>創建日期 *</label><input type="date" id="creationDate" required=""></div>
+              <div class="form-group"><label>創建日期 *</label><input type="date" id="creationDate" required></div>
               <div class="form-group" style="display:none"><input type="hidden" id="acquisitionMethod" value=""></div>
             </div>
           </div>
@@ -310,7 +323,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
             <div class="form-group">
               <label>信任檢核（已達成項目）</label>
               <div class="ms-wrap" id="ms_trustCheck">
-                <div class="ms-display" onclick="toggleMs(&#39;ms_trustCheck&#39;)"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div>
+                <div class="ms-display" onclick="toggleMs('ms_trustCheck')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div>
                 <div class="ms-dropdown">
                   <label class="ms-opt"><input type="checkbox" value="客戶主動分享財務需求與購屋計劃">客戶主動分享財務狀況、需求或購屋計劃</label>
                   <label class="ms-opt"><input type="checkbox" value="客戶回覆訊息速度快且積極">客戶回覆訊息速度快且積極</label>
@@ -323,7 +336,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
             <div class="form-group">
               <label>專業形象檢核（已達成項目）</label>
               <div class="ms-wrap" id="ms_proCheck">
-                <div class="ms-display" onclick="toggleMs(&#39;ms_proCheck&#39;)"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div>
+                <div class="ms-display" onclick="toggleMs('ms_proCheck')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div>
                 <div class="ms-dropdown">
                   <label class="ms-opt"><input type="checkbox" value="有針對市場產品貸款提出數據與案例">是否有針對市場、產品或貸款方案，提出客觀數據與案例？</label>
                   <label class="ms-opt"><input type="checkbox" value="客戶回應原來如此等學習性語句">客戶是否回應「原來如此」、「我不知道這個」等學習性語句？</label>
@@ -352,7 +365,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
             <div class="form-group">
               <label>痛點分析（可多選）</label>
               <div class="ms-wrap" id="ms_painPoint">
-                <div class="ms-display" onclick="toggleMs(&#39;ms_painPoint&#39;)"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div>
+                <div class="ms-display" onclick="toggleMs('ms_painPoint')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div>
                 <div class="ms-dropdown">
                   <div class="ms-group">🟡 新鮮人族群</div>
                   <label class="ms-opt"><input type="checkbox" value="新鮮人-趕不上通膨">趕不上通膨</label>
@@ -490,7 +503,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
             <div class="form-group">
               <label>轉介紹效果</label>
               <div class="ms-wrap" id="ms_referralEffect">
-                <div class="ms-display" onclick="toggleMs(&#39;ms_referralEffect&#39;)"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div>
+                <div class="ms-display" onclick="toggleMs('ms_referralEffect')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div>
                 <div class="ms-dropdown">
                   <label class="ms-opt"><input type="checkbox" value="客戶已聯繫">客戶已聯繫</label>
                   <label class="ms-opt"><input type="checkbox" value="已形成">已形成</label>
@@ -524,7 +537,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
           </div>
           <div class="form-group" id="filterSalesGroup" style="display:none;flex:1;min-width:120px">
             <label>業務篩選</label>
-            <select id="filterSales" onchange="renderCustomers()"><option value="">全部業務</option><option>阮智偉</option><option>廖一龍</option><option>鄭采崴</option><option>張書菡</option><option>余建翰</option><option>王鈞志</option><option>吳玉如</option><option>商國泰</option><option>郭淑真</option><option>高亞琦</option><option>陳淑美</option><option>侯明智</option><option>許亞茵</option><option>曾素蘭</option><option>林紫君</option><option>黃中興</option><option>黃彥程</option><option>孫運迪</option><option>陳丰彥</option><option>劉常裕</option><option>施向宇</option><option>莊環蔭</option><option>廉海桃</option><option>劉晁綱</option><option>游馥宇</option></select>
+            <select id="filterSales" onchange="renderCustomers()"><option value="">全部業務</option></select>
           </div>
           <div class="form-group" style="flex:1;min-width:120px">
             <label>階段篩選</label>
@@ -633,12 +646,12 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
 </div>
 <div class="modal-overlay" id="confirmModal">
   <div class="modal" style="max-width:360px">
-    <div class="modal-head"><h3>確認刪除</h3><button class="modal-close" onclick="document.getElementById(&#39;confirmModal&#39;).classList.remove(&#39;active&#39;)">✕</button></div>
+    <div class="modal-head"><h3>確認刪除</h3><button class="modal-close" onclick="document.getElementById('confirmModal').classList.remove('active')">✕</button></div>
     <div class="modal-body">
       <p style="color:var(--text-soft);font-size:15px">確定要刪除這筆客戶資料嗎？此操作無法復原。</p>
     </div>
     <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="document.getElementById(&#39;confirmModal&#39;).classList.remove(&#39;active&#39;)">取消</button>
+      <button class="btn btn-secondary" onclick="document.getElementById('confirmModal').classList.remove('active')">取消</button>
       <button class="btn btn-danger-outline" id="confirmDeleteBtn">確認刪除</button>
     </div>
   </div>
@@ -1070,6 +1083,8 @@ function showDetail(id) {
   if (canEdit) actions += '<button class="btn btn-secondary" style="flex:1" onclick="showEdit(\''+sid+'\')">✏️ 編輯資料</button>';
   if (canDelete) actions += '<button class="btn btn-danger-outline" style="flex:1" onclick="confirmDelete(\''+sid+'\')">🗑 刪除</button>';
   document.getElementById('modalActions').innerHTML = actions;
+  console.log('modalActions:', actions);
+  console.log('canEdit:', canEdit, 'role:', currentRole, 'salesPerson:', c.salesPerson, 'currentUser:', currentUser);
   document.getElementById('detailModal').classList.add('active');
 }
 
@@ -1387,6 +1402,5 @@ function showToast(msg) {
   document.getElementById('apiStatus').textContent = '✅ 雲端已設定，請登入';
 })();
 </script>
-
-
-</body></html>
+</body>
+</html>
