@@ -1088,17 +1088,13 @@ function showDetail(id) {
   if (canEdit) actions += '<button class="btn btn-secondary" style="flex:1" onclick="showEdit(\''+sid+'\')">✏️ 編輯資料</button>';
   if (canDelete) actions += '<button class="btn btn-danger-outline" style="flex:1" onclick="confirmDelete(\''+sid+'\')">🗑 刪除</button>';
   document.getElementById('modalActions').innerHTML = actions;
-  console.log('modalActions:', actions);
-  console.log('canEdit:', canEdit, 'role:', currentRole, 'salesPerson:', c.salesPerson, 'currentUser:', currentUser);
   document.getElementById('detailModal').classList.add('active');
 }
 
 // ── 編輯彈窗 ──
 function showEdit(id) {
-  alert('showEdit 被呼叫 id='+id);
   var sid = id.toString();
   var c = customers.find(function(x){ return x.id && x.id.toString()===sid; });
-  alert('找到客戶=' + (c ? c.customerName : '找不到，共'+customers.length+'筆'));
   if (!c) return;
   document.getElementById('detailModal').classList.remove('active');
 
