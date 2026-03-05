@@ -1083,19 +1083,33 @@ function showDetail(id) {
   }).join('');
   var sid = c.id.toString();
   var canEdit = currentRole==='manager' || c.salesPerson===currentUser;
-  var canDelete = canEdit;
-  var actions = '';
-  if (canEdit) actions += '<button class="btn btn-secondary" style="flex:1" onclick="showEdit(\''+sid+'\')">✏️ 編輯資料</button>';
-  if (canDelete) actions += '<button class="btn btn-danger-outline" style="flex:1" onclick="confirmDelete(\''+sid+'\')">🗑 刪除</button>';
-  document.getElementById('modalActions').innerHTML = actions;
+  var actionsDiv = document.getElementById('modalActions');
+  actionsDiv.innerHTML = '';
+  if (canEdit) {
+    var editBtn = document.createElement('button');
+    editBtn.className = 'btn btn-secondary';
+    editBtn.style.flex = '1';
+    editBtn.textContent = '✏️ 編輯資料';
+    editBtn.addEventListener('click', function(){ alert('按鈕被點了！sid='+sid); showEdit(sid); });
+    actionsDiv.appendChild(editBtn);
+  }
+  if (canEdit) {
+    var delBtn = document.createElement('button');
+    delBtn.className = 'btn btn-danger-outline';
+    delBtn.style.flex = '1';
+    delBtn.textContent = '🗑 刪除';
+    delBtn.addEventListener('click', function(){ confirmDelete(sid); });
+    actionsDiv.appendChild(delBtn);
+  }
   document.getElementById('detailModal').classList.add('active');
 }
 
 // ── 編輯彈窗 ──
 function showEdit(id) {
+  try {
   var sid = id.toString();
   var c = customers.find(function(x){ return x.id && x.id.toString()===sid; });
-  if (!c) return;
+  if (!c) { alert('找不到客戶'); return; }
   document.getElementById('detailModal').classList.remove('active');
 
   var isSalesLocked = currentRole==='sales';
@@ -1104,6 +1118,7 @@ function showEdit(id) {
   var acqOpts = ['','主動搭訕','經過介紹','活動認識','線上接觸'].map(function(s){ return '<option'+(s===c.acquisitionMethod?' selected':'')+'>'+s+'</option>'; }).join('');
   var statusOpts = ['','基礎信任(1-4分)','中度信任(5-7分)','高度信任(8-10分)','中階信任(5-7分)','稱定信任(5-7分)'].map(function(s){ return '<option'+(s===c.currentStatus?' selected':'')+'>'+s+'</option>'; }).join('');
   var viewOpts = ['','已預約','已帶看','已完整解說'].map(function(s){ return '<option'+(s===c.viewingStatus?' selected':'')+'>'+s+'</option>'; }).join('');
+  var contractOpts = ['未簽約','已下定','已簽約','已付款'].map(function(s){ return '<option'+(s===c.contractStatus?' selected':'')+'>'+s+'</option>'; }).join('');
   var decorOpts = ['','是','否'].map(function(s){ return '<option'+(s===c.decorAdvice?' selected':'')+'>'+s+'</option>'; }).join('');
   var assetOpts = ['','是','否'].map(function(s){ return '<option'+(s===c.assetReview?' selected':'')+'>'+s+'</option>'; }).join('');
   var keepOpts = ['','有','否'].map(function(s){ return '<option'+(s===c.keepInTouch?' selected':'')+'>'+s+'</option>'; }).join('');
@@ -1202,7 +1217,9 @@ function showEdit(id) {
   setMsValue('e_ms_proCheck', c.proChecks || '');
   setMsValue('e_ms_referralEffect', c.referralEffect || '');
   document.getElementById('editSaveBtn').onclick = function(){ saveEdit(c); };
+  alert('即將開啟編輯視窗');
   document.getElementById('editModal').classList.add('active');
+  } catch(err) { alert('編輯錯誤：' + err.message); }
 }
 
 function saveEdit(c) {
