@@ -1,186 +1,805 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>客戶管理系統</title>
-<style>
-:root{--navy:#1a365d;--cream:#f8f9fa;--cream2:#f1f3f5;--text:#2d3748;--text-soft:#718096;}
-*{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;margin:0;padding:0;}
-body{background:var(--cream);color:var(--text);line-height:1.45;}
-#app{max-width:1100px;margin:0 auto;padding:1rem;}
-header{margin-bottom:1rem;}
-h1{font-size:1.4rem;color:var(--navy);}
-.btn{padding:.6rem 1rem;border-radius:8px;border:none;cursor:pointer;font-weight:600;}
-.btn-primary{background:#2b6cb0;color:white;}
-.btn-secondary{background:#718096;color:white;}
-.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:1rem;z-index:999;}
-.modal.active{display:flex;}
-.modal-box{background:white;border-radius:12px;max-width:720px;width:100%;max-height:90vh;overflow:auto;padding:1.25rem;}
-.modal-title{font-size:1.1rem;font-weight:700;color:var(--navy);margin-bottom:.75rem;}
-.modal-body{margin:1rem 0;}
-.modal-actions{display:flex;gap:.75rem;margin-top:1rem;}
-.detail-row{display:flex;gap:.75rem;padding:.5rem 0;border-bottom:1px solid var(--cream2);}
-.detail-label{min-width:100px;font-weight:600;color:var(--navy);font-size:.9rem;}
-.detail-value{flex:1;font-size:.9rem;}
-.form-group{margin-bottom:.75rem;}
-.form-group label{font-size:.9rem;font-weight:600;color:var(--navy);margin-bottom:.35rem;display:inline-block;}
-.ms-wrap{position:relative;}
-.ms-display{border:2px solid #e8edf2;border-radius:8px;padding:.6rem .875rem;background:var(--cream);cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
-.ms-dropdown{position:absolute;left:0;top:100%;width:100%;background:white;border:1px solid #e2e8f0;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.1);padding:.5rem;display:none;z-index:10;}
-.ms-wrap.active .ms-dropdown{display:block;}
-.ms-opt{display:block;padding:.4rem .5rem;cursor:pointer;font-size:.9rem;}
-.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:#2d3748;color:white;padding:.75rem 1.25rem;border-radius:8px;display:none;z-index:9999;}
-.toast.show{display:block;}
-</style>
-</head>
-<body>
-<div id="app">
-<header><h1>客戶管理系統</h1></header>
-<div style="margin-bottom:1rem;"><button class="btn btn-primary" onclick="goAdd()">新增客戶</button></div>
-<div id="customerList" style="display:grid;gap:.75rem;"></div>
-</div>
+// ════════════════════════════════════════════════
+// 富時代地產 CRM — 雲端版 (修復最終版)
+// 修復內容：編輯按鈕無反應、客戶列表重複、ID 類型錯誤
+// ════════════════════════════════════════════════
 
-<div id="detailModal" class="modal">
-<div class="modal-box">
-<div class="modal-title" id="modalTitle"></div>
-<div class="modal-body" id="modalBody"></div>
-<div class="modal-actions" id="modalActions"></div>
-</div>
-</div>
+var API_URL_KEY = 'futime_api_url';
+var HARDCODED_API_URL = 'https://script.google.com/macros/s/AKfycbw7fvIqClTZUIM_GrELnORNMFUEo4BuGPzkbJgopPSHrh-1fIGw9z6DFn8r5ssfF3QD/exec';
+var currentUser = null, currentRole = null;
+var customers = [];
+var MANAGERS = ['總經理','CRM營運長','知識長','AI訓練長'];
+var DEFAULT_SALES = ['阮智偉','廖一龍','鄭采崴','張書菡','余建翰','王鈞志','吳玉如','商國泰','郭淑真','高亞琦','陳淑美','侯明智','許亞茵','曾素蘭','林紫君','黃中興','黃彥程','孫運迪','陳丰彥','劉常裕','施向宇','莊環蔭','廉海桃','劉晁綱','游馥宇'];
+var SALES = [];
+var PASSWORDS = {
+  '總經理':'boss2026','CRM營運長':'crm2026','知識長':'know2026','AI訓練長':'ai2026',
+  '阮智偉':'7433','廖一龍':'8439','鄭采崴':'1862','張書菡':'2626','余建翰':'4581',
+  '王鈞志':'5982','吳玉如':'8527','商國泰':'6502','郭淑真':'1319','高亞琦':'4943',
+  '陳淑美':'8428','侯明智':'3609','許亞茵':'9910','曾素蘭':'9913','林紫君':'3140',
+  '黃中興':'5851','黃彥程':'2508','孫運迪':'1681','陳丰彥':'3993','劉常裕':'4053',
+  '施向宇':'1354','莊環蔭':'4134','廉海桃':'1908','劉晁綱':'1552','游馥宇':'3320'
+};
+var STAGE_NAMES = ['','客戶開發','初步接觸','需求分析','產品匹配','異議處理','成交締結','售後服務','轉介紹'];
+var STAFF_KEY = 'futime_sales_list';
 
-<div id="editModal" class="modal">
-<div class="modal-box">
-<div class="modal-title">編輯客戶資料</div>
-<div class="modal-body" id="editModalBody"></div>
-<div class="modal-actions">
-<button class="btn btn-secondary" onclick="closeEdit()">取消</button>
-<button class="btn btn-primary" id="editSaveBtn">儲存更新</button>
-</div>
-</div>
-</div>
+// ── 頁面加載完成後初始化事件委託 (核心修復) ──
+document.addEventListener('DOMContentLoaded', function() {
+  // 編輯按鈕事件委託 (解決動態元素點擊無效)
+  document.addEventListener('click', function(e) {
+    // 點擊編輯按鈕
+    if (e.target.hasAttribute('data-edit-id')) {
+      var id = e.target.getAttribute('data-edit-id');
+      showEdit(id);
+    }
+    // 點擊刪除按鈕
+    if (e.target.hasAttribute('data-delete-id')) {
+      var id = e.target.getAttribute('data-delete-id');
+      confirmDelete(id);
+    }
+    // 點擊客戶項目查看詳情
+    if (e.target.closest('.customer-item')) {
+      var id = e.target.closest('.customer-item').getAttribute('data-customer-id');
+      if (id) showDetail(id);
+    }
+  });
 
-<div id="toast" class="toast"></div>
+  // 初始化其他功能
+  loadSalesList();
+  rebuildSalesSelects();
+  document.getElementById('apiStatus').textContent = '✅ 雲端已設定，請登入';
+});
 
-<script>
-const STAGE_NAMES = ['初期','信任','需求','產品','異議','成交','售後','轉介'];
-let currentUser = '業務A';
-let currentRole = 'manager';
-let customers = [];
-
-function showToast(msg){
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2200);
+// ── 業務名單管理 ──
+function loadSalesList() {
+  try {
+    var saved = localStorage.getItem(STAFF_KEY);
+    SALES = saved ? JSON.parse(saved) : DEFAULT_SALES.slice();
+  } catch(e) { SALES = DEFAULT_SALES.slice(); }
 }
 
-function closeDetail(){
-  document.getElementById('detailModal').classList.remove('active');
-}
-function closeEdit(){
-  document.getElementById('editModal').classList.remove('active');
+function saveSalesList() {
+  try { localStorage.setItem(STAFF_KEY, JSON.stringify(SALES)); } catch(e) {}
 }
 
-function renderList(){
-  const list = document.getElementById('customerList');
-  list.innerHTML = '';
-  if(!customers || !customers.length){
-    list.innerHTML = '<div style="padding:1rem;background:white;border-radius:8px;">暫無客戶</div>';
-    return;
+function addStaff() {
+  var name = (document.getElementById('newStaffName').value || '').trim();
+  if (!name) { showToast('⚠️ 請輸入業務姓名'); return; }
+  if (SALES.indexOf(name) !== -1) { showToast('⚠️ 此姓名已存在'); return; }
+  SALES.push(name);
+  saveSalesList();
+  document.getElementById('newStaffName').value = '';
+  renderStaffList();
+  rebuildSalesSelects();
+  showToast('✅ 已新增：'+name);
+}
+
+function removeStaff(name) {
+  if (!confirm('確定要移除「'+name+'」？\n（此業務的客戶資料不會被刪除）')) return;
+  SALES = SALES.filter(function(s){ return s !== name; });
+  saveSalesList();
+  renderStaffList();
+  rebuildSalesSelects();
+  showToast('已移除：'+name);
+}
+
+function renderStaffList() {
+  var con = document.getElementById('staffList');
+  if (!con) return;
+  if (!SALES.length) { con.innerHTML='<div class="empty-state"><div class="empty-icon">👤</div>尚無業務名單</div>'; return; }
+  con.innerHTML = SALES.map(function(name, i) {
+    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:.875rem 1rem;border-bottom:1px solid var(--cream2);gap:.5rem">'
+      +'<div style="display:flex;align-items:center;gap:.75rem">'
+      +'<div style="width:32px;height:32px;background:linear-gradient(135deg,var(--navy),var(--navy-light));border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:12px;font-weight:700;flex-shrink:0">'+(i+1)+'</div>'
+      +'<span style="font-weight:600;color:var(--navy)">'+name+'</span></div>'
+      +'<button onclick="removeStaff(\''+name+'\')" style="background:var(--danger-bg);color:var(--danger);border:1px solid #f5c6c3;padding:.35rem .75rem;border-radius:6px;cursor:pointer;font-size:12px;font-family:inherit;white-space:nowrap">移除</button>'
+      +'</div>';
+  }).join('');
+}
+
+function rebuildSalesSelects() {
+  var userSelect = document.getElementById('userSelect');
+  if (userSelect) {
+    userSelect.innerHTML = '<option value="">── 請選擇 ──</option>'
+      +'<optgroup label="👑 管理層"><option>總經理</option><option>CRM營運長</option><option>知識長</option><option>AI訓練長</option></optgroup>'
+      +'<optgroup label="👨‍💼 業務團隊">'+SALES.map(function(s){ return '<option>'+s+'</option>'; }).join('')+'</optgroup>';
   }
-  customers.forEach(c=>{
-    const item = document.createElement('div');
-    item.style.background='white';
-    item.style.borderRadius='8px';
-    item.style.padding='1rem';
-    item.style.cursor='pointer';
-    item.innerHTML = `<div style="font-weight:600;">${c.customerName||'未命名'}</div>
-    <div style="font-size:.85rem;color:var(--text-soft);">${c.contactInfo||''} ${c.salesPerson||''}</div>`;
-    item.onclick = ()=>showDetail(c.id);
-    list.appendChild(item);
+  var sp = document.getElementById('salesPerson');
+  if (sp && currentRole === 'manager') {
+    sp.innerHTML = '<option value="">── 請選擇業務人員 ──</option>'+SALES.map(function(s){ return '<option>'+s+'</option>'; }).join('');
+  }
+  var fs = document.getElementById('filterSales');
+  if (fs) {
+    fs.innerHTML = '<option value="">全部業務</option>'+SALES.map(function(s){ return '<option>'+s+'</option>'; }).join('');
+  }
+}
+
+// ── API 與雲端同步 ──
+function getApiUrl() { return HARDCODED_API_URL; }
+function showResetUrl() {
+  var box = document.getElementById('resetUrlBox');
+  box.style.display = box.style.display === 'none' ? 'block' : 'none';
+  document.getElementById('setupBanner').classList.remove('show');
+}
+
+function saveApiUrl() {
+  var input = document.getElementById('apiUrlInput');
+  if (!input) return;
+  var url = (input.value || '').trim();
+  if (!url) { alert('請先貼入網址'); return; }
+  if (url.indexOf('script.google.com') === -1) { alert('網址格式不對，請重新複製 Apps Script 網址'); return; }
+  try { localStorage.setItem(API_URL_KEY, url); } catch(e) {}
+  document.getElementById('setupBanner').classList.remove('show');
+  document.getElementById('resetUrlBox').style.display = 'none';
+  document.getElementById('apiStatus').textContent = '✅ 雲端已設定，請登入';
+  alert('✅ 設定完成！請選擇身份登入');
+}
+
+function callAPI(payload, callback) {
+  var url = getApiUrl();
+  if (!url) { callback({ success: false, error: '尚未設定 API 網址' }); return; }
+  setSyncing(true);
+  fetch(url, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+    headers: { 'Content-Type': 'text/plain' }
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) { setSyncing(false); callback(data); })
+  .catch(function(err) { setSyncing(false); setOffline(); callback({ success: false, error: err.toString() }); });
+}
+
+function setSyncing(v) {
+  var dot = document.getElementById('syncDot');
+  var txt = document.getElementById('syncStatus');
+  if (!dot) return;
+  if (v) { dot.className='sync-dot syncing'; txt.textContent='同步中...'; }
+  else    { dot.className='sync-dot'; txt.textContent='已連線'; }
+}
+
+function setOffline() {
+  var dot = document.getElementById('syncDot');
+  var txt = document.getElementById('syncStatus');
+  if (!dot) return;
+  dot.className='sync-dot offline'; txt.textContent='連線失敗';
+}
+
+// ── 登入與權限 ──
+function login() {
+  var u = document.getElementById('userSelect').value;
+  var p = document.getElementById('passwordInput').value;
+  var showErr = function(m) {
+    var e = document.getElementById('loginError');
+    e.textContent = m; e.classList.add('active');
+    setTimeout(function(){ e.classList.remove('active'); }, 3000);
+  };
+  if (!u) return showErr('🔒 請選擇身份');
+  if (!p) return showErr('🔒 請輸入密碼');
+  var ok = PASSWORDS[u] ? p === PASSWORDS[u] : false;
+  if (!ok) return showErr('🔒 帳號或密碼錯誤');
+  currentUser = u;
+  currentRole = MANAGERS.indexOf(u) !== -1 ? 'manager' : 'sales';
+  enterApp();
+}
+
+function enterApp() {
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('mainApp').classList.add('active');
+  document.getElementById('userName').textContent = currentUser;
+  initApp();
+  fetchCustomers();
+}
+
+function logout() {
+  currentUser = null; currentRole = null; customers = [];
+  document.getElementById('loginPage').style.display = 'flex';
+  document.getElementById('mainApp').classList.remove('active');
+  document.getElementById('userSelect').value = '';
+  document.getElementById('passwordInput').value = '';
+}
+
+function initApp() {
+  var sp = document.getElementById('salesPerson');
+  if (currentRole === 'manager') {
+    sp.innerHTML = '<option value="">── 請選擇業務人員 ──</option>';
+    SALES.forEach(function(s){ sp.innerHTML += '<option>'+s+'</option>'; });
+    document.getElementById('filterSalesGroup').style.display = 'block';
+    var fs = document.getElementById('filterSales');
+    fs.innerHTML = '<option value="">全部業務</option>';
+    SALES.forEach(function(s){ fs.innerHTML += '<option>'+s+'</option>'; });
+    document.getElementById('reportsTab').style.display = '';
+    document.getElementById('staffTab').style.display = '';
+    document.getElementById('exportScope').innerHTML = '<option value="all">全部客戶</option><option value="mine">我的客戶</option>';
+  } else {
+    sp.innerHTML = '<option value="'+currentUser+'" selected>'+currentUser+'</option>';
+    sp.disabled = true;
+    document.getElementById('reportsTab').style.display = 'none';
+    document.getElementById('staffTab').style.display = 'none';
+  }
+  document.getElementById('creationDate').valueAsDate = new Date();
+  document.getElementById('customerForm').addEventListener('submit', function(e){ e.preventDefault(); saveCustomer(); });
+  buildQuickCommands();
+  renderStaffList();
+}
+
+// ── 核心修復：數據去重與加載 ──
+function fetchCustomers() {
+  callAPI({ action: 'getAll', role: currentRole, user: currentUser }, function(res) {
+    if (res.success) {
+      // 修復：去重邏輯 - 根據 ID 保留第一筆，解決重複顯示 3 次問題
+      var uniqueMap = {};
+      res.customers.forEach(function(c) {
+        var sid = String(c.id || '');
+        if (!uniqueMap[sid]) {
+          uniqueMap[sid] = c;
+        }
+      });
+      // 轉回數組
+      customers = Object.values(uniqueMap);
+      
+      renderDashboard();
+      renderCustomers();
+      renderReports();
+      renderRecent();
+      showToast('✅ 載入 '+customers.length+' 筆客戶資料');
+    } else {
+      showToast('⚠️ 載入失敗：'+res.error);
+    }
   });
 }
 
-function showDetail(id){
-  try{
-    const sid = String(id||'');
-    const c = customers.find(x=>x&&x.id&&String(x.id)===sid);
-    if(!c){showToast('找不到客戶');return;}
-    const modalTitle = document.getElementById('modalTitle');
-    const modalBody = document.getElementById('modalBody');
-    const modalActions = document.getElementById('modalActions');
-    modalTitle.textContent = c.customerName;
-    modalBody.innerHTML = `<div class="detail-row"><div class="detail-label">負責業務</div><div class="detail-value">${c.salesPerson||''}</div></div>
-<div class="detail-row"><div class="detail-label">聯絡方式</div><div class="detail-value">${c.contactInfo||''}</div></div>`;
-    modalActions.innerHTML = '';
-    const canEdit = currentRole==='manager' || c.salesPerson===currentUser;
-    if(canEdit){
-      const editBtn = document.createElement('button');
-      editBtn.className='btn btn-secondary';
-      editBtn.textContent='編輯';
-      editBtn.onclick=()=>showEdit(c.id);
-      modalActions.appendChild(editBtn);
+// ── 八部曲階段判斷 ──
+function stageOf(c) {
+  if ((c.referralList && c.referralList.toString().trim()) || (c.referralCount && parseInt(c.referralCount)>0) || (c.referralEvent && c.referralEvent.toString().trim())) return 8;
+  if (c.satisfactionScore || (c.afterSalesService && c.afterSalesService.toString().trim()) || c.loanHelp || c.decorAdvice) return 7;
+  if (c.contractStatus === '已簽約' || c.contractStatus === '已付款') return 6;
+  if ((c.objections && c.objections.toString().trim()) || (c.solutions && c.solutions.toString().trim())) return 5;
+  if ((c.recommendedProperty && c.recommendedProperty.toString().trim()) || (c.viewingStatus && c.viewingStatus.toString().trim())) return 4;
+  if ((c.painPoints && c.painPoints.toString().trim()) || (c.customerNeeds && c.customerNeeds.toString().trim()) || c.blueprintCompletion) return 3;
+  if (c.trustScore || c.professionalScore || (c.currentStatus && c.currentStatus.toString().trim()) || (c.trustChecks && c.trustChecks.toString().trim())) return 2;
+  return 1;
+}
+
+// ── 儀表板 ──
+function renderDashboard() {
+  var mc = customers;
+  var now = new Date();
+  document.getElementById('totalCustomers').textContent = mc.length;
+  document.getElementById('monthlyNew').textContent = mc.filter(function(c){
+    var d = new Date(c.creationDate); return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
+  }).length;
+  document.getElementById('nearClosing').textContent = mc.filter(function(c){ var s=stageOf(c); return s===5||s===6; }).length;
+  document.getElementById('monthlyClosing').textContent = mc.filter(function(c){ return c.contractStatus==='已簽約'||c.contractStatus==='已付款'; }).length;
+  var count = {};
+  mc.forEach(function(c){ var s=stageOf(c); count[s]=(count[s]||0)+1; });
+  var html = '';
+  for (var i=1;i<=8;i++) html += '<div class="stat-card"><div class="stat-value">'+(count[i]||0)+'</div><div class="stat-label">'+i+'️⃣ '+STAGE_NAMES[i]+'</div></div>';
+  document.getElementById('stagesGrid').innerHTML = html;
+}
+
+function renderRecent() {
+  var sorted = customers.slice().sort(function(a,b){ return (b.id||0)-(a.id||0); }).slice(0,5);
+  if (!sorted.length) { document.getElementById('recentList').innerHTML='<div class="empty-state"><div class="empty-icon">📋</div>尚無資料</div>'; return; }
+  document.getElementById('recentList').innerHTML = sorted.map(function(c){
+    var s = stageOf(c);
+    return '<div class="customer-item" data-customer-id="'+String(c.id)+'">' +
+      '<div class="customer-head"><span class="customer-name">'+c.customerName+'</span><span class="badge badge-'+s+'">'+STAGE_NAMES[s]+'</span></div>'+
+      '<div class="customer-meta">👤 '+c.salesPerson+' ｜ '+c.creationDate+'</div></div>';
+  }).join('');
+}
+
+// ── 多選元件 ──
+function toggleMs(id) {
+  var wrap = document.getElementById(id);
+  var isOpen = wrap.classList.contains('open');
+  document.querySelectorAll('.ms-wrap.open').forEach(function(w){ w.classList.remove('open'); });
+  if (!isOpen) wrap.classList.add('open');
+}
+
+function getMsValue(id) {
+  var wrap = document.getElementById(id);
+  if (!wrap) return '';
+  return Array.from(wrap.querySelectorAll('input[type=checkbox]:checked')).map(function(el){ return el.value; }).join('、');
+}
+
+function setMsValue(id, val) {
+  try {
+    var wrap = document.getElementById(id);
+    if (!wrap) return;
+    var vals = (val||'').split('、').filter(Boolean);
+    wrap.querySelectorAll('input[type=checkbox]').forEach(function(el){
+      el.checked = vals.indexOf(el.value) !== -1;
+    });
+    updateMsDisplay(wrap);
+  } catch (err) {
+    console.error('setMsValue error:', err);
+  }
+}
+
+function updateMsDisplay(wrap) {
+  var display = wrap.querySelector('.ms-display');
+  var checked = Array.from(wrap.querySelectorAll('input[type=checkbox]:checked')).map(function(el){ return el.value; });
+  display.innerHTML = '';
+  if (checked.length === 0) {
+    display.appendChild(Object.assign(document.createElement('span'), {className:'ms-placeholder', textContent:'點選展開'}));
+  } else {
+    checked.forEach(function(v){
+      var tag = document.createElement('span');
+      tag.className = 'ms-tag';
+      tag.textContent = v.includes('-') ? v.split('-').slice(1).join('-') : v;
+      display.appendChild(tag);
+    });
+  }
+  var arr = document.createElement('span');
+  arr.className = 'ms-arrow';
+  arr.textContent = '▾';
+  display.appendChild(arr);
+}
+
+// ── 新增客戶 ──
+var _saving = false;
+function saveCustomer() {
+  if (_saving) return;
+  _saving = true;
+  var sp = document.getElementById('salesPerson').value;
+  var cn = document.getElementById('customerName').value;
+  if (!sp) return alert('請選擇負責業務');
+  if (!cn) return alert('請輸入客戶姓名');
+  var v = function(id){ return document.getElementById(id).value; };
+  var c = {
+    salesPerson:sp, customerName:cn, contactInfo:v('contactInfo'), leadSource:v('leadSource'),
+    leadSourceDetail:v('leadSourceDetail'), acquisitionMethod:v('acquisitionMethod'), creationDate:v('creationDate'),
+    trustScore:v('trustScore'), professionalScore:v('professionalScore'), currentStatus:v('currentStatus'),
+    trustChecks:getMsValue('ms_trustCheck'), proChecks:getMsValue('ms_proCheck'),
+    painPoints:getMsValue('ms_painPoint'), painPointsNote:v('painPoints'),
+    blueprintCompletion:v('blueprintCompletion'), customerNeeds:v('customerNeeds'),
+    recommendedProperty:v('recommendedProperty'), viewingStatus:v('viewingStatus'), productAdvantages:v('productAdvantages'),
+    objections:v('objections'), solutions:v('solutions'), contractStatus:v('contractStatus'),
+    dealAmount:v('dealAmount'), contractDate:v('contractDate'), satisfactionScore:v('satisfactionScore'),
+    satisfactionSurvey:v('satisfactionSurvey'), loanHelp:v('loanHelp'), rentalMgmt:v('rentalMgmt'),
+    decorAdvice:v('decorAdvice'), assetReview:v('assetReview'),
+    afterSalesService:v('afterSalesService'),
+    referralEvent:v('referralEvent'), keepInTouch:v('keepInTouch'), referralReward:v('referralReward'),
+    referralList:v('referralList'), referralCount:v('referralCount'),
+    referralEffect:getMsValue('ms_referralEffect'), notes:v('notes')
+  };
+  var btn = document.getElementById('saveBtn');
+  btn.disabled = true; btn.textContent = '⏳ 儲存中...';
+  callAPI({ action: 'save', customer: c }, function(res) {
+    _saving = false;
+    btn.disabled = false; btn.textContent = '☁️ 儲存並同步';
+    if (res.success) {
+      var a = document.getElementById('successAlert');
+      a.classList.add('active');
+      setTimeout(function(){ a.classList.remove('active'); }, 3000);
+      clearForm();
+      fetchCustomers();
+    } else {
+      showToast('❌ 儲存失敗：'+res.error);
+    }
+  });
+}
+
+function clearForm() {
+  document.getElementById('customerForm').reset();
+  document.getElementById('creationDate').valueAsDate = new Date();
+  if (currentRole === 'sales') document.getElementById('salesPerson').value = currentUser;
+  document.querySelectorAll('.ms-wrap').forEach(function(wrap){
+    wrap.querySelectorAll('input[type=checkbox]').forEach(function(el){ el.checked = false; });
+    updateMsDisplay(wrap);
+  });
+}
+
+// ── 客戶列表 (核心修復：使用 data-* 屬性) ──
+function renderCustomers() {
+  var mc = customers.slice();
+  var fs = document.getElementById('filterSales').value || '';
+  var fst = document.getElementById('filterStage').value || '';
+  var sr = (document.getElementById('searchInput').value || '').toLowerCase();
+  if (fs) mc = mc.filter(function(c){ return c.salesPerson === fs; });
+  if (fst) mc = mc.filter(function(c){ return stageOf(c) === parseInt(fst); });
+  if (sr) mc = mc.filter(function(c){ return (c.customerName+' '+(c.contactInfo||'')).toLowerCase().indexOf(sr) !== -1; });
+  document.getElementById('listCount').textContent = '共 '+mc.length+' 筆';
+  var con = document.getElementById('customerListContainer');
+  if (!mc.length) { con.innerHTML='<div class="empty-state"><div class="empty-icon">🔍</div>沒有符合的客戶</div>'; return; }
+  con.innerHTML = mc.map(function(c){
+    var s = stageOf(c);
+    var sid = String(c.id);
+    var manInfo = currentRole==='manager' ? '<div class="customer-meta">👤 '+c.salesPerson+'</div>' : '';
+    return '<div class="customer-item" data-customer-id="'+sid+'">' +
+      '<div class="customer-head"><span class="customer-name">'+c.customerName+'</span><span class="badge badge-'+s+'">'+s+'️⃣ '+STAGE_NAMES[s]+'</span></div>'+
+      manInfo+
+      '<div class="customer-meta">📞 '+(c.contactInfo||'—')+' ｜ 來源：'+(c.leadSource||'—')+'</div>'+
+      '<div class="customer-meta">信任：'+(c.trustScore?c.trustScore+'/10':'—')+' ｜ '+(c.contractStatus||'未簽約')+(c.dealAmount?' ｜ '+c.dealAmount+'萬':'')+'</div>'+
+      '</div>';
+  }).join('');
+}
+
+// ── 詳情彈窗 (核心修復：按鈕使用 data-* 屬性) ──
+function showDetail(id) {
+  try {
+    var sid = String(id || '');
+    var c = customers.find(function(x) { 
+      return x && x.id && String(x.id) === sid; 
+    });
+    if (!c) { 
+      showToast('⚠️ 找不到該客戶資料');
+      return; 
+    }
+    var s = stageOf(c);
+    document.getElementById('modalTitle').textContent = c.customerName + ' — ' + STAGE_NAMES[s];
+    var rows = [
+      ['負責業務',c.salesPerson],['聯絡方式',c.contactInfo],['名單來源',c.leadSource],
+      ['獲取來源',c.leadSourceDetail],['獲取方式',c.acquisitionMethod],['創建日期',c.creationDate],
+      ['信任評分',c.trustScore?c.trustScore+'/10':''],['專業評分',c.professionalScore?c.professionalScore+'/10':''],
+      ['信任狀態',c.currentStatus],['✅ 信任檢核',c.trustChecks],['✅ 專業形象檢核',c.proChecks],
+      ['痛點分析',c.painPoints],['痛點補充',c.painPointsNote],['藍圖完成度',c.blueprintCompletion?c.blueprintCompletion+'%':''],
+      ['客戶需求',c.customerNeeds],['推薦物件',c.recommendedProperty],['帶看狀態',c.viewingStatus],
+      ['產品優勢',c.productAdvantages],['客戶異議',c.objections],['解決方案',c.solutions],
+      ['簽約狀態',c.contractStatus],['成交金額',c.dealAmount?c.dealAmount+'萬':''],['簽約日期',c.contractDate],
+      ['滿意度',c.satisfactionScore?c.satisfactionScore+'/10':''],['客戶滿意度調查表',c.satisfactionSurvey],
+      ['貸款協助',c.loanHelp],['租賃代管',c.rentalMgmt],['裝潢建議',c.decorAdvice],['定期資產檢視',c.assetReview],
+      ['售後服務',c.afterSalesService],['活動邀約',c.referralEvent],['保持聯繫',c.keepInTouch],
+      ['轉介紹獎勵',c.referralReward],['轉介紹名單',c.referralList],['轉介紹數量',c.referralCount],
+      ['轉介紹效果',c.referralEffect],['備註',c.notes]
+    ];
+    document.getElementById('modalBody').innerHTML = rows.filter(function(r){ 
+      return r[1] && String(r[1]).trim() !== ''; 
+    }).map(function(r){
+      return '<div class="detail-row"><div class="detail-label">'+r[0]+'</div><div class="detail-value">'+r[1]+'</div></div>';
+    }).join('');
+    var canEdit = currentRole === 'manager' || c.salesPerson === currentUser;
+    var actionsDiv = document.getElementById('modalActions');
+    actionsDiv.innerHTML = '';
+    if (canEdit) {
+      // 修復：使用 data-edit-id 屬性，配合事件委託
+      var editBtn = document.createElement('button');
+      editBtn.className = 'btn btn-secondary';
+      editBtn.style.flex = '1';
+      editBtn.textContent = '✏️ 編輯資料';
+      editBtn.setAttribute('data-edit-id', sid);
+      actionsDiv.appendChild(editBtn);
+      
+      var delBtn = document.createElement('button');
+      delBtn.className = 'btn btn-danger-outline';
+      delBtn.style.flex = '1';
+      delBtn.textContent = '🗑 刪除';
+      delBtn.setAttribute('data-delete-id', sid);
+      actionsDiv.appendChild(delBtn);
     }
     document.getElementById('detailModal').classList.add('active');
-  }catch(err){
-    showToast('載入詳情失敗');
-    console.error(err);
+  } catch (err) {
+    showToast('❌ 加載詳情出錯：' + err.message);
+    console.error('showDetail error:', err);
   }
 }
 
-function showEdit(id){
-  try{
-    const sid = String(id||'');
-    const c = customers.find(x=>x&&x.id&&String(x.id)===sid);
-    if(!c){showToast('找不到客戶');return;}
-    closeDetail();
-    function esc(v){return (v||'').toString().replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
-    const html = `<div style="display:grid;gap:.75rem;">
-<div class="form-group"><label>客戶姓名</label><input id="e_customerName" value="${esc(c.customerName)}" style="width:100%;padding:.6rem;border:2px solid #e8edf2;border-radius:8px;"></div>
-<div class="form-group"><label>聯絡方式</label><input id="e_contactInfo" value="${esc(c.contactInfo)}" style="width:100%;padding:.6rem;border:2px solid #e8edf2;border-radius:8px;"></div>
-</div>`;
-    document.getElementById('editModalBody').innerHTML = html;
-    setTimeout(()=>{
-      document.getElementById('editSaveBtn').onclick=()=>saveEdit(c);
+// ── 編輯彈窗 (穩定化修復) ──
+function showEdit(id) {
+  try {
+    var sid = String(id || '');
+    var c = customers.find(function(x) { 
+      return x && x.id && String(x.id) === sid; 
+    });
+    if (!c) { 
+      showToast('⚠️ 找不到該客戶資料');
+      return; 
+    }
+    document.getElementById('detailModal').classList.remove('active');
+    var isSalesLocked = currentRole === 'sales';
+    var salesOpts = SALES.map(function(s) { 
+      return '<option ' + (s === c.salesPerson ? 'selected' : '') + '>' + s + '</option>'; 
+    }).join('');
+    var srcOpts = ['','緣故','轉介紹','社群經營','展場活動','網路廣告','其他'].map(function(s) { 
+      return '<option ' + (s === c.leadSource ? 'selected' : '') + '>' + s + '</option>'; 
+    }).join('');
+    var acqOpts = ['','主動搭訕','經過介紹','活動認識','線上接觸'].map(function(s) { 
+      return '<option ' + (s === c.acquisitionMethod ? 'selected' : '') + '>' + s + '</option>'; 
+    }).join('');
+    var statusOpts = ['','基礎信任(1-4分)','中度信任(5-7分)','高度信任(8-10分)','中階信任(5-7分)','稱定信任(5-7分)'].map(function(s) { 
+      return '<option ' + (s === c.currentStatus ? 'selected' : '') + '>' + s + '</option>'; 
+    }).join('');
+    var viewOpts = ['','已預約','已帶看','已完整解說'].map(function(s) { 
+      return '<option ' + (s === c.viewingStatus ? 'selected' : '') + '>' + s + '</option>'; 
+    }).join('');
+    var contractOpts = ['未簽約','已下定','已簽約','已付款'].map(function(s) { 
+      return '<option ' + (s === c.contractStatus ? 'selected' : '') + '>' + s + '</option>'; 
+    }).join('');
+    var decorOpts = ['','是','否'].map(function(s) { 
+      return '<option ' + (s === c.decorAdvice ? 'selected' : '') + '>' + s + '</option>'; 
+    }).join('');
+    var assetOpts = ['','是','否'].map(function(s) { 
+      return '<option ' + (s === c.assetReview ? 'selected' : '') + '>' + s + '</option>'; 
+    }).join('');
+    var keepOpts = ['','有','否'].map(function(s) { 
+      return '<option ' + (s === c.keepInTouch ? 'selected' : '') + '>' + s + '</option>'; 
+    }).join('');
+    function esc(v) {
+      return (v || '').toString().replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+    function ef(label, id, val, type) {
+      type = type || 'text';
+      return '<div><div style="font-size:11px;font-weight:700;color:var(--navy);letter-spacing:.06em;margin-bottom:.3rem">' + label + '</div>'
+        + '<input type="' + type + '" id="e_' + id + '" value="' + esc(val) + '" style="width:100%;padding:.6rem .875rem;border:2px solid #e8edf2;border-radius:8px;font-size:14px;font-family:inherit;background:var(--cream);outline:none"></div>';
+    }
+    function ta(label, id, val) {
+      return '<div><div style="font-size:11px;font-weight:700;color:var(--navy);letter-spacing:.06em;margin-bottom:.3rem">' + label + '</div>'
+        + '<textarea id="e_' + id + '" rows="2" style="width:100%;padding:.6rem .875rem;border:2px solid #e8edf2;border-radius:8px;font-size:14px;font-family:inherit;background:var(--cream);resize:vertical;outline:none">' + esc(val) + '</textarea></div>';
+    }
+    function sel(label, id, opts) {
+      return '<div><div style="font-size:11px;font-weight:700;color:var(--navy);letter-spacing:.06em;margin-bottom:.3rem">' + label + '</div>'
+        + '<select id="e_' + id + '" style="width:100%;padding:.6rem .875rem;border:2px solid #e8edf2;border-radius:8px;font-size:14px;font-family:inherit;background:var(--cream);outline:none">' + opts + '</select></div>';
+    }
+    var html = '<div style="display:grid;gap:.75rem">';
+    html += '<div style="background:var(--cream2);border-radius:10px;padding:.875rem;font-size:13px;color:var(--text-soft)">📝 編輯後點「儲存更新」即時同步到雲端</div>';
+    html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem">一部曲：基本資料</div>';
+    if (isSalesLocked) {
+      html += '<div><div style="font-size:11px;font-weight:700;color:var(--navy);letter-spacing:.06em;margin-bottom:.3rem">負責業務</div><div style="padding:.6rem .875rem;background:#f0f0f0;border-radius:8px;font-size:14px;color:var(--text-soft)">' + esc(c.salesPerson) + '</div></div>';
+    } else {
+      html += sel('負責業務','salesPerson',salesOpts);
+    }
+    html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
+    html += ef('客戶姓名 *','customerName',c.customerName);
+    html += ef('聯絡方式','contactInfo',c.contactInfo);
+    html += '</div>';
+    html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
+    html += sel('名單來源','leadSource',srcOpts);
+    html += ef('獲取來源細節','leadSourceDetail',c.leadSourceDetail);
+    html += '</div>';
+    html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
+    html += sel('獲取方式','acquisitionMethod',acqOpts);
+    html += ef('創建日期','creationDate',c.creationDate,'date');
+    html += '</div>';
+    html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem;margin-top:.25rem">二部曲：信任建立</div>';
+    html += '<div class="form-group"><label>信任檢核（已達成項目）</label><div class="ms-wrap" id="e_ms_trustCheck"><div class="ms-display" onclick="toggleMs(\'e_ms_trustCheck\')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div><div class="ms-dropdown"><label class="ms-opt"><input type="checkbox" value="客戶主動分享財務需求與購屋計劃">客戶主動分享財務狀況、需求或購屋計劃</label><label class="ms-opt"><input type="checkbox" value="客戶回覆訊息速度快且積極">客戶回覆訊息速度快且積極</label><label class="ms-opt"><input type="checkbox" value="客戶提問時給予完整且真實的資訊">客戶提問時給予完整且真實的資訊</label><label class="ms-opt"><input type="checkbox" value="互動氛圍輕鬆自然如朋友般交流">互動氛圍輕鬆自然，如朋友般交流</label><label class="ms-opt"><input type="checkbox" value="客戶主動提及家人或重要他人參與討論">客戶主動提及家人或重要他人一起參與討論</label></div></div></div>';
+    html += '<div class="form-group"><label>專業形象檢核（已達成項目）</label><div class="ms-wrap" id="e_ms_proCheck"><div class="ms-display" onclick="toggleMs(\'e_ms_proCheck\')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div><div class="ms-dropdown"><label class="ms-opt"><input type="checkbox" value="有針對市場產品貸款提出數據與案例">有針對市場、產品或貸款方案，提出客觀數據與案例</label><label class="ms-opt"><input type="checkbox" value="客戶回應原來如此等學習性語句">客戶回應「原來如此」、「我不知道這個」等學習性語句</label><label class="ms-opt"><input type="checkbox" value="客戶聽完後能重複或理解重點">客戶聽完後能重複或理解重點</label><label class="ms-opt"><input type="checkbox" value="提出客戶沒想到但很有幫助的建議">提出「客戶沒有想到但很有幫助」的提醒或建議</label><label class="ms-opt"><input type="checkbox" value="客戶產生更高的依賴感">客戶因此產生更高的依賴感</label></div></div></div>';
+    html += sel('當前信任狀態','currentStatus',statusOpts);
+    html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem;margin-top:.25rem">三部曲：需求分析</div>';
+    html += ta('痛點分析（可直接修改）','painPointsEdit',c.painPoints);
+    html += ta('痛點補充說明','painPoints',c.painPointsNote);
+    html += ef('藍圖完成度 (%)','blueprintCompletion',c.blueprintCompletion,'number');
+    html += ta('客戶需求','customerNeeds',c.customerNeeds);
+    html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem;margin-top:.25rem">四部曲：產品匹配</div>';
+    html += ta('推薦物件','recommendedProperty',c.recommendedProperty);
+    html += sel('帶看狀態','viewingStatus',viewOpts);
+    html += ta('產品優勢','productAdvantages',c.productAdvantages);
+    html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem;margin-top:.25rem">五部曲：異議處理</div>';
+    html += ta('客戶異議','objections',c.objections);
+    html += ta('解決方案','solutions',c.solutions);
+    html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem;margin-top:.25rem">六部曲：成交締結</div>';
+    html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
+    html += sel('簽約狀態','contractStatus',contractOpts);
+    html += ef('成交金額（萬）','dealAmount',c.dealAmount,'number');
+    html += '</div>';
+    html += ef('簽約日期','contractDate',c.contractDate,'date');
+    html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem;margin-top:.25rem">七部曲：售後服務</div>';
+    html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
+    html += ef('貸款協助（銀行+專員）','loanHelp',c.loanHelp);
+    html += ef('租賃代管服務業務','rentalMgmt',c.rentalMgmt);
+    html += '</div>';
+    html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
+    html += sel('裝潢建議','decorAdvice',decorOpts);
+    html += sel('定期資產檢視','assetReview',assetOpts);
+    html += '</div>';
+    html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
+    html += ef('滿意度 (1-10)','satisfactionScore',c.satisfactionScore,'number');
+    html += ef('客戶滿意度調查表分數','satisfactionSurvey',c.satisfactionSurvey,'number');
+    html += '</div>';
+    html += ta('售後服務記錄','afterSalesService',c.afterSalesService);
+    html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem;margin-top:.25rem">八部曲：轉介紹裂變</div>';
+    html += ta('邀請朋友參加活動（活動名+日期+人名）','referralEvent',c.referralEvent);
+    html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
+    html += sel('保持聯繫','keepInTouch',keepOpts);
+    html += ef('轉介紹獎勵','referralReward',c.referralReward);
+    html += '</div>';
+    html += ta('轉介紹名單','referralList',c.referralList);
+    html += ef('轉介紹數量','referralCount',c.referralCount,'number');
+    html += '<div class="form-group"><label>轉介紹效果</label><div class="ms-wrap" id="e_ms_referralEffect"><div class="ms-display" onclick="toggleMs(\'e_ms_referralEffect\')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div><div class="ms-dropdown"><label class="ms-opt"><input type="checkbox" value="客戶已聯繫">客戶已聯繫</label><label class="ms-opt"><input type="checkbox" value="已形成">已形成</label><label class="ms-opt"><input type="checkbox" value="已購買">已購買</label><label class="ms-opt"><input type="checkbox" value="持續追蹤中">持續追蹤中</label></div></div></div>';
+    html += ta('備註','notes',c.notes);
+    html += '</div>';
+    var editModalBody = document.getElementById('editModalBody');
+    editModalBody.innerHTML = html;
+    setTimeout(function() {
+      setMsValue('e_ms_trustCheck', c.trustChecks || '');
+      setMsValue('e_ms_proCheck', c.proChecks || '');
+      setMsValue('e_ms_referralEffect', c.referralEffect || '');
+      document.getElementById('editSaveBtn').onclick = function() {
+        saveEdit(c);
+      };
       document.getElementById('editModal').classList.add('active');
-      showToast('進入編輯');
-    },100);
-  }catch(err){
-    showToast('編輯載入失敗');
-    console.error(err);
+    }, 100);
+  } catch (err) {
+    showToast('❌ 開啟編輯出錯：' + err.message);
+    console.error('showEdit error:', err);
   }
 }
 
-function saveEdit(c){
-  try{
-    c.customerName = document.getElementById('e_customerName').value.trim();
-    c.contactInfo = document.getElementById('e_contactInfo').value.trim();
-    renderList();
-    closeEdit();
-    showToast('儲存成功');
-  }catch(err){
-    showToast('儲存失敗');
-    console.error(err);
+function saveEdit(c) {
+  var gv = function(fid){ var el=document.getElementById('e_'+fid); return el?el.value:''; };
+  var cn = gv('customerName');
+  if (!cn) { alert('客戶姓名不能為空'); return; }
+  var updated = {
+    id: c.id,
+    salesPerson: currentRole==='sales' ? c.salesPerson : gv('salesPerson'),
+    customerName: cn, contactInfo: gv('contactInfo'), leadSource: gv('leadSource'),
+    leadSourceDetail: gv('leadSourceDetail'), acquisitionMethod: gv('acquisitionMethod'),
+    creationDate: gv('creationDate'), trustScore: gv('trustScore'),
+    professionalScore: gv('professionalScore'), currentStatus: gv('currentStatus'),
+    trustChecks: getMsValue('e_ms_trustCheck'), proChecks: getMsValue('e_ms_proCheck'),
+    painPoints: gv('painPointsEdit'), painPointsNote: gv('painPoints'),
+    blueprintCompletion: gv('blueprintCompletion'),
+    customerNeeds: gv('customerNeeds'), recommendedProperty: gv('recommendedProperty'),
+    viewingStatus: gv('viewingStatus'), productAdvantages: gv('productAdvantages'),
+    objections: gv('objections'), solutions: gv('solutions'),
+    contractStatus: gv('contractStatus'), dealAmount: gv('dealAmount'),
+    contractDate: gv('contractDate'), satisfactionScore: gv('satisfactionScore'),
+    satisfactionSurvey: gv('satisfactionSurvey'), loanHelp: gv('loanHelp'),
+    rentalMgmt: gv('rentalMgmt'), decorAdvice: gv('decorAdvice'), assetReview: gv('assetReview'),
+    afterSalesService: gv('afterSalesService'),
+    referralEvent: gv('referralEvent'), keepInTouch: gv('keepInTouch'),
+    referralReward: gv('referralReward'), referralList: gv('referralList'),
+    referralCount: gv('referralCount'),
+    referralEffect: getMsValue('e_ms_referralEffect'), notes: gv('notes')
+  };
+  var btn = document.getElementById('editSaveBtn');
+  btn.disabled = true; btn.textContent = '⏳ 儲存中...';
+  callAPI({ action: 'update', customer: updated }, function(res) {
+    btn.disabled = false; btn.textContent = '💾 儲存更新';
+    if (res.success) {
+      document.getElementById('editModal').classList.remove('active');
+      showToast('✅ 資料已更新！');
+      fetchCustomers();
+    } else {
+      showToast('❌ 更新失敗：'+res.error);
+    }
+  });
+}
+
+function closeModal() { document.getElementById('detailModal').classList.remove('active'); }
+function closeEditModal() { 
+  document.getElementById('editModal').classList.remove('active'); 
+  document.getElementById('editModalBody').innerHTML = '';
+}
+
+// ── 刪除功能 ──
+function confirmDelete(id) {
+  document.getElementById('detailModal').classList.remove('active');
+  document.getElementById('confirmModal').classList.add('active');
+  document.getElementById('confirmDeleteBtn').onclick = function() {
+    document.getElementById('confirmModal').classList.remove('active');
+    callAPI({ action: 'delete', id: id }, function(res) {
+      if (res.success) { showToast('✅ 已刪除'); fetchCustomers(); }
+      else showToast('❌ 刪除失敗：'+res.error);
+    });
+  };
+}
+
+// ── 報表 ──
+function renderReports() {
+  var stats = {};
+  customers.forEach(function(c){
+    var n = c.salesPerson||'未指定';
+    if (!stats[n]) stats[n] = {total:0, closed:0};
+    stats[n].total++;
+    if (c.contractStatus==='已簽約'||c.contractStatus==='已付款') stats[n].closed++;
+  });
+  var ranking = Object.keys(stats).map(function(n){ var s=stats[n]; return {name:n,total:s.total,closed:s.closed,rate:s.total?Math.round(s.closed/s.total*100):0}; });
+  ranking.sort(function(a,b){ return b.total-a.total||b.closed-a.closed; });
+  var maxTotal = ranking.length ? ranking[0].total : 1;
+  var con = document.getElementById('salesRankingContainer');
+  if (!ranking.length) { con.innerHTML='<div class="empty-state"><div class="empty-icon">📊</div>尚無資料</div>'; return; }
+  con.innerHTML = ranking.map(function(r,i){
+    var cls = 'rank-item'+(i<3?' rank-'+(i+1):'');
+    return '<div class="'+cls+'"><div class="rank-num">'+(i+1)+'</div>'+
+      '<div class="rank-info"><div class="rank-name">'+r.name+'</div>'+
+      '<div class="rank-detail">客戶 '+r.total+' ｜ 成交 '+r.closed+' ｜ 轉換率 '+r.rate+'%</div></div>'+
+      '<div class="rank-bar-wrap"><div class="rank-pct">'+r.total+'人</div>'+
+      '<div class="rank-bar"><div class="rank-fill" style="width:'+Math.round(r.total/maxTotal*100)+'%"></div></div></div></div>';
+  }).join('');
+}
+
+// ── 切換頁面 ──
+function showPage(name, btn) {
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  document.getElementById(name).classList.add('active');
+  document.querySelectorAll('.nav-tabs button').forEach(function(b){ b.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+}
+
+// ── Claude 匯出 ──
+var QUICK_COMMANDS = [
+  {cat:'📊 業績查詢',cmds:['幫我統計每位業務的客戶數量，從高到低排列','本月新增了哪些客戶？按業務分組列出','目前成交金額最高的前5筆是哪些？','計算每位業務的成交轉換率']},
+  {cat:'🎯 階段分析',cmds:['列出目前在五部曲（異議處理）的所有客戶','哪些客戶在六部曲（成交締結）？附上負責業務','找出已下定但尚未正式簽約的客戶']},
+  {cat:'🔍 跟進建議',cmds:['哪些客戶的信任評分低於6分，需要加強關係？','哪些已帶看客戶還沒有成交？建議跟進策略','轉介紹數量最多的客戶是哪幾位？']},
+  {cat:'📈 趨勢分析',cmds:['分析各名單來源的效果，哪個來源轉換率最高？','給我一份完整的本月業績月報']}
+];
+
+function buildQuickCommands() {
+  var html = '';
+  QUICK_COMMANDS.forEach(function(g){
+    html += '<div class="cmd-category">'+g.cat+'</div>';
+    g.cmds.forEach(function(cmd){
+      html += '<div class="cmd-chip" onclick="copyCmd(this.dataset.cmd)" data-cmd="'+cmd.replace(/"/g,'&quot;')+'"><span class="cmd-text">'+cmd+'</span><span class="cmd-copy">複製</span></div>';
+    });
+  });
+  document.getElementById('quickCommandList').innerHTML = html;
+}
+
+function copyCmd(text) {
+  navigator.clipboard.writeText(text).catch(function(){});
+  showToast('✅ 已複製指令！');
+}
+
+function getExportText() {
+  var scope = document.getElementById('exportScope').value;
+  var format = document.getElementById('exportFormat').value;
+  var data = scope==='all' ? customers : customers.filter(function(c){ return c.salesPerson===currentUser; });
+  var now = new Date();
+  var closed = data.filter(function(c){ return c.contractStatus==='已簽約'||c.contractStatus==='已付款'; });
+  var totalAmt = closed.reduce(function(s,c){ return s+(parseFloat(c.dealAmount)||0); }, 0);
+  var count = {}; data.forEach(function(c){ var s=stageOf(c); count[s]=(count[s]||0)+1; });
+  var txt = '════════════════════════════════\n富時代地產 CRM 資料庫\n';
+  txt += '導出時間：'+now.toLocaleString('zh-TW')+'\n導出人員：'+currentUser+'\n════════════════════════════════\n\n';
+  txt += '【統計摘要】\n・總客戶數：'+data.length+' 人\n';
+  txt += '・成交客戶：'+closed.length+' 人（轉換率 '+(data.length?Math.round(closed.length/data.length*100):0)+'%）\n';
+  txt += '・成交總金額：'+totalAmt+' 萬元\n\n【八部曲分布】\n';
+  for (var i=1;i<=8;i++) txt += '・'+i+'️⃣ '+STAGE_NAMES[i]+'：'+(count[i]||0)+' 人\n';
+  txt += '\n';
+  if (format==='full') {
+    txt += '【客戶完整資料】\n────────────────────────────────\n';
+    data.forEach(function(c,idx){
+      var s=stageOf(c);
+      txt += '['+(idx+1)+'] '+c.customerName+' ｜ '+STAGE_NAMES[s]+' ｜ 負責：'+c.salesPerson+'\n';
+      if(c.contactInfo) txt+='  聯絡：'+c.contactInfo+'\n';
+      if(c.leadSource) txt+='  來源：'+c.leadSource+(c.leadSourceDetail?' / '+c.leadSourceDetail:'')+'\n';
+      if(c.trustScore) txt+='  信任：'+c.trustScore+'/10 ｜ 專業：'+(c.professionalScore||'-')+'/10\n';
+      if(c.painPoints) txt+='  痛點：'+c.painPoints+'\n';
+      if(c.customerNeeds) txt+='  需求：'+c.customerNeeds+'\n';
+      if(c.contractStatus&&c.contractStatus!=='未簽約') txt+='  簽約：'+c.contractStatus+(c.dealAmount?' ｜ '+c.dealAmount+'萬':'')+'\n';
+      if(c.notes) txt+='  備註：'+c.notes+'\n';
+      txt += '────────────────────────────────\n';
+    });
+  } else {
+    txt += '【客戶摘要清單】\n';
+    data.forEach(function(c,i){
+      txt += (i+1)+'. '+c.customerName+' ｜ '+STAGE_NAMES[stageOf(c)]+' ｜ '+c.salesPerson;
+      if(c.contractStatus&&c.contractStatus!=='未簽約') txt+=' ｜ '+c.contractStatus;
+      if(c.dealAmount) txt+=' '+c.dealAmount+'萬';
+      txt += '\n';
+    });
   }
+  txt += '\n【以上為完整資料，請根據需求進行分析】';
+  return txt;
 }
 
-function goAdd(){
-  const newId = Date.now();
-  customers.push({id:newId,customerName:'新客戶',contactInfo:'',salesPerson:currentUser});
-  renderList();
-  showEdit(newId);
+function previewExport() {
+  var txt = getExportText();
+  var lines = txt.split('\n');
+  document.getElementById('exportPreview').textContent = lines.slice(0,15).join('\n')+(lines.length>15?'\n...(共'+lines.length+'行)':'');
 }
 
-function init(){
-  if(!customers.length){
-    customers.push({id:1,customerName:'王小姐',contactInfo:'0911111111',salesPerson:'業務A'});
-    customers.push({id:2,customerName:'李先生',contactInfo:'0922222222',salesPerson:'業務B'});
+function copyExport() {
+  var txt = getExportText();
+  navigator.clipboard.writeText(txt).then(function(){
+    var a = document.getElementById('copyAlert'); a.classList.add('active');
+    setTimeout(function(){ a.classList.remove('active'); }, 3500);
+  }).catch(function(){
+    var ta = document.createElement('textarea'); ta.value=txt;
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+    var a = document.getElementById('copyAlert'); a.classList.add('active');
+    setTimeout(function(){ a.classList.remove('active'); }, 3500);
+  });
+}
+
+// ── Toast 通知 ──
+var toastTimer = null;
+function showToast(msg){
+  var t = document.getElementById('crm-toast');
+  if (!t) {
+    t = document.createElement('div'); t.id='crm-toast';
+    t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0f2744;color:white;padding:.75rem 1.5rem;border-radius:24px;font-size:14px;font-weight:600;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,.25);white-space:nowrap;transition:opacity .3s;pointer-events:none';
+    document.body.appendChild(t);
   }
-  renderList();
+  t.textContent=msg; t.style.opacity='1';
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(function(){ t.style.opacity='0'; }, 2800);
 }
-
-window.onload = init;
-</script>
-</body>
-</html>
