@@ -1196,23 +1196,19 @@ function showEdit(id) {
   html += '</div>';
 
   document.getElementById('editModalBody').innerHTML = html;
-  // 帶入已存的勾選值
   setMsValue('e_ms_trustCheck', c.trustChecks || '');
   setMsValue('e_ms_proCheck', c.proChecks || '');
   setMsValue('e_ms_referralEffect', c.referralEffect || '');
-  document.getElementById('editSaveBtn').onclick = function(){ saveEdit(id); };
+  document.getElementById('editSaveBtn').onclick = function(){ saveEdit(c); };
   document.getElementById('editModal').classList.add('active');
 }
 
-function saveEdit(id) {
-  var sid = id.toString();
-  var c = customers.find(function(x){ return x.id && x.id.toString()===sid; });
-  if (!c) return;
+function saveEdit(c) {
   var gv = function(fid){ var el=document.getElementById('e_'+fid); return el?el.value:''; };
   var cn = gv('customerName');
   if (!cn) { alert('客戶姓名不能為空'); return; }
   var updated = {
-    id: id,
+    id: c.id,
     salesPerson: currentRole==='sales' ? c.salesPerson : gv('salesPerson'),
     customerName: cn, contactInfo: gv('contactInfo'), leadSource: gv('leadSource'),
     leadSourceDetail: gv('leadSourceDetail'), acquisitionMethod: gv('acquisitionMethod'),
