@@ -996,6 +996,7 @@ function saveCustomer() {
     referralEffect:getMsValue('ms_referralEffect'), notes:v('notes')
   };
   var btn = document.getElementById('saveBtn');
+  if (btn.disabled) return;
   btn.disabled = true; btn.textContent = '⏳ 儲存中...';
   callAPI({ action: 'save', customer: c }, function(res) {
     btn.disabled = false; btn.textContent = '☁️ 儲存並同步';
