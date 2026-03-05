@@ -1147,7 +1147,8 @@ function showEdit(id) {
   html += sel('當前信任狀態','currentStatus',statusOpts);
 
   html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem;margin-top:.25rem">三部曲：需求分析</div>';
-  html += ta('痛點分析','painPoints',c.painPoints);
+  html += ta('痛點分析（可直接修改）','painPointsEdit',c.painPoints);
+  html += ta('痛點補充說明','painPoints',c.painPointsNote);
   html += ef('藍圖完成度 (%)','blueprintCompletion',c.blueprintCompletion,'number');
   html += ta('客戶需求','customerNeeds',c.customerNeeds);
 
@@ -1217,7 +1218,7 @@ function saveEdit(id) {
     creationDate: gv('creationDate'), trustScore: gv('trustScore'),
     professionalScore: gv('professionalScore'), currentStatus: gv('currentStatus'),
     trustChecks: getMsValue('e_ms_trustCheck'), proChecks: getMsValue('e_ms_proCheck'),
-    painPoints: c.painPoints||'', painPointsNote: gv('painPoints'),
+    painPoints: gv('painPointsEdit'), painPointsNote: gv('painPoints'),
     blueprintCompletion: gv('blueprintCompletion'),
     customerNeeds: gv('customerNeeds'), recommendedProperty: gv('recommendedProperty'),
     viewingStatus: gv('viewingStatus'), productAdvantages: gv('productAdvantages'),
