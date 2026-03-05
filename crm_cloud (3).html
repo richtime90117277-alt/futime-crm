@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0048)file:///C:/Users/User/Downloads/crm_cloud_5.html -->
+<!-- saved from url=(0048)file:///C:/Users/User/Downloads/crm_cloud_6.html -->
 <html lang="zh-TW"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1063,11 +1063,12 @@ function showDetail(id) {
   document.getElementById('modalBody').innerHTML = rows.filter(function(r){ return r[1]; }).map(function(r){
     return '<div class="detail-row"><div class="detail-label">'+r[0]+'</div><div class="detail-value">'+r[1]+'</div></div>';
   }).join('');
+  var sid = c.id.toString();
   var canEdit = currentRole==='manager' || c.salesPerson===currentUser;
   var canDelete = canEdit;
   var actions = '';
-  if (canEdit) actions += '<button class="btn btn-secondary" style="flex:1" onclick="showEdit(\''+id+'\')">✏️ 編輯資料</button>';
-  if (canDelete) actions += '<button class="btn btn-danger-outline" style="flex:1" onclick="confirmDelete(\''+id+'\')">🗑 刪除</button>';
+  if (canEdit) actions += '<button class="btn btn-secondary" style="flex:1" onclick="showEdit(\''+sid+'\')">✏️ 編輯資料</button>';
+  if (canDelete) actions += '<button class="btn btn-danger-outline" style="flex:1" onclick="confirmDelete(\''+sid+'\')">🗑 刪除</button>';
   document.getElementById('modalActions').innerHTML = actions;
   document.getElementById('detailModal').classList.add('active');
 }
