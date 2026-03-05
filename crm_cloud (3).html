@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0048)file:///C:/Users/User/Downloads/crm_cloud_4.html -->
+<!-- saved from url=(0048)file:///C:/Users/User/Downloads/crm_cloud_5.html -->
 <html lang="zh-TW"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -893,7 +893,7 @@ function renderRecent() {
   if (!sorted.length) { document.getElementById('recentList').innerHTML='<div class="empty-state"><div class="empty-icon">📋</div>尚無資料</div>'; return; }
   document.getElementById('recentList').innerHTML = sorted.map(function(c){
     var s = stageOf(c);
-    return '<div class="customer-item" onclick="showDetail(\''+c.id+'\')">'+
+    return '<div class="customer-item" onclick="showDetail(\''+c.id.toString()+'\')">'+
       '<div class="customer-head"><span class="customer-name">'+c.customerName+'</span><span class="badge badge-'+s+'">'+STAGE_NAMES[s]+'</span></div>'+
       '<div class="customer-meta">👤 '+c.salesPerson+' ｜ '+c.creationDate+'</div></div>';
   }).join('');
@@ -1023,7 +1023,7 @@ function renderCustomers() {
   con.innerHTML = mc.map(function(c){
     var s = stageOf(c);
     var manInfo = currentRole==='manager' ? '<div class="customer-meta">👤 '+c.salesPerson+'</div>' : '';
-    return '<div class="customer-item" onclick="showDetail(\''+c.id+'\')">'+
+    return '<div class="customer-item" onclick="showDetail(\''+c.id.toString()+'\')">'+
       '<div class="customer-head"><span class="customer-name">'+c.customerName+'</span><span class="badge badge-'+s+'">'+s+'️⃣ '+STAGE_NAMES[s]+'</span></div>'+
       manInfo+
       '<div class="customer-meta">📞 '+(c.contactInfo||'—')+' ｜ 來源：'+(c.leadSource||'—')+'</div>'+
@@ -1034,10 +1034,9 @@ function renderCustomers() {
 
 // ── 詳情彈窗（檢視模式）──
 function showDetail(id) {
-  console.log('showDetail called, id=', id, 'customers=', customers.length);
-  var c = customers.find(function(x){ return x.id && x.id.toString()===id.toString(); });
-  console.log('found=', c ? c.customerName : 'NOT FOUND');
-  if (!c) { alert('找不到客戶 id='+id+' 共'+customers.length+'筆'); return; }
+  var sid = id.toString();
+  var c = customers.find(function(x){ return x.id && x.id.toString()===sid; });
+  if (!c) { console.log('找不到id='+sid); return; }
   var s = stageOf(c);
   document.getElementById('modalTitle').textContent = c.customerName+' — '+STAGE_NAMES[s];
   var rows = [
@@ -1075,7 +1074,8 @@ function showDetail(id) {
 
 // ── 編輯彈窗 ──
 function showEdit(id) {
-  var c = customers.find(function(x){ return x.id && x.id.toString()===id.toString(); });
+  var sid = id.toString();
+  var c = customers.find(function(x){ return x.id && x.id.toString()===sid; });
   if (!c) return;
   document.getElementById('detailModal').classList.remove('active');
 
