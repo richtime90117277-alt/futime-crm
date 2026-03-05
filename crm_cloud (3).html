@@ -1235,6 +1235,7 @@ function saveEdit(id) {
   };
   var btn = document.getElementById('editSaveBtn');
   btn.disabled = true; btn.textContent = '⏳ 儲存中...';
+  alert('要存的痛點=' + updated.painPoints + '\n補充=' + updated.painPointsNote);
   callAPI({ action: 'update', customer: updated }, function(res) {
     btn.disabled = false; btn.textContent = '💾 儲存更新';
     if (res.success) {
