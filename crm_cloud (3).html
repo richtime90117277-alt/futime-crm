@@ -1095,6 +1095,7 @@ function showDetail(id) {
 function showEdit(id) {
   var sid = id.toString();
   var c = customers.find(function(x){ return x.id && x.id.toString()===sid; });
+  alert('showEdit id='+sid+'\n找到='+( c ? c.customerName : '找不到，共'+customers.length+'筆，第一筆='+( customers[0]?customers[0].id+' 型態='+typeof customers[0].id:'空')));
   if (!c) return;
   document.getElementById('detailModal').classList.remove('active');
 
