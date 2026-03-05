@@ -1134,11 +1134,9 @@ function showEdit(id) {
   html += '</div>';
 
   html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem;margin-top:.25rem">二部曲：信任建立</div>';
-  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
-  html += ef('信任評分 (1-10)','trustScore',c.trustScore,'number');
-  html += ef('專業評分 (1-10)','professionalScore',c.professionalScore,'number');
-  html += '</div>';
-  html += sel('信任狀態','currentStatus',statusOpts);
+  html += '<div class="form-group"><label>信任檢核（已達成項目）</label><div class="ms-wrap" id="e_ms_trustCheck"><div class="ms-display" onclick="toggleMs(\'e_ms_trustCheck\')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div><div class="ms-dropdown"><label class="ms-opt"><input type="checkbox" value="客戶主動分享財務需求與購屋計劃">客戶主動分享財務狀況、需求或購屋計劃</label><label class="ms-opt"><input type="checkbox" value="客戶回覆訊息速度快且積極">客戶回覆訊息速度快且積極</label><label class="ms-opt"><input type="checkbox" value="客戶提問時給予完整且真實的資訊">客戶提問時給予完整且真實的資訊</label><label class="ms-opt"><input type="checkbox" value="互動氛圍輕鬆自然如朋友般交流">互動氛圍輕鬆自然，如朋友般交流</label><label class="ms-opt"><input type="checkbox" value="客戶主動提及家人或重要他人參與討論">客戶主動提及家人或重要他人一起參與討論</label></div></div></div>';
+  html += '<div class="form-group"><label>專業形象檢核（已達成項目）</label><div class="ms-wrap" id="e_ms_proCheck"><div class="ms-display" onclick="toggleMs(\'e_ms_proCheck\')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div><div class="ms-dropdown"><label class="ms-opt"><input type="checkbox" value="有針對市場產品貸款提出數據與案例">有針對市場、產品或貸款方案，提出客觀數據與案例</label><label class="ms-opt"><input type="checkbox" value="客戶回應原來如此等學習性語句">客戶回應「原來如此」、「我不知道這個」等學習性語句</label><label class="ms-opt"><input type="checkbox" value="客戶聽完後能重複或理解重點">客戶聽完後能重複或理解重點</label><label class="ms-opt"><input type="checkbox" value="提出客戶沒想到但很有幫助的建議">提出「客戶沒有想到但很有幫助」的提醒或建議</label><label class="ms-opt"><input type="checkbox" value="客戶產生更高的依賴感">客戶因此產生更高的依賴感</label></div></div></div>';
+  html += sel('當前信任狀態','currentStatus',statusOpts);
 
   html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem;margin-top:.25rem">三部曲：需求分析</div>';
   html += ta('痛點分析','painPoints',c.painPoints);
@@ -1161,15 +1159,38 @@ function showEdit(id) {
   html += '</div>';
   html += ef('簽約日期','contractDate',c.contractDate,'date');
 
-  html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem;margin-top:.25rem">七~八部曲</div>';
+  html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem;margin-top:.25rem">七部曲：售後服務</div>';
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
+  html += ef('貸款協助（銀行+專員）','loanHelp',c.loanHelp);
+  html += ef('租賃代管服務業務','rentalMgmt',c.rentalMgmt);
+  html += '</div>';
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
+  html += sel('裝潢建議','decorAdvice',['','是','否']);
+  html += sel('定期資產檢視','assetReview',['','是','否']);
+  html += '</div>';
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
   html += ef('滿意度 (1-10)','satisfactionScore',c.satisfactionScore,'number');
+  html += ef('客戶滿意度調查表分數','satisfactionSurvey',c.satisfactionSurvey,'number');
+  html += '</div>';
   html += ta('售後服務記錄','afterSalesService',c.afterSalesService);
-  html += ef('轉介紹數量','referralCount',c.referralCount,'number');
+
+  html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem;margin-top:.25rem">八部曲：轉介紹裂變</div>';
+  html += ta('邀請朋友參加活動（活動名+日期+人名）','referralEvent',c.referralEvent);
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
+  html += sel('保持聯繫','keepInTouch',['','有','否']);
+  html += ef('轉介紹獎勵','referralReward',c.referralReward);
+  html += '</div>';
   html += ta('轉介紹名單','referralList',c.referralList);
+  html += ef('轉介紹數量','referralCount',c.referralCount,'number');
+  html += '<div class="form-group"><label>轉介紹效果</label><div class="ms-wrap" id="e_ms_referralEffect"><div class="ms-display" onclick="toggleMs(\'e_ms_referralEffect\')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div><div class="ms-dropdown"><label class="ms-opt"><input type="checkbox" value="客戶已聯繫">客戶已聯繫</label><label class="ms-opt"><input type="checkbox" value="已形成">已形成</label><label class="ms-opt"><input type="checkbox" value="已購買">已購買</label><label class="ms-opt"><input type="checkbox" value="持續追蹤中">持續追蹤中</label></div></div></div>';
   html += ef('備註','notes',c.notes);
   html += '</div>';
 
   document.getElementById('editModalBody').innerHTML = html;
+  // 帶入已存的勾選值
+  setMsValue('e_ms_trustCheck', c.trustChecks || '');
+  setMsValue('e_ms_proCheck', c.proChecks || '');
+  setMsValue('e_ms_referralEffect', c.referralEffect || '');
   document.getElementById('editSaveBtn').onclick = function(){ saveEdit(id); };
   document.getElementById('editModal').classList.add('active');
 }
@@ -1187,7 +1208,7 @@ function saveEdit(id) {
     leadSourceDetail: gv('leadSourceDetail'), acquisitionMethod: gv('acquisitionMethod'),
     creationDate: gv('creationDate'), trustScore: gv('trustScore'),
     professionalScore: gv('professionalScore'), currentStatus: gv('currentStatus'),
-    trustChecks: c.trustChecks||'', proChecks: c.proChecks||'',
+    trustChecks: getMsValue('e_ms_trustCheck'), proChecks: getMsValue('e_ms_proCheck'),
     painPoints: c.painPoints||'', painPointsNote: gv('painPoints'),
     blueprintCompletion: gv('blueprintCompletion'),
     customerNeeds: gv('customerNeeds'), recommendedProperty: gv('recommendedProperty'),
@@ -1195,8 +1216,13 @@ function saveEdit(id) {
     objections: gv('objections'), solutions: gv('solutions'),
     contractStatus: gv('contractStatus'), dealAmount: gv('dealAmount'),
     contractDate: gv('contractDate'), satisfactionScore: gv('satisfactionScore'),
-    afterSalesService: gv('afterSalesService'), referralList: gv('referralList'),
-    referralCount: gv('referralCount'), notes: gv('notes')
+    satisfactionSurvey: gv('satisfactionSurvey'), loanHelp: gv('loanHelp'),
+    rentalMgmt: gv('rentalMgmt'), decorAdvice: gv('decorAdvice'), assetReview: gv('assetReview'),
+    afterSalesService: gv('afterSalesService'),
+    referralEvent: gv('referralEvent'), keepInTouch: gv('keepInTouch'),
+    referralReward: gv('referralReward'), referralList: gv('referralList'),
+    referralCount: gv('referralCount'),
+    referralEffect: getMsValue('e_ms_referralEffect'), notes: gv('notes')
   };
   var btn = document.getElementById('editSaveBtn');
   btn.disabled = true; btn.textContent = '⏳ 儲存中...';
