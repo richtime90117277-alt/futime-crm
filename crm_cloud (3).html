@@ -316,6 +316,32 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
               <div class="form-group"><label>創建日期 *</label><input type="date" id="creationDate" required></div>
               <div class="form-group" style="display:none"><input type="hidden" id="acquisitionMethod" value=""></div>
             </div>
+            <div class="form-grid two">
+              <div class="form-group">
+                <label>📱 溝通偏好</label>
+                <select id="contactPref">
+                  <option value="">請選擇</option>
+                  <option>Line 訊息</option><option>電話通話</option><option>當面拜訪</option><option>Line 語音</option><option>Email</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>⏰ 最佳聯繫時段</label>
+                <select id="contactTime">
+                  <option value="">請選擇</option>
+                  <option>早上（9–12點）</option><option>下午（12–17點）</option><option>傍晚（17–19點）</option><option>晚上（19點後）</option><option>假日為主</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>🧠 客戶個性類型</label>
+              <select id="personalityType">
+                <option value="">請選擇</option>
+                <option>分析型（喜歡數據與邏輯）</option>
+                <option>關係型（重視情感與信任）</option>
+                <option>直覺型（快速決策、跟感覺走）</option>
+                <option>謹慎型（慢慢來、需要多確認）</option>
+              </select>
+            </div>
           </div>
         </div>
         <div class="card">
@@ -414,6 +440,22 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
         <div class="card">
           <div class="card-header"><div class="card-icon">5</div><h3>五部曲：異議處理（顧問解答）</h3></div>
           <div class="card-body">
+            <div class="form-group">
+              <label>🚧 決策障礙（卡點）</label>
+              <div class="ms-wrap" id="ms_decisionBlock">
+                <div class="ms-display" onclick="toggleMs('ms_decisionBlock')"><span class="ms-placeholder">點選展開（可多選）</span><span class="ms-arrow">▾</span></div>
+                <div class="ms-dropdown">
+                  <label class="ms-opt"><input type="checkbox" value="價格超出預算">💰 價格超出預算</label>
+                  <label class="ms-opt"><input type="checkbox" value="家人尚未同意">👨‍👩‍👧 家人尚未同意</label>
+                  <label class="ms-opt"><input type="checkbox" value="時機未到在觀望">⏳ 時機未到、在觀望</label>
+                  <label class="ms-opt"><input type="checkbox" value="還在比較其他物件">🔍 還在比較其他物件</label>
+                  <label class="ms-opt"><input type="checkbox" value="貸款疑慮">🏦 貸款疑慮</label>
+                  <label class="ms-opt"><input type="checkbox" value="工作收入不穩定">📉 工作收入不穩定</label>
+                  <label class="ms-opt"><input type="checkbox" value="純觀望短期不買">👀 純觀望、短期不買</label>
+                  <label class="ms-opt"><input type="checkbox" value="已在其他業務跟進中">🤝 已在其他業務跟進中</label>
+                </div>
+              </div>
+            </div>
             <div class="form-group"><label>客戶異議問題</label><textarea id="objections" placeholder="客戶提出的疑慮或問題"></textarea></div>
             <div class="form-group"><label>顧問解決方案</label><textarea id="solutions" placeholder="提供的解決方案和數據支持"></textarea></div>
           </div>
@@ -518,7 +560,30 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
         <div class="card">
           <div class="card-header"><div class="card-icon">📝</div><h3>備註欄</h3></div>
           <div class="card-body">
-            <div class="form-group"><textarea id="notes" placeholder="任何補充說明皆可自由記錄..." style="min-height:120px"></textarea></div>
+            <div class="form-group">
+              <label>🔁 上次跟進摘要</label>
+              <select id="lastFollowupResult">
+                <option value="">請選擇結果</option>
+                <option>✅ 有進展，下次約好了</option>
+                <option>💬 有聊，態度正面</option>
+                <option>😐 普通，需要再培養</option>
+                <option>❌ 拒絕或沒有回應</option>
+                <option>🔄 重新建立關係中</option>
+              </select>
+            </div>
+            <div class="form-group"><label>跟進重點（下次要說什麼）</label>
+              <select id="nextFollowupAction">
+                <option value="">請選擇</option>
+                <option>分享市場新資訊</option>
+                <option>邀請看屋或活動</option>
+                <option>處理家人疑慮</option>
+                <option>重新確認需求與預算</option>
+                <option>提供貸款方案試算</option>
+                <option>等待時機主動聯繫</option>
+                <option>轉介紹開口</option>
+              </select>
+            </div>
+            <div class="form-group"><textarea id="notes" placeholder="其他補充說明..." style="min-height:100px"></textarea></div>
           </div>
         </div>
         <div class="button-row">
@@ -997,7 +1062,10 @@ function saveCustomer() {
     afterSalesService:v('afterSalesService'),
     referralEvent:v('referralEvent'), keepInTouch:v('keepInTouch'), referralReward:v('referralReward'),
     referralList:v('referralList'), referralCount:v('referralCount'),
-    referralEffect:getMsValue('ms_referralEffect'), notes:v('notes')
+    referralEffect:getMsValue('ms_referralEffect'), notes:v('notes'),
+    contactPref:v('contactPref'), contactTime:v('contactTime'),
+    personalityType:v('personalityType'), decisionBlock:getMsValue('ms_decisionBlock'),
+    lastFollowupResult:v('lastFollowupResult'), nextFollowupAction:v('nextFollowupAction')
   };
   var btn = document.getElementById('saveBtn');
   if (btn.disabled) return;
@@ -1024,6 +1092,9 @@ function clearForm() {
   document.querySelectorAll('.ms-wrap').forEach(function(wrap){
     wrap.querySelectorAll('input[type=checkbox]').forEach(function(el){ el.checked = false; });
     updateMsDisplay(wrap);
+  });
+  ['contactPref','contactTime','personalityType','lastFollowupResult','nextFollowupAction'].forEach(function(id){
+    var el = document.getElementById(id); if(el) el.value = '';
   });
 }
 
@@ -1077,7 +1148,10 @@ function showDetail(id) {
     ['活動邀約',c.referralEvent],['保持聯繫',c.keepInTouch],
     ['轉介紹獎勵',c.referralReward],
     ['轉介紹名單',c.referralList],['轉介紹數量',c.referralCount],
-    ['轉介紹效果',c.referralEffect],['備註',c.notes]
+    ['轉介紹效果',c.referralEffect],['備註',c.notes],
+    ['📱 溝通偏好',c.contactPref],['⏰ 聯繫時段',c.contactTime],
+    ['🧠 客戶個性',c.personalityType],['🚧 決策障礙',c.decisionBlock],
+    ['🔁 上次跟進結果',c.lastFollowupResult],['下次跟進重點',c.nextFollowupAction]
   ];
   document.getElementById('modalBody').innerHTML = rows.filter(function(r){ return r[1]; }).map(function(r){
     return '<div class="detail-row"><div class="detail-label">'+r[0]+'</div><div class="detail-value">'+r[1]+'</div></div>';
@@ -1213,12 +1287,28 @@ function showEdit(id) {
   html += ef('轉介紹數量','referralCount',c.referralCount,'number');
   html += '<div class="form-group"><label>轉介紹效果</label><div class="ms-wrap" id="e_ms_referralEffect"><div class="ms-display" onclick="toggleMs(\'e_ms_referralEffect\')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div><div class="ms-dropdown"><label class="ms-opt"><input type="checkbox" value="客戶已聯繫">客戶已聯繫</label><label class="ms-opt"><input type="checkbox" value="已形成">已形成</label><label class="ms-opt"><input type="checkbox" value="已購買">已購買</label><label class="ms-opt"><input type="checkbox" value="持續追蹤中">持續追蹤中</label></div></div></div>';
   html += ef('備註','notes',c.notes);
+  // 新增：跟進系統
+  var cpOpts = ['','Line 訊息','電話通話','當面拜訪','Line 語音','Email'].map(function(s){ return '<option'+(s===c.contactPref?' selected':'')+'>'+s+'</option>'; }).join('');
+  var ctOpts = ['','早上（9–12點）','下午（12–17點）','傍晚（17–19點）','晚上（19點後）','假日為主'].map(function(s){ return '<option'+(s===c.contactTime?' selected':'')+'>'+s+'</option>'; }).join('');
+  var ptOpts = ['','分析型（喜歡數據與邏輯）','關係型（重視情感與信任）','直覺型（快速決策、跟感覺走）','謹慎型（慢慢來、需要多確認）'].map(function(s){ return '<option'+(s===c.personalityType?' selected':'')+'>'+s+'</option>'; }).join('');
+  var lfOpts = ['','✅ 有進展，下次約好了','💬 有聊，態度正面','😐 普通，需要再培養','❌ 拒絕或沒有回應','🔄 重新建立關係中'].map(function(s){ return '<option'+(s===c.lastFollowupResult?' selected':'')+'>'+s+'</option>'; }).join('');
+  var nfOpts = ['','分享市場新資訊','邀請看屋或活動','處理家人疑慮','重新確認需求與預算','提供貸款方案試算','等待時機主動聯繫','轉介紹開口'].map(function(s){ return '<option'+(s===c.nextFollowupAction?' selected':'')+'>'+s+'</option>'; }).join('');
+  html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem;margin-top:.25rem">📊 跟進系統</div>';
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
+  html += sel('📱 溝通偏好','contactPref',cpOpts);
+  html += sel('⏰ 最佳聯繫時段','contactTime',ctOpts);
+  html += '</div>';
+  html += sel('🧠 客戶個性類型','personalityType',ptOpts);
+  html += '<div class="form-group"><label>🚧 決策障礙</label><div class="ms-wrap" id="e_ms_decisionBlock"><div class="ms-display" onclick="toggleMs(\'e_ms_decisionBlock\')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div><div class="ms-dropdown"><label class="ms-opt"><input type="checkbox" value="價格超出預算">💰 價格超出預算</label><label class="ms-opt"><input type="checkbox" value="家人尚未同意">👨‍👩‍👧 家人尚未同意</label><label class="ms-opt"><input type="checkbox" value="時機未到在觀望">⏳ 時機未到、在觀望</label><label class="ms-opt"><input type="checkbox" value="還在比較其他物件">🔍 還在比較其他物件</label><label class="ms-opt"><input type="checkbox" value="貸款疑慮">🏦 貸款疑慮</label><label class="ms-opt"><input type="checkbox" value="工作收入不穩定">📉 工作收入不穩定</label><label class="ms-opt"><input type="checkbox" value="純觀望短期不買">👀 純觀望、短期不買</label><label class="ms-opt"><input type="checkbox" value="已在其他業務跟進中">🤝 已在其他業務跟進中</label></div></div></div>';
+  html += sel('🔁 上次跟進結果','lastFollowupResult',lfOpts);
+  html += sel('下次跟進重點','nextFollowupAction',nfOpts);
   html += '</div>';
 
   document.getElementById('editModalBody').innerHTML = html;
   setMsValue('e_ms_trustCheck', c.trustChecks || '');
   setMsValue('e_ms_proCheck', c.proChecks || '');
   setMsValue('e_ms_referralEffect', c.referralEffect || '');
+  setMsValue('e_ms_decisionBlock', c.decisionBlock || '');
   document.getElementById('editSaveBtn').onclick = function(){ saveEdit(c); };
   document.getElementById('editModal').classList.add('active');
   } catch(err) { alert('編輯錯誤：' + err.message); }
@@ -1249,7 +1339,10 @@ function saveEdit(c) {
     referralEvent: gv('referralEvent'), keepInTouch: gv('keepInTouch'),
     referralReward: gv('referralReward'), referralList: gv('referralList'),
     referralCount: gv('referralCount'),
-    referralEffect: getMsValue('e_ms_referralEffect'), notes: gv('notes')
+    referralEffect: getMsValue('e_ms_referralEffect'), notes: gv('notes'),
+    contactPref: gv('contactPref'), contactTime: gv('contactTime'),
+    personalityType: gv('personalityType'), decisionBlock: getMsValue('e_ms_decisionBlock'),
+    lastFollowupResult: gv('lastFollowupResult'), nextFollowupAction: gv('nextFollowupAction')
   };
   var btn = document.getElementById('editSaveBtn');
   btn.disabled = true; btn.textContent = '⏳ 儲存中...';
