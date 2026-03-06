@@ -682,8 +682,8 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
             <button class="btn btn-primary" onclick="copyExport()">📋 複製給 Claude</button>
           </div>
           <div style="background:#f8fafc;border:2px solid #e1e8f0;border-radius:var(--radius-sm);padding:1rem;margin-top:1rem;min-height:60px">
-            <div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:.5rem">預覽</div>
-            <div id="exportPreview" style="font-size:12px;color:var(--text-soft);white-space:pre;font-family:monospace">點擊「生成預覽」查看...</div>
+            <div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:.5rem">預覽 <span id="previewLabel" style="color:var(--gold);font-weight:600"></span></div>
+            <div id="exportPreview" style="font-size:12px;color:var(--text-soft);white-space:pre-wrap;font-family:monospace;max-height:250px;overflow-y:auto">點擊下方「提問指令」或「生成預覽」查看...</div>
           </div>
           <div class="alert alert-success" id="copyAlert" style="margin-top:.75rem">✅ 已複製！貼到 Claude 對話即可開始分析 🎉</div>
         </div>
@@ -1483,15 +1483,33 @@ function buildQuickCommands() {
   QUICK_COMMANDS.forEach(function(g){
     html += '<div class="cmd-category">'+g.cat+'</div>';
     g.cmds.forEach(function(cmd){
-      html += '<div class="cmd-chip" onclick="copyCmd(this.dataset.cmd)" data-cmd="'+cmd.replace(/"/g,'&quot;')+'"><span class="cmd-text">'+cmd+'</span><span class="cmd-copy">複製</span></div>';
+      html += '<div class="cmd-chip" onclick="copyWithData(\''+cmd.replace(/'/g,'\\\'').replace(/"/g,'&quot;')+'\')" data-cmd="'+cmd.replace(/"/g,'&quot;')+'"><span class="cmd-text">'+cmd+'</span><span class="cmd-copy">📋 複製+資料</span></div>';
     });
   });
   document.getElementById('quickCommandList').innerHTML = html;
 }
 
-function copyCmd(text) {
-  navigator.clipboard.writeText(text).catch(function(){});
-  showToast('✅ 已複製指令！');
+function copyWithData(question) {
+  var data = getExportText();
+  var full = data + '\n\n════════════════════════════════\n【分析問題】\n' + question + '\n════════════════════════════════';
+  // 更新預覽區顯示
+  var preview = document.getElementById('exportPreview');
+  preview.textContent = full;
+  preview.style.maxHeight = '300px';
+  preview.style.overflowY = 'auto';
+  preview.style.background = '#fff9e6';
+  preview.style.border = '2px solid var(--gold)';
+  var label = document.getElementById('previewLabel');
+  if (label) label.textContent = '— 問題：' + question.slice(0,20)+'...';
+  // 複製
+  var showOk = function(){ showToast('✅ 已複製！直接貼到 Claude 對話即可 🎉'); };
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(full).then(showOk).catch(function(){ fallbackCopy(full, showOk); });
+  } else {
+    fallbackCopy(full, showOk);
+  }
+  // 滾動到預覽區
+  document.getElementById('exportPreview').scrollIntoView({ behavior:'smooth', block:'center' });
 }
 
 function getExportText() {
@@ -1544,16 +1562,58 @@ function previewExport() {
 
 function copyExport() {
   var txt = getExportText();
-  navigator.clipboard.writeText(txt).then(function(){
+  var showOk = function(){
     var a = document.getElementById('copyAlert'); a.classList.add('active');
     setTimeout(function(){ a.classList.remove('active'); }, 3500);
-  }).catch(function(){
-    var ta = document.createElement('textarea'); ta.value=txt;
-    document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+  };
+  // 方法1：現代 clipboard API
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(txt).then(showOk).catch(function(){ fallbackCopy(txt, showOk); });
+  } else {
+    fallbackCopy(txt, showOk);
+  }
+}
+
+function fallbackCopy(txt, cb) {
+  // 方法2：textarea execCommand
+  var ta = document.createElement('textarea');
+  ta.value = txt;
+  ta.style.position = 'fixed';
+  ta.style.top = '0';
+  ta.style.left = '0';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  try {
+    var ok = document.execCommand('copy');
     document.body.removeChild(ta);
-    var a = document.getElementById('copyAlert'); a.classList.add('active');
-    setTimeout(function(){ a.classList.remove('active'); }, 3500);
-  });
+    if (ok) { cb(); } else { showManualCopy(txt); }
+  } catch(e) {
+    document.body.removeChild(ta);
+    showManualCopy(txt);
+  }
+}
+
+function showManualCopy(txt) {
+  // 方法3：直接展開讓用戶手動複製
+  var preview = document.getElementById('exportPreview');
+  preview.textContent = txt;
+  preview.style.maxHeight = '300px';
+  preview.style.overflowY = 'auto';
+  preview.style.userSelect = 'all';
+  preview.style.cursor = 'text';
+  preview.style.background = '#fff9e6';
+  preview.style.border = '2px solid var(--gold)';
+  // 嘗試選取全部
+  try {
+    var range = document.createRange();
+    range.selectNodeContents(preview);
+    var sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+  } catch(e){}
+  showToast('⚠️ 請手動按 Ctrl+C 複製（文字已全選）');
 }
 
 // ── Toast 通知 ──
