@@ -271,14 +271,17 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
     <!-- DASHBOARD -->
     <div id="dashboard" class="page active">
       <div class="stats-grid">
-        <div class="stat-card"><div class="stat-value" id="totalCustomers">—</div><div class="stat-label">總客戶數</div></div>
+        <div class="stat-card"><div class="stat-value" id="totalCustomers">—</div><div class="stat-label">跟進中客戶</div></div>
         <div class="stat-card"><div class="stat-value" id="monthlyNew">—</div><div class="stat-label">本月新增</div></div>
         <div class="stat-card"><div class="stat-value" id="nearClosing">—</div><div class="stat-label">即將成交</div></div>
-        <div class="stat-card"><div class="stat-value" id="monthlyClosing">—</div><div class="stat-label">本月成交</div></div>
+        <div class="stat-card"><div class="stat-value" id="monthlyClosing">—</div><div class="stat-label">本月真正成交</div></div>
       </div>
       <div class="card">
-        <div class="card-header"><div class="card-icon">🎯</div><h3>成交八部曲 — 客戶階段分布</h3></div>
-        <div class="card-body"><div class="stats-grid" id="stagesGrid"></div></div>
+        <div class="card-header"><div class="card-icon">🎯</div><h3>成交八部曲 — 客戶階段分布（進行中）</h3></div>
+        <div class="card-body">
+          <div id="bottleneckHint" style="background:linear-gradient(135deg,#fff3cd,#fff8e1);border:1.5px solid #ffc107;border-radius:8px;padding:.75rem 1rem;font-size:13px;font-weight:700;color:#856404;margin-bottom:1rem"></div>
+          <div class="stats-grid" id="stagesGrid"></div>
+        </div>
       </div>
       <div class="card" id="recentCard">
         <div class="card-header"><div class="card-icon">🕐</div><h3>最新客戶動態</h3></div>
@@ -465,9 +468,18 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
           <div class="card-body">
             <div class="form-grid two">
               <div class="form-group"><label>簽約狀態</label><select id="contractStatus"><option>未簽約</option><option>已下定</option><option>已簽約</option><option>已付款</option></select></div>
-              <div class="form-group"><label>成交金額（萬元）</label><input type="text" id="dealAmount" placeholder="例：1500"></div>
+              <div class="form-group">
+                <label>🏷️ 客戶狀態</label>
+                <select id="customerActive">
+                  <option value="進行中">🟢 進行中（跟進中）</option>
+                  <option value="已成交">✅ 已成交（歷史客戶）</option>
+                </select>
+              </div>
             </div>
-            <div class="form-group"><label>簽約日期</label><input type="date" id="contractDate"></div>
+            <div class="form-grid two">
+              <div class="form-group"><label>成交金額（萬元）</label><input type="text" id="dealAmount" placeholder="例：1500"></div>
+              <div class="form-group"><label>簽約日期</label><input type="date" id="contractDate"></div>
+            </div>
           </div>
         </div>
         <div class="card">
@@ -938,6 +950,16 @@ function fetchCustomers() {
   });
 }
 
+// ── 判斷客戶是否「進行中」（未成交）──
+function isActive(c) {
+  // 有簽約日期 = 已成交；手動設定 customerActive = '已成交' 也算
+  if (c.customerActive === '已成交') return false;
+  if (c.customerActive === '進行中') return true;
+  // 預設：有簽約日期就是已成交
+  if (c.contractDate && c.contractDate.toString().trim()) return false;
+  return true;
+}
+
 // ── 判斷階段 ──
 function stageOf(c) {
   if ((c.referralList && c.referralList.toString().trim()) || (c.referralCount && parseInt(c.referralCount)>0) || (c.referralEvent && c.referralEvent.toString().trim())) return 8;
@@ -952,19 +974,50 @@ function stageOf(c) {
 
 // ── 儀表板 ──
 function renderDashboard() {
-  var mc = customers;
   var now = new Date();
-  document.getElementById('totalCustomers').textContent = mc.length;
-  document.getElementById('monthlyNew').textContent = mc.filter(function(c){
-    var d = new Date(c.creationDate); return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
+  var thisMonth = now.getMonth();
+  var thisYear = now.getFullYear();
+
+  // 進行中客戶（未成交）
+  var active = customers.filter(isActive);
+  // 已成交客戶
+  var closed = customers.filter(function(c){ return !isActive(c); });
+
+  // 1. 跟進中客戶數
+  document.getElementById('totalCustomers').textContent = active.length;
+
+  // 2. 本月新增（進行中）
+  document.getElementById('monthlyNew').textContent = active.filter(function(c){
+    var d = new Date(c.creationDate);
+    return d.getMonth()===thisMonth && d.getFullYear()===thisYear;
   }).length;
-  document.getElementById('nearClosing').textContent = mc.filter(function(c){ var s=stageOf(c); return s===5||s===6; }).length;
-  document.getElementById('monthlyClosing').textContent = mc.filter(function(c){ return c.contractStatus==='已簽約'||c.contractStatus==='已付款'; }).length;
+
+  // 3. 即將成交：進行中 且 在五或六部曲
+  document.getElementById('nearClosing').textContent = active.filter(function(c){
+    var s = stageOf(c); return s===5||s===6;
+  }).length;
+
+  // 4. 本月真正成交：有簽約日期且在本月
+  document.getElementById('monthlyClosing').textContent = closed.filter(function(c){
+    if (!c.contractDate) return false;
+    var d = new Date(c.contractDate);
+    return d.getMonth()===thisMonth && d.getFullYear()===thisYear;
+  }).length;
+
+  // 八部曲分布（只統計進行中）
   var count = {};
-  mc.forEach(function(c){ var s=stageOf(c); count[s]=(count[s]||0)+1; });
+  active.forEach(function(c){ var s=stageOf(c); count[s]=(count[s]||0)+1; });
   var html = '';
   for (var i=1;i<=8;i++) html += '<div class="stat-card"><div class="stat-value">'+(count[i]||0)+'</div><div class="stat-label">'+i+'️⃣ '+STAGE_NAMES[i]+'</div></div>';
   document.getElementById('stagesGrid').innerHTML = html;
+
+  // 卡最多人的部曲提示
+  var maxStage = 1, maxCount = 0;
+  for (var j=1;j<=8;j++) { if ((count[j]||0) > maxCount) { maxCount=count[j]||0; maxStage=j; } }
+  var bottleneckEl = document.getElementById('bottleneckHint');
+  if (bottleneckEl && maxCount > 0) {
+    bottleneckEl.textContent = '🚧 瓶頸：'+STAGE_NAMES[maxStage]+'（'+maxCount+'人卡關）';
+  }
 }
 
 function renderRecent() {
@@ -1065,7 +1118,8 @@ function saveCustomer() {
     referralEffect:getMsValue('ms_referralEffect'), notes:v('notes'),
     contactPref:v('contactPref'), contactTime:v('contactTime'),
     personalityType:v('personalityType'), decisionBlock:getMsValue('ms_decisionBlock'),
-    lastFollowupResult:v('lastFollowupResult'), nextFollowupAction:v('nextFollowupAction')
+    lastFollowupResult:v('lastFollowupResult'), nextFollowupAction:v('nextFollowupAction'),
+    customerActive:v('customerActive')||'進行中'
   };
   var btn = document.getElementById('saveBtn');
   if (btn.disabled) return;
@@ -1139,7 +1193,7 @@ function showDetail(id) {
     ['藍圖完成度',c.blueprintCompletion?c.blueprintCompletion+'%':''],
     ['客戶需求',c.customerNeeds],['推薦物件',c.recommendedProperty],['帶看狀態',c.viewingStatus],
     ['產品優勢',c.productAdvantages],['客戶異議',c.objections],['解決方案',c.solutions],
-    ['簽約狀態',c.contractStatus],['成交金額',c.dealAmount?c.dealAmount+'萬':''],['簽約日期',c.contractDate],
+    ['簽約狀態',c.contractStatus],['🏷️ 客戶狀態', c.customerActive||(c.contractDate&&c.contractDate.toString().trim()?'已成交':'進行中')],['成交金額',c.dealAmount?c.dealAmount+'萬':''],['簽約日期',c.contractDate],
     ['滿意度',c.satisfactionScore?c.satisfactionScore+'/10':''],
     ['客戶滿意度調查表',c.satisfactionSurvey],
     ['貸款協助',c.loanHelp],['租賃代管',c.rentalMgmt],
@@ -1193,6 +1247,7 @@ function showEdit(id) {
   var acqOpts = ['','主動搭訕','經過介紹','活動認識','線上接觸'].map(function(s){ return '<option'+(s===c.acquisitionMethod?' selected':'')+'>'+s+'</option>'; }).join('');
   var statusOpts = ['','基礎信任(1-4分)','中度信任(5-7分)','高度信任(8-10分)','中階信任(5-7分)','稱定信任(5-7分)'].map(function(s){ return '<option'+(s===c.currentStatus?' selected':'')+'>'+s+'</option>'; }).join('');
   var viewOpts = ['','已預約','已帶看','已完整解說'].map(function(s){ return '<option'+(s===c.viewingStatus?' selected':'')+'>'+s+'</option>'; }).join('');
+  var caOpts = ['進行中','已成交'].map(function(s){ return '<option value="'+s+'"'+(s===(c.customerActive||( c.contractDate&&c.contractDate.toString().trim()?'已成交':'進行中'))?' selected':'')+'>'+( s==='進行中'?'🟢 進行中（跟進中）':'✅ 已成交（歷史客戶）')+'</option>'; }).join('');
   var contractOpts = ['未簽約','已下定','已簽約','已付款'].map(function(s){ return '<option'+(s===c.contractStatus?' selected':'')+'>'+s+'</option>'; }).join('');
   var decorOpts = ['','是','否'].map(function(s){ return '<option'+(s===c.decorAdvice?' selected':'')+'>'+s+'</option>'; }).join('');
   var assetOpts = ['','是','否'].map(function(s){ return '<option'+(s===c.assetReview?' selected':'')+'>'+s+'</option>'; }).join('');
@@ -1258,9 +1313,12 @@ function showEdit(id) {
   html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem;margin-top:.25rem">六部曲：成交締結</div>';
   html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
   html += sel('簽約狀態','contractStatus',contractOpts);
-  html += ef('成交金額（萬）','dealAmount',c.dealAmount,'number');
+  html += sel('🏷️ 客戶狀態','customerActive',caOpts);
   html += '</div>';
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
+  html += ef('成交金額（萬）','dealAmount',c.dealAmount,'number');
   html += ef('簽約日期','contractDate',c.contractDate,'date');
+  html += '</div>';
 
   html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem;margin-top:.25rem">七部曲：售後服務</div>';
   html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
@@ -1342,7 +1400,8 @@ function saveEdit(c) {
     referralEffect: getMsValue('e_ms_referralEffect'), notes: gv('notes'),
     contactPref: gv('contactPref'), contactTime: gv('contactTime'),
     personalityType: gv('personalityType'), decisionBlock: getMsValue('e_ms_decisionBlock'),
-    lastFollowupResult: gv('lastFollowupResult'), nextFollowupAction: gv('nextFollowupAction')
+    lastFollowupResult: gv('lastFollowupResult'), nextFollowupAction: gv('nextFollowupAction'),
+    customerActive: gv('customerActive')||'進行中'
   };
   var btn = document.getElementById('editSaveBtn');
   btn.disabled = true; btn.textContent = '⏳ 儲存中...';
