@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-<meta charset="UTF-8">
+<!-- saved from url=(0049)file:///C:/Users/User/Downloads/crm_cloud_11.html -->
+<html lang="zh-TW"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>富時代地產 CRM</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<link href="./crm_cloud 12_files/css2" rel="stylesheet">
 <style>
 :root{
   --gold:#c9a84c;--gold-light:#f0d080;--navy:#0f2744;--navy-mid:#1a3a5c;--navy-light:#234d73;
@@ -208,26 +208,13 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
 
       <div class="form-group">
         <label>選擇身份</label>
-        <select id="userSelect">
-          <option value="">── 請選擇 ──</option>
-          <optgroup label="👑 管理層">
-            <option>總經理</option><option>CRM營運長</option><option>知識長</option><option>AI訓練長</option>
-          </optgroup>
-          <optgroup label="👨‍💼 業務團隊">
-            <option>阮智偉</option><option>廖一龍</option><option>鄭采崴</option><option>張書菡</option>
-            <option>余建翰</option><option>王鈞志</option><option>吳玉如</option><option>商國泰</option>
-            <option>郭淑真</option><option>高亞琦</option><option>陳淑美</option><option>侯明智</option>
-            <option>許亞茵</option><option>曾素蘭</option><option>林紫君</option><option>黃中興</option>
-            <option>黃彥程</option><option>孫運迪</option><option>陳丰彥</option><option>劉常裕</option><option>施向宇</option>
-            <option>莊環蔭</option><option>廉海桃</option><option>劉晁綱</option><option>游馥宇</option>
-          </optgroup>
-        </select>
+        <select id="userSelect"><option value="">── 請選擇 ──</option><optgroup label="👑 管理層"><option>總經理</option><option>CRM營運長</option><option>知識長</option><option>AI訓練長</option></optgroup><optgroup label="👨‍💼 業務團隊"><option>阮智偉</option><option>廖一龍</option><option>鄭采崴</option><option>張書菡</option><option>余建翰</option><option>王鈞志</option><option>吳玉如</option><option>商國泰</option><option>郭淑真</option><option>高亞琦</option><option>陳淑美</option><option>侯明智</option><option>許亞茵</option><option>曾素蘭</option><option>林紫君</option><option>黃中興</option><option>黃彥程</option><option>孫運迪</option><option>陳丰彥</option><option>劉常裕</option><option>施向宇</option><option>莊環蔭</option><option>廉海桃</option><option>劉晁綱</option><option>游馥宇</option></optgroup></select>
       </div>
       <div class="form-group">
         <label>密碼</label>
-        <input type="password" id="passwordInput" placeholder="請輸入密碼" onkeydown="if(event.key==='Enter')login()">
+        <input type="password" id="passwordInput" placeholder="請輸入密碼" onkeydown="if(event.key===&#39;Enter&#39;)login()">
       </div>
-      <div id="apiStatus" style="font-size:13px;color:var(--text-muted);text-align:center;margin-bottom:.5rem"></div>
+      <div id="apiStatus" style="font-size:13px;color:var(--text-muted);text-align:center;margin-bottom:.5rem">✅ 雲端已設定，請登入</div>
       <button class="btn btn-primary" onclick="login()">🔐 登入系統</button>
       <div style="text-align:center;margin-top:1rem">
         <button onclick="showResetUrl()" style="background:none;border:none;color:var(--text-muted);font-size:12px;cursor:pointer;font-family:inherit;text-decoration:underline">⚙️ 重新設定雲端網址</button>
@@ -259,12 +246,12 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
     </div>
   </div>
   <nav class="nav-tabs">
-    <button class="active" onclick="showPage('dashboard',this)">📊 儀表板</button>
-    <button onclick="showPage('newCustomer',this)">➕ 新增</button>
-    <button onclick="showPage('customerList',this)">📋 列表</button>
-    <button onclick="showPage('reports',this)" id="reportsTab">📈 報表</button>
-    <button onclick="showPage('claude',this)">🤖 Claude</button>
-    <button onclick="showPage('staffMgmt',this)" id="staffTab">👥 業務</button>
+    <button class="active" onclick="showPage(&#39;dashboard&#39;,this)">📊 儀表板</button>
+    <button onclick="showPage(&#39;newCustomer&#39;,this)">➕ 新增</button>
+    <button onclick="showPage(&#39;customerList&#39;,this)">📋 列表</button>
+    <button onclick="showPage(&#39;reports&#39;,this)" id="reportsTab">📈 報表</button>
+    <button onclick="showPage(&#39;claude&#39;,this)">🤖 Claude</button>
+    <button onclick="showPage(&#39;staffMgmt&#39;,this)" id="staffTab">👥 業務</button>
   </nav>
   <div class="container">
 
@@ -295,13 +282,13 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
       <form id="customerForm">
         <div class="form-group highlight">
           <label>👨‍💼 負責業務 *</label>
-          <select id="salesPerson" required></select>
+          <select id="salesPerson" required=""></select>
         </div>
         <div class="card">
           <div class="card-header"><div class="card-icon">1</div><h3>一部曲：客戶開發</h3></div>
           <div class="card-body">
             <div class="form-grid two">
-              <div class="form-group"><label>客戶姓名 *</label><input type="text" id="customerName" placeholder="請輸入客戶姓名" required></div>
+              <div class="form-group"><label>客戶姓名 *</label><input type="text" id="customerName" placeholder="請輸入客戶姓名" required=""></div>
               <div class="form-group"><label>聯絡方式</label><input type="text" id="contactInfo" placeholder="電話 / Email"></div>
             </div>
             <div class="form-grid two">
@@ -316,23 +303,35 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
               <div class="form-group"><label>來源細節</label><input type="text" id="leadSourceDetail" placeholder="例：爬山、FB/IG、咖啡展"></div>
             </div>
             <div class="form-grid two">
-              <div class="form-group"><label>創建日期 *</label><input type="date" id="creationDate" required></div>
+              <div class="form-group"><label>創建日期 *</label><input type="date" id="creationDate" required=""></div>
               <div class="form-group" style="display:none"><input type="hidden" id="acquisitionMethod" value=""></div>
             </div>
             <div class="form-grid two">
               <div class="form-group">
                 <label>📱 溝通偏好</label>
-                <select id="contactPref">
-                  <option value="">請選擇</option>
-                  <option>Line 訊息</option><option>電話通話</option><option>當面拜訪</option><option>Line 語音</option><option>Email</option>
-                </select>
+                <div class="ms-wrap" id="ms_contactPref">
+                  <div class="ms-display" onclick="toggleMs(&#39;ms_contactPref&#39;)"><span class="ms-placeholder">點選展開（可多選）</span><span class="ms-arrow">▾</span></div>
+                  <div class="ms-dropdown">
+                    <label class="ms-opt"><input type="checkbox" value="Line 訊息">💬 Line 訊息</label>
+                    <label class="ms-opt"><input type="checkbox" value="電話通話">📞 電話通話</label>
+                    <label class="ms-opt"><input type="checkbox" value="當面拜訪">🤝 當面拜訪</label>
+                    <label class="ms-opt"><input type="checkbox" value="Line 語音">🎙 Line 語音</label>
+                    <label class="ms-opt"><input type="checkbox" value="Email">📧 Email</label>
+                  </div>
+                </div>
               </div>
               <div class="form-group">
                 <label>⏰ 最佳聯繫時段</label>
-                <select id="contactTime">
-                  <option value="">請選擇</option>
-                  <option>早上（9–12點）</option><option>下午（12–17點）</option><option>傍晚（17–19點）</option><option>晚上（19點後）</option><option>假日為主</option>
-                </select>
+                <div class="ms-wrap" id="ms_contactTime">
+                  <div class="ms-display" onclick="toggleMs(&#39;ms_contactTime&#39;)"><span class="ms-placeholder">點選展開（可多選）</span><span class="ms-arrow">▾</span></div>
+                  <div class="ms-dropdown">
+                    <label class="ms-opt"><input type="checkbox" value="早上（9–12點）">🌅 早上（9–12點）</label>
+                    <label class="ms-opt"><input type="checkbox" value="下午（12–17點）">☀️ 下午（12–17點）</label>
+                    <label class="ms-opt"><input type="checkbox" value="傍晚（17–19點）">🌇 傍晚（17–19點）</label>
+                    <label class="ms-opt"><input type="checkbox" value="晚上（19點後）">🌙 晚上（19點後）</label>
+                    <label class="ms-opt"><input type="checkbox" value="假日為主">📅 假日為主</label>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="form-group">
@@ -353,7 +352,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
             <div class="form-group">
               <label>信任檢核（已達成項目）</label>
               <div class="ms-wrap" id="ms_trustCheck">
-                <div class="ms-display" onclick="toggleMs('ms_trustCheck')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div>
+                <div class="ms-display" onclick="toggleMs(&#39;ms_trustCheck&#39;)"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div>
                 <div class="ms-dropdown">
                   <label class="ms-opt"><input type="checkbox" value="客戶主動分享財務需求與購屋計劃">客戶主動分享財務狀況、需求或購屋計劃</label>
                   <label class="ms-opt"><input type="checkbox" value="客戶回覆訊息速度快且積極">客戶回覆訊息速度快且積極</label>
@@ -366,7 +365,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
             <div class="form-group">
               <label>專業形象檢核（已達成項目）</label>
               <div class="ms-wrap" id="ms_proCheck">
-                <div class="ms-display" onclick="toggleMs('ms_proCheck')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div>
+                <div class="ms-display" onclick="toggleMs(&#39;ms_proCheck&#39;)"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div>
                 <div class="ms-dropdown">
                   <label class="ms-opt"><input type="checkbox" value="有針對市場產品貸款提出數據與案例">是否有針對市場、產品或貸款方案，提出客觀數據與案例？</label>
                   <label class="ms-opt"><input type="checkbox" value="客戶回應原來如此等學習性語句">客戶是否回應「原來如此」、「我不知道這個」等學習性語句？</label>
@@ -395,7 +394,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
             <div class="form-group">
               <label>痛點分析（可多選）</label>
               <div class="ms-wrap" id="ms_painPoint">
-                <div class="ms-display" onclick="toggleMs('ms_painPoint')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div>
+                <div class="ms-display" onclick="toggleMs(&#39;ms_painPoint&#39;)"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div>
                 <div class="ms-dropdown">
                   <div class="ms-group">🟡 新鮮人族群</div>
                   <label class="ms-opt"><input type="checkbox" value="新鮮人-趕不上通膨">趕不上通膨</label>
@@ -446,7 +445,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
             <div class="form-group">
               <label>🚧 決策障礙（卡點）</label>
               <div class="ms-wrap" id="ms_decisionBlock">
-                <div class="ms-display" onclick="toggleMs('ms_decisionBlock')"><span class="ms-placeholder">點選展開（可多選）</span><span class="ms-arrow">▾</span></div>
+                <div class="ms-display" onclick="toggleMs(&#39;ms_decisionBlock&#39;)"><span class="ms-placeholder">點選展開（可多選）</span><span class="ms-arrow">▾</span></div>
                 <div class="ms-dropdown">
                   <label class="ms-opt"><input type="checkbox" value="價格超出預算">💰 價格超出預算</label>
                   <label class="ms-opt"><input type="checkbox" value="家人尚未同意">👨‍👩‍👧 家人尚未同意</label>
@@ -558,7 +557,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
             <div class="form-group">
               <label>轉介紹效果</label>
               <div class="ms-wrap" id="ms_referralEffect">
-                <div class="ms-display" onclick="toggleMs('ms_referralEffect')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div>
+                <div class="ms-display" onclick="toggleMs(&#39;ms_referralEffect&#39;)"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div>
                 <div class="ms-dropdown">
                   <label class="ms-opt"><input type="checkbox" value="客戶已聯繫">客戶已聯繫</label>
                   <label class="ms-opt"><input type="checkbox" value="已形成">已形成</label>
@@ -574,35 +573,40 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
           <div class="card-body">
             <div class="form-group">
               <label>🔁 上次跟進摘要</label>
-              <select id="lastFollowupResult">
-                <option value="">請選擇結果</option>
-                <option>✅ 有進展，下次約好了</option>
-                <option>💬 有聊，態度正面</option>
-                <option>😐 普通，需要再培養</option>
-                <option>❌ 拒絕或沒有回應</option>
-                <option>🔄 重新建立關係中</option>
-              </select>
+              <div class="ms-wrap" id="ms_lastFollowup">
+                <div class="ms-display" onclick="toggleMs(&#39;ms_lastFollowup&#39;)"><span class="ms-placeholder">點選展開（可多選）</span><span class="ms-arrow">▾</span></div>
+                <div class="ms-dropdown">
+                  <label class="ms-opt"><input type="checkbox" value="✅ 有進展，下次約好了">✅ 有進展，下次約好了</label>
+                  <label class="ms-opt"><input type="checkbox" value="💬 有聊，態度正面">💬 有聊，態度正面</label>
+                  <label class="ms-opt"><input type="checkbox" value="😐 普通，需要再培養">😐 普通，需要再培養</label>
+                  <label class="ms-opt"><input type="checkbox" value="❌ 拒絕或沒有回應">❌ 拒絕或沒有回應</label>
+                  <label class="ms-opt"><input type="checkbox" value="🔄 重新建立關係中">🔄 重新建立關係中</label>
+                </div>
+              </div>
             </div>
             <div class="form-group"><label>跟進重點（下次要說什麼）</label>
-              <select id="nextFollowupAction">
-                <option value="">請選擇</option>
-                <option>分享市場新資訊</option>
-                <option>邀請看屋或活動</option>
-                <option>處理家人疑慮</option>
-                <option>重新確認需求與預算</option>
-                <option>提供貸款方案試算</option>
-                <option>等待時機主動聯繫</option>
-                <option>轉介紹開口</option>
-              </select>
+              <div class="ms-wrap" id="ms_nextFollowup">
+                <div class="ms-display" onclick="toggleMs(&#39;ms_nextFollowup&#39;)"><span class="ms-placeholder">點選展開（可多選）</span><span class="ms-arrow">▾</span></div>
+                <div class="ms-dropdown">
+                  <label class="ms-opt"><input type="checkbox" value="分享市場新資訊">📊 分享市場新資訊</label>
+                  <label class="ms-opt"><input type="checkbox" value="邀請看屋或活動">🏠 邀請看屋或活動</label>
+                  <label class="ms-opt"><input type="checkbox" value="處理家人疑慮">👨‍👩‍👧 處理家人疑慮</label>
+                  <label class="ms-opt"><input type="checkbox" value="重新確認需求與預算">💰 重新確認需求與預算</label>
+                  <label class="ms-opt"><input type="checkbox" value="提供貸款方案試算">🏦 提供貸款方案試算</label>
+                  <label class="ms-opt"><input type="checkbox" value="等待時機主動聯繫">⏳ 等待時機主動聯繫</label>
+                  <label class="ms-opt"><input type="checkbox" value="轉介紹開口">🤝 轉介紹開口</label>
+                </div>
+              </div>
+            </div>
             </div>
             <div class="form-group"><textarea id="notes" placeholder="其他補充說明..." style="min-height:100px"></textarea></div>
           </div>
-        </div>
+        </form></div>
         <div class="button-row">
           <button type="submit" class="btn btn-primary" id="saveBtn">☁️ 儲存並同步</button>
           <button type="button" class="btn btn-secondary" onclick="clearForm()">🔄 清除</button>
         </div>
-      </form>
+      
     </div>
 
     <!-- CUSTOMER LIST -->
@@ -615,7 +619,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
           </div>
           <div class="form-group" id="filterSalesGroup" style="display:none;flex:1;min-width:120px">
             <label>業務篩選</label>
-            <select id="filterSales" onchange="renderCustomers()"><option value="">全部業務</option></select>
+            <select id="filterSales" onchange="renderCustomers()"><option value="">全部業務</option><option>阮智偉</option><option>廖一龍</option><option>鄭采崴</option><option>張書菡</option><option>余建翰</option><option>王鈞志</option><option>吳玉如</option><option>商國泰</option><option>郭淑真</option><option>高亞琦</option><option>陳淑美</option><option>侯明智</option><option>許亞茵</option><option>曾素蘭</option><option>林紫君</option><option>黃中興</option><option>黃彥程</option><option>孫運迪</option><option>陳丰彥</option><option>劉常裕</option><option>施向宇</option><option>莊環蔭</option><option>廉海桃</option><option>劉晁綱</option><option>游馥宇</option></select>
           </div>
           <div class="form-group" style="flex:1;min-width:120px">
             <label>階段篩選</label>
@@ -653,8 +657,9 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
             ✅ 新增業務後，登入頁的選單會立即更新。<br>
             ⚠️ 刪除業務不會刪除該業務的客戶資料，資料仍保留在系統中。
           </div>
-          <div style="display:flex;gap:.75rem;margin-bottom:1.25rem">
-            <input type="text" id="newStaffName" placeholder="輸入新業務姓名" style="flex:1">
+          <div style="display:flex;gap:.75rem;margin-bottom:1.25rem;flex-wrap:wrap">
+            <input type="text" id="newStaffName" placeholder="業務姓名" style="flex:2;min-width:120px">
+            <input type="text" id="newStaffPwd" placeholder="初始密碼（至少4碼）" style="flex:2;min-width:140px">
             <button onclick="addStaff()" class="btn btn-primary" style="width:auto;padding:.875rem 1.5rem;margin-top:0;white-space:nowrap">➕ 新增</button>
           </div>
           <div id="staffList"></div>
@@ -694,7 +699,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
       </div>
     </div>
   </div>
-</div>
+
 
 <!-- DETAIL / EDIT MODAL -->
 <div class="modal-overlay" id="detailModal">
@@ -724,12 +729,12 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
 </div>
 <div class="modal-overlay" id="confirmModal">
   <div class="modal" style="max-width:360px">
-    <div class="modal-head"><h3>確認刪除</h3><button class="modal-close" onclick="document.getElementById('confirmModal').classList.remove('active')">✕</button></div>
+    <div class="modal-head"><h3>確認刪除</h3><button class="modal-close" onclick="document.getElementById(&#39;confirmModal&#39;).classList.remove(&#39;active&#39;)">✕</button></div>
     <div class="modal-body">
       <p style="color:var(--text-soft);font-size:15px">確定要刪除這筆客戶資料嗎？此操作無法復原。</p>
     </div>
     <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="document.getElementById('confirmModal').classList.remove('active')">取消</button>
+      <button class="btn btn-secondary" onclick="document.getElementById(&#39;confirmModal&#39;).classList.remove(&#39;active&#39;)">取消</button>
       <button class="btn btn-danger-outline" id="confirmDeleteBtn">確認刪除</button>
     </div>
   </div>
@@ -758,6 +763,27 @@ var PASSWORDS = {
 };
 var STAGE_NAMES = ['','客戶開發','初步接觸','需求分析','產品匹配','異議處理','成交締結','售後服務','轉介紹'];
 var STAFF_KEY = 'futime_sales_list';
+var PASSWORDS_KEY = 'futime_passwords';
+
+// ── 密碼管理 ──
+function loadPasswords() {
+  try {
+    var saved = localStorage.getItem(PASSWORDS_KEY);
+    if (saved) {
+      var extra = JSON.parse(saved);
+      Object.keys(extra).forEach(function(k){ PASSWORDS[k] = extra[k]; });
+    }
+  } catch(e) {}
+}
+function savePasswords() {
+  try { localStorage.setItem(PASSWORDS_KEY, JSON.stringify(PASSWORDS)); } catch(e) {}
+}
+function setStaffPassword(name, pwd) {
+  if (!pwd || pwd.length < 4) { showToast('⚠️ 密碼至少4碼'); return; }
+  PASSWORDS[name] = pwd;
+  savePasswords();
+  showToast('✅ 已設定 '+name+' 的密碼');
+}
 
 // ── 業務名單（從 localStorage 讀取，沒有就用預設）──
 function loadSalesList() {
@@ -765,6 +791,7 @@ function loadSalesList() {
     var saved = localStorage.getItem(STAFF_KEY);
     SALES = saved ? JSON.parse(saved) : DEFAULT_SALES.slice();
   } catch(e) { SALES = DEFAULT_SALES.slice(); }
+  loadPasswords();
 }
 function saveSalesList() {
   try { localStorage.setItem(STAFF_KEY, JSON.stringify(SALES)); } catch(e) {}
@@ -773,14 +800,19 @@ function saveSalesList() {
 // ── 業務管理功能 ──
 function addStaff() {
   var name = (document.getElementById('newStaffName').value || '').trim();
+  var pwd = (document.getElementById('newStaffPwd').value || '').trim();
   if (!name) { showToast('⚠️ 請輸入業務姓名'); return; }
+  if (!pwd || pwd.length < 4) { showToast('⚠️ 請輸入至少4碼的初始密碼'); return; }
   if (SALES.indexOf(name) !== -1) { showToast('⚠️ 此姓名已存在'); return; }
   SALES.push(name);
+  PASSWORDS[name] = pwd;
   saveSalesList();
+  savePasswords();
   document.getElementById('newStaffName').value = '';
+  document.getElementById('newStaffPwd').value = '';
   renderStaffList();
   rebuildSalesSelects();
-  showToast('✅ 已新增：'+name);
+  showToast('✅ 已新增：'+name+'（密碼：'+pwd+'）');
 }
 
 function removeStaff(name) {
@@ -797,13 +829,25 @@ function renderStaffList() {
   if (!con) return;
   if (!SALES.length) { con.innerHTML='<div class="empty-state"><div class="empty-icon">👤</div>尚無業務名單</div>'; return; }
   con.innerHTML = SALES.map(function(name, i) {
-    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:.875rem 1rem;border-bottom:1px solid var(--cream2);gap:.5rem">'
+    var hasPwd = PASSWORDS[name] ? '🔑 已設密碼' : '⚠️ 未設密碼';
+    var pwdColor = PASSWORDS[name] ? 'color:#2e7d52' : 'color:var(--danger)';
+    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:.875rem 1rem;border-bottom:1px solid var(--cream2);gap:.5rem;flex-wrap:wrap">'
       +'<div style="display:flex;align-items:center;gap:.75rem">'
       +'<div style="width:32px;height:32px;background:linear-gradient(135deg,var(--navy),var(--navy-light));border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:12px;font-weight:700;flex-shrink:0">'+(i+1)+'</div>'
-      +'<span style="font-weight:600;color:var(--navy)">'+name+'</span></div>'
+      +'<div><span style="font-weight:600;color:var(--navy)">'+name+'</span>'
+      +'<span style="font-size:11px;margin-left:.5rem;'+pwdColor+'">'+hasPwd+'</span></div></div>'
+      +'<div style="display:flex;gap:.5rem">'
+      +'<button onclick="promptChangePassword(\''+name+'\')" style="background:#e3f0fb;color:#1565c0;border:1px solid #b3d4f5;padding:.35rem .75rem;border-radius:6px;cursor:pointer;font-size:12px;font-family:inherit;white-space:nowrap">🔑 改密碼</button>'
       +'<button onclick="removeStaff(\''+name+'\')" style="background:var(--danger-bg);color:var(--danger);border:1px solid #f5c6c3;padding:.35rem .75rem;border-radius:6px;cursor:pointer;font-size:12px;font-family:inherit;white-space:nowrap">移除</button>'
-      +'</div>';
+      +'</div></div>';
   }).join('');
+}
+
+function promptChangePassword(name) {
+  var pwd = prompt('設定「'+name+'」的新密碼（至少4碼）：');
+  if (pwd === null) return;
+  setStaffPassword(name, pwd.trim());
+  renderStaffList();
 }
 
 function rebuildSalesSelects() {
@@ -1116,9 +1160,9 @@ function saveCustomer() {
     referralEvent:v('referralEvent'), keepInTouch:v('keepInTouch'), referralReward:v('referralReward'),
     referralList:v('referralList'), referralCount:v('referralCount'),
     referralEffect:getMsValue('ms_referralEffect'), notes:v('notes'),
-    contactPref:v('contactPref'), contactTime:v('contactTime'),
+    contactPref:getMsValue('ms_contactPref'), contactTime:getMsValue('ms_contactTime'),
     personalityType:v('personalityType'), decisionBlock:getMsValue('ms_decisionBlock'),
-    lastFollowupResult:v('lastFollowupResult'), nextFollowupAction:v('nextFollowupAction'),
+    lastFollowupResult:getMsValue('ms_lastFollowup'), nextFollowupAction:getMsValue('ms_nextFollowup'),
     customerActive:v('customerActive')||'進行中'
   };
   var btn = document.getElementById('saveBtn');
@@ -1149,6 +1193,11 @@ function clearForm() {
   });
   ['contactPref','contactTime','personalityType','lastFollowupResult','nextFollowupAction'].forEach(function(id){
     var el = document.getElementById(id); if(el) el.value = '';
+  });
+  // 清除新的多選欄位
+  ['ms_contactPref','ms_contactTime','ms_lastFollowup','ms_nextFollowup','ms_decisionBlock'].forEach(function(id){
+    var wrap = document.getElementById(id);
+    if(wrap){ wrap.querySelectorAll('input[type=checkbox]').forEach(function(el){ el.checked=false; }); updateMsDisplay(wrap); }
   });
 }
 
@@ -1346,20 +1395,17 @@ function showEdit(id) {
   html += '<div class="form-group"><label>轉介紹效果</label><div class="ms-wrap" id="e_ms_referralEffect"><div class="ms-display" onclick="toggleMs(\'e_ms_referralEffect\')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div><div class="ms-dropdown"><label class="ms-opt"><input type="checkbox" value="客戶已聯繫">客戶已聯繫</label><label class="ms-opt"><input type="checkbox" value="已形成">已形成</label><label class="ms-opt"><input type="checkbox" value="已購買">已購買</label><label class="ms-opt"><input type="checkbox" value="持續追蹤中">持續追蹤中</label></div></div></div>';
   html += ef('備註','notes',c.notes);
   // 新增：跟進系統
-  var cpOpts = ['','Line 訊息','電話通話','當面拜訪','Line 語音','Email'].map(function(s){ return '<option'+(s===c.contactPref?' selected':'')+'>'+s+'</option>'; }).join('');
-  var ctOpts = ['','早上（9–12點）','下午（12–17點）','傍晚（17–19點）','晚上（19點後）','假日為主'].map(function(s){ return '<option'+(s===c.contactTime?' selected':'')+'>'+s+'</option>'; }).join('');
   var ptOpts = ['','分析型（喜歡數據與邏輯）','關係型（重視情感與信任）','直覺型（快速決策、跟感覺走）','謹慎型（慢慢來、需要多確認）'].map(function(s){ return '<option'+(s===c.personalityType?' selected':'')+'>'+s+'</option>'; }).join('');
-  var lfOpts = ['','✅ 有進展，下次約好了','💬 有聊，態度正面','😐 普通，需要再培養','❌ 拒絕或沒有回應','🔄 重新建立關係中'].map(function(s){ return '<option'+(s===c.lastFollowupResult?' selected':'')+'>'+s+'</option>'; }).join('');
   var nfOpts = ['','分享市場新資訊','邀請看屋或活動','處理家人疑慮','重新確認需求與預算','提供貸款方案試算','等待時機主動聯繫','轉介紹開口'].map(function(s){ return '<option'+(s===c.nextFollowupAction?' selected':'')+'>'+s+'</option>'; }).join('');
   html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem;margin-top:.25rem">📊 跟進系統</div>';
   html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
-  html += sel('📱 溝通偏好','contactPref',cpOpts);
-  html += sel('⏰ 最佳聯繫時段','contactTime',ctOpts);
+  html += '<div class="form-group"><label>📱 溝通偏好</label><div class="ms-wrap" id="e_ms_contactPref"><div class="ms-display" onclick="toggleMs(\'e_ms_contactPref\')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div><div class="ms-dropdown"><label class="ms-opt"><input type="checkbox" value="Line 訊息">💬 Line 訊息</label><label class="ms-opt"><input type="checkbox" value="電話通話">📞 電話通話</label><label class="ms-opt"><input type="checkbox" value="當面拜訪">🤝 當面拜訪</label><label class="ms-opt"><input type="checkbox" value="Line 語音">🎙 Line 語音</label><label class="ms-opt"><input type="checkbox" value="Email">📧 Email</label></div></div></div>';
+  html += '<div class="form-group"><label>⏰ 最佳聯繫時段</label><div class="ms-wrap" id="e_ms_contactTime"><div class="ms-display" onclick="toggleMs(\'e_ms_contactTime\')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div><div class="ms-dropdown"><label class="ms-opt"><input type="checkbox" value="早上（9–12點）">🌅 早上（9–12點）</label><label class="ms-opt"><input type="checkbox" value="下午（12–17點）">☀️ 下午（12–17點）</label><label class="ms-opt"><input type="checkbox" value="傍晚（17–19點）">🌇 傍晚（17–19點）</label><label class="ms-opt"><input type="checkbox" value="晚上（19點後）">🌙 晚上（19點後）</label><label class="ms-opt"><input type="checkbox" value="假日為主">📅 假日為主</label></div></div></div>';
   html += '</div>';
   html += sel('🧠 客戶個性類型','personalityType',ptOpts);
   html += '<div class="form-group"><label>🚧 決策障礙</label><div class="ms-wrap" id="e_ms_decisionBlock"><div class="ms-display" onclick="toggleMs(\'e_ms_decisionBlock\')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div><div class="ms-dropdown"><label class="ms-opt"><input type="checkbox" value="價格超出預算">💰 價格超出預算</label><label class="ms-opt"><input type="checkbox" value="家人尚未同意">👨‍👩‍👧 家人尚未同意</label><label class="ms-opt"><input type="checkbox" value="時機未到在觀望">⏳ 時機未到、在觀望</label><label class="ms-opt"><input type="checkbox" value="還在比較其他物件">🔍 還在比較其他物件</label><label class="ms-opt"><input type="checkbox" value="貸款疑慮">🏦 貸款疑慮</label><label class="ms-opt"><input type="checkbox" value="工作收入不穩定">📉 工作收入不穩定</label><label class="ms-opt"><input type="checkbox" value="純觀望短期不買">👀 純觀望、短期不買</label><label class="ms-opt"><input type="checkbox" value="已在其他業務跟進中">🤝 已在其他業務跟進中</label></div></div></div>';
-  html += sel('🔁 上次跟進結果','lastFollowupResult',lfOpts);
-  html += sel('下次跟進重點','nextFollowupAction',nfOpts);
+  html += '<div class="form-group"><label>🔁 上次跟進結果</label><div class="ms-wrap" id="e_ms_lastFollowup"><div class="ms-display" onclick="toggleMs(\'e_ms_lastFollowup\')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div><div class="ms-dropdown"><label class="ms-opt"><input type="checkbox" value="✅ 有進展，下次約好了">✅ 有進展，下次約好了</label><label class="ms-opt"><input type="checkbox" value="💬 有聊，態度正面">💬 有聊，態度正面</label><label class="ms-opt"><input type="checkbox" value="😐 普通，需要再培養">😐 普通，需要再培養</label><label class="ms-opt"><input type="checkbox" value="❌ 拒絕或沒有回應">❌ 拒絕或沒有回應</label><label class="ms-opt"><input type="checkbox" value="🔄 重新建立關係中">🔄 重新建立關係中</label></div></div></div>';
+  html += '<div class="form-group"><label>下次跟進重點</label><div class="ms-wrap" id="e_ms_nextFollowup"><div class="ms-display" onclick="toggleMs(\'e_ms_nextFollowup\')"><span class="ms-placeholder">點選展開（可多選）</span><span class="ms-arrow">▾</span></div><div class="ms-dropdown"><label class="ms-opt"><input type="checkbox" value="分享市場新資訊">📊 分享市場新資訊</label><label class="ms-opt"><input type="checkbox" value="邀請看屋或活動">🏠 邀請看屋或活動</label><label class="ms-opt"><input type="checkbox" value="處理家人疑慮">👨‍👩‍👧 處理家人疑慮</label><label class="ms-opt"><input type="checkbox" value="重新確認需求與預算">💰 重新確認需求與預算</label><label class="ms-opt"><input type="checkbox" value="提供貸款方案試算">🏦 提供貸款方案試算</label><label class="ms-opt"><input type="checkbox" value="等待時機主動聯繫">⏳ 等待時機主動聯繫</label><label class="ms-opt"><input type="checkbox" value="轉介紹開口">🤝 轉介紹開口</label></div></div></div>';
   html += '</div>';
 
   document.getElementById('editModalBody').innerHTML = html;
@@ -1367,6 +1413,10 @@ function showEdit(id) {
   setMsValue('e_ms_proCheck', c.proChecks || '');
   setMsValue('e_ms_referralEffect', c.referralEffect || '');
   setMsValue('e_ms_decisionBlock', c.decisionBlock || '');
+  setMsValue('e_ms_contactPref', c.contactPref || '');
+  setMsValue('e_ms_contactTime', c.contactTime || '');
+  setMsValue('e_ms_lastFollowup', c.lastFollowupResult || '');
+  setMsValue('e_ms_nextFollowup', c.nextFollowupAction || '');
   document.getElementById('editSaveBtn').onclick = function(){ saveEdit(c); };
   document.getElementById('editModal').classList.add('active');
   } catch(err) { alert('編輯錯誤：' + err.message); }
@@ -1398,9 +1448,9 @@ function saveEdit(c) {
     referralReward: gv('referralReward'), referralList: gv('referralList'),
     referralCount: gv('referralCount'),
     referralEffect: getMsValue('e_ms_referralEffect'), notes: gv('notes'),
-    contactPref: gv('contactPref'), contactTime: gv('contactTime'),
+    contactPref: getMsValue('e_ms_contactPref'), contactTime: getMsValue('e_ms_contactTime'),
     personalityType: gv('personalityType'), decisionBlock: getMsValue('e_ms_decisionBlock'),
-    lastFollowupResult: gv('lastFollowupResult'), nextFollowupAction: gv('nextFollowupAction'),
+    lastFollowupResult: getMsValue('e_ms_lastFollowup'), nextFollowupAction: getMsValue('e_ms_nextFollowup'),
     customerActive: gv('customerActive')||'進行中'
   };
   var btn = document.getElementById('editSaveBtn');
@@ -1637,5 +1687,6 @@ function showToast(msg) {
   document.getElementById('apiStatus').textContent = '✅ 雲端已設定，請登入';
 })();
 </script>
-</body>
-</html>
+
+
+</body></html>
