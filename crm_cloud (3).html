@@ -939,14 +939,28 @@ function callAPI(payload, callback) {
   var url = getApiUrl();
   if (!url) { callback({ success: false, error: '尚未設定 API 網址' }); return; }
   setSyncing(true);
+  var controller = new AbortController();
+  var timer = setTimeout(function(){ controller.abort(); }, 15000);
   fetch(url, {
     method: 'POST',
     body: JSON.stringify(payload),
-    headers: { 'Content-Type': 'text/plain' } // 避免 CORS preflight
+    headers: { 'Content-Type': 'text/plain' },
+    signal: controller.signal
   })
-  .then(function(r) { return r.json(); })
-  .then(function(data) { setSyncing(false); callback(data); })
-  .catch(function(err) { setSyncing(false); setOffline(); callback({ success: false, error: err.toString() }); });
+  .then(function(r) { clearTimeout(timer); return r.text(); })
+  .then(function(text) {
+    setSyncing(false);
+    try { callback(JSON.parse(text)); }
+    catch(e) { callback({ success: false, error: '回應格式錯誤: ' + text.slice(0,100) }); }
+  })
+  .catch(function(err) {
+    clearTimeout(timer);
+    setSyncing(false);
+    setOffline();
+    var msg = err.name === 'AbortError' ? '連線逾時，請檢查網路或 Apps Script' : err.toString();
+    showToast('❌ ' + msg);
+    callback({ success: false, error: msg });
+  });
 }
 
 function setSyncing(v) {
