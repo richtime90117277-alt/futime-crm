@@ -339,7 +339,15 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
             <div class="form-group"><label>來源細節</label><input type="text" id="leadSourceDetail" placeholder="例：爬山、FB/IG、咖啡展、某展場活動"></div>
             <div class="form-grid two">
               <div class="form-group"><label>創建日期 *</label><input type="date" id="creationDate" required></div>
-              <div class="form-group" style="display:none"><input type="hidden" id="acquisitionMethod" value=""></div>
+              <div class="form-group">
+                <label>🎓 是否參加過研討會</label>
+                <select id="seminarAttended">
+                  <option value="">請選擇</option>
+                  <option value="是">✅ 是</option>
+                  <option value="否">❌ 否</option>
+                  <option value="已邀請未參加">📩 已邀請未參加</option>
+                </select>
+              </div>
             </div>
             <div class="form-grid two">
               <div class="form-group">
@@ -632,7 +640,6 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
                   <label class="ms-opt"><input type="checkbox" value="轉介紹開口">🤝 轉介紹開口</label>
                 </div>
               </div>
-            </div>
             </div>
             <div class="form-group"><textarea id="notes" placeholder="其他補充說明..." style="min-height:100px"></textarea></div>
           </div>
@@ -1224,7 +1231,8 @@ function saveCustomer() {
     contactPref:getMsValue('ms_contactPref'), contactTime:getMsValue('ms_contactTime'),
     personalityType:v('personalityType'), decisionBlock:getMsValue('ms_decisionBlock'),
     lastFollowupResult:getMsValue('ms_lastFollowup'), nextFollowupAction:getMsValue('ms_nextFollowup'),
-    customerActive:v('customerActive')||'進行中'
+    customerActive:v('customerActive')||'進行中',
+    seminarAttended:v('seminarAttended')
   };
   var btn = document.getElementById('saveBtn');
   if (btn.disabled) return;
@@ -1295,7 +1303,7 @@ function showDetail(id) {
   document.getElementById('modalTitle').textContent = c.customerName+' — '+STAGE_NAMES[s];
   var rows = [
     ['負責業務',c.salesPerson],['聯絡方式',c.contactInfo],['🏷️ 名單類型',c.clientType],['名單來源',c.leadSource],
-    ['獲取來源',c.leadSourceDetail],['獲取方式',c.acquisitionMethod],['創建日期',c.creationDate],
+    ['獲取來源',c.leadSourceDetail],['🎓 參加研討會',c.seminarAttended],['創建日期',c.creationDate],
     ['信任評分',c.trustScore?c.trustScore+'/10':''],['專業評分',c.professionalScore?c.professionalScore+'/10':''],
     ['信任狀態',c.currentStatus],
     ['✅ 信任檢核',c.trustChecks],['✅ 專業形象檢核',c.proChecks],
@@ -1401,8 +1409,9 @@ function showEdit(id) {
   html += sel('名單來源','leadSource',dynamicSrcOpts);
   html += '</div>';
   html += ef('獲取來源細節','leadSourceDetail',c.leadSourceDetail);
+  var semOpts = ['','是','否','已邀請未參加'].map(function(s){ return '<option value="'+s+'"'+(s===(c.seminarAttended||'')?' selected':'')+'>'+( s===''?'請選擇':s==='是'?'✅ 是':s==='否'?'❌ 否':'📩 已邀請未參加')+'</option>'; }).join('');
   html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
-  html += sel('獲取方式','acquisitionMethod',acqOpts);
+  html += sel('🎓 是否參加過研討會','seminarAttended',semOpts);
   html += ef('創建日期','creationDate',c.creationDate,'date');
   html += '</div>';
 
@@ -1518,7 +1527,8 @@ function saveEdit(c) {
     contactPref: getMsValue('e_ms_contactPref'), contactTime: getMsValue('e_ms_contactTime'),
     personalityType: gv('personalityType'), decisionBlock: getMsValue('e_ms_decisionBlock'),
     lastFollowupResult: getMsValue('e_ms_lastFollowup'), nextFollowupAction: getMsValue('e_ms_nextFollowup'),
-    customerActive: gv('customerActive')||'進行中'
+    customerActive: gv('customerActive')||'進行中',
+    seminarAttended: gv('seminarAttended')
   };
   var btn = document.getElementById('editSaveBtn');
   btn.disabled = true; btn.textContent = '⏳ 儲存中...';
