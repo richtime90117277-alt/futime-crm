@@ -1235,7 +1235,7 @@ function saveCustomer() {
     seminarAttended:v('seminarAttended')
   };
   var btn = document.getElementById('saveBtn');
-  if (btn.disabled) return;
+  if (btn.disabled) { _saving = false; return; }
   btn.disabled = true; btn.textContent = '⏳ 儲存中...';
   callAPI({ action: 'save', customer: c }, function(res) {
     _saving = false;
