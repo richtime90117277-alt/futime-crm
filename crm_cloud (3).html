@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- saved from url=(0049)file:///C:/Users/User/Downloads/crm_cloud_11.html -->
-<html lang="zh-TW"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>富時代地產 CRM</title>
-<link href="./crm_cloud 12_files/css2" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=DM+Serif+Display&display=swap" rel="stylesheet">
 <style>
 :root{
   --gold:#c9a84c;--gold-light:#f0d080;--navy:#0f2744;--navy-mid:#1a3a5c;--navy-light:#234d73;
@@ -208,13 +208,26 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
 
       <div class="form-group">
         <label>選擇身份</label>
-        <select id="userSelect"><option value="">── 請選擇 ──</option><optgroup label="👑 管理層"><option>總經理</option><option>CRM營運長</option><option>知識長</option><option>AI訓練長</option></optgroup><optgroup label="👨‍💼 業務團隊"><option>阮智偉</option><option>廖一龍</option><option>鄭采崴</option><option>張書菡</option><option>余建翰</option><option>王鈞志</option><option>吳玉如</option><option>商國泰</option><option>郭淑真</option><option>高亞琦</option><option>陳淑美</option><option>侯明智</option><option>許亞茵</option><option>曾素蘭</option><option>林紫君</option><option>黃中興</option><option>黃彥程</option><option>孫運迪</option><option>陳丰彥</option><option>劉常裕</option><option>施向宇</option><option>莊環蔭</option><option>廉海桃</option><option>劉晁綱</option><option>游馥宇</option></optgroup></select>
+        <select id="userSelect">
+          <option value="">── 請選擇 ──</option>
+          <optgroup label="👑 管理層">
+            <option>總經理</option><option>CRM營運長</option><option>知識長</option><option>AI訓練長</option>
+          </optgroup>
+          <optgroup label="👨‍💼 業務團隊">
+            <option>阮智偉</option><option>廖一龍</option><option>鄭采崴</option><option>張書菡</option>
+            <option>余建翰</option><option>王鈞志</option><option>吳玉如</option><option>商國泰</option>
+            <option>郭淑真</option><option>高亞琦</option><option>陳淑美</option><option>侯明智</option>
+            <option>許亞茵</option><option>曾素蘭</option><option>林紫君</option><option>黃中興</option>
+            <option>黃彥程</option><option>孫運迪</option><option>陳丰彥</option><option>劉常裕</option><option>施向宇</option>
+            <option>莊環蔭</option><option>廉海桃</option><option>劉晁綱</option><option>游馥宇</option>
+          </optgroup>
+        </select>
       </div>
       <div class="form-group">
         <label>密碼</label>
-        <input type="password" id="passwordInput" placeholder="請輸入密碼" onkeydown="if(event.key===&#39;Enter&#39;)login()">
+        <input type="password" id="passwordInput" placeholder="請輸入密碼" onkeydown="if(event.key==='Enter')login()">
       </div>
-      <div id="apiStatus" style="font-size:13px;color:var(--text-muted);text-align:center;margin-bottom:.5rem">✅ 雲端已設定，請登入</div>
+      <div id="apiStatus" style="font-size:13px;color:var(--text-muted);text-align:center;margin-bottom:.5rem"></div>
       <button class="btn btn-primary" onclick="login()">🔐 登入系統</button>
       <div style="text-align:center;margin-top:1rem">
         <button onclick="showResetUrl()" style="background:none;border:none;color:var(--text-muted);font-size:12px;cursor:pointer;font-family:inherit;text-decoration:underline">⚙️ 重新設定雲端網址</button>
@@ -246,12 +259,12 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
     </div>
   </div>
   <nav class="nav-tabs">
-    <button class="active" onclick="showPage(&#39;dashboard&#39;,this)">📊 儀表板</button>
-    <button onclick="showPage(&#39;newCustomer&#39;,this)">➕ 新增</button>
-    <button onclick="showPage(&#39;customerList&#39;,this)">📋 列表</button>
-    <button onclick="showPage(&#39;reports&#39;,this)" id="reportsTab">📈 報表</button>
-    <button onclick="showPage(&#39;claude&#39;,this)">🤖 Claude</button>
-    <button onclick="showPage(&#39;staffMgmt&#39;,this)" id="staffTab">👥 業務</button>
+    <button class="active" onclick="showPage('dashboard',this)">📊 儀表板</button>
+    <button onclick="showPage('newCustomer',this)">➕ 新增</button>
+    <button onclick="showPage('customerList',this)">📋 列表</button>
+    <button onclick="showPage('reports',this)" id="reportsTab">📈 報表</button>
+    <button onclick="showPage('claude',this)">🤖 Claude</button>
+    <button onclick="showPage('staffMgmt',this)" id="staffTab">👥 業務</button>
   </nav>
   <div class="container">
 
@@ -270,6 +283,22 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
           <div class="stats-grid" id="stagesGrid"></div>
         </div>
       </div>
+      <div class="card">
+        <div class="card-header"><div class="card-icon">🏷️</div><h3>名單來源分析</h3></div>
+        <div class="card-body">
+          <div class="stats-grid" style="grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+            <div class="stat-card" style="border-left:4px solid var(--navy)">
+              <div class="stat-value" id="companyLeadCount">—</div>
+              <div class="stat-label">🏢 公司名單</div>
+            </div>
+            <div class="stat-card" style="border-left:4px solid var(--gold)">
+              <div class="stat-value" id="selfLeadCount">—</div>
+              <div class="stat-label">👤 業務自開發</div>
+            </div>
+          </div>
+          <div id="leadSourceBreakdown" style="font-size:13px;color:var(--text-soft);line-height:2"></div>
+        </div>
+      </div>
       <div class="card" id="recentCard">
         <div class="card-header"><div class="card-icon">🕐</div><h3>最新客戶動態</h3></div>
         <div id="recentList"><div class="empty-state"><div class="empty-icon">📋</div>載入中...</div></div>
@@ -282,35 +311,41 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
       <form id="customerForm">
         <div class="form-group highlight">
           <label>👨‍💼 負責業務 *</label>
-          <select id="salesPerson" required=""></select>
+          <select id="salesPerson" required></select>
         </div>
         <div class="card">
           <div class="card-header"><div class="card-icon">1</div><h3>一部曲：客戶開發</h3></div>
           <div class="card-body">
             <div class="form-grid two">
-              <div class="form-group"><label>客戶姓名 *</label><input type="text" id="customerName" placeholder="請輸入客戶姓名" required=""></div>
+              <div class="form-group"><label>客戶姓名 *</label><input type="text" id="customerName" placeholder="請輸入客戶姓名" required></div>
               <div class="form-group"><label>聯絡方式</label><input type="text" id="contactInfo" placeholder="電話 / Email"></div>
             </div>
             <div class="form-grid two">
               <div class="form-group">
-                <label>名單來源</label>
-                <select id="leadSource">
+                <label>🏷️ 名單類型</label>
+                <select id="clientType" onchange="updateLeadSourceOptions()">
                   <option value="">請選擇</option>
-                  <option>緣故</option><option>轉介紹</option><option>社群經營</option>
-                  <option>展場活動</option><option>網路廣告</option><option>其他</option>
+                  <option value="業務自開發">👤 業務自開發</option>
+                  <option value="公司名單">🏢 公司名單</option>
                 </select>
               </div>
-              <div class="form-group"><label>來源細節</label><input type="text" id="leadSourceDetail" placeholder="例：爬山、FB/IG、咖啡展"></div>
+              <div class="form-group">
+                <label>名單來源</label>
+                <select id="leadSource">
+                  <option value="">請先選名單類型</option>
+                </select>
+              </div>
             </div>
+            <div class="form-group"><label>來源細節</label><input type="text" id="leadSourceDetail" placeholder="例：爬山、FB/IG、咖啡展、某展場活動"></div>
             <div class="form-grid two">
-              <div class="form-group"><label>創建日期 *</label><input type="date" id="creationDate" required=""></div>
+              <div class="form-group"><label>創建日期 *</label><input type="date" id="creationDate" required></div>
               <div class="form-group" style="display:none"><input type="hidden" id="acquisitionMethod" value=""></div>
             </div>
             <div class="form-grid two">
               <div class="form-group">
                 <label>📱 溝通偏好</label>
                 <div class="ms-wrap" id="ms_contactPref">
-                  <div class="ms-display" onclick="toggleMs(&#39;ms_contactPref&#39;)"><span class="ms-placeholder">點選展開（可多選）</span><span class="ms-arrow">▾</span></div>
+                  <div class="ms-display" onclick="toggleMs('ms_contactPref')"><span class="ms-placeholder">點選展開（可多選）</span><span class="ms-arrow">▾</span></div>
                   <div class="ms-dropdown">
                     <label class="ms-opt"><input type="checkbox" value="Line 訊息">💬 Line 訊息</label>
                     <label class="ms-opt"><input type="checkbox" value="電話通話">📞 電話通話</label>
@@ -323,7 +358,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
               <div class="form-group">
                 <label>⏰ 最佳聯繫時段</label>
                 <div class="ms-wrap" id="ms_contactTime">
-                  <div class="ms-display" onclick="toggleMs(&#39;ms_contactTime&#39;)"><span class="ms-placeholder">點選展開（可多選）</span><span class="ms-arrow">▾</span></div>
+                  <div class="ms-display" onclick="toggleMs('ms_contactTime')"><span class="ms-placeholder">點選展開（可多選）</span><span class="ms-arrow">▾</span></div>
                   <div class="ms-dropdown">
                     <label class="ms-opt"><input type="checkbox" value="早上（9–12點）">🌅 早上（9–12點）</label>
                     <label class="ms-opt"><input type="checkbox" value="下午（12–17點）">☀️ 下午（12–17點）</label>
@@ -352,7 +387,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
             <div class="form-group">
               <label>信任檢核（已達成項目）</label>
               <div class="ms-wrap" id="ms_trustCheck">
-                <div class="ms-display" onclick="toggleMs(&#39;ms_trustCheck&#39;)"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div>
+                <div class="ms-display" onclick="toggleMs('ms_trustCheck')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div>
                 <div class="ms-dropdown">
                   <label class="ms-opt"><input type="checkbox" value="客戶主動分享財務需求與購屋計劃">客戶主動分享財務狀況、需求或購屋計劃</label>
                   <label class="ms-opt"><input type="checkbox" value="客戶回覆訊息速度快且積極">客戶回覆訊息速度快且積極</label>
@@ -365,7 +400,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
             <div class="form-group">
               <label>專業形象檢核（已達成項目）</label>
               <div class="ms-wrap" id="ms_proCheck">
-                <div class="ms-display" onclick="toggleMs(&#39;ms_proCheck&#39;)"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div>
+                <div class="ms-display" onclick="toggleMs('ms_proCheck')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div>
                 <div class="ms-dropdown">
                   <label class="ms-opt"><input type="checkbox" value="有針對市場產品貸款提出數據與案例">是否有針對市場、產品或貸款方案，提出客觀數據與案例？</label>
                   <label class="ms-opt"><input type="checkbox" value="客戶回應原來如此等學習性語句">客戶是否回應「原來如此」、「我不知道這個」等學習性語句？</label>
@@ -394,7 +429,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
             <div class="form-group">
               <label>痛點分析（可多選）</label>
               <div class="ms-wrap" id="ms_painPoint">
-                <div class="ms-display" onclick="toggleMs(&#39;ms_painPoint&#39;)"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div>
+                <div class="ms-display" onclick="toggleMs('ms_painPoint')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div>
                 <div class="ms-dropdown">
                   <div class="ms-group">🟡 新鮮人族群</div>
                   <label class="ms-opt"><input type="checkbox" value="新鮮人-趕不上通膨">趕不上通膨</label>
@@ -445,7 +480,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
             <div class="form-group">
               <label>🚧 決策障礙（卡點）</label>
               <div class="ms-wrap" id="ms_decisionBlock">
-                <div class="ms-display" onclick="toggleMs(&#39;ms_decisionBlock&#39;)"><span class="ms-placeholder">點選展開（可多選）</span><span class="ms-arrow">▾</span></div>
+                <div class="ms-display" onclick="toggleMs('ms_decisionBlock')"><span class="ms-placeholder">點選展開（可多選）</span><span class="ms-arrow">▾</span></div>
                 <div class="ms-dropdown">
                   <label class="ms-opt"><input type="checkbox" value="價格超出預算">💰 價格超出預算</label>
                   <label class="ms-opt"><input type="checkbox" value="家人尚未同意">👨‍👩‍👧 家人尚未同意</label>
@@ -557,7 +592,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
             <div class="form-group">
               <label>轉介紹效果</label>
               <div class="ms-wrap" id="ms_referralEffect">
-                <div class="ms-display" onclick="toggleMs(&#39;ms_referralEffect&#39;)"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div>
+                <div class="ms-display" onclick="toggleMs('ms_referralEffect')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div>
                 <div class="ms-dropdown">
                   <label class="ms-opt"><input type="checkbox" value="客戶已聯繫">客戶已聯繫</label>
                   <label class="ms-opt"><input type="checkbox" value="已形成">已形成</label>
@@ -574,7 +609,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
             <div class="form-group">
               <label>🔁 上次跟進摘要</label>
               <div class="ms-wrap" id="ms_lastFollowup">
-                <div class="ms-display" onclick="toggleMs(&#39;ms_lastFollowup&#39;)"><span class="ms-placeholder">點選展開（可多選）</span><span class="ms-arrow">▾</span></div>
+                <div class="ms-display" onclick="toggleMs('ms_lastFollowup')"><span class="ms-placeholder">點選展開（可多選）</span><span class="ms-arrow">▾</span></div>
                 <div class="ms-dropdown">
                   <label class="ms-opt"><input type="checkbox" value="✅ 有進展，下次約好了">✅ 有進展，下次約好了</label>
                   <label class="ms-opt"><input type="checkbox" value="💬 有聊，態度正面">💬 有聊，態度正面</label>
@@ -586,7 +621,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
             </div>
             <div class="form-group"><label>跟進重點（下次要說什麼）</label>
               <div class="ms-wrap" id="ms_nextFollowup">
-                <div class="ms-display" onclick="toggleMs(&#39;ms_nextFollowup&#39;)"><span class="ms-placeholder">點選展開（可多選）</span><span class="ms-arrow">▾</span></div>
+                <div class="ms-display" onclick="toggleMs('ms_nextFollowup')"><span class="ms-placeholder">點選展開（可多選）</span><span class="ms-arrow">▾</span></div>
                 <div class="ms-dropdown">
                   <label class="ms-opt"><input type="checkbox" value="分享市場新資訊">📊 分享市場新資訊</label>
                   <label class="ms-opt"><input type="checkbox" value="邀請看屋或活動">🏠 邀請看屋或活動</label>
@@ -601,12 +636,12 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
             </div>
             <div class="form-group"><textarea id="notes" placeholder="其他補充說明..." style="min-height:100px"></textarea></div>
           </div>
-        </form></div>
+        </div>
         <div class="button-row">
           <button type="submit" class="btn btn-primary" id="saveBtn">☁️ 儲存並同步</button>
           <button type="button" class="btn btn-secondary" onclick="clearForm()">🔄 清除</button>
         </div>
-      
+      </form>
     </div>
 
     <!-- CUSTOMER LIST -->
@@ -619,7 +654,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
           </div>
           <div class="form-group" id="filterSalesGroup" style="display:none;flex:1;min-width:120px">
             <label>業務篩選</label>
-            <select id="filterSales" onchange="renderCustomers()"><option value="">全部業務</option><option>阮智偉</option><option>廖一龍</option><option>鄭采崴</option><option>張書菡</option><option>余建翰</option><option>王鈞志</option><option>吳玉如</option><option>商國泰</option><option>郭淑真</option><option>高亞琦</option><option>陳淑美</option><option>侯明智</option><option>許亞茵</option><option>曾素蘭</option><option>林紫君</option><option>黃中興</option><option>黃彥程</option><option>孫運迪</option><option>陳丰彥</option><option>劉常裕</option><option>施向宇</option><option>莊環蔭</option><option>廉海桃</option><option>劉晁綱</option><option>游馥宇</option></select>
+            <select id="filterSales" onchange="renderCustomers()"><option value="">全部業務</option></select>
           </div>
           <div class="form-group" style="flex:1;min-width:120px">
             <label>階段篩選</label>
@@ -699,7 +734,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
       </div>
     </div>
   </div>
-
+</div>
 
 <!-- DETAIL / EDIT MODAL -->
 <div class="modal-overlay" id="detailModal">
@@ -729,12 +764,12 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
 </div>
 <div class="modal-overlay" id="confirmModal">
   <div class="modal" style="max-width:360px">
-    <div class="modal-head"><h3>確認刪除</h3><button class="modal-close" onclick="document.getElementById(&#39;confirmModal&#39;).classList.remove(&#39;active&#39;)">✕</button></div>
+    <div class="modal-head"><h3>確認刪除</h3><button class="modal-close" onclick="document.getElementById('confirmModal').classList.remove('active')">✕</button></div>
     <div class="modal-body">
       <p style="color:var(--text-soft);font-size:15px">確定要刪除這筆客戶資料嗎？此操作無法復原。</p>
     </div>
     <div class="modal-actions">
-      <button class="btn btn-secondary" onclick="document.getElementById(&#39;confirmModal&#39;).classList.remove(&#39;active&#39;)">取消</button>
+      <button class="btn btn-secondary" onclick="document.getElementById('confirmModal').classList.remove('active')">取消</button>
       <button class="btn btn-danger-outline" id="confirmDeleteBtn">確認刪除</button>
     </div>
   </div>
@@ -994,6 +1029,19 @@ function fetchCustomers() {
   });
 }
 
+// ── 名單來源動態選項 ──
+var LEAD_SOURCES = {
+  '業務自開發': ['緣故／親友','客戶轉介紹','社群經營（FB／IG／LINE）','商會／早餐會／活動','其他自開發'],
+  '公司名單':   ['展場活動','網路廣告','門市來客','代銷／潛銷發放','舊專案遺留','其他公司名單']
+};
+function updateLeadSourceOptions() {
+  var type = document.getElementById('clientType').value;
+  var sel = document.getElementById('leadSource');
+  if (!type) { sel.innerHTML = '<option value="">請先選名單類型</option>'; return; }
+  sel.innerHTML = '<option value="">請選擇來源</option>'
+    + (LEAD_SOURCES[type]||[]).map(function(s){ return '<option>'+s+'</option>'; }).join('');
+}
+
 // ── 判斷客戶是否「進行中」（未成交）──
 function isActive(c) {
   // 有簽約日期 = 已成交；手動設定 customerActive = '已成交' 也算
@@ -1062,6 +1110,19 @@ function renderDashboard() {
   if (bottleneckEl && maxCount > 0) {
     bottleneckEl.textContent = '🚧 瓶頸：'+STAGE_NAMES[maxStage]+'（'+maxCount+'人卡關）';
   }
+
+  // 名單來源分析（全部客戶）
+  var companyLeads = customers.filter(function(c){ return c.clientType==='公司名單'; });
+  var selfLeads = customers.filter(function(c){ return c.clientType==='業務自開發'; });
+  document.getElementById('companyLeadCount').textContent = companyLeads.length;
+  document.getElementById('selfLeadCount').textContent = selfLeads.length;
+  var srcCount = {};
+  customers.forEach(function(c){ if (c.leadSource) srcCount[c.leadSource]=(srcCount[c.leadSource]||0)+1; });
+  var srcHtml = Object.keys(srcCount).sort(function(a,b){ return srcCount[b]-srcCount[a]; }).map(function(s){
+    return '<div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--cream2);padding:.25rem 0">'
+      +'<span>'+s+'</span><span style="font-weight:700;color:var(--navy)">'+srcCount[s]+'人</span></div>';
+  }).join('');
+  document.getElementById('leadSourceBreakdown').innerHTML = srcHtml||'<span style="color:var(--text-muted)">尚無資料</span>';
 }
 
 function renderRecent() {
@@ -1138,14 +1199,14 @@ function setChecked(name, val) {}
 var _saving = false;
 function saveCustomer() {
   if (_saving) return;
-  _saving = true;
   var sp = document.getElementById('salesPerson').value;
   var cn = document.getElementById('customerName').value;
   if (!sp) return alert('請選擇負責業務');
   if (!cn) return alert('請輸入客戶姓名');
+  _saving = true;
   var v = function(id){ return document.getElementById(id).value; };
   var c = {
-    salesPerson:sp, customerName:cn, contactInfo:v('contactInfo'), leadSource:v('leadSource'),
+    salesPerson:sp, customerName:cn, contactInfo:v('contactInfo'), clientType:v('clientType'), leadSource:v('leadSource'),
     leadSourceDetail:v('leadSourceDetail'), acquisitionMethod:v('acquisitionMethod'), creationDate:v('creationDate'),
     trustScore:v('trustScore'), professionalScore:v('professionalScore'), currentStatus:v('currentStatus'),
     trustChecks:getMsValue('ms_trustCheck'), proChecks:getMsValue('ms_proCheck'),
@@ -1233,7 +1294,7 @@ function showDetail(id) {
   var s = stageOf(c);
   document.getElementById('modalTitle').textContent = c.customerName+' — '+STAGE_NAMES[s];
   var rows = [
-    ['負責業務',c.salesPerson],['聯絡方式',c.contactInfo],['名單來源',c.leadSource],
+    ['負責業務',c.salesPerson],['聯絡方式',c.contactInfo],['🏷️ 名單類型',c.clientType],['名單來源',c.leadSource],
     ['獲取來源',c.leadSourceDetail],['獲取方式',c.acquisitionMethod],['創建日期',c.creationDate],
     ['信任評分',c.trustScore?c.trustScore+'/10':''],['專業評分',c.professionalScore?c.professionalScore+'/10':''],
     ['信任狀態',c.currentStatus],
@@ -1331,9 +1392,15 @@ function showEdit(id) {
   html += ef('聯絡方式','contactInfo',c.contactInfo);
   html += '</div>';
   html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
-  html += sel('名單來源','leadSource',srcOpts);
-  html += ef('獲取來源細節','leadSourceDetail',c.leadSourceDetail);
+  var ctypeOpts = ['','業務自開發','公司名單'].map(function(s){ return '<option value="'+s+'"'+(s===c.clientType?' selected':'')+'>'+( s===''?'請選擇': s==='業務自開發'?'👤 業務自開發':'🏢 公司名單')+'</option>'; }).join('');
+  html += sel('🏷️ 名單類型','e_clientType',ctypeOpts);
+  // 動態來源選項
+  var currentType = c.clientType||'';
+  var srcList = currentType ? (LEAD_SOURCES[currentType]||[]) : ['緣故','轉介紹','社群經營','展場活動','網路廣告','其他'];
+  var dynamicSrcOpts = '<option value="">請選擇</option>'+srcList.map(function(s){ return '<option'+(s===c.leadSource?' selected':'')+'>'+s+'</option>'; }).join('');
+  html += sel('名單來源','leadSource',dynamicSrcOpts);
   html += '</div>';
+  html += ef('獲取來源細節','leadSourceDetail',c.leadSourceDetail);
   html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
   html += sel('獲取方式','acquisitionMethod',acqOpts);
   html += ef('創建日期','creationDate',c.creationDate,'date');
@@ -1429,7 +1496,7 @@ function saveEdit(c) {
   var updated = {
     id: c.id,
     salesPerson: currentRole==='sales' ? c.salesPerson : gv('salesPerson'),
-    customerName: cn, contactInfo: gv('contactInfo'), leadSource: gv('leadSource'),
+    customerName: cn, contactInfo: gv('contactInfo'), clientType: gv('e_clientType'), leadSource: gv('leadSource'),
     leadSourceDetail: gv('leadSourceDetail'), acquisitionMethod: gv('acquisitionMethod'),
     creationDate: gv('creationDate'), trustScore: gv('trustScore'),
     professionalScore: gv('professionalScore'), currentStatus: gv('currentStatus'),
@@ -1687,6 +1754,5 @@ function showToast(msg) {
   document.getElementById('apiStatus').textContent = '✅ 雲端已設定，請登入';
 })();
 </script>
-
-
-</body></html>
+</body>
+</html>
