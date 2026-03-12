@@ -318,9 +318,10 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
           <div class="card-body">
             <div class="form-grid two">
               <div class="form-group"><label>客戶姓名 *</label><input type="text" id="customerName" placeholder="請輸入客戶姓名" required></div>
-              <div class="form-group"><label>聯絡方式</label><input type="text" id="contactInfo" placeholder="電話 / Email"></div>
+              <div class="form-group"><label>聯絡電話 *</label><input type="tel" id="contactInfo" placeholder="請輸入手機號碼" required></div>
             </div>
             <div class="form-grid two">
+              <div class="form-group"><label>年齡</label><input type="number" id="customerAge" placeholder="請輸入年齡" min="18" max="99"></div>
               <div class="form-group">
                 <label>🏷️ 名單類型</label>
                 <select id="clientType" onchange="updateLeadSourceOptions()">
@@ -329,6 +330,8 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
                   <option value="公司名單">🏢 公司名單</option>
                 </select>
               </div>
+            </div>
+            <div class="form-grid two">
               <div class="form-group">
                 <label>名單來源</label>
                 <select id="leadSource">
@@ -1222,12 +1225,16 @@ var _saving = false; // deprecated, kept for safety
 function saveCustomer() {
   var sp = document.getElementById('salesPerson').value;
   var cn = document.getElementById('customerName').value;
+  var ci = document.getElementById('contactInfo').value;
   if (!sp) { alert('請選擇負責業務'); return; }
   if (!cn) { alert('請輸入客戶姓名'); return; }
+  if (!ci) { alert('請輸入聯絡電話'); return; }
   var btn = document.getElementById('saveBtn');
+  if (btn.disabled) return;
+  btn.disabled = true; btn.textContent = '⏳ 儲存中...';
   var v = function(id){ var el=document.getElementById(id); return el?el.value:''; };
   var c = {
-    salesPerson:sp, customerName:cn, contactInfo:v('contactInfo'), clientType:v('clientType'), leadSource:v('leadSource'),
+    salesPerson:sp, customerName:cn, contactInfo:v('contactInfo'), customerAge:v('customerAge'), clientType:v('clientType'), leadSource:v('leadSource'),
     leadSourceDetail:v('leadSourceDetail'), acquisitionMethod:v('acquisitionMethod'), creationDate:v('creationDate'),
     trustScore:v('trustScore'), professionalScore:v('professionalScore'), currentStatus:v('currentStatus'),
     trustChecks:getMsValue('ms_trustCheck'), proChecks:getMsValue('ms_proCheck'),
@@ -1248,6 +1255,7 @@ function saveCustomer() {
     customerActive:v('customerActive')||'進行中',
     seminarAttended:v('seminarAttended')
   };
+  var btn = document.getElementById('saveBtn');
   if (btn.disabled) { return; }
   btn.disabled = true; btn.textContent = '⏳ 儲存中...';
   console.log('DEBUG: calling API with', JSON.stringify({action:'save', name: c.customerName}));
@@ -1317,7 +1325,7 @@ function showDetail(id) {
   var s = stageOf(c);
   document.getElementById('modalTitle').textContent = c.customerName+' — '+STAGE_NAMES[s];
   var rows = [
-    ['負責業務',c.salesPerson],['聯絡方式',c.contactInfo],['🏷️ 名單類型',c.clientType],['名單來源',c.leadSource],
+    ['負責業務',c.salesPerson],['聯絡電話',c.contactInfo],['年齡',c.customerAge],['🏷️ 名單類型',c.clientType],['名單來源',c.leadSource],
     ['獲取來源',c.leadSourceDetail],['🎓 參加研討會',c.seminarAttended],['創建日期',c.creationDate],
     ['信任評分',c.trustScore?c.trustScore+'/10':''],['專業評分',c.professionalScore?c.professionalScore+'/10':''],
     ['信任狀態',c.currentStatus],
@@ -1412,9 +1420,10 @@ function showEdit(id) {
   }
   html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
   html += ef('客戶姓名 *','customerName',c.customerName);
-  html += ef('聯絡方式','contactInfo',c.contactInfo);
+  html += ef('聯絡電話 *','contactInfo',c.contactInfo);
   html += '</div>';
   html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
+  html += ef('年齡','customerAge',c.customerAge,'number');
   var ctypeOpts = ['','業務自開發','公司名單'].map(function(s){ return '<option value="'+s+'"'+(s===c.clientType?' selected':'')+'>'+( s===''?'請選擇': s==='業務自開發'?'👤 業務自開發':'🏢 公司名單')+'</option>'; }).join('');
   html += sel('🏷️ 名單類型','e_clientType',ctypeOpts);
   // 動態來源選項
@@ -1520,7 +1529,7 @@ function saveEdit(c) {
   var updated = {
     id: c.id,
     salesPerson: currentRole==='sales' ? c.salesPerson : gv('salesPerson'),
-    customerName: cn, contactInfo: gv('contactInfo'), clientType: gv('e_clientType'), leadSource: gv('leadSource'),
+    customerName: cn, contactInfo: gv('contactInfo'), customerAge: gv('customerAge'), clientType: gv('e_clientType'), leadSource: gv('leadSource'),
     leadSourceDetail: gv('leadSourceDetail'), acquisitionMethod: gv('acquisitionMethod'),
     creationDate: gv('creationDate'), trustScore: gv('trustScore'),
     professionalScore: gv('professionalScore'), currentStatus: gv('currentStatus'),
