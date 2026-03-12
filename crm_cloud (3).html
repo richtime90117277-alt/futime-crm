@@ -1230,7 +1230,7 @@ function saveCustomer() {
   if (!cn) { alert('請輸入客戶姓名'); return; }
   if (!ci) { alert('請輸入聯絡電話'); return; }
   var btn = document.getElementById('saveBtn');
-  if (btn.disabled) return;
+  if (btn.disabled) { return; }
   btn.disabled = true; btn.textContent = '⏳ 儲存中...';
   var v = function(id){ var el=document.getElementById(id); return el?el.value:''; };
   var c = {
