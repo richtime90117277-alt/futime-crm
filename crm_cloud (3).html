@@ -1234,7 +1234,7 @@ function saveCustomer() {
   btn.disabled = true; btn.textContent = '⏳ 儲存中...';
   var v = function(id){ var el=document.getElementById(id); return el?el.value:''; };
   var c = {
-    salesPerson:sp, customerName:cn, contactInfo:v('contactInfo'), customerAge:v('customerAge'), clientType:v('clientType'), leadSource:v('leadSource'),
+    salesPerson:sp, customerName:cn, contactInfo:ci, customerAge:v('customerAge'), clientType:v('clientType'), leadSource:v('leadSource'),
     leadSourceDetail:v('leadSourceDetail'), acquisitionMethod:v('acquisitionMethod'), creationDate:v('creationDate'),
     trustScore:v('trustScore'), professionalScore:v('professionalScore'), currentStatus:v('currentStatus'),
     trustChecks:getMsValue('ms_trustCheck'), proChecks:getMsValue('ms_proCheck'),
@@ -1255,10 +1255,6 @@ function saveCustomer() {
     customerActive:v('customerActive')||'進行中',
     seminarAttended:v('seminarAttended')
   };
-  var btn = document.getElementById('saveBtn');
-  if (btn.disabled) { return; }
-  btn.disabled = true; btn.textContent = '⏳ 儲存中...';
-  console.log('DEBUG: calling API with', JSON.stringify({action:'save', name: c.customerName}));
   callAPI({ action: 'save', customer: c }, function(res) {
     btn.disabled = false; btn.textContent = '☁️ 儲存並同步';
     if (res.success) {
