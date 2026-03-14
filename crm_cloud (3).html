@@ -318,7 +318,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
           <div class="card-body">
             <div class="form-grid two">
               <div class="form-group"><label>客戶姓名 *</label><input type="text" id="customerName" placeholder="請輸入客戶姓名" required></div>
-              <div class="form-group"><label>聯絡電話 *</label><input type="tel" id="contactInfo" placeholder="請輸入手機號碼" required></div>
+              <div class="form-group"><label>聯絡方式 *</label><input type="text" id="contactInfo" placeholder="電話 / Line ID / 其他" required></div>
             </div>
             <div class="form-grid two">
               <div class="form-group"><label>年齡</label><input type="number" id="customerAge" placeholder="請輸入年齡" min="18" max="99"></div>
@@ -1228,9 +1228,9 @@ function saveCustomer() {
   var ci = document.getElementById('contactInfo').value;
   if (!sp) { alert('請選擇負責業務'); return; }
   if (!cn) { alert('請輸入客戶姓名'); return; }
-  if (!ci) { alert('請輸入聯絡電話'); return; }
+  if (!ci) { alert('請輸入聯絡方式（電話 / Line ID / 其他）'); return; }
   var btn = document.getElementById('saveBtn');
-  if (btn.disabled) { return; }
+  if (btn.disabled) return;
   btn.disabled = true; btn.textContent = '⏳ 儲存中...';
   var v = function(id){ var el=document.getElementById(id); return el?el.value:''; };
   var c = {
@@ -1308,6 +1308,7 @@ function renderCustomers() {
       '<div class="customer-head"><span class="customer-name">'+c.customerName+'</span><span class="badge badge-'+s+'">'+s+'️⃣ '+STAGE_NAMES[s]+'</span></div>'+
       manInfo+
       '<div class="customer-meta">📞 '+(c.contactInfo||'—')+' ｜ 來源：'+(c.leadSource||'—')+'</div>'+
+      (c.seminarAttended&&c.seminarAttended!=='否'?'<div class="customer-meta">🎓 曾參加研討會</div>':'')+
       '<div class="customer-meta">信任：'+(c.trustScore?c.trustScore+'/10':'—')+' ｜ '+(c.contractStatus||'未簽約')+(c.dealAmount?' ｜ '+c.dealAmount+'萬':'')+'</div>'+
       '</div>';
   }).join('');
@@ -1321,7 +1322,7 @@ function showDetail(id) {
   var s = stageOf(c);
   document.getElementById('modalTitle').textContent = c.customerName+' — '+STAGE_NAMES[s];
   var rows = [
-    ['負責業務',c.salesPerson],['聯絡電話',c.contactInfo],['年齡',c.customerAge],['🏷️ 名單類型',c.clientType],['名單來源',c.leadSource],
+    ['負責業務',c.salesPerson],['聯絡方式',c.contactInfo],['年齡',c.customerAge],['🏷️ 名單類型',c.clientType],['名單來源',c.leadSource],
     ['獲取來源',c.leadSourceDetail],['🎓 參加研討會',c.seminarAttended],['創建日期',c.creationDate],
     ['信任評分',c.trustScore?c.trustScore+'/10':''],['專業評分',c.professionalScore?c.professionalScore+'/10':''],
     ['信任狀態',c.currentStatus],
@@ -1416,7 +1417,7 @@ function showEdit(id) {
   }
   html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
   html += ef('客戶姓名 *','customerName',c.customerName);
-  html += ef('聯絡電話 *','contactInfo',c.contactInfo);
+  html += ef('聯絡方式 *','contactInfo',c.contactInfo);
   html += '</div>';
   html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
   html += ef('年齡','customerAge',c.customerAge,'number');
