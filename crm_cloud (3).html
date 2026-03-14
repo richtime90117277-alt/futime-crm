@@ -1305,10 +1305,9 @@ function renderCustomers() {
     var s = stageOf(c);
     var manInfo = currentRole==='manager' ? '<div class="customer-meta">👤 '+c.salesPerson+'</div>' : '';
     return '<div class="customer-item" onclick="showDetail(\''+c.id.toString()+'\')">'+
-      '<div class="customer-head"><span class="customer-name">'+c.customerName+'</span><span class="badge badge-'+s+'">'+s+'️⃣ '+STAGE_NAMES[s]+'</span></div>'+
+      '<div class="customer-head"><span class="customer-name">'+c.customerName+'</span><span style="display:flex;gap:.375rem;align-items:center"><span class="badge badge-'+s+'">'+s+'️⃣ '+STAGE_NAMES[s]+'</span>'+(c.seminarAttended&&c.seminarAttended!=='否'?'<span style="background:#e8f5e9;color:#2e7d32;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600">🎓 研討會</span>':'')+'</span></div>'+
       manInfo+
       '<div class="customer-meta">📞 '+(c.contactInfo||'—')+' ｜ 來源：'+(c.leadSource||'—')+'</div>'+
-      (c.seminarAttended&&c.seminarAttended!=='否'?'<div class="customer-meta">🎓 曾參加研討會</div>':'')+
       '<div class="customer-meta">信任：'+(c.trustScore?c.trustScore+'/10':'—')+' ｜ '+(c.contractStatus||'未簽約')+(c.dealAmount?' ｜ '+c.dealAmount+'萬':'')+'</div>'+
       '</div>';
   }).join('');
