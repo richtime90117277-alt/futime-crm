@@ -1209,20 +1209,37 @@ function renderLeaderboard() {
 
   var weekRange = getWeekRange();
 
-  // 只統計進行中客戶的積分
+  // 只統計進行中客戶的積分，並記錄分數拆解
   var scoreMap = {};
   var countMap = {};
+  var detailMap = {};
   customers.forEach(function(c) {
-    if (!isActive(c)) return; // 跳過已成交客戶
+    if (!isActive(c)) return;
     var sp = c.salesPerson || '未指定';
-    if (!scoreMap[sp]) { scoreMap[sp] = 0; countMap[sp] = 0; }
-    scoreMap[sp] += calcScore(c, weekRange);
-    countMap[sp] += 1;
+    if (!scoreMap[sp]) {
+      scoreMap[sp] = 0; countMap[sp] = 0;
+      detailMap[sp] = {basic:0,timeline:0,pain:0,budget:0,consult:0,viewed:0,decision:0,referral:0,deal:0};
+    }
+    // 拆解計分
+    if (c.customerName && c.contactInfo && c.leadSource) { scoreMap[sp]+=1; detailMap[sp].basic++; }
+    if (c.buyingTimeline) { scoreMap[sp]+=1; detailMap[sp].timeline++; }
+    if (c.painPoints && c.painPoints.toString().trim()) { scoreMap[sp]+=1; detailMap[sp].pain++; }
+    if (c.budget && c.budget.toString().trim()) { scoreMap[sp]+=2; detailMap[sp].budget++; }
+    if (c.viewingStatus === '已完成諮詢') { scoreMap[sp]+=3; detailMap[sp].consult++; }
+    if (c.viewedProperties && c.viewedProperties.toString().trim() &&
+        c.whyNotBought && c.whyNotBought.toString().trim()) { scoreMap[sp]+=2; detailMap[sp].viewed++; }
+    if (c.decisionBlock && c.decisionBlock.toString().trim()) { scoreMap[sp]+=1; detailMap[sp].decision++; }
+    if (c.referralCount && parseInt(c.referralCount) >= 1) { scoreMap[sp]+=3; detailMap[sp].referral++; }
+    if (weekRange && c.contractDate) {
+      var cd = new Date(c.contractDate);
+      if (cd >= weekRange.start && cd <= weekRange.end) { scoreMap[sp]+=10; detailMap[sp].deal++; }
+    }
+    countMap[sp]++;
   });
 
   // 排序
   var ranked = Object.keys(scoreMap).map(function(sp) {
-    return { name: sp, score: scoreMap[sp], count: countMap[sp] };
+    return { name: sp, score: scoreMap[sp], count: countMap[sp], detail: detailMap[sp] };
   }).sort(function(a, b) { return b.score - a.score; });
 
   if (ranked.length === 0) {
@@ -1238,6 +1255,25 @@ function renderLeaderboard() {
     var highlight = isMe ? 'background:linear-gradient(135deg,#fffbea,#fff3cd);border:2px solid #f0c040;' : 'background:#fff;border:1px solid var(--cream2);';
     var maxScore = ranked[0].score || 1;
     var pct = Math.round((r.score / maxScore) * 100);
+    // 管理員看分數拆解
+    var breakdown = '';
+    if (currentRole === 'manager' && r.detail) {
+      var d = r.detail;
+      var parts = [];
+      if (d.basic)    parts.push('基本資料×'+d.basic+'=<b>+'+(d.basic*1)+'</b>');
+      if (d.timeline) parts.push('時間軸×'+d.timeline+'=<b>+'+(d.timeline*1)+'</b>');
+      if (d.pain)     parts.push('痛點×'+d.pain+'=<b>+'+(d.pain*1)+'</b>');
+      if (d.budget)   parts.push('資金×'+d.budget+'=<b>+'+(d.budget*2)+'</b>');
+      if (d.consult)  parts.push('諮詢×'+d.consult+'=<b>+'+(d.consult*3)+'</b>');
+      if (d.viewed)   parts.push('看案子×'+d.viewed+'=<b>+'+(d.viewed*2)+'</b>');
+      if (d.decision) parts.push('決策障礙×'+d.decision+'=<b>+'+(d.decision*1)+'</b>');
+      if (d.referral) parts.push('轉介紹×'+d.referral+'=<b>+'+(d.referral*3)+'</b>');
+      if (d.deal)     parts.push('本週成交×'+d.deal+'=<b>+'+(d.deal*10)+'</b>');
+      if (parts.length) {
+        breakdown = '<div style="font-size:11px;color:var(--text-soft);margin-top:.5rem;background:var(--cream2);border-radius:8px;padding:.4rem .75rem;line-height:1.9">'
+          + '📊 ' + parts.join(' ｜ ') + '</div>';
+      }
+    }
     html += '<div style="' + highlight + 'border-radius:12px;padding:1rem 1.25rem;margin-bottom:.75rem;">' +
       '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">' +
         '<div style="display:flex;align-items:center;gap:.625rem">' +
@@ -1249,7 +1285,8 @@ function renderLeaderboard() {
       '<div style="background:var(--cream2);border-radius:99px;height:8px;overflow:hidden">' +
         '<div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,#1a3c5e,#c9a84c);border-radius:99px;transition:.6s"></div>' +
       '</div>' +
-      '<div style="font-size:12px;color:var(--text-soft);margin-top:.375rem">共 ' + r.count + ' 位客戶</div>' +
+      '<div style="font-size:12px;color:var(--text-soft);margin-top:.375rem">共 ' + r.count + ' 位進行中客戶</div>' +
+      breakdown +
     '</div>';
   });
   container.innerHTML = html;
