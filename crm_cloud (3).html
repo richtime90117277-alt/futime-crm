@@ -806,7 +806,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
         <div class="card-header"><div class="card-icon">🏆</div><h3>積分排行榜</h3></div>
         <div class="card-body">
           <div style="font-size:13px;color:var(--text-soft);margin-bottom:1rem;background:var(--cream2);padding:.75rem 1rem;border-radius:8px;line-height:1.8">
-            📋 <b>積分規則：</b>基本資料完整 +1｜購買時間軸 +1｜痛點分析 +1｜自有資金 +2｜顧問諮詢完成 +3｜看過案子+原因 +2｜決策障礙 +1｜轉介紹≥1 +3｜<b>成交 +10</b>
+            📋 <b>積分規則（僅計算進行中客戶）：</b>基本資料完整 +1｜購買時間軸 +1｜痛點分析 +1｜自有資金 +2｜顧問諮詢完成 +3｜看過案子+原因 +2｜決策障礙 +1｜轉介紹≥1 +3｜<b>本週成交 +10</b>｜已成交客戶不計分
           </div>
           <div id="leaderboardList"></div>
         </div>
@@ -1160,7 +1160,23 @@ function initApp() {
 // ── 從雲端載入客戶 ──
 
 // ── 積分計算 ──
-function calcScore(c) {
+function getWeekRange() {
+  var now = new Date();
+  // 週二開始
+  var day = now.getDay(); // 0=日,1=一,...,6=六
+  var diff = day >= 2 ? day - 2 : day + 5; // 距離本週二的天數
+  var weekStart = new Date(now);
+  weekStart.setDate(now.getDate() - diff);
+  weekStart.setHours(0,0,0,0);
+  var weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekStart.getDate() + 6); // 週一結束
+  weekEnd.setHours(23,59,59,999);
+  return { start: weekStart, end: weekEnd };
+}
+
+function calcScore(c, weekRange) {
+  // 只計算「進行中」的客戶
+  if (!isActive(c)) return 0;
   var score = 0;
   // 基本資料完整（姓名+聯絡+來源）
   if (c.customerName && c.contactInfo && c.leadSource) score += 1;
@@ -1179,8 +1195,11 @@ function calcScore(c) {
   if (c.decisionBlock && c.decisionBlock.toString().trim()) score += 1;
   // 轉介紹 ≥ 1
   if (c.referralCount && parseInt(c.referralCount) >= 1) score += 3;
-  // 成交
-  if (c.contractStatus === '已簽約' || c.contractStatus === '已付款') score += 10;
+  // 成交：只算本週內簽約的
+  if (weekRange && c.contractDate) {
+    var cd = new Date(c.contractDate);
+    if (cd >= weekRange.start && cd <= weekRange.end) score += 10;
+  }
   return score;
 }
 
@@ -1188,13 +1207,16 @@ function renderLeaderboard() {
   var container = document.getElementById('leaderboardList');
   if (!container) return;
 
-  // 統計每個業務的積分
+  var weekRange = getWeekRange();
+
+  // 只統計進行中客戶的積分
   var scoreMap = {};
   var countMap = {};
   customers.forEach(function(c) {
+    if (!isActive(c)) return; // 跳過已成交客戶
     var sp = c.salesPerson || '未指定';
     if (!scoreMap[sp]) { scoreMap[sp] = 0; countMap[sp] = 0; }
-    scoreMap[sp] += calcScore(c);
+    scoreMap[sp] += calcScore(c, weekRange);
     countMap[sp] += 1;
   });
 
