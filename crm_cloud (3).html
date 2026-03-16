@@ -175,6 +175,21 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
   .filter-bar{padding:1rem}
   .detail-row{grid-template-columns:110px 1fr}
 }
+
+/* ── Accordion ── */
+.acc-section { background:#fff; border-radius:var(--radius); box-shadow:0 2px 8px rgba(0,0,0,.07); margin-bottom:1rem; overflow:hidden; }
+.acc-header { display:flex; align-items:center; justify-content:space-between; padding:1rem 1.25rem; cursor:pointer; user-select:none; border-left:4px solid transparent; transition:.2s; }
+.acc-header:hover { background:var(--cream2); }
+.acc-header.required-section { border-left-color:#1a3c5e; }
+.acc-header.open { background:var(--cream2); }
+.acc-title { display:flex; align-items:center; gap:.625rem; font-size:15px; font-weight:700; color:var(--navy); }
+.acc-icon { font-size:18px; }
+.acc-badge { font-size:11px; background:#e3f0fb; color:#1565c0; padding:2px 8px; border-radius:20px; font-weight:600; }
+.acc-badge.required { background:#fbe9e7; color:#bf360c; }
+.acc-arrow { font-size:13px; color:#999; transition:transform .25s; }
+.acc-header.open .acc-arrow { transform:rotate(180deg); }
+.acc-body { display:none; padding:1.25rem; border-top:1px solid var(--cream2); }
+.acc-body.open { display:block; }
 </style>
 </head>
 <body>
@@ -262,7 +277,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
     <button class="active" onclick="showPage('dashboard',this)">📊 儀表板</button>
     <button onclick="showPage('newCustomer',this)">➕ 新增</button>
     <button onclick="showPage('customerList',this)">📋 列表</button>
-    <button onclick="showPage('reports',this)" id="reportsTab">📈 報表</button>
+    <button onclick="showPage('leaderboard',this)" id="reportsTab">🏆 排行榜</button>
     <button onclick="showPage('claude',this)">🤖 Claude</button>
     <button onclick="showPage('staffMgmt',this)" id="staffTab">👥 業務</button>
   </nav>
@@ -270,38 +285,68 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
 
     <!-- DASHBOARD -->
     <div id="dashboard" class="page active">
-      <div class="stats-grid">
+
+      <!-- 週報標題 -->
+      <div style="background:linear-gradient(135deg,var(--navy),#1a3060);border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div style="font-size:11px;letter-spacing:.15em;color:var(--gold);font-weight:700;margin-bottom:4px">WEEKLY MANAGEMENT REPORT</div>
+          <div style="font-size:16px;font-weight:700;color:#fff" id="dashWeekLabel">本週管理儀表板</div>
+        </div>
+        <div style="text-align:right;font-size:12px;color:rgba(255,255,255,.5)" id="dashDateLabel"></div>
+      </div>
+
+      <!-- 核心四格 -->
+      <div class="stats-grid" style="margin-bottom:1rem">
         <div class="stat-card"><div class="stat-value" id="totalCustomers">—</div><div class="stat-label">跟進中客戶</div></div>
         <div class="stat-card"><div class="stat-value" id="monthlyNew">—</div><div class="stat-label">本月新增</div></div>
         <div class="stat-card"><div class="stat-value" id="nearClosing">—</div><div class="stat-label">即將成交</div></div>
-        <div class="stat-card"><div class="stat-value" id="monthlyClosing">—</div><div class="stat-label">本月真正成交</div></div>
+        <div class="stat-card"><div class="stat-value" id="monthlyClosing">—</div><div class="stat-label">本月成交</div></div>
       </div>
-      <div class="card">
-        <div class="card-header"><div class="card-icon">🎯</div><h3>成交八部曲 — 客戶階段分布（進行中）</h3></div>
+
+      <!-- 業務績效排行 -->
+      <div class="card" style="margin-bottom:1rem">
+        <div class="card-header"><div class="card-icon">👤</div><h3>業務績效一覽</h3></div>
+        <div class="card-body" id="salesPerformanceGrid"></div>
+      </div>
+
+      <!-- 來源轉換率 -->
+      <div class="card" style="margin-bottom:1rem">
+        <div class="card-header"><div class="card-icon">📊</div><h3>名單來源 × 成交轉換率</h3></div>
+        <div class="card-body" id="sourceConversionGrid"></div>
+      </div>
+
+      <!-- 八部曲瓶頸 -->
+      <div class="card" style="margin-bottom:1rem">
+        <div class="card-header"><div class="card-icon">🎯</div><h3>八部曲客戶分布</h3></div>
         <div class="card-body">
           <div id="bottleneckHint" style="background:linear-gradient(135deg,#fff3cd,#fff8e1);border:1.5px solid #ffc107;border-radius:8px;padding:.75rem 1rem;font-size:13px;font-weight:700;color:#856404;margin-bottom:1rem"></div>
           <div class="stats-grid" id="stagesGrid"></div>
         </div>
       </div>
-      <div class="card">
-        <div class="card-header"><div class="card-icon">🏷️</div><h3>名單來源分析</h3></div>
-        <div class="card-body">
-          <div class="stats-grid" style="grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
-            <div class="stat-card" style="border-left:4px solid var(--navy)">
-              <div class="stat-value" id="companyLeadCount">—</div>
-              <div class="stat-label">🏢 公司名單</div>
-            </div>
-            <div class="stat-card" style="border-left:4px solid var(--gold)">
-              <div class="stat-value" id="selfLeadCount">—</div>
-              <div class="stat-label">👤 業務自開發</div>
-            </div>
-          </div>
-          <div id="leadSourceBreakdown" style="font-size:13px;color:var(--text-soft);line-height:2"></div>
-        </div>
+
+      <!-- 購買時間軸分布 -->
+      <div class="card" style="margin-bottom:1rem">
+        <div class="card-header"><div class="card-icon">⏳</div><h3>客戶購買時間軸分布</h3></div>
+        <div class="card-body" id="timelineGrid"></div>
       </div>
+
+      <!-- 研討會效益 -->
+      <div class="card" style="margin-bottom:1rem">
+        <div class="card-header"><div class="card-icon">🎓</div><h3>研討會效益分析</h3></div>
+        <div class="card-body" id="seminarGrid"></div>
+      </div>
+
+      <!-- 最新動態 -->
       <div class="card" id="recentCard">
         <div class="card-header"><div class="card-icon">🕐</div><h3>最新客戶動態</h3></div>
         <div id="recentList"><div class="empty-state"><div class="empty-icon">📋</div>載入中...</div></div>
+      </div>
+
+      <!-- 隱藏舊元素相容 -->
+      <div style="display:none">
+        <span id="companyLeadCount"></span>
+        <span id="selfLeadCount"></span>
+        <span id="leadSourceBreakdown"></span>
       </div>
     </div>
 
@@ -313,9 +358,14 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
           <label>👨‍💼 負責業務 *</label>
           <select id="salesPerson" required></select>
         </div>
-        <div class="card">
-          <div class="card-header"><div class="card-icon">1</div><h3>一部曲：客戶開發</h3></div>
-          <div class="card-body">
+
+        <!-- ▌一部曲：客戶開發（預設展開）-->
+        <div class="acc-section">
+          <div class="acc-header required-section open" id="acc-h-s1" onclick="toggleAcc('s1')">
+            <div class="acc-title"><span class="acc-icon">1️⃣</span>一部曲：客戶開發 <span class="acc-badge required">必填</span></div>
+            <span class="acc-arrow">▼</span>
+          </div>
+          <div class="acc-body open" id="acc-b-s1">
             <div class="form-grid two">
               <div class="form-group"><label>客戶姓名 *</label><input type="text" id="customerName" placeholder="請輸入客戶姓名" required></div>
               <div class="form-group"><label>聯絡方式 *</label><input type="text" id="contactInfo" placeholder="電話 / Line ID / 其他" required></div>
@@ -334,12 +384,10 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
             <div class="form-grid two">
               <div class="form-group">
                 <label>名單來源</label>
-                <select id="leadSource">
-                  <option value="">請先選名單類型</option>
-                </select>
+                <select id="leadSource"><option value="">請先選名單類型</option></select>
               </div>
+              <div class="form-group"><label>來源細節</label><input type="text" id="leadSourceDetail" placeholder="例：爬山、FB/IG、咖啡展"></div>
             </div>
-            <div class="form-group"><label>來源細節</label><input type="text" id="leadSourceDetail" placeholder="例：爬山、FB/IG、咖啡展、某展場活動"></div>
             <div class="form-grid two">
               <div class="form-group"><label>創建日期 *</label><input type="date" id="creationDate" required></div>
               <div class="form-group">
@@ -349,6 +397,26 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
                   <option value="是">✅ 是</option>
                   <option value="否">❌ 否</option>
                   <option value="已邀請未參加">📩 已邀請未參加</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group">
+                <label>⏳ 購買時間軸</label>
+                <select id="buyingTimeline">
+                  <option value="">請選擇</option>
+                  <option>1個月內</option>
+                  <option>3個月內</option>
+                  <option>半年內</option>
+                  <option>1年以上</option>
+                  <option>純詢問觀望</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>🏷️ 客戶狀態</label>
+                <select id="customerActive">
+                  <option value="進行中">🟢 進行中（跟進中）</option>
+                  <option value="已成交">✅ 已成交（歷史客戶）</option>
                 </select>
               </div>
             </div>
@@ -392,9 +460,45 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
             </div>
           </div>
         </div>
-        <div class="card">
-          <div class="card-header"><div class="card-icon">2</div><h3>二部曲：初步接觸（建立信任）</h3></div>
-          <div class="card-body">
+
+        <!-- ▌二部曲：初步接觸（預設收合）-->
+        <div class="acc-section">
+          <div class="acc-header" id="acc-h-s2" onclick="toggleAcc('s2')">
+            <div class="acc-title"><span class="acc-icon">2️⃣</span>二部曲：初步接觸（建立信任）</div>
+            <span class="acc-arrow">▼</span>
+          </div>
+          <div class="acc-body" id="acc-b-s2">
+            <div class="form-grid two">
+              <div class="form-group">
+                <label>家庭成員</label>
+                <input type="text" id="familyMembers" placeholder="例：2大人 / 1小孩(8歲) / 長輩">
+              </div>
+              <div class="form-group">
+                <label>KEY MAN（決策者）</label>
+                <input type="text" id="keyMan" placeholder="例：本人、配偶、父母">
+              </div>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group">
+                <label>居住狀況</label>
+                <select id="livingStatus">
+                  <option value="">請選擇</option>
+                  <option>自住（已有房）</option>
+                  <option>與家人同住</option>
+                  <option>租屋中</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>家人購屋支持度</label>
+                <select id="familySupport">
+                  <option value="">請選擇</option>
+                  <option>✅ 完全支持</option>
+                  <option>🟡 部分支持</option>
+                  <option>👀 觀望</option>
+                  <option>❌ 反對</option>
+                </select>
+              </div>
+            </div>
             <div class="form-group">
               <label>信任檢核（已達成項目）</label>
               <div class="ms-wrap" id="ms_trustCheck">
@@ -413,11 +517,11 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
               <div class="ms-wrap" id="ms_proCheck">
                 <div class="ms-display" onclick="toggleMs('ms_proCheck')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div>
                 <div class="ms-dropdown">
-                  <label class="ms-opt"><input type="checkbox" value="有針對市場產品貸款提出數據與案例">是否有針對市場、產品或貸款方案，提出客觀數據與案例？</label>
-                  <label class="ms-opt"><input type="checkbox" value="客戶回應原來如此等學習性語句">客戶是否回應「原來如此」、「我不知道這個」等學習性語句？</label>
-                  <label class="ms-opt"><input type="checkbox" value="客戶聽完後能重複或理解重點">客戶聽完後是否能重複或理解重點？</label>
-                  <label class="ms-opt"><input type="checkbox" value="提出客戶沒想到但很有幫助的建議">是否有提出「客戶沒有想到但很有幫助」的提醒或建議？</label>
-                  <label class="ms-opt"><input type="checkbox" value="客戶產生更高的依賴感">客戶是否因此產生更高的依賴感？</label>
+                  <label class="ms-opt"><input type="checkbox" value="有針對市場產品貸款提出數據與案例">有針對市場、產品或貸款方案，提出客觀數據與案例</label>
+                  <label class="ms-opt"><input type="checkbox" value="客戶回應原來如此等學習性語句">客戶回應「原來如此」、「我不知道這個」等學習性語句</label>
+                  <label class="ms-opt"><input type="checkbox" value="客戶聽完後能重複或理解重點">客戶聽完後能重複或理解重點</label>
+                  <label class="ms-opt"><input type="checkbox" value="提出客戶沒想到但很有幫助的建議">提出「客戶沒有想到但很有幫助」的提醒或建議</label>
+                  <label class="ms-opt"><input type="checkbox" value="客戶產生更高的依賴感">客戶因此產生更高的依賴感</label>
                 </div>
               </div>
             </div>
@@ -435,9 +539,32 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
             <input type="hidden" id="acquisitionMethod" value="">
           </div>
         </div>
-        <div class="card">
-          <div class="card-header"><div class="card-icon">3</div><h3>三部曲：需求分析（顧問診斷）</h3></div>
-          <div class="card-body">
+
+        <!-- ▌三部曲：需求分析（預設收合）-->
+        <div class="acc-section">
+          <div class="acc-header" id="acc-h-s3" onclick="toggleAcc('s3')">
+            <div class="acc-title"><span class="acc-icon">3️⃣</span>三部曲：需求分析（顧問診斷）</div>
+            <span class="acc-arrow">▼</span>
+          </div>
+          <div class="acc-body" id="acc-b-s3">
+            <div class="form-grid two">
+              <div class="form-group">
+                <label>購屋主要目的</label>
+                <select id="purchasePurpose">
+                  <option value="">請選擇</option>
+                  <option>🏠 自住</option>
+                  <option>💰 投資</option>
+                  <option>🏠💰 自住兼投資</option>
+                  <option>📦 資產配置</option>
+                </select>
+              </div>
+              <div class="form-group"><label>自有資金（萬元）＆來源</label><input type="text" id="budget" placeholder="例：300萬，來自存款／父母贊助／賣股票"></div>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group"><label>每月可儲蓄（萬元）</label><input type="text" id="monthlyPayment" placeholder="例：3萬"></div>
+              <input type="hidden" id="blueprintCompletion" value="">
+            </div>
+            <input type="hidden" id="customerNeeds" value="">
             <div class="form-group">
               <label>痛點分析（可多選）</label>
               <div class="ms-wrap" id="ms_painPoint">
@@ -459,14 +586,11 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
                   <div class="ms-group">🟢 有老屋族群</div>
                   <label class="ms-opt"><input type="checkbox" value="有老屋-上下爬樓梯不便">上下爬樓梯不便</label>
                   <label class="ms-opt"><input type="checkbox" value="有老屋-結構與居住安全性差">結構與居住安全性差</label>
-                  <label class="ms-opt"><input type="checkbox" value="有老屋-垃圾與包裝處理不便">垃圾與包裝處理不便</label>
                   <div class="ms-group">🟠 租屋族群</div>
                   <label class="ms-opt"><input type="checkbox" value="租屋族-房東問題臨時漲租要求搬遷">房東問題（臨時漲租、要求搬遷）</label>
                   <label class="ms-opt"><input type="checkbox" value="租屋族-年齡越大租屋越難">年齡越大租屋越難</label>
                   <label class="ms-opt"><input type="checkbox" value="租屋族-房價上漲與自己無關">房價上漲與自己無關</label>
                   <div class="ms-group">📈 股票族群</div>
-                  <label class="ms-opt"><input type="checkbox" value="股票族-投資績效穩定性">投資績效穩定性</label>
-                  <label class="ms-opt"><input type="checkbox" value="股票族-投資心理與生活平衡">投資心理與生活平衡</label>
                   <label class="ms-opt"><input type="checkbox" value="股票族-資產缺乏多元配置">資產缺乏多元配置</label>
                   <div class="ms-group">🏦 定存族群</div>
                   <label class="ms-opt"><input type="checkbox" value="定存族-通膨侵蝕購買力">通膨侵蝕購買力</label>
@@ -474,21 +598,32 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
               </div>
             </div>
             <div class="form-group"><label>痛點補充說明</label><textarea id="painPoints" placeholder="其他痛點或詳細描述..."></textarea></div>
-            <div class="form-group"><label>人生藍圖規劃表完成度 (%)</label><input type="number" id="blueprintCompletion" min="0" max="100" placeholder="0–100"></div>
-            <div class="form-group"><label>客戶需求</label><textarea id="customerNeeds" placeholder="預算、坪數、地點、格局等詳細需求"></textarea></div>
+            <div class="form-group"><label>看過哪些案子？（區域／格局／價格）</label><textarea id="viewedProperties" placeholder="例：中和XX建案，3房2廳，1500萬&#10;板橋YY案，2房，980萬"></textarea></div>
+            <div class="form-group"><label>為什麼沒有買？</label><textarea id="whyNotBought" placeholder="例：價格太高、格局不喜歡、家人反對、時機未到"></textarea></div>
           </div>
         </div>
-        <div class="card">
-          <div class="card-header"><div class="card-icon">4</div><h3>四部曲：產品匹配（專業推薦）</h3></div>
-          <div class="card-body">
+
+        <!-- ▌四部曲：產品匹配（預設收合）-->
+        <div class="acc-section">
+          <div class="acc-header" id="acc-h-s4" onclick="toggleAcc('s4')">
+            <div class="acc-title"><span class="acc-icon">4️⃣</span>四部曲：產品匹配（專業推薦）</div>
+            <span class="acc-arrow">▼</span>
+          </div>
+          <div class="acc-body" id="acc-b-s4">
             <div class="form-group"><label>推薦物件</label><textarea id="recommendedProperty" placeholder="推薦的房屋物件資訊、特色、優勢"></textarea></div>
-            <div class="form-group"><label>帶看狀態</label><select id="viewingStatus"><option value="">尚未帶看</option><option>已預約</option><option>已帶看</option><option>已完整解說</option></select></div>
-            <div class="form-group"><label>產品優勢說明</label><textarea id="productAdvantages" placeholder="為什麼這個物件適合客戶？"></textarea></div>
+            <div class="form-group"><label>顧問諮詢狀態</label><select id="viewingStatus"><option value="">尚未預約</option><option>已預約諮詢</option><option>已完成諮詢</option></select></div>
+            <input type="hidden" id="productAdvantages" value="">
+            <div class="form-group"><label>建議配對物件</label><textarea id="matchedProperty" placeholder="例：推薦中和XX建案，符合預算與格局需求"></textarea></div>
           </div>
         </div>
-        <div class="card">
-          <div class="card-header"><div class="card-icon">5</div><h3>五部曲：異議處理（顧問解答）</h3></div>
-          <div class="card-body">
+
+        <!-- ▌五部曲：異議處理（預設收合）-->
+        <div class="acc-section">
+          <div class="acc-header" id="acc-h-s5" onclick="toggleAcc('s5')">
+            <div class="acc-title"><span class="acc-icon">5️⃣</span>五部曲：異議處理（顧問解答）</div>
+            <span class="acc-arrow">▼</span>
+          </div>
+          <div class="acc-body" id="acc-b-s5">
             <div class="form-group">
               <label>🚧 決策障礙（卡點）</label>
               <div class="ms-wrap" id="ms_decisionBlock">
@@ -509,115 +644,83 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
             <div class="form-group"><label>顧問解決方案</label><textarea id="solutions" placeholder="提供的解決方案和數據支持"></textarea></div>
           </div>
         </div>
-        <div class="card">
-          <div class="card-header"><div class="card-icon">6</div><h3>六部曲：成交締結（下定與簽約）</h3></div>
-          <div class="card-body">
+
+        <!-- ▌六部曲：成交締結（預設收合）-->
+        <div class="acc-section">
+          <div class="acc-header" id="acc-h-s6" onclick="toggleAcc('s6')">
+            <div class="acc-title"><span class="acc-icon">6️⃣</span>六部曲：成交締結（下定與簽約）</div>
+            <span class="acc-arrow">▼</span>
+          </div>
+          <div class="acc-body" id="acc-b-s6">
             <div class="form-grid two">
               <div class="form-group"><label>簽約狀態</label><select id="contractStatus"><option>未簽約</option><option>已下定</option><option>已簽約</option><option>已付款</option></select></div>
-              <div class="form-group">
-                <label>🏷️ 客戶狀態</label>
-                <select id="customerActive">
-                  <option value="進行中">🟢 進行中（跟進中）</option>
-                  <option value="已成交">✅ 已成交（歷史客戶）</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-grid two">
               <div class="form-group"><label>成交金額（萬元）</label><input type="text" id="dealAmount" placeholder="例：1500"></div>
-              <div class="form-group"><label>簽約日期</label><input type="date" id="contractDate"></div>
             </div>
+            <div class="form-group"><label>簽約日期</label><input type="date" id="contractDate"></div>
           </div>
         </div>
-        <div class="card">
-          <div class="card-header"><div class="card-icon">7</div><h3>七部曲：售後服務（客戶受到顧問價值）</h3></div>
-          <div class="card-body">
+
+        <!-- ▌七部曲：售後服務（預設收合）-->
+        <div class="acc-section">
+          <div class="acc-header" id="acc-h-s7" onclick="toggleAcc('s7')">
+            <div class="acc-title"><span class="acc-icon">7️⃣</span>七部曲：售後服務（客戶受到顧問價值）</div>
+            <span class="acc-arrow">▼</span>
+          </div>
+          <div class="acc-body" id="acc-b-s7">
             <div class="form-grid two">
-              <div class="form-group">
-                <label>貸款協助（銀行+專員）</label>
-                <input type="text" id="loanHelp" placeholder="例：台新、又庭、一籠">
-              </div>
-              <div class="form-group">
-                <label>租賃代管服務業務</label>
-                <input type="text" id="rentalMgmt" placeholder="例：富邦方字">
-              </div>
-            </div>
-            <div class="form-grid two">
-              <div class="form-group">
-                <label>裝潢建議</label>
-                <select id="decorAdvice">
-                  <option value="">請選擇</option>
-                  <option>是</option><option>否</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>定期資產檢視</label>
-                <select id="assetReview">
-                  <option value="">請選擇</option>
-                  <option>是</option><option>否</option>
-                </select>
-              </div>
+              <div class="form-group"><label>貸款協助</label><input type="text" id="loanHelp" placeholder="例：台新、又庭、一籠"></div>
+              <div class="form-group"><label>租賃代管</label><input type="text" id="rentalMgmt" placeholder="例：富邦方字"></div>
             </div>
             <div class="form-grid two">
-              <div class="form-group">
-                <label>滿意度評分 (1–10)</label>
-                <input type="number" id="satisfactionScore" min="1" max="10" placeholder="1–10">
-              </div>
-              <div class="form-group">
-                <label>客戶滿意度調查表分數</label>
-                <input type="number" id="satisfactionSurvey" min="0" max="100" placeholder="分數">
-              </div>
+              <div class="form-group"><label>裝潢建議</label><select id="decorAdvice"><option value="">請選擇</option><option>是</option><option>否</option></select></div>
+              <div class="form-group"><label>定期資產檢視</label><select id="assetReview"><option value="">請選擇</option><option>是</option><option>否</option></select></div>
             </div>
-            <div class="form-group">
-              <label>售後服務記錄</label>
-              <textarea id="afterSalesService" placeholder="提供的售後服務內容"></textarea>
+            <div class="form-grid two">
+              <div class="form-group"><label>滿意度評分 (1–10)</label><input type="number" id="satisfactionScore" min="1" max="10" placeholder="1–10"></div>
+              <div class="form-group"><label>滿意度調查表分數</label><input type="number" id="satisfactionSurvey" min="0" max="100" placeholder="分數"></div>
             </div>
+            <div class="form-group"><label>售後服務記錄</label><textarea id="afterSalesService" placeholder="提供的售後服務內容"></textarea></div>
           </div>
         </div>
-        <div class="card">
-          <div class="card-header"><div class="card-icon">8</div><h3>八部曲：轉介紹裂變（變式開發）</h3></div>
-          <div class="card-body">
-            <div class="form-group">
-              <label>邀請朋友參加活動（活動名稱+日期+人名）</label>
-              <textarea id="referralEvent" placeholder="例：9/20 研討會、山友大嫂、郵局兒子已婚大四女兒"></textarea>
-            </div>
+
+        <!-- ▌八部曲：轉介紹裂變（預設收合）-->
+        <div class="acc-section">
+          <div class="acc-header" id="acc-h-s8" onclick="toggleAcc('s8')">
+            <div class="acc-title"><span class="acc-icon">8️⃣</span>八部曲：轉介紹裂變（變式開發）</div>
+            <span class="acc-arrow">▼</span>
+          </div>
+          <div class="acc-body" id="acc-b-s8">
+            <div class="form-group"><label>邀請朋友參加活動</label><textarea id="referralEvent" placeholder="例：9/20 研討會、山友大嫂、郵局兒子已婚大四女兒"></textarea></div>
             <div class="form-grid two">
+              <div class="form-group"><label>保持聯繫</label><select id="keepInTouch"><option value="">請選擇</option><option>有</option><option>否</option></select></div>
+              <div class="form-group"><label>轉介紹獎勵</label><input type="text" id="referralReward" placeholder="例：送中秋禮盒、請客吃飯"></div>
+            </div>
+            <div class="form-group"><label>轉介紹名單</label><textarea id="referralList" placeholder="客戶介紹的親友名單（姓名、關係、聯絡方式）"></textarea></div>
+            <div class="form-grid two">
+              <div class="form-group"><label>轉介紹數量</label><input type="number" id="referralCount" min="0" placeholder="人數"></div>
               <div class="form-group">
-                <label>保持聯繫</label>
-                <select id="keepInTouch">
-                  <option value="">請選擇</option>
-                  <option>有</option><option>否</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>轉介紹獎勵</label>
-                <input type="text" id="referralReward" placeholder="例：送中秋禮盒、請客吃飯、介紹獎金">
-              </div>
-            </div>
-            <div class="form-group">
-              <label>轉介紹名單</label>
-              <textarea id="referralList" placeholder="客戶介紹的親友名單（姓名、關係、聯絡方式）"></textarea>
-            </div>
-            <div class="form-group">
-              <label>轉介紹數量</label>
-              <input type="number" id="referralCount" min="0" placeholder="人數">
-            </div>
-            <div class="form-group">
-              <label>轉介紹效果</label>
-              <div class="ms-wrap" id="ms_referralEffect">
-                <div class="ms-display" onclick="toggleMs('ms_referralEffect')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div>
-                <div class="ms-dropdown">
-                  <label class="ms-opt"><input type="checkbox" value="客戶已聯繫">客戶已聯繫</label>
-                  <label class="ms-opt"><input type="checkbox" value="已形成">已形成</label>
-                  <label class="ms-opt"><input type="checkbox" value="已購買">已購買</label>
-                  <label class="ms-opt"><input type="checkbox" value="持續追蹤中">持續追蹤中</label>
+                <label>轉介紹效果</label>
+                <div class="ms-wrap" id="ms_referralEffect">
+                  <div class="ms-display" onclick="toggleMs('ms_referralEffect')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div>
+                  <div class="ms-dropdown">
+                    <label class="ms-opt"><input type="checkbox" value="客戶已聯繫">客戶已聯繫</label>
+                    <label class="ms-opt"><input type="checkbox" value="已形成">已形成</label>
+                    <label class="ms-opt"><input type="checkbox" value="已購買">已購買</label>
+                    <label class="ms-opt"><input type="checkbox" value="持續追蹤中">持續追蹤中</label>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="card">
-          <div class="card-header"><div class="card-icon">📝</div><h3>備註欄</h3></div>
-          <div class="card-body">
+
+        <!-- ▌備註欄（預設收合）-->
+        <div class="acc-section">
+          <div class="acc-header" id="acc-h-notes" onclick="toggleAcc('notes')">
+            <div class="acc-title"><span class="acc-icon">📝</span>備註與跟進紀錄</div>
+            <span class="acc-arrow">▼</span>
+          </div>
+          <div class="acc-body" id="acc-b-notes">
             <div class="form-group">
               <label>🔁 上次跟進摘要</label>
               <div class="ms-wrap" id="ms_lastFollowup">
@@ -645,9 +748,10 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
                 </div>
               </div>
             </div>
-            <div class="form-group"><textarea id="notes" placeholder="其他補充說明..." style="min-height:100px"></textarea></div>
+            <div class="form-group"><textarea id="notes" placeholder="其他補充說明..." style="min-height:80px"></textarea></div>
           </div>
         </div>
+
         <div class="button-row">
           <button type="submit" class="btn btn-primary" id="saveBtn">☁️ 儲存並同步</button>
           <button type="button" class="btn btn-secondary" onclick="clearForm()">🔄 清除</button>
@@ -695,6 +799,20 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
     </div>
 
     <!-- STAFF MANAGEMENT -->
+
+    <!-- LEADERBOARD PAGE -->
+    <div id="leaderboard" class="page">
+      <div class="card">
+        <div class="card-header"><div class="card-icon">🏆</div><h3>積分排行榜</h3></div>
+        <div class="card-body">
+          <div style="font-size:13px;color:var(--text-soft);margin-bottom:1rem;background:var(--cream2);padding:.75rem 1rem;border-radius:8px;line-height:1.8">
+            📋 <b>積分規則：</b>基本資料完整 +1｜購買時間軸 +1｜痛點分析 +1｜自有資金 +2｜顧問諮詢完成 +3｜看過案子+原因 +2｜決策障礙 +1｜轉介紹≥1 +3｜<b>成交 +10</b>
+          </div>
+          <div id="leaderboardList"></div>
+        </div>
+      </div>
+    </div>
+
     <div id="staffMgmt" class="page">
       <div class="card">
         <div class="card-header"><div class="card-icon">👥</div><h3>業務名單管理</h3></div>
@@ -1040,6 +1158,82 @@ function initApp() {
 }
 
 // ── 從雲端載入客戶 ──
+
+// ── 積分計算 ──
+function calcScore(c) {
+  var score = 0;
+  // 基本資料完整（姓名+聯絡+來源）
+  if (c.customerName && c.contactInfo && c.leadSource) score += 1;
+  // 購買時間軸
+  if (c.buyingTimeline) score += 1;
+  // 痛點分析（至少一項）
+  if (c.painPoints && c.painPoints.toString().trim()) score += 1;
+  // 自有資金
+  if (c.budget && c.budget.toString().trim()) score += 2;
+  // 顧問諮詢完成
+  if (c.viewingStatus === '已完成諮詢') score += 3;
+  // 看過案子 + 為什麼沒買
+  if (c.viewedProperties && c.viewedProperties.toString().trim() &&
+      c.whyNotBought && c.whyNotBought.toString().trim()) score += 2;
+  // 決策障礙
+  if (c.decisionBlock && c.decisionBlock.toString().trim()) score += 1;
+  // 轉介紹 ≥ 1
+  if (c.referralCount && parseInt(c.referralCount) >= 1) score += 3;
+  // 成交
+  if (c.contractStatus === '已簽約' || c.contractStatus === '已付款') score += 10;
+  return score;
+}
+
+function renderLeaderboard() {
+  var container = document.getElementById('leaderboardList');
+  if (!container) return;
+
+  // 統計每個業務的積分
+  var scoreMap = {};
+  var countMap = {};
+  customers.forEach(function(c) {
+    var sp = c.salesPerson || '未指定';
+    if (!scoreMap[sp]) { scoreMap[sp] = 0; countMap[sp] = 0; }
+    scoreMap[sp] += calcScore(c);
+    countMap[sp] += 1;
+  });
+
+  // 排序
+  var ranked = Object.keys(scoreMap).map(function(sp) {
+    return { name: sp, score: scoreMap[sp], count: countMap[sp] };
+  }).sort(function(a, b) { return b.score - a.score; });
+
+  if (ranked.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">🏆</div><p>尚無資料</p></div>';
+    return;
+  }
+
+  var medals = ['🥇','🥈','🥉'];
+  var html = '';
+  ranked.forEach(function(r, i) {
+    var medal = medals[i] || ('　' + (i+1) + '.');
+    var isMe = (currentRole === 'sales' && r.name === currentUser);
+    var highlight = isMe ? 'background:linear-gradient(135deg,#fffbea,#fff3cd);border:2px solid #f0c040;' : 'background:#fff;border:1px solid var(--cream2);';
+    var maxScore = ranked[0].score || 1;
+    var pct = Math.round((r.score / maxScore) * 100);
+    html += '<div style="' + highlight + 'border-radius:12px;padding:1rem 1.25rem;margin-bottom:.75rem;">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">' +
+        '<div style="display:flex;align-items:center;gap:.625rem">' +
+          '<span style="font-size:22px">' + medal + '</span>' +
+          '<span style="font-weight:700;font-size:15px;color:var(--navy)">' + r.name + (isMe ? ' 　<span style="font-size:11px;background:#1a3c5e;color:#fff;padding:1px 7px;border-radius:10px">我</span>' : '') + '</span>' +
+        '</div>' +
+        '<span style="font-size:20px;font-weight:800;color:var(--gold)">' + r.score + '<span style="font-size:12px;font-weight:500;color:var(--text-soft)"> 分</span></span>' +
+      '</div>' +
+      '<div style="background:var(--cream2);border-radius:99px;height:8px;overflow:hidden">' +
+        '<div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,#1a3c5e,#c9a84c);border-radius:99px;transition:.6s"></div>' +
+      '</div>' +
+      '<div style="font-size:12px;color:var(--text-soft);margin-top:.375rem">共 ' + r.count + ' 位客戶</div>' +
+    '</div>';
+  });
+  container.innerHTML = html;
+}
+
+
 function fetchCustomers() {
   callAPI({ action: 'getAll', role: currentRole, user: currentUser }, function(res) {
     if (res.success) {
@@ -1048,6 +1242,7 @@ function fetchCustomers() {
       renderCustomers();
       renderReports();
       renderRecent();
+      renderLeaderboard();
     } else {
       showToast('⚠️ 載入失敗：'+res.error);
     }
@@ -1091,63 +1286,162 @@ function stageOf(c) {
 
 // ── 儀表板 ──
 function renderDashboard() {
+  // 日期標籤
   var now = new Date();
-  var thisMonth = now.getMonth();
-  var thisYear = now.getFullYear();
+  var weekStart = new Date(now); weekStart.setDate(now.getDate() - now.getDay() + 1);
+  var weekEnd = new Date(weekStart); weekEnd.setDate(weekStart.getDate() + 6);
+  var fmt = function(d){ return (d.getMonth()+1)+'/'+(d.getDate()); };
+  var el = document.getElementById('dashDateLabel');
+  if (el) el.innerHTML = fmt(weekStart)+' — '+fmt(weekEnd)+'<br>'+now.getFullYear()+'年'+(now.getMonth()+1)+'月';
 
-  // 進行中客戶（未成交）
+  var thisMonth = now.getMonth(), thisYear = now.getFullYear();
   var active = customers.filter(isActive);
-  // 已成交客戶
   var closed = customers.filter(function(c){ return !isActive(c); });
 
-  // 1. 跟進中客戶數
+  // 核心四格
   document.getElementById('totalCustomers').textContent = active.length;
-
-  // 2. 本月新增（進行中）
   document.getElementById('monthlyNew').textContent = active.filter(function(c){
     var d = new Date(c.creationDate);
     return d.getMonth()===thisMonth && d.getFullYear()===thisYear;
   }).length;
-
-  // 3. 即將成交：進行中 且 在五或六部曲
   document.getElementById('nearClosing').textContent = active.filter(function(c){
     var s = stageOf(c); return s===5||s===6;
   }).length;
-
-  // 4. 本月真正成交：有簽約日期且在本月
   document.getElementById('monthlyClosing').textContent = closed.filter(function(c){
     if (!c.contractDate) return false;
     var d = new Date(c.contractDate);
     return d.getMonth()===thisMonth && d.getFullYear()===thisYear;
   }).length;
 
-  // 八部曲分布（只統計進行中）
+  // ── 業務績效一覽 ──
+  var salesMap = {};
+  customers.forEach(function(c){
+    var sp = c.salesPerson || '未指定';
+    if (!salesMap[sp]) salesMap[sp] = { total:0, active:0, closed:0, referral:0 };
+    salesMap[sp].total++;
+    if (isActive(c)) salesMap[sp].active++;
+    else salesMap[sp].closed++;
+    if (parseInt(c.referralCount||0) > 0) salesMap[sp].referral += parseInt(c.referralCount);
+  });
+  var salesList = Object.keys(salesMap).map(function(sp){
+    return { name:sp, data:salesMap[sp] };
+  }).sort(function(a,b){ return b.data.closed - a.data.closed || b.data.total - a.data.total; });
+
+  var spHtml = '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13px">';
+  spHtml += '<tr style="background:var(--navy);color:#fff">';
+  ['業務', '總客戶', '跟進中', '已成交', '轉介紹數', '成交率'].forEach(function(h){
+    spHtml += '<th style="padding:.5rem .75rem;text-align:center;font-weight:700;font-size:11px">'+h+'</th>';
+  });
+  spHtml += '</tr>';
+  salesList.forEach(function(sp, idx){
+    var d = sp.data;
+    var rate = d.total > 0 ? Math.round(d.closed/d.total*100) : 0;
+    var bg = idx % 2 === 0 ? '#fff' : 'var(--cream2)';
+    var isMe = currentRole === 'sales' && sp.name === currentUser;
+    if (isMe) bg = '#fffbea';
+    spHtml += '<tr style="background:'+bg+(isMe?';font-weight:700':'')+'">';
+    spHtml += '<td style="padding:.5rem .75rem;font-weight:700;color:var(--navy)">'+sp.name+(isMe?' 👤':'')+( d.closed >= 5 ? ' ⭐':'')+'</td>';
+    spHtml += '<td style="padding:.5rem .75rem;text-align:center">'+d.total+'</td>';
+    spHtml += '<td style="padding:.5rem .75rem;text-align:center;color:#1565c0">'+d.active+'</td>';
+    spHtml += '<td style="padding:.5rem .75rem;text-align:center;color:#2e7d32;font-weight:700">'+d.closed+'</td>';
+    spHtml += '<td style="padding:.5rem .75rem;text-align:center;color:var(--gold)">'+d.referral+'</td>';
+    var rateColor = rate >= 20 ? '#2e7d32' : rate >= 10 ? '#e65100' : '#c62828';
+    spHtml += '<td style="padding:.5rem .75rem;text-align:center;font-weight:700;color:'+rateColor+'">'+rate+'%</td>';
+    spHtml += '</tr>';
+  });
+  spHtml += '</table></div>';
+  var spEl = document.getElementById('salesPerformanceGrid');
+  if (spEl) spEl.innerHTML = spHtml;
+
+  // ── 名單來源轉換率 ──
+  var srcMap = {};
+  customers.forEach(function(c){
+    var src = c.leadSource || '未填寫';
+    if (!srcMap[src]) srcMap[src] = { total:0, closed:0 };
+    srcMap[src].total++;
+    if (!isActive(c)) srcMap[src].closed++;
+  });
+  var srcList = Object.keys(srcMap).sort(function(a,b){
+    return srcMap[b].closed - srcMap[a].closed;
+  });
+  var srcHtml = '<div style="display:flex;flex-direction:column;gap:.5rem">';
+  srcList.forEach(function(src){
+    var d = srcMap[src];
+    var rate = d.total > 0 ? Math.round(d.closed/d.total*100) : 0;
+    var barW = Math.min(rate * 2, 100);
+    srcHtml += '<div style="display:flex;align-items:center;gap:.75rem">';
+    srcHtml += '<div style="width:80px;font-size:12px;color:var(--text-soft);flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+src+'">'+src+'</div>';
+    srcHtml += '<div style="flex:1;background:var(--cream2);border-radius:99px;height:8px;overflow:hidden">';
+    srcHtml += '<div style="height:100%;width:'+barW+'%;background:linear-gradient(90deg,var(--navy),var(--gold));border-radius:99px;transition:.6s"></div>';
+    srcHtml += '</div>';
+    srcHtml += '<div style="font-size:12px;font-weight:700;color:var(--navy);width:60px;text-align:right">'+d.closed+'/'+d.total+' <span style="color:var(--gold)">'+rate+'%</span></div>';
+    srcHtml += '</div>';
+  });
+  srcHtml += '</div>';
+  var srcEl = document.getElementById('sourceConversionGrid');
+  if (srcEl) srcEl.innerHTML = srcList.length ? srcHtml : '<div style="color:var(--text-soft);font-size:13px">尚無資料</div>';
+
+  // ── 八部曲分布 ──
   var count = {};
   active.forEach(function(c){ var s=stageOf(c); count[s]=(count[s]||0)+1; });
   var html = '';
   for (var i=1;i<=8;i++) html += '<div class="stat-card"><div class="stat-value">'+(count[i]||0)+'</div><div class="stat-label">'+i+'️⃣ '+STAGE_NAMES[i]+'</div></div>';
   document.getElementById('stagesGrid').innerHTML = html;
-
-  // 卡最多人的部曲提示
-  var maxStage = 1, maxCount = 0;
-  for (var j=1;j<=8;j++) { if ((count[j]||0) > maxCount) { maxCount=count[j]||0; maxStage=j; } }
+  var maxStage=1, maxCount=0;
+  for (var j=1;j<=8;j++){ if ((count[j]||0)>maxCount){ maxCount=count[j]||0; maxStage=j; } }
   var bottleneckEl = document.getElementById('bottleneckHint');
-  if (bottleneckEl && maxCount > 0) {
-    bottleneckEl.textContent = '🚧 瓶頸：'+STAGE_NAMES[maxStage]+'（'+maxCount+'人卡關）';
-  }
+  if (bottleneckEl) bottleneckEl.textContent = maxCount > 0 ? '🚧 瓶頸：'+STAGE_NAMES[maxStage]+'（'+maxCount+' 人卡關）' : '';
 
-  // 名單來源分析（全部客戶）
-  var companyLeads = customers.filter(function(c){ return c.clientType==='公司名單'; });
-  var selfLeads = customers.filter(function(c){ return c.clientType==='業務自開發'; });
-  document.getElementById('companyLeadCount').textContent = companyLeads.length;
-  document.getElementById('selfLeadCount').textContent = selfLeads.length;
-  var srcCount = {};
-  customers.forEach(function(c){ if (c.leadSource) srcCount[c.leadSource]=(srcCount[c.leadSource]||0)+1; });
-  var srcHtml = Object.keys(srcCount).sort(function(a,b){ return srcCount[b]-srcCount[a]; }).map(function(s){
-    return '<div style="display:flex;justify-content:space-between;border-bottom:1px solid var(--cream2);padding:.25rem 0">'
-      +'<span>'+s+'</span><span style="font-weight:700;color:var(--navy)">'+srcCount[s]+'人</span></div>';
-  }).join('');
-  document.getElementById('leadSourceBreakdown').innerHTML = srcHtml||'<span style="color:var(--text-muted)">尚無資料</span>';
+  // ── 購買時間軸 ──
+  var tlOrder = ['1個月內','3個月內','半年內','1年以上','純詢問觀望',''];
+  var tlMap = {};
+  active.forEach(function(c){
+    var t = c.buyingTimeline || '未填寫';
+    tlMap[t] = (tlMap[t]||0) + 1;
+  });
+  var tlColors = {'1個月內':'#c62828','3個月內':'#e65100','半年內':'#f57f17','1年以上':'#1565c0','純詢問觀望':'#546e7a','未填寫':'#9e9e9e'};
+  var tlHtml = '<div style="display:flex;flex-wrap:wrap;gap:.5rem">';
+  tlOrder.concat(Object.keys(tlMap).filter(function(k){ return tlOrder.indexOf(k)===-1; })).forEach(function(tl){
+    var label = tl || '未填寫';
+    var cnt = tlMap[tl] || tlMap[label] || 0;
+    if (!cnt) return;
+    var color = tlColors[label] || '#999';
+    tlHtml += '<div style="background:'+color+'18;border:1.5px solid '+color+'44;border-radius:10px;padding:.5rem 1rem;display:flex;align-items:center;gap:.5rem">';
+    tlHtml += '<span style="font-size:13px;color:'+color+';font-weight:700">'+cnt+'</span>';
+    tlHtml += '<span style="font-size:12px;color:var(--text-soft)">'+label+'</span>';
+    tlHtml += '</div>';
+  });
+  tlHtml += '</div>';
+  var tlEl = document.getElementById('timelineGrid');
+  if (tlEl) tlEl.innerHTML = tlHtml || '<div style="color:var(--text-soft);font-size:13px">尚無資料</div>';
+
+  // ── 研討會效益 ──
+  var semYes = customers.filter(function(c){ return c.seminarAttended==='是'; });
+  var semNo  = customers.filter(function(c){ return c.seminarAttended!=='是'; });
+  var semYesClosed = semYes.filter(function(c){ return !isActive(c); }).length;
+  var semNoClosed  = semNo.filter(function(c){ return !isActive(c); }).length;
+  var semYesRate = semYes.length > 0 ? Math.round(semYesClosed/semYes.length*100) : 0;
+  var semNoRate  = semNo.length  > 0 ? Math.round(semNoClosed/semNo.length*100)   : 0;
+  var semHtml = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">';
+  semHtml += '<div style="background:linear-gradient(135deg,#e8f5e9,#f1f8e9);border:1px solid #a5d6a7;border-radius:12px;padding:1rem;text-align:center">';
+  semHtml += '<div style="font-size:11px;color:#2e7d32;font-weight:700;letter-spacing:.1em;margin-bottom:.5rem">🎓 有參加研討會</div>';
+  semHtml += '<div style="font-size:28px;font-weight:900;color:#1b5e20">'+semYes.length+'</div>';
+  semHtml += '<div style="font-size:12px;color:#388e3c;margin-top:.25rem">成交 '+semYesClosed+' 人 / 轉換率 <b>'+semYesRate+'%</b></div>';
+  semHtml += '</div>';
+  semHtml += '<div style="background:var(--cream2);border:1px solid #e0e0e0;border-radius:12px;padding:1rem;text-align:center">';
+  semHtml += '<div style="font-size:11px;color:var(--text-soft);font-weight:700;letter-spacing:.1em;margin-bottom:.5rem">未參加研討會</div>';
+  semHtml += '<div style="font-size:28px;font-weight:900;color:var(--navy)">'+semNo.length+'</div>';
+  semHtml += '<div style="font-size:12px;color:var(--text-soft);margin-top:.25rem">成交 '+semNoClosed+' 人 / 轉換率 <b>'+semNoRate+'%</b></div>';
+  semHtml += '</div>';
+  semHtml += '</div>';
+  if (semYesRate > semNoRate) {
+    semHtml += '<div style="margin-top:.75rem;padding:.625rem 1rem;background:#e8f5e9;border-radius:8px;font-size:12px;color:#2e7d32;font-weight:600">✅ 研討會客戶轉換率高出 '+(semYesRate-semNoRate)+' 個百分點，值得持續邀約</div>';
+  }
+  var semEl = document.getElementById('seminarGrid');
+  if (semEl) semEl.innerHTML = semHtml;
+
+  // ── 最新動態 ──
+  renderRecent();
 }
 
 function renderRecent() {
@@ -1162,6 +1456,21 @@ function renderRecent() {
 }
 
 // ── 多選下拉元件 ──
+
+function toggleAcc(id) {
+  var header = document.getElementById('acc-h-'+id);
+  var body = document.getElementById('acc-b-'+id);
+  if (!header || !body) return;
+  var isOpen = body.classList.contains('open');
+  if (isOpen) {
+    body.classList.remove('open');
+    header.classList.remove('open');
+  } else {
+    body.classList.add('open');
+    header.classList.add('open');
+  }
+}
+
 function toggleMs(id) {
   var wrap = document.getElementById(id);
   var isOpen = wrap.classList.contains('open');
@@ -1234,12 +1543,17 @@ function saveCustomer() {
   btn.disabled = true; btn.textContent = '⏳ 儲存中...';
   var v = function(id){ var el=document.getElementById(id); return el?el.value:''; };
   var c = {
-    salesPerson:sp, customerName:cn, contactInfo:ci, customerAge:v('customerAge'), clientType:v('clientType'), leadSource:v('leadSource'),
+    salesPerson:sp, customerName:cn, contactInfo:ci, customerAge:v('customerAge'),
+    purchasePurpose:v('purchasePurpose'), buyingTimeline:v('buyingTimeline'),
+    livingStatus:v('livingStatus'), familySupport:v('familySupport'),
+    familyMembers:v('familyMembers'), keyMan:v('keyMan'),
+    budget:v('budget'), monthlyPayment:v('monthlyPayment'),
+    clientType:v('clientType'), leadSource:v('leadSource'),
     leadSourceDetail:v('leadSourceDetail'), acquisitionMethod:v('acquisitionMethod'), creationDate:v('creationDate'),
     trustScore:v('trustScore'), professionalScore:v('professionalScore'), currentStatus:v('currentStatus'),
     trustChecks:getMsValue('ms_trustCheck'), proChecks:getMsValue('ms_proCheck'),
     painPoints:getMsValue('ms_painPoint'), painPointsNote:v('painPoints'),
-    blueprintCompletion:v('blueprintCompletion'), customerNeeds:v('customerNeeds'),
+    blueprintCompletion:v('blueprintCompletion'), customerNeeds:v('customerNeeds'), matchedProperty:v('matchedProperty'), viewedProperties:v('viewedProperties'), whyNotBought:v('whyNotBought'),
     recommendedProperty:v('recommendedProperty'), viewingStatus:v('viewingStatus'), productAdvantages:v('productAdvantages'),
     objections:v('objections'), solutions:v('solutions'), contractStatus:v('contractStatus'),
     dealAmount:v('dealAmount'), contractDate:v('contractDate'), satisfactionScore:v('satisfactionScore'),
@@ -1531,7 +1845,7 @@ function saveEdit(c) {
     professionalScore: gv('professionalScore'), currentStatus: gv('currentStatus'),
     trustChecks: getMsValue('e_ms_trustCheck'), proChecks: getMsValue('e_ms_proCheck'),
     painPoints: gv('painPointsEdit'), painPointsNote: gv('painPoints'),
-    blueprintCompletion: gv('blueprintCompletion'),
+    blueprintCompletion: gv('blueprintCompletion'), matchedProperty: gv('matchedProperty'), viewedProperties: gv('viewedProperties'), whyNotBought: gv('whyNotBought'),
     customerNeeds: gv('customerNeeds'), recommendedProperty: gv('recommendedProperty'),
     viewingStatus: gv('viewingStatus'), productAdvantages: gv('productAdvantages'),
     objections: gv('objections'), solutions: gv('solutions'),
