@@ -280,6 +280,8 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
     <button onclick="showPage('leaderboard',this)" id="reportsTab">🏆 排行榜</button>
     <button onclick="showPage('claude',this)">🤖 Claude</button>
     <button onclick="showPage('staffMgmt',this)" id="staffTab">👥 業務</button>
+    <button onclick="showPage('followupJournal',this)" id="journalTab">📝 日誌</button>
+    <button onclick="showPage('bossDashboard',this)" id="bossTab" style="display:none">🧠 決策</button>
   </nav>
   <div class="container">
 
@@ -342,12 +344,94 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
         <div id="recentList"><div class="empty-state"><div class="empty-icon">📋</div>載入中...</div></div>
       </div>
 
+
+      <!-- 趨勢比較（本月 vs 上月） -->
+      <div class="card" style="margin-bottom:1rem" id="trendCard">
+        <div class="card-header"><div class="card-icon">📈</div><h3>趨勢比較 本月 vs 上月</h3></div>
+        <div class="card-body" id="trendGrid"></div>
+      </div>
+
+      <!-- 資料完整度警示 -->
+      <div class="card" id="completenessCard">
+        <div class="card-header"><div class="card-icon">🔍</div><h3>客戶資料完整度</h3></div>
+        <div class="card-body" id="completenessGrid"></div>
+      </div>
+
       <!-- 隱藏舊元素相容 -->
       <div style="display:none">
         <span id="companyLeadCount"></span>
         <span id="selfLeadCount"></span>
         <span id="leadSourceBreakdown"></span>
       </div>
+    </div>
+
+
+    <!-- BOSS DECISION DASHBOARD -->
+    <div id="bossDashboard" class="page">
+
+      <!-- 頁頭 -->
+      <div style="background:linear-gradient(135deg,#0f2744,#1a3a5c);border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div style="font-size:11px;letter-spacing:.15em;color:#c9a84c;font-weight:700;margin-bottom:4px">BOSS INTELLIGENCE CENTER</div>
+          <div style="font-size:16px;font-weight:700;color:#fff">老闆決策面板</div>
+        </div>
+        <div style="font-size:12px;color:rgba(255,255,255,.5)" id="bossDateLabel"></div>
+      </div>
+
+      <!-- 今日 Top3 推薦 -->
+      <div class="card" style="margin-bottom:1rem;border:2px solid #c9a84c">
+        <div class="card-header" style="background:linear-gradient(135deg,#fffbf0,#fff8e7)">
+          <div class="card-icon">🎯</div>
+          <h3 style="color:#856404">今日最值得跟進的客戶 Top 3</h3>
+        </div>
+        <div class="card-body" id="top3List"></div>
+      </div>
+
+      <!-- 異常預警 -->
+      <div class="card" style="margin-bottom:1rem">
+        <div class="card-header"><div class="card-icon">🚨</div><h3>異常預警中心</h3></div>
+        <div class="card-body" id="alertCenter"></div>
+      </div>
+
+      <!-- 業務行為分析 -->
+      <div class="card" style="margin-bottom:1rem">
+        <div class="card-header"><div class="card-icon">📈</div><h3>業務行為分析</h3></div>
+        <div class="card-body" id="salesBehavior"></div>
+      </div>
+
+      <!-- 成交預測總覽 -->
+      <div class="card" style="margin-bottom:1rem">
+        <div class="card-header"><div class="card-icon">💰</div><h3>成交預測總覽</h3></div>
+        <div class="card-body" id="closingForecast"></div>
+      </div>
+
+      <!-- 本週業績節奏 -->
+      <div class="card" style="margin-bottom:1rem">
+        <div class="card-header"><div class="card-icon">⚡</div><h3>本週業績節奏</h3></div>
+        <div class="card-body" id="weeklyRhythm"></div>
+      </div>
+
+
+      <!-- 業務活躍度追蹤 -->
+      <div class="card" style="margin-bottom:1rem">
+        <div class="card-header"><div class="card-icon">🕵️</div><h3>業務活躍度追蹤</h3>
+          <span style="font-size:11px;color:var(--text-muted);margin-left:.5rem">（依客戶資料推算）</span>
+        </div>
+        <div class="card-body" id="salesActivity"></div>
+      </div>
+
+      <!-- 研討會名單待認領 -->
+      <div class="card" style="margin-bottom:1rem">
+        <div class="card-header"><div class="card-icon">🎓</div><h3>研討會名單待認領</h3></div>
+        <div class="card-body" id="seminarPending"></div>
+      </div>
+
+      <!-- Line 通知設定 -->
+      <div class="card" style="margin-bottom:1rem">
+        <div class="card-header"><div class="card-icon">💬</div><h3>Line 通知設定</h3></div>
+        <div class="card-body" id="lineNotifyPanel"></div>
+      </div>
+
     </div>
 
     <!-- NEW CUSTOMER -->
@@ -547,7 +631,32 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
             <span class="acc-arrow">▼</span>
           </div>
           <div class="acc-body" id="acc-b-s3">
+            <!-- 客戶族群 + 購屋目的 -->
             <div class="form-grid two">
+              <div class="form-group">
+                <label>🏷️ 客戶族群（主要）</label>
+                <select id="clientSegment" onchange="updatePainPointsBySegment()">
+                  <option value="">請選擇族群</option>
+                  <optgroup label="💼 資產條件">
+                    <option value="新鮮人">🟡 新鮮人（剛出社會、首購）</option>
+                    <option value="雙薪無殼">👫 雙薪無殼（收入不低但未買）</option>
+                    <option value="月光族">🔵 月光族（存款少、現金流緊）</option>
+                    <option value="高資產">🔴 高資產（多筆資產、升級配置）</option>
+                    <option value="退休規劃">🌅 退休規劃族（55歲以上）</option>
+                  </optgroup>
+                  <optgroup label="🏠 居住狀態">
+                    <option value="租屋族">🟠 租屋族（長期租房）</option>
+                    <option value="有老屋">🟢 有老屋族（舊屋換新）</option>
+                    <option value="換屋族">🔄 換屋族（已有房要換）</option>
+                    <option value="地緣組">📍 地緣組（只買熟悉區域）</option>
+                  </optgroup>
+                  <optgroup label="💰 投資偏好">
+                    <option value="股票族">📈 股票族（資產多元配置）</option>
+                    <option value="定存族">🏦 定存族（保守理財）</option>
+                    <option value="包租公">🏢 包租公/婆（以租養房）</option>
+                  </optgroup>
+                </select>
+              </div>
               <div class="form-group">
                 <label>購屋主要目的</label>
                 <select id="purchasePurpose">
@@ -556,9 +665,18 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
                   <option>💰 投資</option>
                   <option>🏠💰 自住兼投資</option>
                   <option>📦 資產配置</option>
+                  <option>🏢 以租養房</option>
+                  <option>👴 退休安置</option>
+                  <option>🎁 傳承規劃</option>
                 </select>
               </div>
+            </div>
+            <div class="form-grid two">
               <div class="form-group"><label>自有資金（萬元）＆來源</label><input type="text" id="budget" placeholder="例：300萬，來自存款／父母贊助／賣股票"></div>
+              <div class="form-group" id="geographyGroupDiv" style="display:none">
+                <label>📍 偏好區域（地緣組專用）</label>
+                <input type="text" id="preferredArea" placeholder="例：青埔、板橋、中和自住圈">
+              </div>
             </div>
             <div class="form-grid two">
               <div class="form-group"><label>每月可儲蓄（萬元）</label><input type="text" id="monthlyPayment" placeholder="例：3萬"></div>
@@ -569,31 +687,72 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
               <label>痛點分析（可多選）</label>
               <div class="ms-wrap" id="ms_painPoint">
                 <div class="ms-display" onclick="toggleMs('ms_painPoint')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div>
-                <div class="ms-dropdown">
-                  <div class="ms-group">🟡 新鮮人族群</div>
-                  <label class="ms-opt"><input type="checkbox" value="新鮮人-趕不上通膨">趕不上通膨</label>
-                  <label class="ms-opt"><input type="checkbox" value="新鮮人-想享有自己自在的空間">想享有自己自在的空間</label>
-                  <label class="ms-opt"><input type="checkbox" value="新鮮人-想實踐包租公夢想">想實踐包租公夢想</label>
-                  <div class="ms-group">🔴 高資產族群</div>
-                  <label class="ms-opt"><input type="checkbox" value="高資產-資產升級">想要再更好（資產升級）</label>
-                  <label class="ms-opt"><input type="checkbox" value="高資產-傳承規劃">傳承規劃</label>
-                  <label class="ms-opt"><input type="checkbox" value="高資產-持有人名字可能不是本人">持有人的名字可能不是本人</label>
-                  <div class="ms-group">🔵 月光族群</div>
-                  <label class="ms-opt"><input type="checkbox" value="月光族-家人醫療支出風險">家人的醫療支出風險</label>
-                  <label class="ms-opt"><input type="checkbox" value="月光族-投資失利承受度低">投資失利承受度低</label>
-                  <label class="ms-opt"><input type="checkbox" value="月光族-夢想與現實落差大">夢想與現實落差大</label>
-                  <label class="ms-opt"><input type="checkbox" value="月光族-若失業仍需工作無被動收入">若失業仍需工作（無被動收入）</label>
-                  <div class="ms-group">🟢 有老屋族群</div>
-                  <label class="ms-opt"><input type="checkbox" value="有老屋-上下爬樓梯不便">上下爬樓梯不便</label>
-                  <label class="ms-opt"><input type="checkbox" value="有老屋-結構與居住安全性差">結構與居住安全性差</label>
-                  <div class="ms-group">🟠 租屋族群</div>
-                  <label class="ms-opt"><input type="checkbox" value="租屋族-房東問題臨時漲租要求搬遷">房東問題（臨時漲租、要求搬遷）</label>
-                  <label class="ms-opt"><input type="checkbox" value="租屋族-年齡越大租屋越難">年齡越大租屋越難</label>
-                  <label class="ms-opt"><input type="checkbox" value="租屋族-房價上漲與自己無關">房價上漲與自己無關</label>
-                  <div class="ms-group">📈 股票族群</div>
-                  <label class="ms-opt"><input type="checkbox" value="股票族-資產缺乏多元配置">資產缺乏多元配置</label>
-                  <div class="ms-group">🏦 定存族群</div>
-                  <label class="ms-opt"><input type="checkbox" value="定存族-通膨侵蝕購買力">通膨侵蝕購買力</label>
+                <div class="ms-dropdown" id="painPointDropdown">
+                  <div class="ms-group">🟡 新鮮人</div>
+                  <label class="ms-opt"><input type="checkbox" value="新鮮人-趕不上通膨">薪水漲幅趕不上房價通膨</label>
+                  <label class="ms-opt"><input type="checkbox" value="新鮮人-想有自己空間">想要有自己的空間、不再與家人同住</label>
+                  <label class="ms-opt"><input type="checkbox" value="新鮮人-包租公夢想">想實踐包租公夢想、以房養房</label>
+                  <label class="ms-opt"><input type="checkbox" value="新鮮人-父母催促">父母希望盡早置產、有家的感覺</label>
+                  <label class="ms-opt"><input type="checkbox" value="新鮮人-貸款不確定">不確定自己能貸多少、害怕貸不到</label>
+                  <div class="ms-group">👫 雙薪無殼</div>
+                  <label class="ms-opt"><input type="checkbox" value="雙薪-一直看一直沒買">一直在看房，但沒有採取行動</label>
+                  <label class="ms-opt"><input type="checkbox" value="雙薪-兩人意見不一">另一半對買房看法不同、難以決策</label>
+                  <label class="ms-opt"><input type="checkbox" value="雙薪-覺得還可以等">總覺得時機未到、房價會跌</label>
+                  <label class="ms-opt"><input type="checkbox" value="雙薪-生活品質優先">習慣花費享受，難以存頭期款</label>
+                  <label class="ms-opt"><input type="checkbox" value="雙薪-租房很方便">覺得租房方便，沒有強烈購屋動力</label>
+                  <div class="ms-group">🔵 月光族</div>
+                  <label class="ms-opt"><input type="checkbox" value="月光族-醫療支出風險">家人醫療支出佔大宗，難以存錢</label>
+                  <label class="ms-opt"><input type="checkbox" value="月光族-投資失利">曾有投資失利，對高風險資產有陰影</label>
+                  <label class="ms-opt"><input type="checkbox" value="月光族-夢想現實落差">心中有理想的家，但現實條件差距大</label>
+                  <label class="ms-opt"><input type="checkbox" value="月光族-無被動收入">若失業只能靠勞動，沒有被動收入保障</label>
+                  <label class="ms-opt"><input type="checkbox" value="月光族-頭期款壓力">頭期款準備不足，需要父母協助或分期</label>
+                  <div class="ms-group">🔴 高資產</div>
+                  <label class="ms-opt"><input type="checkbox" value="高資產-資產升級">現有物件格局或地段不符期待，想升級</label>
+                  <label class="ms-opt"><input type="checkbox" value="高資產-傳承規劃">考慮子女未來，提前做資產傳承</label>
+                  <label class="ms-opt"><input type="checkbox" value="高資產-名字問題">持有人名字可能非本人，有稅務考量</label>
+                  <label class="ms-opt"><input type="checkbox" value="高資產-閒置資金">手中有大量閒置資金，需要找出路</label>
+                  <label class="ms-opt"><input type="checkbox" value="高資產-分散風險">資產過度集中單一項目，需要分散</label>
+                  <div class="ms-group">🌅 退休規劃</div>
+                  <label class="ms-opt"><input type="checkbox" value="退休-養老安置">考慮退休後的居住品質與便利性</label>
+                  <label class="ms-opt"><input type="checkbox" value="退休-以租養老">希望透過收租彌補退休金不足</label>
+                  <label class="ms-opt"><input type="checkbox" value="退休-留給子女">不想讓子女為房子問題煩惱</label>
+                  <label class="ms-opt"><input type="checkbox" value="退休-醫療資金">擔心醫療費用，希望有固定收入來源</label>
+                  <div class="ms-group">🟢 有老屋</div>
+                  <label class="ms-opt"><input type="checkbox" value="有老屋-爬樓梯不便">上下爬樓梯不便，影響日常生活</label>
+                  <label class="ms-opt"><input type="checkbox" value="有老屋-結構安全">老屋結構老化，居住安全有疑慮</label>
+                  <label class="ms-opt"><input type="checkbox" value="有老屋-格局過時">格局設計老舊，不符合現代生活需求</label>
+                  <label class="ms-opt"><input type="checkbox" value="有老屋-維修費高">老屋維修費用持續增加</label>
+                  <label class="ms-opt"><input type="checkbox" value="有老屋-價值停滯">老屋增值空間有限，想換有潛力的標的</label>
+                  <div class="ms-group">🔄 換屋族</div>
+                  <label class="ms-opt"><input type="checkbox" value="換屋-空間不夠">家庭成員增加，現有空間不敷使用</label>
+                  <label class="ms-opt"><input type="checkbox" value="換屋-學區需求">孩子入學，需要搬到特定學區</label>
+                  <label class="ms-opt"><input type="checkbox" value="換屋-工作地點變動">換工作或公司搬遷，通勤距離太遠</label>
+                  <label class="ms-opt"><input type="checkbox" value="換屋-想要更好環境">想搬到更好的社區或生活環境</label>
+                  <div class="ms-group">🟠 租屋族</div>
+                  <label class="ms-opt"><input type="checkbox" value="租屋-房東問題">房東問題：臨時漲租、要求搬遷</label>
+                  <label class="ms-opt"><input type="checkbox" value="租屋-年齡越大越難">年齡越大租屋越困難，被房東挑選</label>
+                  <label class="ms-opt"><input type="checkbox" value="租屋-房價上漲無份">房價上漲與自己無關，越租越輸</label>
+                  <label class="ms-opt"><input type="checkbox" value="租屋-無法裝潢">租房無法按自己喜好裝潢，住起來不像家</label>
+                  <label class="ms-opt"><input type="checkbox" value="租屋-租金浪費">每月租金等於幫房東繳貸款</label>
+                  <div class="ms-group">📍 地緣組</div>
+                  <label class="ms-opt"><input type="checkbox" value="地緣-只信任熟悉區域">只願意在熟悉的生活圈購買，不考慮其他區域</label>
+                  <label class="ms-opt"><input type="checkbox" value="地緣-已有多間同區">已在同區域持有多筆，熟悉當地行情</label>
+                  <label class="ms-opt"><input type="checkbox" value="地緣-在地人脈資源">該區域有人脈或生意，方便管理出租</label>
+                  <label class="ms-opt"><input type="checkbox" value="地緣-熟悉增值潛力">對該區域未來發展有信心、押注特定重劃區</label>
+                  <div class="ms-group">📈 股票族</div>
+                  <label class="ms-opt"><input type="checkbox" value="股票-資產多元配置">資產過度集中股票，想多元配置降低風險</label>
+                  <label class="ms-opt"><input type="checkbox" value="股票-股市波動大">股市波動讓人焦慮，不動產相對穩定</label>
+                  <label class="ms-opt"><input type="checkbox" value="股票-獲利出場需求">股票大賺一波，想把獲利轉到實體資產</label>
+                  <label class="ms-opt"><input type="checkbox" value="股票-槓桿操作興趣">理解槓桿操作，對房貸槓桿邏輯感興趣</label>
+                  <div class="ms-group">🏦 定存族</div>
+                  <label class="ms-opt"><input type="checkbox" value="定存-通膨侵蝕">通膨侵蝕購買力，定存利率跑不贏通膨</label>
+                  <label class="ms-opt"><input type="checkbox" value="定存-資金閒置">資金長期閒置，沒有好的出路</label>
+                  <label class="ms-opt"><input type="checkbox" value="定存-保守但想成長">個性保守，但也知道不能只靠定存</label>
+                  <div class="ms-group">🏢 包租公/婆</div>
+                  <label class="ms-opt"><input type="checkbox" value="包租-以房養房邏輯">想用租金收入繳房貸，實現以房養房</label>
+                  <label class="ms-opt"><input type="checkbox" value="包租-被動收入目標">設定每月被動收入目標，用收租達成</label>
+                  <label class="ms-opt"><input type="checkbox" value="包租-管理多間有經驗">已有出租經驗，想擴大規模</label>
+                  <label class="ms-opt"><input type="checkbox" value="包租-小資產大槓桿">資金有限，想用小頭期款槓桿更大資產</label>
                 </div>
               </div>
             </div>
@@ -759,6 +918,89 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
       </form>
     </div>
 
+
+    <!-- FOLLOW UP JOURNAL -->
+    <div id="followupJournal" class="page">
+
+      <div style="background:linear-gradient(135deg,var(--navy),#1a3060);border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div style="font-size:11px;letter-spacing:.15em;color:var(--gold);font-weight:700;margin-bottom:4px">DAILY FOLLOW-UP LOG</div>
+          <div style="font-size:16px;font-weight:700;color:#fff">每日跟進日誌</div>
+        </div>
+        <div style="font-size:12px;color:rgba(255,255,255,.5)" id="journalDateLabel"></div>
+      </div>
+
+      <!-- 快速記錄 -->
+      <div class="card" style="margin-bottom:1rem;border:2px solid var(--gold)">
+        <div class="card-header" style="background:linear-gradient(135deg,#fffbf0,#fff8e7)">
+          <div class="card-icon">⚡</div>
+          <h3 style="color:#856404">30秒快速記錄</h3>
+        </div>
+        <div class="card-body">
+          <div class="form-group">
+            <label>選擇客戶</label>
+            <select id="jn_customer" onchange="fillJournalCustomer()">
+              <option value="">── 選擇要跟進的客戶 ──</option>
+            </select>
+          </div>
+          <div class="form-grid two">
+            <div class="form-group">
+              <label>今天做了什麼</label>
+              <select id="jn_action">
+                <option value="">請選擇</option>
+                <option>📞 電話聯繫</option>
+                <option>💬 Line 訊息</option>
+                <option>🤝 當面拜訪</option>
+                <option>🏠 帶看物件</option>
+                <option>📊 顧問諮詢</option>
+                <option>📝 發送資料</option>
+                <option>🎓 邀請研討會</option>
+                <option>⏰ 嘗試聯繫無回應</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>客戶反應</label>
+              <select id="jn_response">
+                <option value="">請選擇</option>
+                <option>✅ 積極正面，有進展</option>
+                <option>💬 有聊，態度一般</option>
+                <option>🤔 在考慮中，需等待</option>
+                <option>❌ 拒絕或無回應</option>
+                <option>🔥 非常感興趣，快成交</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>補充說明（可略）</label>
+            <textarea id="jn_note" placeholder="例：她說下週要問老公，約週五再聯絡" style="min-height:60px"></textarea>
+          </div>
+          <div class="form-group">
+            <label>下次跟進計畫</label>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
+              <input type="date" id="jn_nextDate" placeholder="下次跟進日期">
+              <input type="text" id="jn_nextPlan" placeholder="例：打電話確認老公意見">
+            </div>
+          </div>
+          <button onclick="saveJournalEntry()" class="btn btn-primary" id="jn_saveBtn">⚡ 記錄跟進（更新到客戶資料）</button>
+        </div>
+      </div>
+
+      <!-- 今日跟進清單 -->
+      <div class="card" style="margin-bottom:1rem">
+        <div class="card-header"><div class="card-icon">📋</div><h3>今日應跟進名單</h3>
+          <span style="font-size:11px;color:var(--text-muted);margin-left:.5rem">系統推薦</span>
+        </div>
+        <div class="card-body" id="todayFollowupList"></div>
+      </div>
+
+      <!-- 本週跟進記錄 -->
+      <div class="card">
+        <div class="card-header"><div class="card-icon">📅</div><h3>本週跟進記錄</h3></div>
+        <div class="card-body" id="weekJournalList"></div>
+      </div>
+
+    </div>
+
     <!-- CUSTOMER LIST -->
     <div id="customerList" class="page">
       <div class="card">
@@ -806,7 +1048,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
         <div class="card-header"><div class="card-icon">🏆</div><h3>積分排行榜</h3></div>
         <div class="card-body">
           <div style="font-size:13px;color:var(--text-soft);margin-bottom:1rem;background:var(--cream2);padding:.75rem 1rem;border-radius:8px;line-height:1.8">
-            📋 <b>積分規則（僅計算進行中客戶）：</b>基本資料完整 +1｜購買時間軸 +1｜痛點分析 +1｜自有資金 +2｜顧問諮詢完成 +3｜看過案子+原因 +2｜決策障礙 +1｜轉介紹≥1 +3｜<b>本週成交 +10</b>｜已成交客戶不計分
+            📋 <b>積分規則：</b>基本資料完整 +1｜購買時間軸 +1｜痛點分析 +1｜自有資金 +2｜顧問諮詢完成 +3｜看過案子+原因 +2｜決策障礙 +1｜轉介紹≥1 +3｜<b>成交 +10</b>
           </div>
           <div id="leaderboardList"></div>
         </div>
@@ -1144,6 +1386,7 @@ function initApp() {
     SALES.forEach(function(s){ fs.innerHTML += '<option>'+s+'</option>'; });
     document.getElementById('reportsTab').style.display = '';
     document.getElementById('staffTab').style.display = '';
+    document.getElementById('bossTab').style.display = '';
     document.getElementById('exportScope').innerHTML = '<option value="all">全部客戶</option><option value="mine">我的客戶</option>';
   } else {
     sp.innerHTML = '<option value="'+currentUser+'" selected>'+currentUser+'</option>';
@@ -1160,23 +1403,7 @@ function initApp() {
 // ── 從雲端載入客戶 ──
 
 // ── 積分計算 ──
-function getWeekRange() {
-  var now = new Date();
-  // 週二開始
-  var day = now.getDay(); // 0=日,1=一,...,6=六
-  var diff = day >= 2 ? day - 2 : day + 5; // 距離本週二的天數
-  var weekStart = new Date(now);
-  weekStart.setDate(now.getDate() - diff);
-  weekStart.setHours(0,0,0,0);
-  var weekEnd = new Date(weekStart);
-  weekEnd.setDate(weekStart.getDate() + 6); // 週一結束
-  weekEnd.setHours(23,59,59,999);
-  return { start: weekStart, end: weekEnd };
-}
-
-function calcScore(c, weekRange) {
-  // 只計算「進行中」的客戶
-  if (!isActive(c)) return 0;
+function calcScore(c) {
   var score = 0;
   // 基本資料完整（姓名+聯絡+來源）
   if (c.customerName && c.contactInfo && c.leadSource) score += 1;
@@ -1195,11 +1422,8 @@ function calcScore(c, weekRange) {
   if (c.decisionBlock && c.decisionBlock.toString().trim()) score += 1;
   // 轉介紹 ≥ 1
   if (c.referralCount && parseInt(c.referralCount) >= 1) score += 3;
-  // 成交：只算本週內簽約的
-  if (weekRange && c.contractDate) {
-    var cd = new Date(c.contractDate);
-    if (cd >= weekRange.start && cd <= weekRange.end) score += 10;
-  }
+  // 成交
+  if (c.contractStatus === '已簽約' || c.contractStatus === '已付款') score += 10;
   return score;
 }
 
@@ -1207,39 +1431,19 @@ function renderLeaderboard() {
   var container = document.getElementById('leaderboardList');
   if (!container) return;
 
-  var weekRange = getWeekRange();
-
-  // 只統計進行中客戶的積分，並記錄分數拆解
+  // 統計每個業務的積分
   var scoreMap = {};
   var countMap = {};
-  var detailMap = {};
   customers.forEach(function(c) {
-    if (!isActive(c)) return;
     var sp = c.salesPerson || '未指定';
-    if (!scoreMap[sp]) {
-      scoreMap[sp] = 0; countMap[sp] = 0;
-      detailMap[sp] = {basic:0,timeline:0,pain:0,budget:0,consult:0,viewed:0,decision:0,referral:0,deal:0};
-    }
-    // 拆解計分
-    if (c.customerName && c.contactInfo && c.leadSource) { scoreMap[sp]+=1; detailMap[sp].basic++; }
-    if (c.buyingTimeline) { scoreMap[sp]+=1; detailMap[sp].timeline++; }
-    if (c.painPoints && c.painPoints.toString().trim()) { scoreMap[sp]+=1; detailMap[sp].pain++; }
-    if (c.budget && c.budget.toString().trim()) { scoreMap[sp]+=2; detailMap[sp].budget++; }
-    if (c.viewingStatus === '已完成諮詢') { scoreMap[sp]+=3; detailMap[sp].consult++; }
-    if (c.viewedProperties && c.viewedProperties.toString().trim() &&
-        c.whyNotBought && c.whyNotBought.toString().trim()) { scoreMap[sp]+=2; detailMap[sp].viewed++; }
-    if (c.decisionBlock && c.decisionBlock.toString().trim()) { scoreMap[sp]+=1; detailMap[sp].decision++; }
-    if (c.referralCount && parseInt(c.referralCount) >= 1) { scoreMap[sp]+=3; detailMap[sp].referral++; }
-    if (weekRange && c.contractDate) {
-      var cd = new Date(c.contractDate);
-      if (cd >= weekRange.start && cd <= weekRange.end) { scoreMap[sp]+=10; detailMap[sp].deal++; }
-    }
-    countMap[sp]++;
+    if (!scoreMap[sp]) { scoreMap[sp] = 0; countMap[sp] = 0; }
+    scoreMap[sp] += calcScore(c);
+    countMap[sp] += 1;
   });
 
   // 排序
   var ranked = Object.keys(scoreMap).map(function(sp) {
-    return { name: sp, score: scoreMap[sp], count: countMap[sp], detail: detailMap[sp] };
+    return { name: sp, score: scoreMap[sp], count: countMap[sp] };
   }).sort(function(a, b) { return b.score - a.score; });
 
   if (ranked.length === 0) {
@@ -1255,25 +1459,6 @@ function renderLeaderboard() {
     var highlight = isMe ? 'background:linear-gradient(135deg,#fffbea,#fff3cd);border:2px solid #f0c040;' : 'background:#fff;border:1px solid var(--cream2);';
     var maxScore = ranked[0].score || 1;
     var pct = Math.round((r.score / maxScore) * 100);
-    // 管理員看分數拆解
-    var breakdown = '';
-    if (currentRole === 'manager' && r.detail) {
-      var d = r.detail;
-      var parts = [];
-      if (d.basic)    parts.push('基本資料×'+d.basic+'=<b>+'+(d.basic*1)+'</b>');
-      if (d.timeline) parts.push('時間軸×'+d.timeline+'=<b>+'+(d.timeline*1)+'</b>');
-      if (d.pain)     parts.push('痛點×'+d.pain+'=<b>+'+(d.pain*1)+'</b>');
-      if (d.budget)   parts.push('資金×'+d.budget+'=<b>+'+(d.budget*2)+'</b>');
-      if (d.consult)  parts.push('諮詢×'+d.consult+'=<b>+'+(d.consult*3)+'</b>');
-      if (d.viewed)   parts.push('看案子×'+d.viewed+'=<b>+'+(d.viewed*2)+'</b>');
-      if (d.decision) parts.push('決策障礙×'+d.decision+'=<b>+'+(d.decision*1)+'</b>');
-      if (d.referral) parts.push('轉介紹×'+d.referral+'=<b>+'+(d.referral*3)+'</b>');
-      if (d.deal)     parts.push('本週成交×'+d.deal+'=<b>+'+(d.deal*10)+'</b>');
-      if (parts.length) {
-        breakdown = '<div style="font-size:11px;color:var(--text-soft);margin-top:.5rem;background:var(--cream2);border-radius:8px;padding:.4rem .75rem;line-height:1.9">'
-          + '📊 ' + parts.join(' ｜ ') + '</div>';
-      }
-    }
     html += '<div style="' + highlight + 'border-radius:12px;padding:1rem 1.25rem;margin-bottom:.75rem;">' +
       '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">' +
         '<div style="display:flex;align-items:center;gap:.625rem">' +
@@ -1285,8 +1470,7 @@ function renderLeaderboard() {
       '<div style="background:var(--cream2);border-radius:99px;height:8px;overflow:hidden">' +
         '<div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,#1a3c5e,#c9a84c);border-radius:99px;transition:.6s"></div>' +
       '</div>' +
-      '<div style="font-size:12px;color:var(--text-soft);margin-top:.375rem">共 ' + r.count + ' 位進行中客戶</div>' +
-      breakdown +
+      '<div style="font-size:12px;color:var(--text-soft);margin-top:.375rem">共 ' + r.count + ' 位客戶</div>' +
     '</div>';
   });
   container.innerHTML = html;
@@ -1302,6 +1486,9 @@ function fetchCustomers() {
       renderReports();
       renderRecent();
       renderLeaderboard();
+      if (currentRole === 'manager') renderBossDashboard();
+      renderTrend();
+      renderCompleteness();
     } else {
       showToast('⚠️ 載入失敗：'+res.error);
     }
@@ -1413,9 +1600,15 @@ function renderDashboard() {
   if (spEl) spEl.innerHTML = spHtml;
 
   // ── 名單來源轉換率 ──
+  // 有效的名單來源白名單（防止年齡或其他數字欄位混入）
+  var VALID_SOURCES = ['緣故/親友','緣故','客戶轉介紹','轉介紹','社群經營 (FB／IG／LINE)','社群經營',
+    '商會／早餐會／活動','其他自開發','展場活動','網路廣告','門市來客','代銷／潛銷發放','舊專案遺留','其他公司名單','其他'];
   var srcMap = {};
   customers.forEach(function(c){
-    var src = c.leadSource || '未填寫';
+    var src = (c.leadSource || '').toString().trim();
+    // 過濾掉空值、純數字（年齡誤填）、或不在白名單的短數字字串
+    if (!src) return;
+    if (/^\d+$/.test(src)) return; // 純數字跳過
     if (!srcMap[src]) srcMap[src] = { total:0, closed:0 };
     srcMap[src].total++;
     if (!isActive(c)) srcMap[src].closed++;
@@ -1501,8 +1694,1324 @@ function renderDashboard() {
 
   // ── 最新動態 ──
   renderRecent();
+  // ── 趨勢比較 ──
+  renderTrend();
+  // ── 資料完整度 ──
+  renderCompleteness();
 }
 
+
+// ══════════════════════════════════════════════
+// 成交預測評分引擎（0–100分）
+// ══════════════════════════════════════════════
+function calcCloseProb(c) {
+  if (!isActive(c)) return 0;
+  var score = 0;
+
+  // 購買時間軸（最大權重）
+  var tlScore = {'1個月內':30,'3個月內':20,'半年內':12,'1年以上':4,'純詢問觀望':0};
+  score += tlScore[c.buyingTimeline] || 0;
+
+  // 家人支持度
+  var fsScore = {'完全支持':15,'部分支持':8,'觀望':3,'反對':0};
+  score += fsScore[c.familySupport] || 0;
+
+  // 資金狀況
+  if (c.budget && c.budget.toString().trim()) score += 12;
+
+  // 信任狀態
+  var trustScore = {'高度信任(8-10分)':12,'中度信任(5-7分)':6,'基礎信任(1-4分)':2};
+  var ts = c.currentStatus || '';
+  Object.keys(trustScore).forEach(function(k){ if(ts.indexOf(k.split('(')[0])!==-1) score += trustScore[k]; });
+
+  // 研討會出席
+  if (c.seminarAttended === '是') score += 8;
+
+  // 八部曲進度
+  var s = stageOf(c);
+  score += Math.min(s * 1.5, 9);
+
+  // 痛點有填
+  if (c.painPoints && c.painPoints.toString().trim()) score += 5;
+
+  // 看過案子且有理由
+  if (c.viewedProperties && c.whyNotBought) score += 3;
+
+  // 顧問諮詢完成
+  if (c.viewingStatus === '已完成諮詢') score += 6;
+
+  return Math.min(Math.round(score), 100);
+}
+
+// ══════════════════════════════════════════════
+// 流失風險偵測
+// ══════════════════════════════════════════════
+function daysSinceUpdate(c) {
+  // 用 id 當時間戳（若 Google Sheets row id 不夠，改用 creationDate 估算）
+  var d = c.updatedAt || c.creationDate;
+  if (!d) return 999;
+  try {
+    var diff = (new Date() - new Date(d)) / (1000 * 60 * 60 * 24);
+    return Math.floor(diff);
+  } catch(e) { return 999; }
+}
+
+function stuckDays(c) {
+  // 簡易：用 creationDate 距今，若階段只有1-2代表沒在推進
+  var s = stageOf(c);
+  var days = daysSinceUpdate(c);
+  if (s <= 2 && days > 30) return days;
+  if (s <= 4 && days > 21) return days;
+  if (days > 14) return days;
+  return 0;
+}
+
+function getRiskLevel(c) {
+  var days = stuckDays(c);
+  if (days > 45) return 'critical';
+  if (days > 21) return 'high';
+  if (days > 14) return 'medium';
+  return 'ok';
+}
+
+// ══════════════════════════════════════════════
+// 老闆決策面板渲染
+// ══════════════════════════════════════════════
+function renderBossDashboard() {
+  var now = new Date();
+  var el = document.getElementById('bossDateLabel');
+  if (el) el.textContent = now.getFullYear()+'/'+(now.getMonth()+1)+'/'+now.getDate();
+
+  var active = customers.filter(isActive);
+
+  // ── Top 3 推薦 ──
+  var scored = active.map(function(c){
+    return { c:c, prob: calcCloseProb(c), risk: getRiskLevel(c) };
+  }).filter(function(x){ return x.prob >= 30; })
+    .sort(function(a,b){ return b.prob - a.prob; })
+    .slice(0, 3);
+
+  var top3El = document.getElementById('top3List');
+  if (scored.length === 0) {
+    top3El.innerHTML = '<div style="color:var(--text-soft);font-size:13px;padding:.5rem">尚無高機率客戶，請補充客戶資料</div>';
+  } else {
+    top3El.innerHTML = scored.map(function(x, i){
+      var c = x.c;
+      var medals = ['🥇','🥈','🥉'];
+      var pColor = x.prob >= 70 ? '#2e7d52' : x.prob >= 50 ? '#e65100' : '#1565c0';
+      var s = stageOf(c);
+      // 推薦話術方向
+      var hint = '';
+      if (!c.familySupport || c.familySupport === '觀望') hint = '💡 建議：邀請家人一起來了解';
+      else if (c.buyingTimeline === '1個月內') hint = '💡 建議：本週安排帶看，推進簽約';
+      else if (c.viewingStatus !== '已完成諮詢') hint = '💡 建議：邀請完成顧問諮詢';
+      else if (!c.budget) hint = '💡 建議：確認資金來源，推進下一步';
+      else hint = '💡 建議：強化信任，引導決策';
+
+      return '<div style="padding:1rem;border-bottom:1px solid var(--cream2);display:flex;gap:1rem;align-items:flex-start">'+
+        '<div style="font-size:24px;flex-shrink:0">'+medals[i]+'</div>'+
+        '<div style="flex:1">'+
+          '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.25rem">'+
+            '<span style="font-weight:700;font-size:15px;color:var(--navy)">'+c.customerName+'</span>'+
+            '<span style="font-size:20px;font-weight:900;color:'+pColor+'">'+x.prob+'<span style="font-size:12px;font-weight:500">%</span></span>'+
+          '</div>'+
+          '<div style="font-size:12px;color:var(--text-soft);margin-bottom:.35rem">'+
+            '👤 '+c.salesPerson+' ｜ '+s+'️⃣ '+STAGE_NAMES[s]+
+            (c.buyingTimeline?' ｜ ⏰ '+c.buyingTimeline:'')+
+          '</div>'+
+          '<div style="font-size:12px;background:linear-gradient(135deg,#fffbf0,#fff8e7);border:1px solid #f0d080;border-radius:8px;padding:.4rem .75rem;color:#856404;font-weight:600">'+hint+'</div>'+
+        '</div>'+
+      '</div>';
+    }).join('');
+  }
+
+  // ── 異常預警 ──
+  var alerts = [];
+
+  // 流失風險
+  var critical = active.filter(function(c){ return getRiskLevel(c)==='critical'; });
+  var highRisk  = active.filter(function(c){ return getRiskLevel(c)==='high'; });
+  if (critical.length) {
+    alerts.push({
+      level:'danger',
+      icon:'🔴',
+      title: critical.length+' 位客戶超過45天未更新，極高流失風險',
+      detail: critical.map(function(c){ return c.customerName+'（'+c.salesPerson+'）'; }).join('、')
+    });
+  }
+  if (highRisk.length) {
+    alerts.push({
+      level:'warning',
+      icon:'🟡',
+      title: highRisk.length+' 位客戶超過21天未推進',
+      detail: highRisk.slice(0,5).map(function(c){ return c.customerName; }).join('、')+(highRisk.length>5?' 等':'')
+    });
+  }
+
+  // 卡關分析
+  var stage1stuck = active.filter(function(c){ return stageOf(c)===1 && daysSinceUpdate(c)>14; });
+  if (stage1stuck.length > 3) {
+    alerts.push({
+      level:'info',
+      icon:'🔵',
+      title: stage1stuck.length+' 位客戶卡在一部曲超過14天',
+      detail: '建議：安排研討會邀約，推進到初步接觸'
+    });
+  }
+
+  // 本月成交數為0預警
+  var now2 = new Date();
+  var thisMonthClosed = customers.filter(function(c){
+    if (isActive(c)) return false;
+    if (!c.contractDate) return false;
+    var d = new Date(c.contractDate);
+    return d.getMonth()===now2.getMonth() && d.getFullYear()===now2.getFullYear();
+  });
+  if (thisMonthClosed.length === 0) {
+    alerts.push({
+      level:'warning',
+      icon:'⚠️',
+      title: '本月尚無成交紀錄',
+      detail: '月底前建議重點衝刺五、六部曲客戶'
+    });
+  }
+
+  // 高分客戶被忽視
+  var highProbIgnored = active.filter(function(c){ return calcCloseProb(c)>=60 && getRiskLevel(c)!=='ok'; });
+  if (highProbIgnored.length) {
+    alerts.push({
+      level:'danger',
+      icon:'🔴',
+      title: highProbIgnored.length+' 位高成交機率客戶（≥60%）已停滯',
+      detail: highProbIgnored.map(function(c){ return c.customerName+'('+calcCloseProb(c)+'%)'; }).join('、')
+    });
+  }
+
+  var alertEl = document.getElementById('alertCenter');
+  if (!alerts.length) {
+    alertEl.innerHTML = '<div style="color:#2e7d52;font-weight:600;padding:.5rem">✅ 目前無異常，整體運營健康</div>';
+  } else {
+    var colorMap = { danger:'#fdf0ee', warning:'#fffbf0', info:'#e3f0fb' };
+    var borderMap = { danger:'#f5c6c3', warning:'#ffd700', info:'#b3d4f5' };
+    var textMap = { danger:'#c0392b', warning:'#856404', info:'#1565c0' };
+    alertEl.innerHTML = alerts.map(function(a){
+      return '<div style="background:'+colorMap[a.level]+';border:1.5px solid '+borderMap[a.level]+';border-radius:10px;padding:.875rem 1rem;margin-bottom:.625rem">'+
+        '<div style="font-weight:700;font-size:14px;color:'+textMap[a.level]+';margin-bottom:.25rem">'+a.icon+' '+a.title+'</div>'+
+        '<div style="font-size:12px;color:var(--text-soft)">'+a.detail+'</div>'+
+      '</div>';
+    }).join('');
+  }
+
+  // ── 業務行為分析 ──
+  var behavMap = {};
+  customers.forEach(function(c){
+    var sp = c.salesPerson || '未指定';
+    if (!behavMap[sp]) behavMap[sp] = { total:0, active:0, closed:0, avgProb:0, probSum:0, stuckCount:0 };
+    behavMap[sp].total++;
+    if (isActive(c)) {
+      behavMap[sp].active++;
+      var p = calcCloseProb(c);
+      behavMap[sp].probSum += p;
+      if (getRiskLevel(c) !== 'ok') behavMap[sp].stuckCount++;
+    } else {
+      behavMap[sp].closed++;
+    }
+  });
+  Object.keys(behavMap).forEach(function(sp){
+    var d = behavMap[sp];
+    d.avgProb = d.active > 0 ? Math.round(d.probSum / d.active) : 0;
+  });
+
+  var behavList = Object.keys(behavMap).map(function(sp){ return { name:sp, d:behavMap[sp] }; })
+    .sort(function(a,b){ return b.d.avgProb - a.d.avgProb; });
+
+  var behavEl = document.getElementById('salesBehavior');
+  var bHtml = '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13px">';
+  bHtml += '<tr style="background:var(--navy);color:#fff">';
+  ['業務','客戶數','成交','停滯數','平均成交率','狀態評估'].forEach(function(h){
+    bHtml += '<th style="padding:.5rem .625rem;text-align:center;font-size:11px;font-weight:700">'+h+'</th>';
+  });
+  bHtml += '</tr>';
+  behavList.forEach(function(x, idx){
+    var d = x.d;
+    var rate = d.total > 0 ? Math.round(d.closed/d.total*100) : 0;
+    var bg = idx%2===0 ? '#fff' : 'var(--cream2)';
+    var isMe = currentRole==='sales' && x.name===currentUser;
+    if (isMe) bg = '#fffbea';
+
+    // 狀態評估
+    var status = '';
+    if (d.avgProb >= 55 && d.stuckCount <= 1) status = '<span style="color:#2e7d52;font-weight:700">🌟 優秀</span>';
+    else if (d.avgProb >= 40) status = '<span style="color:#e65100;font-weight:700">📈 成長中</span>';
+    else if (d.stuckCount > d.active * 0.5) status = '<span style="color:#c0392b;font-weight:700">⚠️ 需輔導</span>';
+    else status = '<span style="color:#546e7a">—</span>';
+
+    var probColor = d.avgProb >= 55 ? '#2e7d52' : d.avgProb >= 35 ? '#e65100' : '#c0392b';
+    bHtml += '<tr style="background:'+bg+'">';
+    bHtml += '<td style="padding:.5rem .625rem;font-weight:700;color:var(--navy)">'+x.name+(isMe?' 👈':'')+'</td>';
+    bHtml += '<td style="padding:.5rem .625rem;text-align:center">'+d.active+'跟進 / '+d.total+'總</td>';
+    bHtml += '<td style="padding:.5rem .625rem;text-align:center;color:#2e7d52;font-weight:700">'+d.closed+' ('+rate+'%)</td>';
+    bHtml += '<td style="padding:.5rem .625rem;text-align:center;color:'+(d.stuckCount>0?'#c0392b':'#2e7d52')+'">'+d.stuckCount+'</td>';
+    bHtml += '<td style="padding:.5rem .625rem;text-align:center;font-weight:700;color:'+probColor+'">'+d.avgProb+'%</td>';
+    bHtml += '<td style="padding:.5rem .625rem;text-align:center">'+status+'</td>';
+    bHtml += '</tr>';
+  });
+  bHtml += '</table></div>';
+  document.getElementById('salesBehavior').innerHTML = bHtml;
+
+  // ── 成交預測總覽 ──
+  var highProb  = active.filter(function(c){ return calcCloseProb(c) >= 70; });
+  var medProb   = active.filter(function(c){ var p=calcCloseProb(c); return p>=40 && p<70; });
+  var lowProb   = active.filter(function(c){ return calcCloseProb(c) < 40; });
+  var estRevenue = highProb.reduce(function(s,c){ return s + (parseFloat(c.dealAmount||0)||0); }, 0);
+
+  var fcEl = document.getElementById('closingForecast');
+  fcEl.innerHTML =
+    '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-bottom:1rem">'+
+      '<div style="background:linear-gradient(135deg,#e8f5e9,#f1f8e9);border:1px solid #a5d6a7;border-radius:12px;padding:1rem;text-align:center">'+
+        '<div style="font-size:28px;font-weight:900;color:#1b5e20">'+highProb.length+'</div>'+
+        '<div style="font-size:11px;color:#2e7d52;font-weight:700;margin-top:.25rem">高機率 ≥70%</div>'+
+      '</div>'+
+      '<div style="background:linear-gradient(135deg,#fff3e0,#fff8f0);border:1px solid #ffcc80;border-radius:12px;padding:1rem;text-align:center">'+
+        '<div style="font-size:28px;font-weight:900;color:#e65100">'+medProb.length+'</div>'+
+        '<div style="font-size:11px;color:#e65100;font-weight:700;margin-top:.25rem">中機率 40-69%</div>'+
+      '</div>'+
+      '<div style="background:var(--cream2);border:1px solid #e0e0e0;border-radius:12px;padding:1rem;text-align:center">'+
+        '<div style="font-size:28px;font-weight:900;color:var(--navy)">'+lowProb.length+'</div>'+
+        '<div style="font-size:11px;color:var(--text-soft);font-weight:700;margin-top:.25rem">培育中 &lt;40%</div>'+
+      '</div>'+
+    '</div>'+
+    (estRevenue > 0 ? '<div style="background:linear-gradient(135deg,#0f2744,#1a3a5c);border-radius:12px;padding:1rem;text-align:center">'+
+      '<div style="font-size:11px;color:#c9a84c;font-weight:700;letter-spacing:.1em;margin-bottom:.25rem">預估可成交金額（高機率客戶）</div>'+
+      '<div style="font-size:28px;font-weight:900;color:#f0d080">'+estRevenue+' <span style="font-size:14px;font-weight:500">萬元</span></div>'+
+    '</div>' : '')+
+    '<div style="margin-top:1rem">'+
+    highProb.slice(0,5).map(function(c){
+      var p = calcCloseProb(c);
+      return '<div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--cream2)">'+
+        '<span style="font-weight:600;color:var(--navy)">'+c.customerName+'</span>'+
+        '<span style="font-size:12px;color:var(--text-soft)">'+c.salesPerson+'</span>'+
+        '<span style="font-weight:700;color:#2e7d52;background:#e8f5e9;padding:2px 10px;border-radius:20px;font-size:13px">'+p+'%</span>'+
+      '</div>';
+    }).join('')+
+    '</div>';
+
+  // ── 本週業績節奏 ──
+  var weekRange = getWeekRange();
+  var weekNew = customers.filter(function(c){
+    if (!c.creationDate) return false;
+    var d = new Date(c.creationDate);
+    return d >= weekRange.start && d <= weekRange.end;
+  });
+  var weekClosed = customers.filter(function(c){
+    if (!c.contractDate) return false;
+    var d = new Date(c.contractDate);
+    return d >= weekRange.start && d <= weekRange.end;
+  });
+  var weekStageUp = active.filter(function(c){ return stageOf(c) >= 3; });
+
+  var wrEl = document.getElementById('weeklyRhythm');
+  wrEl.innerHTML =
+    '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem">'+
+      '<div style="background:#e3f0fb;border-radius:12px;padding:1rem;text-align:center">'+
+        '<div style="font-size:28px;font-weight:900;color:#1565c0">'+weekNew.length+'</div>'+
+        '<div style="font-size:11px;color:#1565c0;font-weight:700;margin-top:.25rem">本週新增</div>'+
+      '</div>'+
+      '<div style="background:linear-gradient(135deg,#e8f5e9,#f1f8e9);border-radius:12px;padding:1rem;text-align:center">'+
+        '<div style="font-size:28px;font-weight:900;color:#1b5e20">'+weekClosed.length+'</div>'+
+        '<div style="font-size:11px;color:#2e7d52;font-weight:700;margin-top:.25rem">本週成交</div>'+
+      '</div>'+
+      '<div style="background:linear-gradient(135deg,#fffbf0,#fff8e7);border-radius:12px;padding:1rem;text-align:center">'+
+        '<div style="font-size:28px;font-weight:900;color:#856404">'+weekStageUp.length+'</div>'+
+        '<div style="font-size:11px;color:#856404;font-weight:700;margin-top:.25rem">三部曲以上活躍</div>'+
+      '</div>'+
+    '</div>';
+
+  // 渲染三個新模組
+  renderSalesActivity();
+  renderSeminarPending();
+  renderLineNotifyPanel();
+}
+
+
+// ══════════════════════════════════════════════
+// 業務活躍度追蹤
+// 從客戶資料推算：幾天內有新增/更新、卡多久沒動作
+// ══════════════════════════════════════════════
+function renderSalesActivity() {
+  var el = document.getElementById('salesActivity');
+  if (!el) return;
+
+  var now = new Date();
+  var actMap = {};
+
+  customers.forEach(function(c) {
+    var sp = c.salesPerson || '未指定';
+    if (!actMap[sp]) actMap[sp] = {
+      total: 0, active: 0, closed: 0,
+      lastActionDays: 999,   // 距最近一筆異動幾天
+      newThisWeek: 0,        // 本週新增
+      newThisMonth: 0,       // 本月新增
+      updatedThisWeek: 0,    // 本週有更新的客戶數
+      highProbCount: 0       // 高機率未成交
+    };
+    actMap[sp].total++;
+    if (isActive(c)) actMap[sp].active++;
+    else actMap[sp].closed++;
+
+    // 用 id（timestamp）估最後動作時間
+    var idNum = parseInt(c.id || '0');
+    if (idNum > 0) {
+      var daysAgo = Math.floor((now - new Date(idNum)) / 86400000);
+      if (daysAgo < actMap[sp].lastActionDays) actMap[sp].lastActionDays = daysAgo;
+    }
+
+    // 本週 / 本月新增
+    if (c.creationDate) {
+      try {
+        var cd = new Date(c.creationDate);
+        var diffD = Math.floor((now - cd) / 86400000);
+        if (diffD <= 7)  actMap[sp].newThisWeek++;
+        if (diffD <= 30) actMap[sp].newThisMonth++;
+      } catch(e) {}
+    }
+
+    // 本週有被更新（updatedAt 欄位不一定有，用 id 時間戳估）
+    if (idNum > 0) {
+      var daysAgoId = Math.floor((now - new Date(idNum)) / 86400000);
+      if (daysAgoId <= 7) actMap[sp].updatedThisWeek++;
+    }
+
+    if (isActive(c) && calcCloseProb(c) >= 60) actMap[sp].highProbCount++;
+  });
+
+  var list = Object.keys(actMap).map(function(sp){ return { name:sp, d:actMap[sp] }; })
+    .sort(function(a,b){ return a.d.lastActionDays - b.d.lastActionDays; });
+
+  var html = '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13px">';
+  html += '<tr style="background:var(--navy);color:#fff">';
+  ['業務','總客戶','本週新增','本月新增','高機率客戶','最後活動','活躍評級'].forEach(function(h){
+    html += '<th style="padding:.5rem .625rem;text-align:center;font-size:11px;font-weight:700">'+h+'</th>';
+  });
+  html += '</tr>';
+
+  list.forEach(function(x, idx) {
+    var d = x.d;
+    var bg = idx%2===0 ? '#fff' : 'var(--cream2)';
+
+    // 活躍評級
+    var grade = '', gradeBg = '';
+    if (d.lastActionDays <= 3 && d.newThisWeek >= 2) {
+      grade = '🔥 超活躍'; gradeBg = '#e8f5e9;color:#1b5e20';
+    } else if (d.lastActionDays <= 7) {
+      grade = '✅ 正常'; gradeBg = '#f1f8e9;color:#33691e';
+    } else if (d.lastActionDays <= 14) {
+      grade = '🟡 偏慢'; gradeBg = '#fffbf0;color:#856404';
+    } else if (d.lastActionDays <= 30) {
+      grade = '🟠 警告'; gradeBg = '#fff3e0;color:#e65100';
+    } else {
+      grade = '🔴 失聯'; gradeBg = '#fdf0ee;color:#c0392b';
+    }
+
+    var lastStr = d.lastActionDays === 999 ? '—' : d.lastActionDays + '天前';
+    var lastColor = d.lastActionDays > 14 ? '#c0392b' : d.lastActionDays > 7 ? '#e65100' : '#2e7d52';
+
+    html += '<tr style="background:'+bg+'">';
+    html += '<td style="padding:.5rem .625rem;font-weight:700;color:var(--navy)">'+x.name+'</td>';
+    html += '<td style="padding:.5rem .625rem;text-align:center">'+d.active+' 跟進<br><span style="font-size:11px;color:var(--text-muted)">'+d.closed+' 成交</span></td>';
+    html += '<td style="padding:.5rem .625rem;text-align:center;font-weight:700;color:'+(d.newThisWeek>0?'#1565c0':'#9e9e9e')+'">'+d.newThisWeek+'</td>';
+    html += '<td style="padding:.5rem .625rem;text-align:center">'+d.newThisMonth+'</td>';
+    html += '<td style="padding:.5rem .625rem;text-align:center;font-weight:700;color:'+(d.highProbCount>0?'#2e7d52':'#9e9e9e')+'">'+d.highProbCount+'</td>';
+    html += '<td style="padding:.5rem .625rem;text-align:center;font-weight:700;color:'+lastColor+'">'+lastStr+'</td>';
+    html += '<td style="padding:.5rem .625rem;text-align:center"><span style="font-size:11px;font-weight:700;background:'+gradeBg+';padding:3px 8px;border-radius:20px">'+grade+'</span></td>';
+    html += '</tr>';
+  });
+  html += '</table></div>';
+
+  // 懶惰預警列表
+  var lazy = list.filter(function(x){ return x.d.lastActionDays > 14 && x.d.active > 0; });
+  if (lazy.length) {
+    html += '<div style="margin-top:1rem;background:#fdf0ee;border:1.5px solid #f5c6c3;border-radius:10px;padding:.875rem 1rem">';
+    html += '<div style="font-weight:700;color:#c0392b;margin-bottom:.375rem">⚠️ 需關注（14天以上無動作）</div>';
+    html += lazy.map(function(x){
+      return '<div style="font-size:13px;color:#c0392b;padding:.2rem 0">'+x.name+' — 最後活動 '+x.d.lastActionDays+'天前，尚有 '+x.d.active+' 位跟進中客戶</div>';
+    }).join('');
+    html += '</div>';
+  }
+
+  el.innerHTML = html;
+}
+
+// ══════════════════════════════════════════════
+// 研討會名單待認領
+// 從 customers 找來源是研討會但還未指派的，
+// 管理員也可以在這裡手動新增待認領名單
+// ══════════════════════════════════════════════
+var SEMINAR_PENDING_KEY = 'futime_seminar_pending';
+
+function getSeminarPending() {
+  try {
+    var raw = localStorage.getItem(SEMINAR_PENDING_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) { return []; }
+}
+
+function saveSeminarPending(list) {
+  try { localStorage.setItem(SEMINAR_PENDING_KEY, JSON.stringify(list)); } catch(e) {}
+}
+
+function renderSeminarPending() {
+  var el = document.getElementById('seminarPending');
+  if (!el) return;
+
+  var pending = getSeminarPending();
+
+  var html = '';
+
+  // 新增表單
+  html += '<div style="background:var(--cream2);border-radius:10px;padding:1rem;margin-bottom:1rem">';
+  html += '<div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:.625rem">➕ 新增研討會報名名單</div>';
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:.5rem;align-items:end">';
+  html += '<div><div style="font-size:11px;color:var(--text-muted);margin-bottom:.25rem">姓名</div><input id="sp_name" type="text" placeholder="客戶姓名" style="width:100%;padding:.5rem .75rem;border:1.5px solid #dde3ea;border-radius:8px;font-size:13px;font-family:inherit;outline:none"></div>';
+  html += '<div><div style="font-size:11px;color:var(--text-muted);margin-bottom:.25rem">聯絡方式</div><input id="sp_contact" type="text" placeholder="電話/Line" style="width:100%;padding:.5rem .75rem;border:1.5px solid #dde3ea;border-radius:8px;font-size:13px;font-family:inherit;outline:none"></div>';
+  html += '<div><div style="font-size:11px;color:var(--text-muted);margin-bottom:.25rem">備註</div><input id="sp_note" type="text" placeholder="場次/介紹人" style="width:100%;padding:.5rem .75rem;border:1.5px solid #dde3ea;border-radius:8px;font-size:13px;font-family:inherit;outline:none"></div>';
+  html += '<button onclick="addSeminarPending()" style="background:var(--navy);color:white;border:none;padding:.5rem 1rem;border-radius:8px;font-size:13px;font-family:inherit;cursor:pointer;white-space:nowrap">新增</button>';
+  html += '</div></div>';
+
+  if (!pending.length) {
+    html += '<div style="color:var(--text-muted);font-size:13px;padding:.5rem">目前無待認領名單</div>';
+  } else {
+    html += '<div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:.5rem">待認領名單（'+pending.length+' 筆）</div>';
+    html += pending.map(function(p, i){
+      var spOpts = SALES.map(function(s){ return '<option value="'+s+'">'+s+'</option>'; }).join('');
+      return '<div style="display:flex;align-items:center;gap:.625rem;padding:.625rem 0;border-bottom:1px solid var(--cream2);flex-wrap:wrap">' +
+        '<div style="flex:1;min-width:120px">' +
+          '<span style="font-weight:700;color:var(--navy)">'+p.name+'</span>' +
+          '<span style="font-size:12px;color:var(--text-muted);margin-left:.5rem">'+p.contact+'</span>' +
+          (p.note ? '<span style="font-size:11px;color:var(--text-muted);margin-left:.5rem">・'+p.note+'</span>' : '') +
+        '</div>' +
+        '<select id="sp_assign_'+i+'" style="padding:.35rem .625rem;border:1.5px solid #dde3ea;border-radius:6px;font-size:12px;font-family:inherit;outline:none">' +
+          '<option value="">指派給...</option>'+spOpts +
+        '</select>' +
+        '<button onclick="assignSeminarLead('+i+')" style="background:#1a3a5c;color:white;border:none;padding:.35rem .75rem;border-radius:6px;font-size:12px;font-family:inherit;cursor:pointer">轉入CRM</button>' +
+        '<button onclick="removeSeminarPending('+i+')" style="background:#fdf0ee;color:#c0392b;border:1px solid #f5c6c3;padding:.35rem .625rem;border-radius:6px;font-size:12px;cursor:pointer">✕</button>' +
+      '</div>';
+    }).join('');
+  }
+
+  el.innerHTML = html;
+}
+
+function addSeminarPending() {
+  var name = (document.getElementById('sp_name').value||'').trim();
+  var contact = (document.getElementById('sp_contact').value||'').trim();
+  var note = (document.getElementById('sp_note').value||'').trim();
+  if (!name) { showToast('請輸入客戶姓名'); return; }
+  var list = getSeminarPending();
+  list.push({ name:name, contact:contact, note:note, addedAt: new Date().toLocaleDateString('zh-TW') });
+  saveSeminarPending(list);
+  document.getElementById('sp_name').value = '';
+  document.getElementById('sp_contact').value = '';
+  document.getElementById('sp_note').value = '';
+  renderSeminarPending();
+  showToast('✅ 已加入待認領名單');
+}
+
+function removeSeminarPending(i) {
+  var list = getSeminarPending();
+  list.splice(i, 1);
+  saveSeminarPending(list);
+  renderSeminarPending();
+}
+
+function assignSeminarLead(i) {
+  var sel = document.getElementById('sp_assign_'+i);
+  var sp = sel ? sel.value : '';
+  if (!sp) { showToast('請先選擇指派業務'); return; }
+  var list = getSeminarPending();
+  var p = list[i];
+
+  // 直接呼叫 saveCustomer 流程寫入 CRM
+  var c = {
+    salesPerson: sp,
+    customerName: p.name,
+    contactInfo: p.contact,
+    leadSource: '展場活動',
+    leadSourceDetail: p.note || '研討會名單',
+    seminarAttended: '是',
+    creationDate: new Date().toISOString().slice(0,10),
+    customerActive: '進行中',
+    notes: '來源：研討會待認領名單' + (p.note ? '（'+p.note+'）' : '')
+  };
+
+  callAPI({ action: 'save', customer: c }, function(res) {
+    if (res.success) {
+      list.splice(i, 1);
+      saveSeminarPending(list);
+      renderSeminarPending();
+      fetchCustomers();
+      showToast('✅ 已將 '+p.name+' 指派給 '+sp+' 並寫入CRM');
+    } else {
+      showToast('❌ 寫入失敗：'+res.error);
+    }
+  });
+}
+
+// ══════════════════════════════════════════════
+// Line 通知整合
+// 需要 Line Notify token（申請：https://notify-bot.line.me）
+// Apps Script 定時觸發版本另見 apps_script 說明
+// ══════════════════════════════════════════════
+var LINE_NOTIFY_KEY = 'futime_line_token';
+
+function getLineToken() {
+  try { return localStorage.getItem(LINE_NOTIFY_KEY) || ''; } catch(e) { return ''; }
+}
+function saveLineToken(t) {
+  try { localStorage.setItem(LINE_NOTIFY_KEY, t); } catch(e) {}
+}
+
+function renderLineNotifyPanel() {
+  var el = document.getElementById('lineNotifyPanel');
+  if (!el) return;
+  var token = getLineToken();
+
+  var html = '';
+
+  // Token 設定
+  html += '<div style="background:var(--cream2);border-radius:10px;padding:1rem;margin-bottom:1rem">';
+  html += '<div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:.5rem">🔑 Line Notify Token</div>';
+  html += '<div style="font-size:12px;color:var(--text-muted);margin-bottom:.625rem">申請網址：<a href="https://notify-bot.line.me" target="_blank" style="color:var(--navy)">notify-bot.line.me</a> → 登入 → 產生權杖 → 貼入下方</div>';
+  html += '<div style="display:flex;gap:.5rem">';
+  html += '<input id="line_token_input" type="password" placeholder="貼入 Line Notify Token" value="'+(token?'已設定（點清除可重設）':'')+'" style="flex:1;padding:.5rem .875rem;border:1.5px solid #dde3ea;border-radius:8px;font-size:13px;font-family:inherit;outline:none">';
+  html += '<button onclick="saveLineTokenAction()" style="background:var(--navy);color:white;border:none;padding:.5rem 1rem;border-radius:8px;font-size:13px;font-family:inherit;cursor:pointer">儲存</button>';
+  if (token) html += '<button onclick="clearLineToken()" style="background:#fdf0ee;color:#c0392b;border:1px solid #f5c6c3;padding:.5rem .75rem;border-radius:8px;font-size:13px;cursor:pointer">清除</button>';
+  html += '</div></div>';
+
+  // 通知規則說明
+  html += '<div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:.5rem">📋 自動通知規則</div>';
+  var rules = [
+    { icon:'🔴', label:'高機率客戶（≥70%）超過7天未更新', action:'立即提醒負責業務' },
+    { icon:'🟡', label:'成交階段（五六部曲）超過14天未推進', action:'發送跟進提醒' },
+    { icon:'⚠️', label:'本週新增客戶數為0', action:'週一提醒全團隊' },
+    { icon:'🎓', label:'研討會名單超過3天未認領', action:'提醒管理員指派' },
+  ];
+  html += rules.map(function(r){
+    return '<div style="display:flex;align-items:center;gap:.75rem;padding:.5rem 0;border-bottom:1px solid var(--cream2)">' +
+      '<span style="font-size:16px">'+r.icon+'</span>' +
+      '<div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--text)">'+r.label+'</div>' +
+      '<div style="font-size:11px;color:var(--text-muted)">→ '+r.action+'</div></div>' +
+    '</div>';
+  }).join('');
+
+  // 手動測試按鈕
+  html += '<div style="margin-top:1rem;display:flex;gap:.75rem;flex-wrap:wrap">';
+  html += '<button onclick="runLineCheck()" style="background:var(--navy);color:white;border:none;padding:.625rem 1.25rem;border-radius:8px;font-size:13px;font-family:inherit;cursor:pointer">🔍 立即掃描並發送通知</button>';
+  html += '<button onclick="testLineNotify()" style="background:var(--cream2);color:var(--navy);border:1.5px solid #dde3ea;padding:.625rem 1.25rem;border-radius:8px;font-size:13px;font-family:inherit;cursor:pointer">📨 測試發送</button>';
+  html += '</div>';
+
+  // 說明：定時自動版本需 Apps Script
+  html += '<div style="margin-top:1rem;background:#e3f0fb;border-radius:8px;padding:.75rem 1rem;font-size:12px;color:#1565c0;line-height:1.7">';
+  html += '💡 <b>要讓通知自動每天發出</b>，需在 Google Apps Script 設定「定時觸發器」。<br>';
+  html += '在你的 Apps Script 貼上附件中的 Line 通知程式碼，並設定每天早上9點執行即可。';
+  html += '</div>';
+
+  el.innerHTML = html;
+}
+
+function saveLineTokenAction() {
+  var input = document.getElementById('line_token_input');
+  var val = (input ? input.value : '').trim();
+  if (!val || val === '已設定（點清除可重設）') { showToast('請貼入 Token'); return; }
+  saveLineToken(val);
+  renderLineNotifyPanel();
+  showToast('✅ Line Token 已儲存');
+}
+
+function clearLineToken() {
+  saveLineToken('');
+  renderLineNotifyPanel();
+  showToast('已清除 Token');
+}
+
+function sendLineNotify(token, message) {
+  // Line Notify API 需從後端發送（瀏覽器端 CORS 限制）
+  // 這裡改為：產生 Apps Script 呼叫指令，或透過 callAPI 轉發
+  callAPI({ action: 'lineNotify', token: token, message: message }, function(res) {
+    if (res.success) showToast('📨 Line 通知已發送');
+    else showToast('❌ 發送失敗：需在 Apps Script 加入 lineNotify handler');
+  });
+}
+
+function testLineNotify() {
+  var token = getLineToken();
+  if (!token) { showToast('請先設定 Line Notify Token'); return; }
+  sendLineNotify(token, '\n【富時代CRM 測試通知】\n✅ Line 通知連線正常\n' + new Date().toLocaleString('zh-TW'));
+}
+
+function runLineCheck() {
+  var token = getLineToken();
+  if (!token) { showToast('請先設定 Line Notify Token'); return; }
+  var now = new Date();
+  var msgs = [];
+
+  // 規則1：高機率 + 超過7天
+  customers.filter(isActive).forEach(function(c) {
+    var prob = calcCloseProb(c);
+    if (prob >= 70) {
+      var days = daysSinceUpdate(c);
+      if (days >= 7) {
+        msgs.push('🔴 '+c.customerName+'（'+c.salesPerson+'）成交機率'+prob+'%，已'+days+'天未更新');
+      }
+    }
+  });
+
+  // 規則2：五六部曲超過14天
+  customers.filter(isActive).forEach(function(c) {
+    var s = stageOf(c);
+    if (s === 5 || s === 6) {
+      var days = daysSinceUpdate(c);
+      if (days >= 14) {
+        msgs.push('🟡 '+c.customerName+'（'+c.salesPerson+'）卡在'+STAGE_NAMES[s]+'已'+days+'天');
+      }
+    }
+  });
+
+  // 規則3：待認領超過3天
+  var pending = getSeminarPending();
+  pending.forEach(function(p) {
+    try {
+      var addedDate = new Date(p.addedAt);
+      var days = Math.floor((now - addedDate) / 86400000);
+      if (days >= 3) msgs.push('🎓 研討會名單「'+p.name+'」待認領已'+days+'天');
+    } catch(e) {}
+  });
+
+  if (!msgs.length) {
+    showToast('✅ 掃描完成，目前無需通知的項目');
+    return;
+  }
+
+  var fullMsg = '\n【富時代CRM 智能預警】\n' + now.toLocaleDateString('zh-TW') + '\n\n' + msgs.join('\n');
+  sendLineNotify(token, fullMsg);
+  showToast('📨 發現 '+msgs.length+' 項預警，正在發送...');
+}
+
+
+// ══════════════════════════════════════════════
+// 每日跟進日誌系統
+// ══════════════════════════════════════════════
+var JOURNAL_KEY = 'futime_journal';
+
+function getJournal() {
+  try { var r = localStorage.getItem(JOURNAL_KEY); return r ? JSON.parse(r) : []; }
+  catch(e) { return []; }
+}
+function saveJournal(list) {
+  try { localStorage.setItem(JOURNAL_KEY, JSON.stringify(list)); } catch(e) {}
+}
+
+function initJournalPage() {
+  var now = new Date();
+  var el = document.getElementById('journalDateLabel');
+  if (el) el.textContent = now.getFullYear()+'/'+(now.getMonth()+1)+'/'+now.getDate()+' ('+['日','一','二','三','四','五','六'][now.getDay()]+')';
+
+  // 填充客戶選單
+  var sel = document.getElementById('jn_customer');
+  if (sel) {
+    var active = customers.filter(function(c){
+      return isActive(c) && (currentRole==='manager' || c.salesPerson===currentUser);
+    }).sort(function(a,b){ return calcCloseProb(b)-calcCloseProb(a); });
+    sel.innerHTML = '<option value="">── 選擇要跟進的客戶 ──</option>' +
+      active.map(function(c){
+        var prob = calcCloseProb(c);
+        var days = daysSinceUpdate(c);
+        var flag = days > 14 ? ' 🔴' : days > 7 ? ' 🟡' : '';
+        return '<option value="'+c.id+'">'+c.customerName+' ('+prob+'%'+flag+')</option>';
+      }).join('');
+  }
+
+  // 設定今日預設日期
+  var nd = document.getElementById('jn_nextDate');
+  if (nd && !nd.value) {
+    var tomorrow = new Date(now); tomorrow.setDate(tomorrow.getDate()+3);
+    nd.value = tomorrow.toISOString().slice(0,10);
+  }
+
+  renderTodayFollowupList();
+  renderWeekJournalList();
+}
+
+function fillJournalCustomer() {
+  // 選了客戶後自動填入下次跟進建議
+  var id = document.getElementById('jn_customer').value;
+  if (!id) return;
+  var c = customers.find(function(x){ return x.id && x.id.toString()===id; });
+  if (!c) return;
+  // 如果有 nextFollowupAction 就顯示
+  var np = document.getElementById('jn_nextPlan');
+  if (np && c.nextFollowupAction) np.value = c.nextFollowupAction;
+}
+
+function saveJournalEntry() {
+  var cid = document.getElementById('jn_customer').value;
+  var action = document.getElementById('jn_action').value;
+  var response = document.getElementById('jn_response').value;
+  var note = document.getElementById('jn_note').value;
+  var nextDate = document.getElementById('jn_nextDate').value;
+  var nextPlan = document.getElementById('jn_nextPlan').value;
+
+  if (!cid) { showToast('請選擇客戶'); return; }
+  if (!action) { showToast('請選擇今天做了什麼'); return; }
+  if (!response) { showToast('請選擇客戶反應'); return; }
+
+  var c = customers.find(function(x){ return x.id && x.id.toString()===cid; });
+  if (!c) return;
+
+  var btn = document.getElementById('jn_saveBtn');
+  btn.disabled = true; btn.textContent = '儲存中...';
+
+  // 儲存到本地日誌
+  var journal = getJournal();
+  journal.unshift({
+    id: Date.now().toString(),
+    customerId: cid,
+    customerName: c.customerName,
+    salesPerson: currentUser,
+    action: action,
+    response: response,
+    note: note,
+    nextDate: nextDate,
+    nextPlan: nextPlan,
+    date: new Date().toISOString().slice(0,10),
+    ts: Date.now()
+  });
+  // 保留最近500筆
+  if (journal.length > 500) journal = journal.slice(0, 500);
+  saveJournal(journal);
+
+  // 同時更新客戶的跟進備註到 CRM
+  var updatePayload = Object.assign({}, c, {
+    notes: '['+new Date().toLocaleDateString('zh-TW')+'] '+action+' - '+response+(note?' / '+note:'')+(c.notes ? '\n'+c.notes : ''),
+    nextFollowupAction: nextPlan || c.nextFollowupAction,
+    lastFollowupResult: response.includes('進展') ? '✅ 有進展，下次約好了' :
+                        response.includes('積極') ? '✅ 有進展，下次約好了' :
+                        response.includes('拒絕') ? '❌ 拒絕或沒有回應' : '💬 有聊，態度正面'
+  });
+
+  callAPI({ action: 'update', customer: updatePayload }, function(res) {
+    btn.disabled = false; btn.textContent = '⚡ 記錄跟進（更新到客戶資料）';
+    if (res.success) {
+      showToast('✅ 已記錄！客戶資料已同步更新');
+      // 清空表單
+      document.getElementById('jn_customer').value = '';
+      document.getElementById('jn_action').value = '';
+      document.getElementById('jn_response').value = '';
+      document.getElementById('jn_note').value = '';
+      document.getElementById('jn_nextPlan').value = '';
+      fetchCustomers();
+      renderWeekJournalList();
+      renderTodayFollowupList();
+    } else {
+      showToast('❌ 更新失敗：'+res.error);
+    }
+  });
+}
+
+function renderTodayFollowupList() {
+  var el = document.getElementById('todayFollowupList');
+  if (!el) return;
+  var now = new Date();
+
+  // 推薦今日應跟進：高機率 + 流失風險 + 有設定跟進日期到期
+  var journal = getJournal();
+  var todayStr = now.toISOString().slice(0,10);
+
+  var myCustomers = customers.filter(function(c){
+    return isActive(c) && (currentRole==='manager' || c.salesPerson===currentUser);
+  });
+
+  var recommended = myCustomers.map(function(c){
+    var prob = calcCloseProb(c);
+    var risk = getRiskLevel(c);
+    var days = daysSinceUpdate(c);
+    var hasJournalToday = journal.some(function(j){
+      return j.customerId===c.id.toString() && j.date===todayStr;
+    });
+    var score = prob + (risk==='critical'?30:risk==='high'?20:risk==='medium'?10:0);
+    return { c:c, prob:prob, risk:risk, days:days, done:hasJournalToday, score:score };
+  })
+  .filter(function(x){ return !x.done && x.prob >= 25; })
+  .sort(function(a,b){ return b.score - a.score })
+  .slice(0, 8);
+
+  if (!recommended.length) {
+    el.innerHTML = '<div style="color:#2e7d52;font-weight:600;padding:.5rem">✅ 今日推薦名單已全部跟進完畢！</div>';
+    return;
+  }
+
+  el.innerHTML = recommended.map(function(x){
+    var c = x.c;
+    var s = stageOf(c);
+    var riskTag = x.risk==='critical' ? '<span style="font-size:10px;color:#c0392b;background:#fdf0ee;padding:2px 6px;border-radius:20px;font-weight:700">🔴 '+(x.days)+'天未跟</span>' :
+                  x.risk==='high' ? '<span style="font-size:10px;color:#856404;background:#fffbf0;padding:2px 6px;border-radius:20px;font-weight:700">🟡 '+(x.days)+'天</span>' : '';
+    var probColor = x.prob>=70?'#2e7d52':x.prob>=40?'#e65100':'#9e9e9e';
+    return '<div style="display:flex;align-items:center;gap:.75rem;padding:.75rem 0;border-bottom:1px solid var(--cream2)">' +
+      '<div style="flex:1">' +
+        '<div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">' +
+          '<span style="font-weight:700;color:var(--navy)">'+c.customerName+'</span>' +
+          '<span class="badge badge-'+s+'" style="font-size:10px">'+STAGE_NAMES[s]+'</span>' +
+          riskTag +
+        '</div>' +
+        '<div style="font-size:12px;color:var(--text-muted);margin-top:.15rem">👤 '+c.salesPerson+(c.buyingTimeline?' ｜ ⏰ '+c.buyingTimeline:'')+'</div>' +
+      '</div>' +
+      '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:.25rem">' +
+        '<span style="font-size:16px;font-weight:800;color:'+probColor+'">'+x.prob+'%</span>' +
+        '<button data-cid="'+c.id+'" onclick="quickSelectCustomer(this.dataset.cid)" style="font-size:11px;background:var(--navy);color:white;border:none;padding:.3rem .75rem;border-radius:6px;cursor:pointer;font-family:inherit">記錄跟進</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function quickSelectCustomer(id) {
+  var sel = document.getElementById('jn_customer');
+  if (sel) { sel.value = id; fillJournalCustomer(); }
+  // scroll to form
+  var saveBtn = document.getElementById('jn_saveBtn');
+  if (saveBtn) saveBtn.scrollIntoView({ behavior:'smooth', block:'center' });
+}
+
+function renderWeekJournalList() {
+  var el = document.getElementById('weekJournalList');
+  if (!el) return;
+  var journal = getJournal();
+  var now = new Date();
+  var weekAgo = new Date(now - 7*86400000);
+
+  var mine = journal.filter(function(j){
+    return (currentRole==='manager' || j.salesPerson===currentUser) &&
+           new Date(j.ts) >= weekAgo;
+  });
+
+  if (!mine.length) {
+    el.innerHTML = '<div style="color:var(--text-muted);font-size:13px">本週尚無跟進記錄</div>';
+    return;
+  }
+
+  // 依日期分組
+  var byDate = {};
+  mine.forEach(function(j){
+    if (!byDate[j.date]) byDate[j.date] = [];
+    byDate[j.date].push(j);
+  });
+
+  var html = '';
+  Object.keys(byDate).sort().reverse().forEach(function(date){
+    var entries = byDate[date];
+    html += '<div style="margin-bottom:.75rem">';
+    html += '<div style="font-size:11px;font-weight:700;color:var(--navy);letter-spacing:.06em;padding:.375rem 0;border-bottom:2px solid var(--cream2);margin-bottom:.375rem">'+date+'（'+entries.length+' 筆）</div>';
+    entries.forEach(function(j){
+      var responseColor = j.response.includes('積極')||j.response.includes('進展')||j.response.includes('感興趣') ? '#2e7d52' :
+                          j.response.includes('拒絕') ? '#c0392b' : '#546e7a';
+      html += '<div style="padding:.5rem .625rem;background:var(--cream);border-radius:8px;margin-bottom:.375rem">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.2rem">' +
+          '<span style="font-weight:600;font-size:13px;color:var(--navy)">'+j.customerName+'</span>' +
+          '<span style="font-size:11px;color:'+responseColor+';font-weight:600">'+j.response+'</span>' +
+        '</div>' +
+        '<div style="font-size:12px;color:var(--text-soft)">'+j.action+(j.note?' — '+j.note:'')+'</div>' +
+        (j.nextDate ? '<div style="font-size:11px;color:#1565c0;margin-top:.2rem">📅 下次：'+j.nextDate+(j.nextPlan?' '+j.nextPlan:'')+'</div>' : '') +
+      '</div>';
+    });
+    html += '</div>';
+  });
+  el.innerHTML = html;
+}
+
+// ══════════════════════════════════════════════
+// 趨勢比較（本月 vs 上月）
+// ══════════════════════════════════════════════
+function renderTrend() {
+  var el = document.getElementById('trendGrid');
+  if (!el) return;
+
+  var now = new Date();
+  var thisMonth = now.getMonth(), thisYear = now.getFullYear();
+  var lastMonth = thisMonth === 0 ? 11 : thisMonth - 1;
+  var lastYear  = thisMonth === 0 ? thisYear - 1 : thisYear;
+
+  function inMonth(dateStr, m, y) {
+    if (!dateStr) return false;
+    try { var d = new Date(dateStr); return d.getMonth()===m && d.getFullYear()===y; }
+    catch(e) { return false; }
+  }
+
+  // 新增客戶
+  var thisNewCount = customers.filter(function(c){ return inMonth(c.creationDate, thisMonth, thisYear); }).length;
+  var lastNewCount = customers.filter(function(c){ return inMonth(c.creationDate, lastMonth, lastYear); }).length;
+
+  // 成交
+  var thisClosed = customers.filter(function(c){ return inMonth(c.contractDate, thisMonth, thisYear); });
+  var lastClosed = customers.filter(function(c){ return inMonth(c.contractDate, lastMonth, lastYear); });
+  var thisClosedAmt = thisClosed.reduce(function(s,c){ return s+(parseFloat(c.dealAmount)||0); }, 0);
+  var lastClosedAmt = lastClosed.reduce(function(s,c){ return s+(parseFloat(c.dealAmount)||0); }, 0);
+
+  // 研討會
+  var thisSemar = customers.filter(function(c){ return c.seminarAttended==='是' && inMonth(c.creationDate, thisMonth, thisYear); }).length;
+  var lastSemar = customers.filter(function(c){ return c.seminarAttended==='是' && inMonth(c.creationDate, lastMonth, lastYear); }).length;
+
+  // 轉換率
+  var thisRate = thisNewCount > 0 ? Math.round(thisClosed.length/thisNewCount*100) : 0;
+  var lastRate = lastNewCount > 0 ? Math.round(lastClosed.length/lastNewCount*100) : 0;
+
+  function trendArrow(cur, prev) {
+    if (cur > prev) return '<span style="color:#2e7d52;font-weight:700">▲ +'+(cur-prev)+'</span>';
+    if (cur < prev) return '<span style="color:#c0392b;font-weight:700">▼ '+(cur-prev)+'</span>';
+    return '<span style="color:#9e9e9e">— 持平</span>';
+  }
+
+  var mNames = ['','一','二','三','四','五','六','七','八','九','十','十一','十二'];
+  var thisLabel = mNames[thisMonth+1]+'月';
+  var lastLabel = mNames[lastMonth+1]+'月';
+
+  var rows = [
+    { label:'新增客戶', thisVal:thisNewCount, lastVal:lastNewCount, unit:'人' },
+    { label:'成交數', thisVal:thisClosed.length, lastVal:lastClosed.length, unit:'件' },
+    { label:'成交金額', thisVal:thisClosedAmt, lastVal:lastClosedAmt, unit:'萬' },
+    { label:'成交轉換率', thisVal:thisRate, lastVal:lastRate, unit:'%' },
+    { label:'研討會新增', thisVal:thisSemar, lastVal:lastSemar, unit:'人' },
+  ];
+
+  var html = '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13px">';
+  html += '<tr style="background:var(--navy);color:#fff">';
+  ['指標', lastLabel+'（上月）', thisLabel+'（本月）', '趨勢'].forEach(function(h){
+    html += '<th style="padding:.5rem .75rem;text-align:center;font-size:12px;font-weight:700">'+h+'</th>';
+  });
+  html += '</tr>';
+
+  rows.forEach(function(r, idx){
+    var bg = idx%2===0 ? '#fff' : 'var(--cream2)';
+    var thisColor = r.thisVal > r.lastVal ? '#2e7d52' : r.thisVal < r.lastVal ? '#c0392b' : 'var(--text)';
+    html += '<tr style="background:'+bg+'">';
+    html += '<td style="padding:.625rem .75rem;font-weight:600;color:var(--navy)">'+r.label+'</td>';
+    html += '<td style="padding:.625rem .75rem;text-align:center;color:var(--text-muted)">'+r.lastVal+r.unit+'</td>';
+    html += '<td style="padding:.625rem .75rem;text-align:center;font-weight:700;color:'+thisColor+'">'+r.thisVal+r.unit+'</td>';
+    html += '<td style="padding:.625rem .75rem;text-align:center;font-size:12px">'+trendArrow(r.thisVal, r.lastVal)+'</td>';
+    html += '</tr>';
+  });
+  html += '</table></div>';
+
+  // 快評
+  var summary = '';
+  if (thisClosed.length > lastClosed.length) {
+    summary = '🎉 本月成交數較上月增加 '+(thisClosed.length-lastClosed.length)+' 件，保持節奏！';
+  } else if (thisClosed.length < lastClosed.length) {
+    summary = '⚠️ 本月成交數較上月少 '+(lastClosed.length-thisClosed.length)+' 件，建議重點衝刺即將成交客戶。';
+  } else if (thisNewCount > lastNewCount) {
+    summary = '📈 新增名單數成長，轉換率是關鍵，注意推進八部曲進度。';
+  }
+
+  if (summary) {
+    html += '<div style="margin-top:.75rem;padding:.625rem 1rem;background:linear-gradient(135deg,#fffbf0,#fff8e7);border:1px solid #f0d080;border-radius:8px;font-size:13px;color:#856404;font-weight:600">'+summary+'</div>';
+  }
+
+  el.innerHTML = html;
+}
+
+// ══════════════════════════════════════════════
+// 資料完整度警示
+// ══════════════════════════════════════════════
+var COMPLETENESS_FIELDS = [
+  { key:'leadSource',      label:'名單來源',   weight:1 },
+  { key:'buyingTimeline',  label:'購買時間軸', weight:2 },
+  { key:'familySupport',   label:'家人支持度', weight:1 },
+  { key:'budget',          label:'自有資金',   weight:2 },
+  { key:'painPoints',      label:'痛點分析',   weight:2 },
+  { key:'currentStatus',   label:'信任狀態',   weight:1 },
+  { key:'contactInfo',     label:'聯絡方式',   weight:1 },
+];
+var MAX_COMPLETE_SCORE = COMPLETENESS_FIELDS.reduce(function(s,f){ return s+f.weight; }, 0);
+
+function calcCompleteness(c) {
+  var score = 0;
+  COMPLETENESS_FIELDS.forEach(function(f){
+    if (c[f.key] && c[f.key].toString().trim()) score += f.weight;
+  });
+  return Math.round(score / MAX_COMPLETE_SCORE * 100);
+}
+
+function renderCompleteness() {
+  var el = document.getElementById('completenessGrid');
+  if (!el) return;
+
+  var myActive = customers.filter(function(c){
+    return isActive(c) && (currentRole==='manager' || c.salesPerson===currentUser);
+  });
+
+  if (!myActive.length) { el.innerHTML = '<div style="color:var(--text-muted);font-size:13px">暫無跟進中客戶</div>'; return; }
+
+  // 找出不完整的
+  var incomplete = myActive.map(function(c){
+    var pct = calcCompleteness(c);
+    var missing = COMPLETENESS_FIELDS.filter(function(f){ return !c[f.key] || !c[f.key].toString().trim(); }).map(function(f){ return f.label; });
+    return { c:c, pct:pct, missing:missing };
+  }).filter(function(x){ return x.pct < 80; })
+    .sort(function(a,b){ return a.pct - b.pct });
+
+  if (!incomplete.length) {
+    el.innerHTML = '<div style="color:#2e7d52;font-weight:600;padding:.5rem">✅ 所有跟進中客戶資料完整度達 80% 以上！</div>';
+    return;
+  }
+
+  // 整體概覽
+  var avgComplete = Math.round(myActive.reduce(function(s,c){ return s+calcCompleteness(c); }, 0) / myActive.length);
+  var html = '<div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;padding:.75rem 1rem;background:var(--cream2);border-radius:10px">';
+  html += '<div style="flex:1"><div style="font-size:12px;color:var(--text-muted);margin-bottom:.25rem">平均完整度</div>';
+  var avgColor = avgComplete>=80?'#2e7d52':avgComplete>=60?'#e65100':'#c0392b';
+  html += '<div style="font-size:24px;font-weight:900;color:'+avgColor+'">'+avgComplete+'%</div></div>';
+  html += '<div style="font-size:13px;color:var(--text-muted)">'+incomplete.length+' 位客戶資料不完整<br>需補充以提升成交預測準確度</div>';
+  html += '</div>';
+
+  html += incomplete.slice(0,8).map(function(x){
+    var c = x.c;
+    var barColor = x.pct>=60?'#e65100':'#c0392b';
+    return '<div style="padding:.625rem 0;border-bottom:1px solid var(--cream2)">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.375rem">' +
+        '<span style="font-weight:600;color:var(--navy);font-size:13px">'+c.customerName+'</span>' +
+        '<span style="font-size:12px;font-weight:700;color:'+barColor+'">'+x.pct+'%</span>' +
+      '</div>' +
+      '<div style="background:var(--cream2);border-radius:99px;height:6px;overflow:hidden;margin-bottom:.375rem">' +
+        '<div style="height:100%;width:'+x.pct+'%;background:linear-gradient(90deg,'+barColor+',#f0a040);border-radius:99px;transition:.6s"></div>' +
+      '</div>' +
+      '<div style="font-size:11px;color:#c0392b">缺：'+x.missing.join('、')+'</div>' +
+      '<button data-eid="'+c.id+'" onclick="showEdit(this.dataset.eid)" style="margin-top:.375rem;font-size:11px;background:#e3f0fb;color:#1565c0;border:1px solid #b3d4f5;padding:.2rem .625rem;border-radius:6px;cursor:pointer;font-family:inherit">📝 立即補充</button>' +
+    '</div>';
+  }).join('');
+
+  el.innerHTML = html;
+}
+
+
+// ══════════════════════════════════════════════
+// 族群選擇互動
+// ══════════════════════════════════════════════
+function updatePainPointsBySegment() {
+  var seg = document.getElementById('clientSegment').value;
+  // 地緣組才顯示偏好區域欄位
+  var geoDiv = document.getElementById('geographyGroupDiv');
+  if (geoDiv) geoDiv.style.display = seg === '地緣組' ? 'block' : 'none';
+
+  // 自動勾選該族群最常見痛點（可手動調整）
+  var autoCheck = {
+    '新鮮人':    ['新鮮人-趕不上通膨','新鮮人-想有自己空間'],
+    '雙薪無殼':  ['雙薪-一直看一直沒買','雙薪-兩人意見不一'],
+    '月光族':    ['月光族-無被動收入','月光族-頭期款壓力'],
+    '高資產':    ['高資產-資產升級','高資產-分散風險'],
+    '退休規劃':  ['退休-養老安置','退休-以租養老'],
+    '有老屋':    ['有老屋-爬樓梯不便','有老屋-結構安全'],
+    '換屋族':    ['換屋-空間不夠'],
+    '租屋族':    ['租屋-房價上漲無份','租屋-租金浪費'],
+    '地緣組':    ['地緣-只信任熟悉區域','地緣-熟悉增值潛力'],
+    '股票族':    ['股票-資產多元配置','股票-股市波動大'],
+    '定存族':    ['定存-通膨侵蝕','定存-資金閒置'],
+    '包租公':    ['包租-以房養房邏輯','包租-被動收入目標'],
+  };
+
+  if (!seg || !autoCheck[seg]) return;
+
+  // 先清空
+  var wrap = document.getElementById('ms_painPoint');
+  if (!wrap) return;
+  wrap.querySelectorAll('input[type=checkbox]').forEach(function(el){ el.checked = false; });
+
+  // 勾選推薦項目
+  autoCheck[seg].forEach(function(val){
+    var cb = wrap.querySelector('input[value="'+val+'"]');
+    if (cb) cb.checked = true;
+  });
+  updateMsDisplay(wrap);
+  showToast('✅ 已自動勾選 '+seg+' 常見痛點，可手動調整');
+}
+
+// ══════════════════════════════════════════════
+// AI 話術建議（呼叫 Claude API）
+// ══════════════════════════════════════════════
+function buildCustomerPrompt(c) {
+  var s = stageOf(c);
+  var prob = calcCloseProb(c);
+  var stageNames = ['','客戶開發','初步接觸','需求分析','產品匹配','異議處理','成交締結','售後服務','轉介紹'];
+  var nl = '\n';
+  var prompt = '';
+  prompt += '你是一位頂尖的台灣房地產顧問，精通富時代地產的八部曲銷售系統。' + nl;
+  prompt += '請根據以下客戶資料，給出具體的話術建議。' + nl + nl;
+  prompt += '【客戶基本資料】' + nl;
+  prompt += '姓名：' + c.customerName + '　年齡：' + (c.customerAge||'未填') + '歲' + nl;
+  prompt += '族群：' + (c.clientSegment||'未設定') + '　購屋目的：' + (c.purchasePurpose||'未填') + nl;
+  prompt += '購買時間軸：' + (c.buyingTimeline||'未填') + '　居住狀況：' + (c.livingStatus||'未填') + nl;
+  if (c.preferredArea) prompt += '偏好區域：' + c.preferredArea + nl;
+  prompt += nl + '【家庭與決策】' + nl;
+  prompt += '家庭成員：' + (c.familyMembers||'未填') + '　KEY MAN：' + (c.keyMan||'未填') + nl;
+  prompt += '家人支持度：' + (c.familySupport||'未填') + '　客戶個性：' + (c.personalityType||'未填') + nl;
+  prompt += nl + '【財務狀況】' + nl;
+  prompt += '自有資金：' + (c.budget||'未填') + '　每月可儲蓄：' + (c.monthlyPayment||'未填') + nl;
+  prompt += nl + '【痛點與需求】' + nl;
+  prompt += '主要痛點：' + (c.painPoints||'未填') + nl;
+  if (c.painPointsNote) prompt += '補充：' + c.painPointsNote + nl;
+  prompt += nl + '【目前銷售進度】' + nl;
+  prompt += '八部曲階段：第' + s + '部曲（' + stageNames[s] + '）' + nl;
+  prompt += '成交預測機率：' + prob + '%' + nl;
+  prompt += '信任狀態：' + (c.currentStatus||'未填') + nl;
+  if (c.decisionBlock) prompt += '決策障礙：' + c.decisionBlock + nl;
+  if (c.objections) prompt += '客戶異議：' + c.objections + nl;
+  if (c.viewedProperties) prompt += '看過案子：' + c.viewedProperties + nl;
+  if (c.whyNotBought) prompt += '未買原因：' + c.whyNotBought + nl;
+  prompt += nl + '請給出以下三點建議，用繁體中文，語氣自然像在跟業務朋友說話：' + nl + nl;
+  prompt += '## 1. 現況判斷（2-3句）' + nl;
+  prompt += '這個客戶目前最核心的問題是什麼？卡在哪裡？' + nl + nl;
+  prompt += '## 2. 本次建議開場白' + nl;
+  prompt += '給一段完整的話術，可以直接用來開啟下一次對話或拜訪。針對這個客戶的族群和痛點設計，不要太制式。' + nl + nl;
+  prompt += '## 3. 預測異議與回應' + nl;
+  prompt += '這個客戶最可能說的1-2個拒絕理由是什麼？各給一個自然的回應方式。';
+  return prompt;
+}
+
+function showAIScriptModal(customerId) {
+  var c = customers.find(function(x){ return x.id && x.id.toString()===customerId.toString(); });
+  if (!c) return;
+
+  // 建立 modal 覆蓋層
+  var overlay = document.getElementById('aiScriptOverlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'aiScriptOverlay';
+    overlay.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(15,39,68,.7);z-index:3000;padding:1rem;align-items:center;justify-content:center';
+    overlay.innerHTML =
+      '<div style="background:#fff;border-radius:20px;max-width:600px;width:100%;max-height:88vh;overflow-y:auto;display:flex;flex-direction:column">' +
+        '<div style="padding:1.25rem 1.5rem;border-bottom:2px solid var(--cream2);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;z-index:1">' +
+          '<div>' +
+            '<div style="font-size:11px;color:var(--gold);font-weight:700;letter-spacing:.1em">AI SCRIPT ADVISOR</div>' +
+            '<h3 style="color:var(--navy);font-size:16px" id="aiScriptTitle">🤖 AI 話術建議</h3>' +
+          '</div>' +
+          '<button onclick="closeAIScript()" style="background:none;border:none;font-size:24px;cursor:pointer;color:#9e9e9e">✕</button>' +
+        '</div>' +
+        '<div id="aiScriptBody" style="padding:1.5rem;flex:1"></div>' +
+      '</div>';
+    overlay.addEventListener('click', function(e){ if(e.target===overlay) closeAIScript(); });
+    document.body.appendChild(overlay);
+  }
+
+  document.getElementById('aiScriptTitle').textContent = '🤖 '+c.customerName+' 的 AI 話術建議';
+  document.getElementById('aiScriptBody').innerHTML =
+    '<div style="text-align:center;padding:2rem">' +
+      '<div style="width:40px;height:40px;border:4px solid var(--cream2);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 1rem"></div>' +
+      '<div style="color:var(--navy);font-weight:600">Claude 正在分析客戶資料...</div>' +
+      '<div style="color:var(--text-muted);font-size:13px;margin-top:.5rem">約需 5-10 秒</div>' +
+    '</div>';
+  overlay.style.display = 'flex';
+
+  // 呼叫 Claude API
+  var prompt = buildCustomerPrompt(c);
+  fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(data){
+    var text = data.content && data.content[0] ? data.content[0].text : '無法取得回應';
+    renderAIScript(text, c);
+  })
+  .catch(function(err){
+    document.getElementById('aiScriptBody').innerHTML =
+      '<div style="color:#c0392b;padding:1rem;background:#fdf0ee;border-radius:8px">❌ 呼叫失敗：'+err.toString()+'</div>';
+  });
+}
+
+function renderAIScript(text, c) {
+  var html = '<div style="font-size:13px;line-height:1.8;color:var(--text)">';
+
+  // markdown → HTML（安全版本，不用 regex 特殊字元）
+  var parts = text.split('\n');
+  var out = [];
+  parts.forEach(function(line) {
+    if (line.indexOf('## ') === 0) {
+      out.push('<div style="font-size:14px;font-weight:700;color:var(--navy);margin:1.25rem 0 .5rem;padding:.5rem .875rem;background:linear-gradient(135deg,#fffbf0,#fff8e7);border-left:3px solid var(--gold);border-radius:0 8px 8px 0">' + line.slice(3) + '</div>');
+    } else if (line.trim() === '') {
+      out.push('<br>');
+    } else {
+      // bold: **text**
+      var l = line.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+      out.push(l + '<br>');
+    }
+  });
+  html += out.join('');
+  html += '</div>';
+
+  var cid = c.id ? c.id.toString() : '';
+  html += '<div style="margin-top:1.5rem;display:flex;gap:.75rem;flex-wrap:wrap">';
+  html += '<button onclick="copyAIScript()" style="background:var(--navy);color:white;border:none;padding:.625rem 1.25rem;border-radius:8px;font-size:13px;font-family:inherit;cursor:pointer">📋 複製話術</button>';
+  html += '<button onclick="saveToJournal_AI(\'' + cid + '\')" style="background:var(--cream2);color:var(--navy);border:1.5px solid #dde3ea;padding:.625rem 1.25rem;border-radius:8px;font-size:13px;font-family:inherit;cursor:pointer">📝 記錄到日誌</button>';
+  html += '<button onclick="closeAIScript()" style="background:#fdf0ee;color:#c0392b;border:1px solid #f5c6c3;padding:.625rem 1rem;border-radius:8px;font-size:13px;cursor:pointer">關閉</button>';
+  html += '</div>';
+
+  document.getElementById('aiScriptBody').innerHTML = html;
+}
+
+function closeAIScript() {
+  var o = document.getElementById('aiScriptOverlay');
+  if (o) o.style.display = 'none';
+}
+
+function copyAIScript() {
+  var body = document.getElementById('aiScriptBody');
+  var text = body ? body.innerText : '';
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(function(){ showToast('✅ 已複製話術'); });
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('✅ 已複製話術');
+  }
+}
+
+function saveToJournal_AI(customerId) {
+  var body = document.getElementById('aiScriptBody');
+  var text = body ? body.innerText.slice(0, 300) : '';
+  var journal = getJournal();
+  var c = customers.find(function(x){ return x.id && x.id.toString()===customerId.toString(); });
+  if (!c) return;
+  journal.unshift({
+    id: Date.now().toString(),
+    customerId: customerId,
+    customerName: c.customerName,
+    salesPerson: currentUser,
+    action: '🤖 AI 話術建議',
+    response: '── 已生成建議 ──',
+    note: text,
+    date: new Date().toISOString().slice(0,10),
+    ts: Date.now()
+  });
+  if (journal.length > 500) journal = journal.slice(0,500);
+  saveJournal(journal);
+  showToast('✅ 已儲存到日誌');
+  closeAIScript();
+}
+
+function formatDate(raw) {
+  if (!raw) return '—';
+  try {
+    var d = new Date(raw);
+    if (isNaN(d.getTime())) return raw;
+    return d.getFullYear()+'/'+(d.getMonth()+1)+'/'+(d.getDate());
+  } catch(e) { return raw; }
+}
 function renderRecent() {
   var sorted = customers.slice().sort(function(a,b){ return (b.id||0)-(a.id||0); }).slice(0,5);
   if (!sorted.length) { document.getElementById('recentList').innerHTML='<div class="empty-state"><div class="empty-icon">📋</div>尚無資料</div>'; return; }
@@ -1510,7 +3019,7 @@ function renderRecent() {
     var s = stageOf(c);
     return '<div class="customer-item" onclick="showDetail(\''+c.id.toString()+'\')">'+
       '<div class="customer-head"><span class="customer-name">'+c.customerName+'</span><span class="badge badge-'+s+'">'+STAGE_NAMES[s]+'</span></div>'+
-      '<div class="customer-meta">👤 '+c.salesPerson+' ｜ '+c.creationDate+'</div></div>';
+      '<div class="customer-meta">👤 '+c.salesPerson+' ｜ '+formatDate(c.creationDate)+'</div></div>';
   }).join('');
 }
 
@@ -1626,7 +3135,9 @@ function saveCustomer() {
     personalityType:v('personalityType'), decisionBlock:getMsValue('ms_decisionBlock'),
     lastFollowupResult:getMsValue('ms_lastFollowup'), nextFollowupAction:getMsValue('ms_nextFollowup'),
     customerActive:v('customerActive')||'進行中',
-    seminarAttended:v('seminarAttended')
+    seminarAttended:v('seminarAttended'),
+    clientSegment:v('clientSegment'),
+    preferredArea:v('preferredArea')
   };
   callAPI({ action: 'save', customer: c }, function(res) {
     btn.disabled = false; btn.textContent = '☁️ 儲存並同步';
@@ -1677,8 +3188,18 @@ function renderCustomers() {
   con.innerHTML = mc.map(function(c){
     var s = stageOf(c);
     var manInfo = currentRole==='manager' ? '<div class="customer-meta">👤 '+c.salesPerson+'</div>' : '';
-    return '<div class="customer-item" onclick="showDetail(\''+c.id.toString()+'\')">'+
-      '<div class="customer-head"><span class="customer-name">'+c.customerName+'</span><span style="display:flex;gap:.375rem;align-items:center"><span class="badge badge-'+s+'">'+s+'️⃣ '+STAGE_NAMES[s]+'</span>'+(c.seminarAttended==='是'||c.seminarAttended==='已邀請未參加'?'<span style="background:#e8f5e9;color:#2e7d32;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600">🎓 研討會</span>':'')+'</span></div>'+
+    var prob = isActive(c) ? calcCloseProb(c) : null;
+    var probBadge = '';
+    if (prob !== null) {
+      var pc = prob >= 70 ? '#2e7d52' : prob >= 40 ? '#e65100' : '#9e9e9e';
+      probBadge = '<span style="font-size:11px;font-weight:700;color:'+pc+';background:'+pc+'18;padding:2px 8px;border-radius:20px">'+prob+'%</span>';
+    }
+    var riskBadge = '';
+    var risk = getRiskLevel(c);
+    if (risk === 'critical') riskBadge = '<span style="font-size:10px;color:#c0392b;background:#fdf0ee;padding:2px 6px;border-radius:20px;font-weight:700">🔴停滯</span>';
+    else if (risk === 'high') riskBadge = '<span style="font-size:10px;color:#856404;background:#fffbf0;padding:2px 6px;border-radius:20px;font-weight:700">🟡注意</span>';
+    return '<div class="customer-item" onclick="showDetail(\''+c.id.toString()+'\')">' +
+      '<div class="customer-head"><span class="customer-name">'+c.customerName+'</span><span style="display:flex;gap:.375rem;align-items:center;flex-wrap:wrap"><span class="badge badge-'+s+'">'+s+'️⃣ '+STAGE_NAMES[s]+'</span>'+(c.seminarAttended==='是'||c.seminarAttended==='已邀請未參加'?'<span style="background:#e8f5e9;color:#2e7d32;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600">🎓 研討會</span>':'')+probBadge+riskBadge+'</span></div>'+
       manInfo+
       '<div class="customer-meta">📞 '+(c.contactInfo||'—')+' ｜ 來源：'+(c.leadSource||'—')+'</div>'+
       '<div class="customer-meta">信任：'+(c.trustScore?c.trustScore+'/10':'—')+' ｜ '+(c.contractStatus||'未簽約')+(c.dealAmount?' ｜ '+c.dealAmount+'萬':'')+'</div>'+
@@ -1695,7 +3216,7 @@ function showDetail(id) {
   document.getElementById('modalTitle').textContent = c.customerName+' — '+STAGE_NAMES[s];
   var rows = [
     ['負責業務',c.salesPerson],['聯絡方式',c.contactInfo],['年齡',c.customerAge],['🏷️ 名單類型',c.clientType],['名單來源',c.leadSource],
-    ['獲取來源',c.leadSourceDetail],['🎓 參加研討會',c.seminarAttended],['創建日期',c.creationDate],
+    ['獲取來源',c.leadSourceDetail],['🎓 參加研討會',c.seminarAttended],['創建日期',formatDate(c.creationDate)],
     ['信任評分',c.trustScore?c.trustScore+'/10':''],['專業評分',c.professionalScore?c.professionalScore+'/10':''],
     ['信任狀態',c.currentStatus],
     ['✅ 信任檢核',c.trustChecks],['✅ 專業形象檢核',c.proChecks],
@@ -1724,18 +3245,27 @@ function showDetail(id) {
   var canEdit = currentRole==='manager' || c.salesPerson===currentUser;
   var actionsDiv = document.getElementById('modalActions');
   actionsDiv.innerHTML = '';
+
+  // AI 話術建議按鈕（所有人都能用）
+  var aiBtn = document.createElement('button');
+  aiBtn.className = 'btn btn-primary';
+  aiBtn.style.cssText = 'flex:2;margin-top:0;background:linear-gradient(135deg,#1a3a5c,#c9a84c)';
+  aiBtn.innerHTML = '🤖 AI 話術建議';
+  aiBtn.addEventListener('click', (function(id){ return function(){ showAIScriptModal(id); }; })(sid));
+  actionsDiv.appendChild(aiBtn);
+
   if (canEdit) {
     var editBtn = document.createElement('button');
     editBtn.className = 'btn btn-secondary';
-    editBtn.style.flex = '1';
-    editBtn.textContent = '✏️ 編輯資料';
+    editBtn.style.cssText = 'flex:1;margin-top:0';
+    editBtn.textContent = '✏️ 編輯';
     editBtn.addEventListener('click', function(){ showEdit(sid); });
     actionsDiv.appendChild(editBtn);
   }
   if (canEdit) {
     var delBtn = document.createElement('button');
     delBtn.className = 'btn btn-danger-outline';
-    delBtn.style.flex = '1';
+    delBtn.style.cssText = 'flex:1;margin-top:0';
     delBtn.textContent = '🗑 刪除';
     delBtn.addEventListener('click', function(){ confirmDelete(sid); });
     actionsDiv.appendChild(delBtn);
@@ -1805,7 +3335,8 @@ function showEdit(id) {
   var semOpts = ['','是','否','已邀請未參加'].map(function(s){ return '<option value="'+s+'"'+(s===(c.seminarAttended||'')?' selected':'')+'>'+( s===''?'請選擇':s==='是'?'✅ 是':s==='否'?'❌ 否':'📩 已邀請未參加')+'</option>'; }).join('');
   html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
   html += sel('🎓 是否參加過研討會','seminarAttended',semOpts);
-  html += ef('創建日期','creationDate',c.creationDate,'date');
+  var cdVal = c.creationDate ? (function(raw){ try { var d=new Date(raw); if(!isNaN(d.getTime())){ var y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),dd=String(d.getDate()).padStart(2,'0'); return y+'-'+m+'-'+dd; } return raw; } catch(e){ return raw||''; } })(c.creationDate) : '';
+  html += ef('創建日期','creationDate',cdVal,'date');
   html += '</div>';
 
   html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem;margin-top:.25rem">二部曲：初步接觸</div>';
@@ -2019,6 +3550,8 @@ function showPage(name, btn) {
   document.getElementById(name).classList.add('active');
   document.querySelectorAll('.nav-tabs button').forEach(function(b){ b.classList.remove('active'); });
   if (btn) btn.classList.add('active');
+  if (name === 'bossDashboard') renderBossDashboard();
+  if (name === 'followupJournal') initJournalPage();
 }
 
 // ── Claude 匯出 ──
