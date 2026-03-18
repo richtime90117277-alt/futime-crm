@@ -3103,9 +3103,23 @@ document.addEventListener('click', function(e) {
     document.querySelectorAll('.ms-wrap.open').forEach(function(w){ w.classList.remove('open'); });
   }
 });
-// scroll 時關閉所有 dropdown
+// scroll 時重新計算 dropdown 位置（不關閉）
 document.addEventListener('scroll', function() {
-  document.querySelectorAll('.ms-wrap.open').forEach(function(w){ w.classList.remove('open'); });
+  var openWrap = document.querySelector('.ms-wrap.open');
+  if (!openWrap) return;
+  var display = openWrap.querySelector('.ms-display');
+  var dropdown = openWrap.querySelector('.ms-dropdown');
+  var rect = display.getBoundingClientRect();
+  dropdown.style.left = rect.left + 'px';
+  dropdown.style.width = rect.width + 'px';
+  var spaceBelow = window.innerHeight - rect.bottom;
+  if (spaceBelow < 200 && rect.top > 200) {
+    dropdown.style.top = '';
+    dropdown.style.bottom = (window.innerHeight - rect.top + 4) + 'px';
+  } else {
+    dropdown.style.bottom = '';
+    dropdown.style.top = (rect.bottom + 4) + 'px';
+  }
 }, true);
 function getMsValue(id) {
   var wrap = document.getElementById(id);
