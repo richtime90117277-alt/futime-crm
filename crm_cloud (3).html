@@ -1314,19 +1314,25 @@ function callAPI(payload, callback) {
   .then(function(text) {
     setSyncing(false);
     try {
-      // 清洗 Apps Script 可能附加的前綴（CORS 安全字串、BOM、空白）
       var clean = text.trim();
-      // 移除 )]}' 或 while(1); 安全前綴
       if (clean.startsWith(')]}\'')) clean = clean.slice(4);
       else if (clean.startsWith('while(1);')) clean = clean.slice(9);
-      // 移除 UTF-8 BOM
       if (clean.charCodeAt(0) === 0xFEFF) clean = clean.slice(1);
-      // 找到第一個 { 或 [ 開始解析（跳過任何非 JSON 前綴）
       var jsonStart = clean.search(/[\[\{]/);
       if (jsonStart > 0) clean = clean.slice(jsonStart);
       callback(JSON.parse(clean));
     }
-    catch(e) { callback({ success: false, error: '回應格式錯誤: ' + text.slice(0,120) }); }
+    catch(e) {
+      // 找出 JSON 第一個錯誤位置
+      var errPos = e.message.match(/position (\d+)/);
+      var pos = errPos ? parseInt(errPos[1]) : -1;
+      var snippet = pos >= 0 ? text.slice(Math.max(0,pos-30), pos+30) : text.slice(0,200);
+      var debugMsg = '解析失敗';
+      if (pos >= 0) debugMsg += ' 位置' + pos + '附近：[' + snippet + ']';
+      else debugMsg += '：' + snippet;
+      console.error('完整回應：', text);
+      callback({ success: false, error: debugMsg });
+    }
   })
   .catch(function(err) {
     clearTimeout(timer);
