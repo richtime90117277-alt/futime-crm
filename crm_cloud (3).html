@@ -44,7 +44,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
 .ms-arrow{font-size:11px;color:var(--text-muted);flex-shrink:0;transition:transform .2s}
 .ms-wrap.open .ms-arrow{transform:rotate(180deg)}
 .ms-tag{background:var(--navy);color:white;border-radius:4px;padding:2px 8px;font-size:12px;white-space:nowrap}
-.ms-dropdown{display:none;position:absolute;left:0;right:0;top:calc(100% + 4px);background:white;border:2px solid var(--gold);border-radius:var(--radius-sm);box-shadow:0 8px 24px rgba(0,0,0,.15);z-index:9999;max-height:360px;overflow-y:auto}
+.ms-dropdown{display:none;position:fixed;background:white;border:2px solid var(--gold);border-radius:var(--radius-sm);box-shadow:0 8px 24px rgba(0,0,0,.15);z-index:99999;max-height:260px;overflow-y:auto;min-width:200px}
 .ms-wrap.open .ms-dropdown{display:block}
 .ms-opt{display:flex;align-items:flex-start;gap:.75rem;padding:.65rem 1rem;font-size:14px;cursor:pointer;transition:background .1s;line-height:1.5}
 .ms-opt:hover{background:var(--cream2)}
@@ -3077,14 +3077,36 @@ function toggleAcc(id) {
 function toggleMs(id) {
   var wrap = document.getElementById(id);
   var isOpen = wrap.classList.contains('open');
+  // 先關所有
   document.querySelectorAll('.ms-wrap.open').forEach(function(w){ w.classList.remove('open'); });
-  if (!isOpen) wrap.classList.add('open');
+  if (!isOpen) {
+    wrap.classList.add('open');
+    // 用 fixed 定位，計算顯示位置
+    var display = wrap.querySelector('.ms-display');
+    var dropdown = wrap.querySelector('.ms-dropdown');
+    var rect = display.getBoundingClientRect();
+    dropdown.style.left = rect.left + 'px';
+    dropdown.style.width = rect.width + 'px';
+    // 判斷下方空間是否足夠
+    var spaceBelow = window.innerHeight - rect.bottom;
+    if (spaceBelow < 200 && rect.top > 200) {
+      dropdown.style.top = '';
+      dropdown.style.bottom = (window.innerHeight - rect.top + 4) + 'px';
+    } else {
+      dropdown.style.bottom = '';
+      dropdown.style.top = (rect.bottom + 4) + 'px';
+    }
+  }
 }
 document.addEventListener('click', function(e) {
   if (!e.target.closest('.ms-wrap')) {
     document.querySelectorAll('.ms-wrap.open').forEach(function(w){ w.classList.remove('open'); });
   }
 });
+// scroll 時關閉所有 dropdown
+document.addEventListener('scroll', function() {
+  document.querySelectorAll('.ms-wrap.open').forEach(function(w){ w.classList.remove('open'); });
+}, true);
 function getMsValue(id) {
   var wrap = document.getElementById(id);
   if (!wrap) return '';
