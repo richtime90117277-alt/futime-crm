@@ -176,139 +176,6 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
   .detail-row{grid-template-columns:110px 1fr}
 }
 
-/* ══════════════════════════════════════════════
-   手機版優化 (max-width: 640px)
-   ══════════════════════════════════════════════ */
-@media(max-width:640px){
-
-  /* ── Header ── */
-  .header { padding: .5rem 1rem; }
-  .header-inner { gap: .5rem; }
-  .header-logo { width:32px; height:32px; font-size:14px; }
-  .header-name { font-size:13px; }
-
-  /* ── Nav tabs：2行顯示，每行4個 ── */
-  .nav-tabs {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    position: sticky;
-    top: 52px;
-  }
-  .nav-tabs button {
-    font-size: 10px;
-    padding: .6rem .15rem;
-    min-width: unset;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  /* ── Container ── */
-  .container { padding: .75rem .625rem 5rem; }
-
-  /* ── Stats 數字卡片：2欄 ── */
-  .stats-grid { grid-template-columns: repeat(2,1fr); gap:.5rem; margin-bottom:1rem; }
-  .stat-card { padding:1rem .875rem; }
-  .stat-number { font-size:26px; }
-
-  /* ── 一般 card ── */
-  .card { border-radius:12px; margin-bottom:.75rem; }
-  .card-header { padding:1rem 1.125rem; }
-  .card-header h3 { font-size:14px; }
-  .card-body { padding:1rem .875rem; }
-
-  /* ── Filter bar ── */
-  .filter-bar { 
-    flex-direction: column; 
-    gap: .5rem; 
-    padding: .875rem 1rem; 
-  }
-  .filter-bar .form-group { min-width: unset; width: 100%; }
-
-  /* ── 表單 ── */
-  .form-group { margin-bottom:.875rem; }
-  .form-group label { font-size:12px; }
-  input, select, textarea { font-size:16px !important; } /* 防止 iOS 自動縮放 */
-
-  /* ── Modal 全螢幕 ── */
-  .modal-overlay { padding: 0; align-items: flex-end; }
-  .modal { 
-    border-radius: 20px 20px 0 0; 
-    max-width: 100%; 
-    max-height: 95vh; 
-    width: 100%;
-  }
-  .modal-head { padding: 1rem 1.125rem; }
-  .modal-head h3 { font-size:15px; }
-  .modal-body { padding: 1rem 1.125rem; }
-  .modal-actions { padding:.875rem 1.125rem; gap:.5rem; }
-  .modal-actions .btn { font-size:13px; padding:.625rem 1rem; }
-
-  /* ── 客戶詳情欄位 ── */
-  .detail-row { 
-    grid-template-columns: 100px 1fr; 
-    font-size:13px; 
-    padding:.5rem 0; 
-    gap:.35rem .75rem;
-  }
-
-  /* ── Leaderboard 表格 ── */
-  .rank-table th, .rank-table td { 
-    padding:.5rem .375rem; 
-    font-size:11px; 
-  }
-
-  /* ── 按鈕 ── */
-  .btn { font-size:13px; padding:.6rem 1rem; }
-  .logout-btn { font-size:12px; padding:.375rem .75rem; }
-
-  /* ── 業務績效一覽表格 ── */
-  #leaderboardTable th, #leaderboardTable td {
-    padding: .5rem .375rem;
-    font-size: 11px;
-  }
-
-  /* ── 今日跟進名單 ── */
-  #followTodayList > div {
-    flex-wrap: wrap;
-  }
-
-  /* ── 週報 header 卡片 ── */
-  #dashWeekLabel { font-size: 14px; }
-
-  /* ── 成交預測三欄改雙欄 ── */
-  #closingForecast > div:first-child {
-    grid-template-columns: 1fr 1fr !important;
-  }
-
-  /* ── 防止橫向 scroll ── */
-  body { overflow-x: hidden; }
-  .page { overflow-x: hidden; }
-
-  /* ── 日誌頁面 ── */
-  #journalForm .form-grid { grid-template-columns: 1fr; }
-
-  /* ── acc-section ── */
-  .acc-header { padding:.875rem 1rem; }
-  .acc-title { font-size:13px; }
-  .acc-body { padding:.875rem 1rem 1rem; }
-}
-
-/* 超小螢幕 (max-width: 380px) */
-@media(max-width:380px){
-  .nav-tabs { grid-template-columns: repeat(4,1fr); }
-  .nav-tabs button { font-size: 9px; padding: .5rem .1rem; }
-  .stats-grid { gap: .375rem; }
-  .stat-number { font-size: 22px; }
-}
-
-@media(max-width:480px){
-  .nav-label { display: none; }
-  .nav-emoji { font-size: 18px; }
-  .nav-tabs button { padding: .625rem .2rem; }
-}
-
-
 /* ── Accordion ── */
 .acc-section { background:#fff; border-radius:var(--radius); box-shadow:0 2px 8px rgba(0,0,0,.07); margin-bottom:1rem; overflow:hidden; }
 .acc-header { display:flex; align-items:center; justify-content:space-between; padding:1rem 1.25rem; cursor:pointer; user-select:none; border-left:4px solid transparent; transition:.2s; }
@@ -407,13 +274,14 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
     </div>
   </div>
   <nav class="nav-tabs">
-    <button class="active" onclick="showPage('dashboard',this)"><span class="nav-emoji">📊</span><span class="nav-label"> 儀表板</span></button>
-    <button onclick="showPage('newCustomer',this)"><span class="nav-emoji">➕</span><span class="nav-label"> 新增</span></button>
-    <button onclick="showPage('customerList',this)"><span class="nav-emoji">📋</span><span class="nav-label"> 列表</span></button>
-    <button onclick="showPage('leaderboard',this)" id="reportsTab"><span class="nav-emoji">🏆</span><span class="nav-label"> 排行榜</span></button>
-    <button onclick="showPage('staffMgmt',this)" id="staffTab"><span class="nav-emoji">👥</span><span class="nav-label"> 業務</span></button>
-    <button onclick="showPage('followupJournal',this)" id="journalTab"><span class="nav-emoji">📝</span><span class="nav-label"> 日誌</span></button>
-    <button onclick="showPage('bossDashboard',this)" id="bossTab" style="display:none"><span class="nav-emoji">🧠</span><span class="nav-label"> 決策</span></button>
+    <button class="active" onclick="showPage('dashboard',this)">📊 儀表板</button>
+    <button onclick="showPage('newCustomer',this)">➕ 新增</button>
+    <button onclick="showPage('customerList',this)">📋 列表</button>
+    <button onclick="showPage('leaderboard',this)" id="reportsTab">🏆 排行榜</button>
+    <button onclick="showPage('claude',this)">🤖 Claude</button>
+    <button onclick="showPage('staffMgmt',this)" id="staffTab">👥 業務</button>
+    <button onclick="showPage('followupJournal',this)" id="journalTab">📝 日誌</button>
+    <button onclick="showPage('bossDashboard',this)" id="bossTab" style="display:none">🧠 決策</button>
   </nav>
   <div class="container">
 
@@ -552,26 +420,10 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
         <div class="card-body" id="salesActivity"></div>
       </div>
 
-      
-
-      <!-- API 網址設定 -->
-      <div class="card" style="margin-bottom:1rem" id="apiUrlCard">
-        <div class="card-header"><div class="card-icon">🔗</div><h3>雲端 API 網址</h3></div>
-        <div class="card-body">
-          <p style="font-size:13px;color:var(--text-soft);margin-bottom:.875rem">
-            每次 Apps Script 重新部署後，若網址有變更，在此更新即可，不需要修改程式碼。
-          </p>
-          <div style="display:flex;gap:.5rem;flex-wrap:wrap">
-            <input type="text" id="apiUrlOverrideInput" 
-              placeholder="https://script.google.com/macros/s/.../exec"
-              style="flex:1;min-width:200px;font-size:13px"
-              oninput="previewApiUrl(this.value)">
-            <button class="btn btn-primary" style="margin-top:0;white-space:nowrap" onclick="saveApiUrlOverride()">💾 儲存網址</button>
-            <button class="btn" style="margin-top:0;white-space:nowrap;background:#fdf0ee;color:#c0392b;border:1.5px solid #f5c6c0" onclick="clearApiUrlOverride()">🗑 清除（用預設）</button>
-          </div>
-          <div id="apiUrlPreview" style="margin-top:.625rem;font-size:12px;color:var(--text-muted)"></div>
-          <div id="apiUrlStatus" style="margin-top:.5rem;font-size:13px;font-weight:600"></div>
-        </div>
+      <!-- 研討會名單待認領 -->
+      <div class="card" style="margin-bottom:1rem">
+        <div class="card-header"><div class="card-icon">🎓</div><h3>研討會名單待認領</h3></div>
+        <div class="card-body" id="seminarPending"></div>
       </div>
 
       <!-- Line 通知設定 -->
@@ -1222,7 +1074,36 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
     </div>
 
     <!-- CLAUDE AI -->
-    
+    <div id="claude" class="page">
+      <div class="card">
+        <div class="card-header"><div class="card-icon">📤</div><h3>導出資料給 Claude 分析</h3></div>
+        <div class="card-body">
+          <div class="form-grid two">
+            <div class="form-group" id="exportScopeGroup">
+              <label>導出範圍</label>
+              <select id="exportScope"><option value="mine">我的客戶</option></select>
+            </div>
+            <div class="form-group">
+              <label>格式</label>
+              <select id="exportFormat"><option value="full">完整資料（推薦）</option><option value="summary">摘要版</option></select>
+            </div>
+          </div>
+          <div class="button-row">
+            <button class="btn btn-secondary" onclick="previewExport()">👁 生成預覽</button>
+            <button class="btn btn-primary" onclick="copyExport()">📋 複製給 Claude</button>
+          </div>
+          <div style="background:#f8fafc;border:2px solid #e1e8f0;border-radius:var(--radius-sm);padding:1rem;margin-top:1rem;min-height:60px">
+            <div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:.5rem">預覽 <span id="previewLabel" style="color:var(--gold);font-weight:600"></span></div>
+            <div id="exportPreview" style="font-size:12px;color:var(--text-soft);white-space:pre-wrap;font-family:monospace;max-height:250px;overflow-y:auto">點擊下方「提問指令」或「生成預覽」查看...</div>
+          </div>
+          <div class="alert alert-success" id="copyAlert" style="margin-top:.75rem">✅ 已複製！貼到 Claude 對話即可開始分析 🎉</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-icon">⚡</div><h3>常用 Claude 提問指令</h3></div>
+        <div class="card-body" style="padding:1rem"><div id="quickCommandList"></div></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1396,13 +1277,7 @@ function rebuildSalesSelects() {
 }
 
 // ── 取得 API URL ──
-function getApiUrl() {
-  try {
-    var saved = localStorage.getItem('futime_api_url_override');
-    if (saved && saved.startsWith('https://script.google.com')) return saved;
-  } catch(e) {}
-  return HARDCODED_API_URL;
-}
+function getApiUrl() { return HARDCODED_API_URL; }
 function showResetUrl() {
   var box = document.getElementById('resetUrlBox');
   box.style.display = box.style.display === 'none' ? 'block' : 'none';
@@ -1796,17 +1671,17 @@ function renderDashboard() {
   if (bottleneckEl) bottleneckEl.textContent = maxCount > 0 ? '🚧 瓶頸：'+STAGE_NAMES[maxStage]+'（'+maxCount+' 人卡關）' : '';
 
   // ── 購買時間軸 ──
-  var tlOrder = ['1個月內','3個月內','半年內','1年以上','純詢問觀望','未填寫'];
+  var tlOrder = ['1個月內','3個月內','半年內','1年以上','純詢問觀望',''];
   var tlMap = {};
   active.forEach(function(c){
-    var key = (c.buyingTimeline || '').trim() || '未填寫';
-    tlMap[key] = (tlMap[key]||0) + 1;
+    var t = c.buyingTimeline || '未填寫';
+    tlMap[t] = (tlMap[t]||0) + 1;
   });
   var tlColors = {'1個月內':'#c62828','3個月內':'#e65100','半年內':'#f57f17','1年以上':'#1565c0','純詢問觀望':'#546e7a','未填寫':'#9e9e9e'};
   var tlHtml = '<div style="display:flex;flex-wrap:wrap;gap:.5rem">';
-  tlOrder.forEach(function(tl){
-    var label = tl;
-    var cnt = tlMap[tl] || 0;
+  tlOrder.concat(Object.keys(tlMap).filter(function(k){ return tlOrder.indexOf(k)===-1; })).forEach(function(tl){
+    var label = tl || '未填寫';
+    var cnt = tlMap[tl] || tlMap[label] || 0;
     if (!cnt) return;
     var color = tlColors[label] || '#999';
     tlHtml += '<div style="background:'+color+'18;border:1.5px solid '+color+'44;border-radius:10px;padding:.5rem 1rem;display:flex;align-items:center;gap:.5rem">';
@@ -1935,70 +1810,6 @@ function getWeekRange() {
   var start = new Date(now); start.setHours(0,0,0,0); start.setDate(now.getDate() - diff);
   var end = new Date(start); end.setDate(start.getDate() + 6); end.setHours(23,59,59,999);
   return { start: start, end: end };
-}
-
-
-function toggleForecastList(type) {
-  var h = document.getElementById('forecastListHigh');
-  var m = document.getElementById('forecastListMed');
-  if (!h||!m) return;
-  if (type==='high') { h.style.display=h.style.display==='none'?'block':'none'; m.style.display='none'; }
-  else { m.style.display=m.style.display==='none'?'block':'none'; h.style.display='none'; }
-}
-
-function showCustomerSummary(customerId) {
-  var c = customers.find(function(x){ return x.id&&x.id.toString()===customerId.toString(); });
-  if (!c) return;
-  var prob = calcCloseProb(c), risk = getRiskLevel(c), stage = stageOf(c);
-  var riskText = risk==='critical'?'🔴 極高流失風險':risk==='high'?'🟠 高流失風險':risk==='medium'?'🟡 需要跟進':'🟢 正常';
-  var pColor = prob>=70?'#1b5e20':prob>=40?'#e65100':'#1565c0';
-  var blocks = [];
-  if (!c.familySupport||c.familySupport==='觀望') blocks.push('家人未支持');
-  if (!c.budget) blocks.push('預算未確認');
-  if (c.viewingStatus!=='已完整解說') blocks.push('產品未完整解說');
-  if (!c.buyingTimeline||c.buyingTimeline==='純詢問觀望') blocks.push('購買意願不明確');
-  if (c.objections) blocks.push('異議：'+c.objections.slice(0,20));
-  var next = '';
-  if (risk==='critical'||risk==='high') next='⚡ 本週必須聯繫，否則可能流失';
-  else if (!c.familySupport||c.familySupport==='觀望') next='👨‍👩‍👧 安排家人一起來了解';
-  else if (c.buyingTimeline==='1個月內') next='🏠 本週安排帶看，推進簽約';
-  else if (c.viewingStatus!=='已完整解說') next='📋 邀請完成顧問諮詢';
-  else if (!c.budget) next='💰 確認資金來源與貸款能力';
-  else next='🤝 持續維繫信任，等待時機';
-  var html =
-    '<div style="padding:1.25rem;background:linear-gradient(135deg,#0f2744,#1a3a5c);border-radius:16px;margin-bottom:1rem;color:white">'+
-      '<div style="font-size:11px;color:#c9a84c;font-weight:700;letter-spacing:.1em;margin-bottom:.25rem">客戶分析摘要</div>'+
-      '<div style="font-size:20px;font-weight:900">'+c.customerName+'</div>'+
-      '<div style="font-size:12px;color:#a0b4c8;margin-top:.25rem">'+c.salesPerson+' ｜ '+STAGE_NAMES[stage]+'階段</div>'+
-    '</div>'+
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.875rem">'+
-      '<div style="background:#f0faf0;border-radius:12px;padding:.875rem;text-align:center">'+
-        '<div style="font-size:26px;font-weight:900;color:'+pColor+'">'+prob+'%</div>'+
-        '<div style="font-size:11px;font-weight:700;color:'+pColor+'">成交機率</div>'+
-      '</div>'+
-      '<div style="background:#fef9f0;border-radius:12px;padding:.875rem;text-align:center;display:flex;align-items:center;justify-content:center">'+
-        '<div style="font-size:13px;font-weight:700;color:#856404">'+riskText+'</div>'+
-      '</div>'+
-    '</div>'+
-    (c.painPoints?'<div style="background:var(--cream2);border-radius:10px;padding:.875rem;margin-bottom:.625rem"><div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:.3rem">💬 核心痛點</div><div style="font-size:13px">'+c.painPoints+'</div></div>':'')+
-    ((c.budget||c.monthlyPayment)?'<div style="background:var(--cream2);border-radius:10px;padding:.875rem;margin-bottom:.625rem"><div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:.3rem">💰 預算</div><div style="font-size:13px">'+(c.budget?'總預算：'+c.budget:'')+(c.budget&&c.monthlyPayment?' ｜ ':'')+(c.monthlyPayment?'月付：'+c.monthlyPayment:'')+'</div></div>':'')+
-    (blocks.length?'<div style="background:#fdf0ee;border-radius:10px;padding:.875rem;margin-bottom:.625rem"><div style="font-size:11px;font-weight:700;color:#c0392b;margin-bottom:.3rem">🚧 卡關原因</div><div style="font-size:13px">'+blocks.join('、')+'</div></div>':'')+
-    '<div style="background:linear-gradient(135deg,#fffbf0,#fff8e7);border:1.5px solid #f0d080;border-radius:10px;padding:.875rem">'+
-      '<div style="font-size:11px;font-weight:700;color:#856404;margin-bottom:.3rem">⚡ 建議下一步</div>'+
-      '<div style="font-size:13px;font-weight:600;color:#5c4000">'+next+'</div>'+
-    '</div>';
-  var overlay = document.getElementById('summaryModal');
-  if (!overlay) {
-    overlay = document.createElement('div');
-    overlay.id = 'summaryModal';
-    overlay.className = 'modal-overlay';
-    overlay.innerHTML = '<div class="modal" style="max-width:480px"><div class="modal-head"><h3 id="summaryModalTitle"></h3><button class="modal-close" onclick="document.getElementById(\'summaryModal\').classList.remove(\'active\')">×</button></div><div class="modal-body" id="summaryModalBody"></div></div>';
-    overlay.addEventListener('click', function(e){ if(e.target===overlay) overlay.classList.remove('active'); });
-    document.body.appendChild(overlay);
-  }
-  document.getElementById('summaryModalTitle').textContent = '📊 '+c.customerName+' 分析摘要';
-  document.getElementById('summaryModalBody').innerHTML = html;
-  overlay.classList.add('active');
 }
 
 function renderBossDashboard() {
@@ -2192,15 +2003,13 @@ function renderBossDashboard() {
   var fcEl = document.getElementById('closingForecast');
   fcEl.innerHTML =
     '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-bottom:1rem">'+
-      '<div style="background:linear-gradient(135deg,#e8f5e9,#f1f8e9);border:1px solid #a5d6a7;border-radius:12px;padding:1rem;text-align:center;cursor:pointer" onclick="toggleForecastList(\'high\')">'+
+      '<div style="background:linear-gradient(135deg,#e8f5e9,#f1f8e9);border:1px solid #a5d6a7;border-radius:12px;padding:1rem;text-align:center">'+
         '<div style="font-size:28px;font-weight:900;color:#1b5e20">'+highProb.length+'</div>'+
         '<div style="font-size:11px;color:#2e7d52;font-weight:700;margin-top:.25rem">高機率 ≥70%</div>'+
-        '<div style="font-size:10px;color:#2e7d52;margin-top:.15rem">▾ 查看名單</div>'+
       '</div>'+
-      '<div style="background:linear-gradient(135deg,#fff3e0,#fff8f0);border:1px solid #ffcc80;border-radius:12px;padding:1rem;text-align:center;cursor:pointer" onclick="toggleForecastList(\'med\')">'+
+      '<div style="background:linear-gradient(135deg,#fff3e0,#fff8f0);border:1px solid #ffcc80;border-radius:12px;padding:1rem;text-align:center">'+
         '<div style="font-size:28px;font-weight:900;color:#e65100">'+medProb.length+'</div>'+
         '<div style="font-size:11px;color:#e65100;font-weight:700;margin-top:.25rem">中機率 40-69%</div>'+
-        '<div style="font-size:10px;color:#e65100;margin-top:.15rem">▾ 查看名單</div>'+
       '</div>'+
       '<div style="background:var(--cream2);border:1px solid #e0e0e0;border-radius:12px;padding:1rem;text-align:center">'+
         '<div style="font-size:28px;font-weight:900;color:var(--navy)">'+lowProb.length+'</div>'+
@@ -2211,14 +2020,6 @@ function renderBossDashboard() {
       '<div style="font-size:11px;color:#c9a84c;font-weight:700;letter-spacing:.1em;margin-bottom:.25rem">預估可成交金額（高機率客戶）</div>'+
       '<div style="font-size:28px;font-weight:900;color:#f0d080">'+estRevenue+' <span style="font-size:14px;font-weight:500">萬元</span></div>'+
     '</div>' : '')+
-    '<div id="forecastListHigh" style="display:none;margin-top:.75rem;padding:.875rem;background:#f0faf0;border-radius:12px">'+
-      '<div style="font-size:11px;font-weight:700;color:#2e7d52;margin-bottom:.5rem">🟢 高機率（'+highProb.length+'人）</div>'+
-      (highProb.length?highProb.map(function(c){var p=calcCloseProb(c);return '<div style="display:flex;justify-content:space-between;align-items:center;padding:.35rem 0;border-bottom:1px solid #c8e6c9"><span style="font-weight:600;font-size:13px">'+c.customerName+'</span><span style="font-size:11px;color:#888">'+c.salesPerson+'</span><span style="font-weight:700;font-size:12px;color:#2e7d52;background:#e8f5e9;padding:2px 8px;border-radius:20px">'+p+'%</span></div>';}).join(''):'<div style="font-size:12px;color:#888">目前無高機率客戶</div>')+
-    '</div>'+
-    '<div id="forecastListMed" style="display:none;margin-top:.75rem;padding:.875rem;background:#fff8f0;border-radius:12px">'+
-      '<div style="font-size:11px;font-weight:700;color:#e65100;margin-bottom:.5rem">🟡 中機率（'+medProb.length+'人）</div>'+
-      (medProb.length?medProb.map(function(c){var p=calcCloseProb(c);return '<div style="display:flex;justify-content:space-between;align-items:center;padding:.35rem 0;border-bottom:1px solid #ffcc80"><span style="font-weight:600;font-size:13px">'+c.customerName+'</span><span style="font-size:11px;color:#888">'+c.salesPerson+'</span><span style="font-weight:700;font-size:12px;color:#e65100;background:#fff3e0;padding:2px 8px;border-radius:20px">'+p+'%</span></div>';}).join(''):'<div style="font-size:12px;color:#888">目前無中機率客戶</div>')+
-    '</div>'+
     '<div style="margin-top:1rem">'+
     highProb.slice(0,5).map(function(c){
       var p = calcCloseProb(c);
@@ -2376,7 +2177,11 @@ function renderSalesActivity() {
   el.innerHTML = html;
 }
 
-
+// ══════════════════════════════════════════════
+// 研討會名單待認領
+// 從 customers 找來源是研討會但還未指派的，
+// 管理員也可以在這裡手動新增待認領名單
+// ══════════════════════════════════════════════
 var SEMINAR_PENDING_KEY = 'futime_seminar_pending';
 
 function getSeminarPending() {
@@ -2390,6 +2195,47 @@ function saveSeminarPending(list) {
   try { localStorage.setItem(SEMINAR_PENDING_KEY, JSON.stringify(list)); } catch(e) {}
 }
 
+function renderSeminarPending() {
+  var el = document.getElementById('seminarPending');
+  if (!el) return;
+
+  var pending = getSeminarPending();
+
+  var html = '';
+
+  // 新增表單
+  html += '<div style="background:var(--cream2);border-radius:10px;padding:1rem;margin-bottom:1rem">';
+  html += '<div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:.625rem">➕ 新增研討會報名名單</div>';
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:.5rem;align-items:end">';
+  html += '<div><div style="font-size:11px;color:var(--text-muted);margin-bottom:.25rem">姓名</div><input id="sp_name" type="text" placeholder="客戶姓名" style="width:100%;padding:.5rem .75rem;border:1.5px solid #dde3ea;border-radius:8px;font-size:13px;font-family:inherit;outline:none"></div>';
+  html += '<div><div style="font-size:11px;color:var(--text-muted);margin-bottom:.25rem">聯絡方式</div><input id="sp_contact" type="text" placeholder="電話/Line" style="width:100%;padding:.5rem .75rem;border:1.5px solid #dde3ea;border-radius:8px;font-size:13px;font-family:inherit;outline:none"></div>';
+  html += '<div><div style="font-size:11px;color:var(--text-muted);margin-bottom:.25rem">備註</div><input id="sp_note" type="text" placeholder="場次/介紹人" style="width:100%;padding:.5rem .75rem;border:1.5px solid #dde3ea;border-radius:8px;font-size:13px;font-family:inherit;outline:none"></div>';
+  html += '<button onclick="addSeminarPending()" style="background:var(--navy);color:white;border:none;padding:.5rem 1rem;border-radius:8px;font-size:13px;font-family:inherit;cursor:pointer;white-space:nowrap">新增</button>';
+  html += '</div></div>';
+
+  if (!pending.length) {
+    html += '<div style="color:var(--text-muted);font-size:13px;padding:.5rem">目前無待認領名單</div>';
+  } else {
+    html += '<div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:.5rem">待認領名單（'+pending.length+' 筆）</div>';
+    html += pending.map(function(p, i){
+      var spOpts = SALES.map(function(s){ return '<option value="'+s+'">'+s+'</option>'; }).join('');
+      return '<div style="display:flex;align-items:center;gap:.625rem;padding:.625rem 0;border-bottom:1px solid var(--cream2);flex-wrap:wrap">' +
+        '<div style="flex:1;min-width:120px">' +
+          '<span style="font-weight:700;color:var(--navy)">'+p.name+'</span>' +
+          '<span style="font-size:12px;color:var(--text-muted);margin-left:.5rem">'+p.contact+'</span>' +
+          (p.note ? '<span style="font-size:11px;color:var(--text-muted);margin-left:.5rem">・'+p.note+'</span>' : '') +
+        '</div>' +
+        '<select id="sp_assign_'+i+'" style="padding:.35rem .625rem;border:1.5px solid #dde3ea;border-radius:6px;font-size:12px;font-family:inherit;outline:none">' +
+          '<option value="">指派給...</option>'+spOpts +
+        '</select>' +
+        '<button onclick="assignSeminarLead('+i+')" style="background:#1a3a5c;color:white;border:none;padding:.35rem .75rem;border-radius:6px;font-size:12px;font-family:inherit;cursor:pointer">轉入CRM</button>' +
+        '<button onclick="removeSeminarPending('+i+')" style="background:#fdf0ee;color:#c0392b;border:1px solid #f5c6c3;padding:.35rem .625rem;border-radius:6px;font-size:12px;cursor:pointer">✕</button>' +
+      '</div>';
+    }).join('');
+  }
+
+  el.innerHTML = html;
+}
 
 function addSeminarPending() {
   var name = (document.getElementById('sp_name').value||'').trim();
@@ -2756,8 +2602,7 @@ function renderTodayFollowupList() {
       '</div>' +
       '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:.25rem">' +
         '<span style="font-size:16px;font-weight:800;color:'+probColor+'">'+x.prob+'%</span>' +
-        '<button data-cid="'+c.id+'" onclick="quickSelectCustomer(this.dataset.cid)" style="font-size:11px;background:var(--navy);color:white;border:none;padding:.3rem .75rem;border-radius:6px;cursor:pointer;font-family:inherit">記錄跟進</button>'+
-        '<button data-cid="'+c.id+'" onclick="showCustomerSummary(this.dataset.cid)" style="font-size:11px;background:#e8f0fb;color:#1565c0;border:1.5px solid #bbcef0;padding:.3rem .75rem;border-radius:6px;cursor:pointer;font-family:inherit">📊 摘要</button>' +
+        '<button data-cid="'+c.id+'" onclick="quickSelectCustomer(this.dataset.cid)" style="font-size:11px;background:var(--navy);color:white;border:none;padding:.3rem .75rem;border-radius:6px;cursor:pointer;font-family:inherit">記錄跟進</button>' +
       '</div>' +
     '</div>';
   }).join('');
@@ -3023,12 +2868,176 @@ function updatePainPointsBySegment() {
 }
 
 // ══════════════════════════════════════════════
+// AI 話術建議（呼叫 Claude API）
 // ══════════════════════════════════════════════
+function buildCustomerPrompt(c) {
+  var s = stageOf(c);
+  var prob = calcCloseProb(c);
+  var stageNames = ['','客戶開發','初步接觸','需求分析','產品匹配','異議處理','成交締結','售後服務','轉介紹'];
+  var nl = '\n';
+  var prompt = '';
+  prompt += '你是一位頂尖的台灣房地產顧問，精通富時代地產的八部曲銷售系統。' + nl;
+  prompt += '請根據以下客戶資料，給出具體的話術建議。' + nl + nl;
+  prompt += '【客戶基本資料】' + nl;
+  prompt += '姓名：' + c.customerName + '　年齡：' + (c.customerAge||'未填') + '歲' + nl;
+  prompt += '族群：' + (c.clientSegment||'未設定') + '　購屋目的：' + (c.purchasePurpose||'未填') + nl;
+  prompt += '購買時間軸：' + (c.buyingTimeline||'未填') + '　居住狀況：' + (c.livingStatus||'未填') + nl;
+  if (c.preferredArea) prompt += '偏好區域：' + c.preferredArea + nl;
+  prompt += nl + '【家庭與決策】' + nl;
+  prompt += '家庭成員：' + (c.familyMembers||'未填') + '　KEY MAN：' + (c.keyMan||'未填') + nl;
+  prompt += '家人支持度：' + (c.familySupport||'未填') + '　客戶個性：' + (c.personalityType||'未填') + nl;
+  prompt += nl + '【財務狀況】' + nl;
+  prompt += '自有資金：' + (c.budget||'未填') + '　每月可儲蓄：' + (c.monthlyPayment||'未填') + nl;
+  prompt += nl + '【痛點與需求】' + nl;
+  prompt += '主要痛點：' + (c.painPoints||'未填') + nl;
+  if (c.painPointsNote) prompt += '補充：' + c.painPointsNote + nl;
+  prompt += nl + '【目前銷售進度】' + nl;
+  prompt += '八部曲階段：第' + s + '部曲（' + stageNames[s] + '）' + nl;
+  prompt += '成交預測機率：' + prob + '%' + nl;
+  prompt += '信任狀態：' + (c.currentStatus||'未填') + nl;
+  if (c.decisionBlock) prompt += '決策障礙：' + c.decisionBlock + nl;
+  if (c.objections) prompt += '客戶異議：' + c.objections + nl;
+  if (c.viewedProperties) prompt += '看過案子：' + c.viewedProperties + nl;
+  if (c.whyNotBought) prompt += '未買原因：' + c.whyNotBought + nl;
+  prompt += nl + '請給出以下三點建議，用繁體中文，語氣自然像在跟業務朋友說話：' + nl + nl;
+  prompt += '## 1. 現況判斷（2-3句）' + nl;
+  prompt += '這個客戶目前最核心的問題是什麼？卡在哪裡？' + nl + nl;
+  prompt += '## 2. 本次建議開場白' + nl;
+  prompt += '給一段完整的話術，可以直接用來開啟下一次對話或拜訪。針對這個客戶的族群和痛點設計，不要太制式。' + nl + nl;
+  prompt += '## 3. 預測異議與回應' + nl;
+  prompt += '這個客戶最可能說的1-2個拒絕理由是什麼？各給一個自然的回應方式。';
+  return prompt;
+}
 
+function showAIScriptModal(customerId) {
+  var c = customers.find(function(x){ return x.id && x.id.toString()===customerId.toString(); });
+  if (!c) return;
 
+  // 建立 modal 覆蓋層
+  var overlay = document.getElementById('aiScriptOverlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'aiScriptOverlay';
+    overlay.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(15,39,68,.7);z-index:3000;padding:1rem;align-items:center;justify-content:center';
+    overlay.innerHTML =
+      '<div style="background:#fff;border-radius:20px;max-width:600px;width:100%;max-height:88vh;overflow-y:auto;display:flex;flex-direction:column">' +
+        '<div style="padding:1.25rem 1.5rem;border-bottom:2px solid var(--cream2);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;z-index:1">' +
+          '<div>' +
+            '<div style="font-size:11px;color:var(--gold);font-weight:700;letter-spacing:.1em">AI SCRIPT ADVISOR</div>' +
+            '<h3 style="color:var(--navy);font-size:16px" id="aiScriptTitle">🤖 AI 話術建議</h3>' +
+          '</div>' +
+          '<button onclick="closeAIScript()" style="background:none;border:none;font-size:24px;cursor:pointer;color:#9e9e9e">✕</button>' +
+        '</div>' +
+        '<div id="aiScriptBody" style="padding:1.5rem;flex:1"></div>' +
+      '</div>';
+    overlay.addEventListener('click', function(e){ if(e.target===overlay) closeAIScript(); });
+    document.body.appendChild(overlay);
+  }
 
+  document.getElementById('aiScriptTitle').textContent = '🤖 '+c.customerName+' 的 AI 話術建議';
+  document.getElementById('aiScriptBody').innerHTML =
+    '<div style="text-align:center;padding:2rem">' +
+      '<div style="width:40px;height:40px;border:4px solid var(--cream2);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 1rem"></div>' +
+      '<div style="color:var(--navy);font-weight:600">Claude 正在分析客戶資料...</div>' +
+      '<div style="color:var(--text-muted);font-size:13px;margin-top:.5rem">約需 5-10 秒</div>' +
+    '</div>';
+  overlay.style.display = 'flex';
 
+  // 呼叫 Claude API
+  var prompt = buildCustomerPrompt(c);
+  fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(data){
+    var text = data.content && data.content[0] ? data.content[0].text : '無法取得回應';
+    renderAIScript(text, c);
+  })
+  .catch(function(err){
+    document.getElementById('aiScriptBody').innerHTML =
+      '<div style="color:#c0392b;padding:1rem;background:#fdf0ee;border-radius:8px">❌ 呼叫失敗：'+err.toString()+'</div>';
+  });
+}
 
+function renderAIScript(text, c) {
+  var html = '<div style="font-size:13px;line-height:1.8;color:var(--text)">';
+
+  // markdown → HTML（安全版本，不用 regex 特殊字元）
+  var parts = text.split('\n');
+  var out = [];
+  parts.forEach(function(line) {
+    if (line.indexOf('## ') === 0) {
+      out.push('<div style="font-size:14px;font-weight:700;color:var(--navy);margin:1.25rem 0 .5rem;padding:.5rem .875rem;background:linear-gradient(135deg,#fffbf0,#fff8e7);border-left:3px solid var(--gold);border-radius:0 8px 8px 0">' + line.slice(3) + '</div>');
+    } else if (line.trim() === '') {
+      out.push('<br>');
+    } else {
+      // bold: **text**
+      var l = line.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+      out.push(l + '<br>');
+    }
+  });
+  html += out.join('');
+  html += '</div>';
+
+  var cid = c.id ? c.id.toString() : '';
+  html += '<div style="margin-top:1.5rem;display:flex;gap:.75rem;flex-wrap:wrap">';
+  html += '<button onclick="copyAIScript()" style="background:var(--navy);color:white;border:none;padding:.625rem 1.25rem;border-radius:8px;font-size:13px;font-family:inherit;cursor:pointer">📋 複製話術</button>';
+  html += '<button onclick="saveToJournal_AI(\'' + cid + '\')" style="background:var(--cream2);color:var(--navy);border:1.5px solid #dde3ea;padding:.625rem 1.25rem;border-radius:8px;font-size:13px;font-family:inherit;cursor:pointer">📝 記錄到日誌</button>';
+  html += '<button onclick="closeAIScript()" style="background:#fdf0ee;color:#c0392b;border:1px solid #f5c6c3;padding:.625rem 1rem;border-radius:8px;font-size:13px;cursor:pointer">關閉</button>';
+  html += '</div>';
+
+  document.getElementById('aiScriptBody').innerHTML = html;
+}
+
+function closeAIScript() {
+  var o = document.getElementById('aiScriptOverlay');
+  if (o) o.style.display = 'none';
+}
+
+function copyAIScript() {
+  var body = document.getElementById('aiScriptBody');
+  var text = body ? body.innerText : '';
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(function(){ showToast('✅ 已複製話術'); });
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('✅ 已複製話術');
+  }
+}
+
+function saveToJournal_AI(customerId) {
+  var body = document.getElementById('aiScriptBody');
+  var text = body ? body.innerText.slice(0, 300) : '';
+  var journal = getJournal();
+  var c = customers.find(function(x){ return x.id && x.id.toString()===customerId.toString(); });
+  if (!c) return;
+  journal.unshift({
+    id: Date.now().toString(),
+    customerId: customerId,
+    customerName: c.customerName,
+    salesPerson: currentUser,
+    action: '🤖 AI 話術建議',
+    response: '── 已生成建議 ──',
+    note: text,
+    date: new Date().toISOString().slice(0,10),
+    ts: Date.now()
+  });
+  if (journal.length > 500) journal = journal.slice(0,500);
+  saveJournal(journal);
+  showToast('✅ 已儲存到日誌');
+  closeAIScript();
+}
 
 function formatDate(raw) {
   if (!raw) return '—';
@@ -3307,6 +3316,14 @@ function showDetail(id) {
   var canEdit = currentRole==='manager' || c.salesPerson===currentUser;
   var actionsDiv = document.getElementById('modalActions');
   actionsDiv.innerHTML = '';
+
+  // AI 話術建議按鈕（所有人都能用）
+  var aiBtn = document.createElement('button');
+  aiBtn.className = 'btn btn-primary';
+  aiBtn.style.cssText = 'flex:2;margin-top:0;background:linear-gradient(135deg,#1a3a5c,#c9a84c)';
+  aiBtn.innerHTML = '🤖 AI 話術建議';
+  aiBtn.addEventListener('click', (function(id){ return function(){ showAIScriptModal(id); }; })(sid));
+  actionsDiv.appendChild(aiBtn);
 
   if (canEdit) {
     var editBtn = document.createElement('button');
@@ -3605,7 +3622,6 @@ function showPage(name, btn) {
   document.querySelectorAll('.nav-tabs button').forEach(function(b){ b.classList.remove('active'); });
   if (btn) btn.classList.add('active');
   if (name === 'bossDashboard') renderBossDashboard();
-  if (name === 'staffMgmt') loadApiUrlSetting();
   if (name === 'followupJournal') initJournalPage();
 }
 
@@ -3753,59 +3769,6 @@ function showManualCopy(txt) {
     sel.addRange(range);
   } catch(e){}
   showToast('⚠️ 請手動按 Ctrl+C 複製（文字已全選）');
-}
-
-
-function previewApiUrl(val) {
-  var el = document.getElementById('apiUrlPreview');
-  if (!el) return;
-  if (val && val.startsWith('https://script.google.com')) {
-    el.textContent = '✅ 格式正確';
-    el.style.color = '#2e7d52';
-  } else if (val) {
-    el.textContent = '⚠️ 網址格式不正確，應以 https://script.google.com 開頭';
-    el.style.color = '#c0392b';
-  } else {
-    el.textContent = '';
-  }
-}
-
-function saveApiUrlOverride() {
-  var input = document.getElementById('apiUrlOverrideInput');
-  var url = (input.value || '').trim();
-  if (!url) { showToast('⚠️ 請輸入網址'); return; }
-  if (!url.startsWith('https://script.google.com')) {
-    showToast('⚠️ 網址格式不正確'); return;
-  }
-  try { localStorage.setItem('futime_api_url_override', url); } catch(e) {}
-  document.getElementById('apiUrlStatus').textContent = '✅ 已儲存！新網址將立即生效';
-  document.getElementById('apiUrlStatus').style.color = '#2e7d52';
-  showToast('✅ API 網址已更新！');
-}
-
-function clearApiUrlOverride() {
-  try { localStorage.removeItem('futime_api_url_override'); } catch(e) {}
-  var input = document.getElementById('apiUrlOverrideInput');
-  if (input) input.value = '';
-  document.getElementById('apiUrlStatus').textContent = '已清除，目前使用內建預設網址';
-  document.getElementById('apiUrlStatus').style.color = 'var(--text-muted)';
-  showToast('已恢復使用預設網址');
-}
-
-function loadApiUrlSetting() {
-  var input = document.getElementById('apiUrlOverrideInput');
-  if (!input) return;
-  try {
-    var saved = localStorage.getItem('futime_api_url_override');
-    if (saved) {
-      input.value = saved;
-      document.getElementById('apiUrlStatus').textContent = '目前使用：自訂網址';
-      document.getElementById('apiUrlStatus').style.color = '#1565c0';
-    } else {
-      document.getElementById('apiUrlStatus').textContent = '目前使用：內建預設網址';
-      document.getElementById('apiUrlStatus').style.color = 'var(--text-muted)';
-    }
-  } catch(e) {}
 }
 
 // ── Toast 通知 ──
