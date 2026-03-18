@@ -1313,8 +1313,20 @@ function callAPI(payload, callback) {
   .then(function(r) { clearTimeout(timer); return r.text(); })
   .then(function(text) {
     setSyncing(false);
-    try { callback(JSON.parse(text)); }
-    catch(e) { callback({ success: false, error: '回應格式錯誤: ' + text.slice(0,100) }); }
+    try {
+      // 清洗 Apps Script 可能附加的前綴（CORS 安全字串、BOM、空白）
+      var clean = text.trim();
+      // 移除 )]}' 或 while(1); 安全前綴
+      if (clean.startsWith(')]}\'')) clean = clean.slice(4);
+      else if (clean.startsWith('while(1);')) clean = clean.slice(9);
+      // 移除 UTF-8 BOM
+      if (clean.charCodeAt(0) === 0xFEFF) clean = clean.slice(1);
+      // 找到第一個 { 或 [ 開始解析（跳過任何非 JSON 前綴）
+      var jsonStart = clean.search(/[\[\{]/);
+      if (jsonStart > 0) clean = clean.slice(jsonStart);
+      callback(JSON.parse(clean));
+    }
+    catch(e) { callback({ success: false, error: '回應格式錯誤: ' + text.slice(0,120) }); }
   })
   .catch(function(err) {
     clearTimeout(timer);
