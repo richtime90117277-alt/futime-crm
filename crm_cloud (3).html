@@ -1498,7 +1498,15 @@ function renderLeaderboard() {
 function fetchCustomers() {
   callAPI({ action: 'getAll', role: currentRole, user: currentUser }, function(res) {
     if (res.success) {
-      customers = res.customers;
+      // 清洗所有欄位的換行字元（防止 Apps Script 舊版未處理）
+      customers = res.customers.map(function(c) {
+        var clean = {};
+        Object.keys(c).forEach(function(k) {
+          var v = c[k];
+          clean[k] = (typeof v === 'string') ? v.replace(/[\r\n\t]/g, ' ').replace(/  +/g, ' ').trim() : v;
+        });
+        return clean;
+      });
       renderDashboard();
       renderCustomers();
       renderReports();
@@ -1795,6 +1803,15 @@ function getRiskLevel(c) {
 // ══════════════════════════════════════════════
 // 老闆決策面板渲染
 // ══════════════════════════════════════════════
+function getWeekRange() {
+  var now = new Date();
+  var day = now.getDay(); // 0=日,1=一...6=六
+  var diff = day === 0 ? 6 : day - 1; // 讓週一為起點
+  var start = new Date(now); start.setHours(0,0,0,0); start.setDate(now.getDate() - diff);
+  var end = new Date(start); end.setDate(start.getDate() + 6); end.setHours(23,59,59,999);
+  return { start: start, end: end };
+}
+
 function renderBossDashboard() {
   var now = new Date();
   var el = document.getElementById('bossDateLabel');
