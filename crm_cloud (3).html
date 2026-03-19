@@ -470,11 +470,7 @@ function claimSeminarLead() {}
 
       
 
-      <!-- Line 通知設定 -->
-      <div class="card" style="margin-bottom:1rem">
-        <div class="card-header"><div class="card-icon">💬</div><h3>Line 通知設定</h3></div>
-        <div class="card-body" id="lineNotifyPanel"></div>
-      </div>
+      
 
     </div>
 
@@ -2593,9 +2589,6 @@ var LINE_NOTIFY_KEY = 'futime_line_token';
 function getLineToken() {
   try { return localStorage.getItem(LINE_NOTIFY_KEY) || ''; } catch(e) { return ''; }
 }
-function saveLineToken(t) {
-  try { localStorage.setItem(LINE_NOTIFY_KEY, t); } catch(e) {}
-}
 
 function renderLineNotifyPanel() {
   var el = document.getElementById('lineNotifyPanel');
@@ -2606,10 +2599,10 @@ function renderLineNotifyPanel() {
 
   // Token 設定
   html += '<div style="background:var(--cream2);border-radius:10px;padding:1rem;margin-bottom:1rem">';
-  html += '<div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:.5rem">🔑 Line Notify Token</div>';
+  
   html += '<div style="font-size:12px;color:var(--text-muted);margin-bottom:.625rem">申請網址：<a href="https://notify-bot.line.me" target="_blank" style="color:var(--navy)">notify-bot.line.me</a> → 登入 → 產生權杖 → 貼入下方</div>';
   html += '<div style="display:flex;gap:.5rem">';
-  html += '<input id="line_token_input" type="password" placeholder="貼入 Line Notify Token" value="'+(token?'已設定（點清除可重設）':'')+'" style="flex:1;padding:.5rem .875rem;border:1.5px solid #dde3ea;border-radius:8px;font-size:13px;font-family:inherit;outline:none">';
+  
   html += '<button onclick="saveLineTokenAction()" style="background:var(--navy);color:white;border:none;padding:.5rem 1rem;border-radius:8px;font-size:13px;font-family:inherit;cursor:pointer">儲存</button>';
   if (token) html += '<button onclick="clearLineToken()" style="background:#fdf0ee;color:#c0392b;border:1px solid #f5c6c3;padding:.5rem .75rem;border-radius:8px;font-size:13px;cursor:pointer">清除</button>';
   html += '</div></div>';
@@ -2654,20 +2647,7 @@ function saveLineTokenAction() {
   showToast('✅ Line Token 已儲存');
 }
 
-function clearLineToken() {
-  saveLineToken('');
-  renderLineNotifyPanel();
-  showToast('已清除 Token');
-}
 
-function sendLineNotify(token, message) {
-  // Line Notify API 需從後端發送（瀏覽器端 CORS 限制）
-  // 這裡改為：產生 Apps Script 呼叫指令，或透過 callAPI 轉發
-  callAPI({ action: 'lineNotify', token: token, message: message }, function(res) {
-    if (res.success) showToast('📨 Line 通知已發送');
-    else showToast('❌ 發送失敗：需在 Apps Script 加入 lineNotify handler');
-  });
-}
 
 function testLineNotify() {
   var token = getLineToken();
