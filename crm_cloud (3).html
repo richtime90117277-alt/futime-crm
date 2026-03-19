@@ -4,7 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>富時代地產 CRM</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=DM+Serif+Display&display=swap" rel="stylesheet" onerror="this.remove()">
+<style>
+/* 備用字體（Google Fonts 載入失敗時使用）*/
+body { font-family: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif !important; }
+</style>
 <style>
 :root{
   --gold:#c9a84c;--gold-light:#f0d080;--navy:#0f2744;--navy-mid:#1a3a5c;--navy-light:#234d73;
@@ -176,6 +180,12 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
   .detail-row{grid-template-columns:110px 1fr}
 }
 
+/* ── 語音錄音動畫 ── */
+@keyframes voicePulse {
+  0%, 100% { opacity:1; transform:scale(1); }
+  50% { opacity:.4; transform:scale(1.3); }
+}
+
 /* ── Accordion ── */
 .acc-section { background:#fff; border-radius:var(--radius); box-shadow:0 2px 8px rgba(0,0,0,.07); margin-bottom:1rem; overflow:hidden; }
 .acc-header { display:flex; align-items:center; justify-content:space-between; padding:1rem 1.25rem; cursor:pointer; user-select:none; border-left:4px solid transparent; transition:.2s; }
@@ -191,6 +201,18 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
 .acc-body { display:none; padding:1.25rem; border-top:1px solid var(--cream2); }
 .acc-body.open { display:block; }
 </style>
+<script>
+window.addEventListener('error', function(e) {
+  // 忽略跨域資源錯誤（如 Google Fonts）
+  if (!e.filename || e.filename === '') return;
+  console.warn('捕捉到錯誤：', e.message, e.filename, e.lineno);
+});
+// 已移除研討會名單功能（stub 保留避免錯誤）
+function renderSeminarPending() {}
+function addSeminarLead() {}
+function claimSeminarLead() {}
+
+</script>
 </head>
 <body>
 
@@ -278,7 +300,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
     <button onclick="showPage('newCustomer',this)">➕ 新增</button>
     <button onclick="showPage('customerList',this)">📋 列表</button>
     <button onclick="showPage('leaderboard',this)" id="reportsTab">🏆 排行榜</button>
-    <button onclick="showPage('claude',this)">🤖 Claude</button>
+
     <button onclick="showPage('staffMgmt',this)" id="staffTab">👥 業務</button>
     <button onclick="showPage('followupJournal',this)" id="journalTab">📝 日誌</button>
     <button onclick="showPage('bossDashboard',this)" id="bossTab" style="display:none">🧠 決策</button>
@@ -420,11 +442,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
         <div class="card-body" id="salesActivity"></div>
       </div>
 
-      <!-- 研討會名單待認領 -->
-      <div class="card" style="margin-bottom:1rem">
-        <div class="card-header"><div class="card-icon">🎓</div><h3>研討會名單待認領</h3></div>
-        <div class="card-body" id="seminarPending"></div>
-      </div>
+      
 
       <!-- Line 通知設定 -->
       <div class="card" style="margin-bottom:1rem">
@@ -893,21 +911,46 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
                 </div>
               </div>
             </div>
-            <div class="form-group"><label>跟進重點（下次要說什麼）</label>
-              <div class="ms-wrap" id="ms_nextFollowup">
-                <div class="ms-display" onclick="toggleMs('ms_nextFollowup')"><span class="ms-placeholder">點選展開（可多選）</span><span class="ms-arrow">▾</span></div>
-                <div class="ms-dropdown">
-                  <label class="ms-opt"><input type="checkbox" value="分享市場新資訊">📊 分享市場新資訊</label>
-                  <label class="ms-opt"><input type="checkbox" value="邀請看屋或活動">🏠 邀請看屋或活動</label>
-                  <label class="ms-opt"><input type="checkbox" value="處理家人疑慮">👨‍👩‍👧 處理家人疑慮</label>
-                  <label class="ms-opt"><input type="checkbox" value="重新確認需求與預算">💰 重新確認需求與預算</label>
-                  <label class="ms-opt"><input type="checkbox" value="提供貸款方案試算">🏦 提供貸款方案試算</label>
-                  <label class="ms-opt"><input type="checkbox" value="等待時機主動聯繫">⏳ 等待時機主動聯繫</label>
-                  <label class="ms-opt"><input type="checkbox" value="轉介紹開口">🤝 轉介紹開口</label>
-                </div>
-              </div>
+            <div class="form-group">
+              <label>⚡ 跟進重點 / 話術建議</label>
+              <textarea id="ms_nextFollowup" placeholder="貼入早會建議或自行填寫，例如：&#10;1. 下週三約帶看，強調增值潛力&#10;2. 先解決家人疑慮，邀請一起來&#10;3. 傳送貸款試算表參考" style="min-height:110px;font-size:14px;line-height:1.7"></textarea>
             </div>
             <div class="form-group"><textarea id="notes" placeholder="其他補充說明..." style="min-height:80px"></textarea></div>
+          </div>
+        </div>
+
+        <!-- 語音新增功能 -->
+        <div id="voiceInputCard" style="background:linear-gradient(135deg,#0f2744,#1a3a5c);border-radius:14px;padding:1.25rem;margin-bottom:1rem">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.875rem">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#c9a84c;letter-spacing:.05em">🎤 語音快速建檔</div>
+              <div style="font-size:11px;color:#a0b4c8;margin-top:.2rem">說出客戶資料，AI 自動填入表單</div>
+            </div>
+            <button type="button" id="voiceBtn" onclick="toggleVoiceInput()" 
+              style="background:linear-gradient(135deg,#c9a84c,#f0d080);color:#0f2744;border:none;border-radius:50px;padding:.625rem 1.25rem;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:.5rem;transition:all .2s">
+              🎤 開始錄音
+            </button>
+          </div>
+          <div id="voiceStatus" style="display:none;margin-bottom:.75rem">
+            <div id="voiceListening" style="display:none;align-items:center;gap:.75rem;padding:.75rem 1rem;background:rgba(201,168,76,.15);border:1.5px solid rgba(201,168,76,.4);border-radius:10px">
+              <div style="width:12px;height:12px;background:#c9a84c;border-radius:50%;animation:voicePulse 1s infinite"></div>
+              <span style="font-size:13px;color:#f0d080;font-weight:600">錄音中... 說完後點停止</span>
+            </div>
+            <div id="voiceProcessing" style="display:none;align-items:center;gap:.75rem;padding:.75rem 1rem;background:rgba(255,255,255,.08);border-radius:10px">
+              <div style="width:16px;height:16px;border:2px solid #c9a84c;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite"></div>
+              <span style="font-size:13px;color:#a0b4c8">AI 解析中...</span>
+            </div>
+          </div>
+          <div id="voiceTranscript" style="display:none;background:rgba(255,255,255,.06);border-radius:10px;padding:.875rem;margin-bottom:.75rem">
+            <div style="font-size:10px;color:#a0b4c8;font-weight:700;margin-bottom:.35rem">識別內容</div>
+            <div id="voiceTranscriptText" style="font-size:13px;color:#e8f0fb;line-height:1.6"></div>
+          </div>
+          <div id="voiceResult" style="display:none;background:rgba(201,168,76,.1);border:1.5px solid rgba(201,168,76,.3);border-radius:10px;padding:.875rem;margin-bottom:.75rem">
+            <div style="font-size:10px;color:#c9a84c;font-weight:700;margin-bottom:.5rem">✨ AI 已填入以下資料</div>
+            <div id="voiceResultText" style="font-size:12px;color:#e8f0fb;line-height:1.8"></div>
+          </div>
+          <div style="font-size:11px;color:#6a8aaa;line-height:1.6">
+            💡 範例：「客戶王大明，電話 0912345678，朋友轉介紹，想買三房自住，預算一千萬，三個月內要買」
           </div>
         </div>
 
@@ -1074,36 +1117,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
     </div>
 
     <!-- CLAUDE AI -->
-    <div id="claude" class="page">
-      <div class="card">
-        <div class="card-header"><div class="card-icon">📤</div><h3>導出資料給 Claude 分析</h3></div>
-        <div class="card-body">
-          <div class="form-grid two">
-            <div class="form-group" id="exportScopeGroup">
-              <label>導出範圍</label>
-              <select id="exportScope"><option value="mine">我的客戶</option></select>
-            </div>
-            <div class="form-group">
-              <label>格式</label>
-              <select id="exportFormat"><option value="full">完整資料（推薦）</option><option value="summary">摘要版</option></select>
-            </div>
-          </div>
-          <div class="button-row">
-            <button class="btn btn-secondary" onclick="previewExport()">👁 生成預覽</button>
-            <button class="btn btn-primary" onclick="copyExport()">📋 複製給 Claude</button>
-          </div>
-          <div style="background:#f8fafc;border:2px solid #e1e8f0;border-radius:var(--radius-sm);padding:1rem;margin-top:1rem;min-height:60px">
-            <div style="font-size:11px;font-weight:700;color:var(--text-muted);margin-bottom:.5rem">預覽 <span id="previewLabel" style="color:var(--gold);font-weight:600"></span></div>
-            <div id="exportPreview" style="font-size:12px;color:var(--text-soft);white-space:pre-wrap;font-family:monospace;max-height:250px;overflow-y:auto">點擊下方「提問指令」或「生成預覽」查看...</div>
-          </div>
-          <div class="alert alert-success" id="copyAlert" style="margin-top:.75rem">✅ 已複製！貼到 Claude 對話即可開始分析 🎉</div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-header"><div class="card-icon">⚡</div><h3>常用 Claude 提問指令</h3></div>
-        <div class="card-body" style="padding:1rem"><div id="quickCommandList"></div></div>
-      </div>
-    </div>
+    
   </div>
 </div>
 
@@ -1405,7 +1419,7 @@ function initApp() {
     document.getElementById('reportsTab').style.display = '';
     document.getElementById('staffTab').style.display = '';
     document.getElementById('bossTab').style.display = '';
-    document.getElementById('exportScope').innerHTML = '<option value="all">全部客戶</option><option value="mine">我的客戶</option>';
+    var expEl=document.getElementById('exportScope'); if(expEl) expEl.innerHTML='<option value="all">全部客戶</option><option value="mine">我的客戶</option>';
   } else {
     sp.innerHTML = '<option value="'+currentUser+'" selected>'+currentUser+'</option>';
     sp.disabled = true;
@@ -1671,17 +1685,17 @@ function renderDashboard() {
   if (bottleneckEl) bottleneckEl.textContent = maxCount > 0 ? '🚧 瓶頸：'+STAGE_NAMES[maxStage]+'（'+maxCount+' 人卡關）' : '';
 
   // ── 購買時間軸 ──
-  var tlOrder = ['1個月內','3個月內','半年內','1年以上','純詢問觀望',''];
+  var tlOrder = ['1個月內','3個月內','半年內','1年以上','純詢問觀望','未填寫'];
   var tlMap = {};
   active.forEach(function(c){
-    var t = c.buyingTimeline || '未填寫';
-    tlMap[t] = (tlMap[t]||0) + 1;
+    var key = (c.buyingTimeline || '').trim() || '未填寫';
+    tlMap[key] = (tlMap[key]||0) + 1;
   });
   var tlColors = {'1個月內':'#c62828','3個月內':'#e65100','半年內':'#f57f17','1年以上':'#1565c0','純詢問觀望':'#546e7a','未填寫':'#9e9e9e'};
   var tlHtml = '<div style="display:flex;flex-wrap:wrap;gap:.5rem">';
-  tlOrder.concat(Object.keys(tlMap).filter(function(k){ return tlOrder.indexOf(k)===-1; })).forEach(function(tl){
-    var label = tl || '未填寫';
-    var cnt = tlMap[tl] || tlMap[label] || 0;
+  tlOrder.forEach(function(tl){
+    var label = tl;
+    var cnt = tlMap[tl] || 0;
     if (!cnt) return;
     var color = tlColors[label] || '#999';
     tlHtml += '<div style="background:'+color+'18;border:1.5px solid '+color+'44;border-radius:10px;padding:.5rem 1rem;display:flex;align-items:center;gap:.5rem">';
@@ -1810,6 +1824,70 @@ function getWeekRange() {
   var start = new Date(now); start.setHours(0,0,0,0); start.setDate(now.getDate() - diff);
   var end = new Date(start); end.setDate(start.getDate() + 6); end.setHours(23,59,59,999);
   return { start: start, end: end };
+}
+
+
+function toggleForecastList(type) {
+  var h = document.getElementById('forecastListHigh');
+  var m = document.getElementById('forecastListMed');
+  if (!h||!m) return;
+  if (type==='high') { h.style.display=h.style.display==='none'?'block':'none'; m.style.display='none'; }
+  else { m.style.display=m.style.display==='none'?'block':'none'; h.style.display='none'; }
+}
+
+function showCustomerSummary(customerId) {
+  var c = customers.find(function(x){ return x.id&&x.id.toString()===customerId.toString(); });
+  if (!c) return;
+  var prob = calcCloseProb(c), risk = getRiskLevel(c), stage = stageOf(c);
+  var riskText = risk==='critical'?'🔴 極高流失風險':risk==='high'?'🟠 高流失風險':risk==='medium'?'🟡 需要跟進':'🟢 正常';
+  var pColor = prob>=70?'#1b5e20':prob>=40?'#e65100':'#1565c0';
+  var blocks = [];
+  if (!c.familySupport||c.familySupport==='觀望') blocks.push('家人未支持');
+  if (!c.budget) blocks.push('預算未確認');
+  if (c.viewingStatus!=='已完整解說') blocks.push('產品未完整解說');
+  if (!c.buyingTimeline||c.buyingTimeline==='純詢問觀望') blocks.push('購買意願不明確');
+  if (c.objections) blocks.push('異議：'+c.objections.slice(0,20));
+  var next = '';
+  if (risk==='critical'||risk==='high') next='⚡ 本週必須聯繫，否則可能流失';
+  else if (!c.familySupport||c.familySupport==='觀望') next='👨‍👩‍👧 安排家人一起來了解';
+  else if (c.buyingTimeline==='1個月內') next='🏠 本週安排帶看，推進簽約';
+  else if (c.viewingStatus!=='已完整解說') next='📋 邀請完成顧問諮詢';
+  else if (!c.budget) next='💰 確認資金來源與貸款能力';
+  else next='🤝 持續維繫信任，等待時機';
+  var html =
+    '<div style="padding:1.25rem;background:linear-gradient(135deg,#0f2744,#1a3a5c);border-radius:16px;margin-bottom:1rem;color:white">'+
+      '<div style="font-size:11px;color:#c9a84c;font-weight:700;letter-spacing:.1em;margin-bottom:.25rem">客戶分析摘要</div>'+
+      '<div style="font-size:20px;font-weight:900">'+c.customerName+'</div>'+
+      '<div style="font-size:12px;color:#a0b4c8;margin-top:.25rem">'+c.salesPerson+' ｜ '+STAGE_NAMES[stage]+'階段</div>'+
+    '</div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.875rem">'+
+      '<div style="background:#f0faf0;border-radius:12px;padding:.875rem;text-align:center">'+
+        '<div style="font-size:26px;font-weight:900;color:'+pColor+'">'+prob+'%</div>'+
+        '<div style="font-size:11px;font-weight:700;color:'+pColor+'">成交機率</div>'+
+      '</div>'+
+      '<div style="background:#fef9f0;border-radius:12px;padding:.875rem;text-align:center;display:flex;align-items:center;justify-content:center">'+
+        '<div style="font-size:13px;font-weight:700;color:#856404">'+riskText+'</div>'+
+      '</div>'+
+    '</div>'+
+    (c.painPoints?'<div style="background:var(--cream2);border-radius:10px;padding:.875rem;margin-bottom:.625rem"><div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:.3rem">💬 核心痛點</div><div style="font-size:13px">'+c.painPoints+'</div></div>':'')+
+    ((c.budget||c.monthlyPayment)?'<div style="background:var(--cream2);border-radius:10px;padding:.875rem;margin-bottom:.625rem"><div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:.3rem">💰 預算</div><div style="font-size:13px">'+(c.budget?'總預算：'+c.budget:'')+(c.budget&&c.monthlyPayment?' ｜ ':'')+(c.monthlyPayment?'月付：'+c.monthlyPayment:'')+'</div></div>':'')+
+    (blocks.length?'<div style="background:#fdf0ee;border-radius:10px;padding:.875rem;margin-bottom:.625rem"><div style="font-size:11px;font-weight:700;color:#c0392b;margin-bottom:.3rem">🚧 卡關原因</div><div style="font-size:13px">'+blocks.join('、')+'</div></div>':'')+
+    '<div style="background:linear-gradient(135deg,#fffbf0,#fff8e7);border:1.5px solid #f0d080;border-radius:10px;padding:.875rem">'+
+      '<div style="font-size:11px;font-weight:700;color:#856404;margin-bottom:.3rem">⚡ 建議下一步</div>'+
+      '<div style="font-size:13px;font-weight:600;color:#5c4000">'+next+'</div>'+
+    '</div>';
+  var overlay = document.getElementById('summaryModal');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'summaryModal';
+    overlay.className = 'modal-overlay';
+    overlay.innerHTML = '<div class="modal" style="max-width:480px"><div class="modal-head"><h3 id="summaryModalTitle"></h3><button class="modal-close" onclick="document.getElementById(\'summaryModal\').classList.remove(\'active\')">×</button></div><div class="modal-body" id="summaryModalBody"></div></div>';
+    overlay.addEventListener('click', function(e){ if(e.target===overlay) overlay.classList.remove('active'); });
+    document.body.appendChild(overlay);
+  }
+  document.getElementById('summaryModalTitle').textContent = '📊 '+c.customerName+' 分析摘要';
+  document.getElementById('summaryModalBody').innerHTML = html;
+  overlay.classList.add('active');
 }
 
 function renderBossDashboard() {
@@ -2003,13 +2081,15 @@ function renderBossDashboard() {
   var fcEl = document.getElementById('closingForecast');
   fcEl.innerHTML =
     '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-bottom:1rem">'+
-      '<div style="background:linear-gradient(135deg,#e8f5e9,#f1f8e9);border:1px solid #a5d6a7;border-radius:12px;padding:1rem;text-align:center">'+
+      '<div style="background:linear-gradient(135deg,#e8f5e9,#f1f8e9);border:1px solid #a5d6a7;border-radius:12px;padding:1rem;text-align:center;cursor:pointer" onclick="toggleForecastList(\'high\')">'+
         '<div style="font-size:28px;font-weight:900;color:#1b5e20">'+highProb.length+'</div>'+
         '<div style="font-size:11px;color:#2e7d52;font-weight:700;margin-top:.25rem">高機率 ≥70%</div>'+
+        '<div style="font-size:10px;color:#2e7d52;margin-top:.15rem">▾ 查看名單</div>'+
       '</div>'+
-      '<div style="background:linear-gradient(135deg,#fff3e0,#fff8f0);border:1px solid #ffcc80;border-radius:12px;padding:1rem;text-align:center">'+
+      '<div style="background:linear-gradient(135deg,#fff3e0,#fff8f0);border:1px solid #ffcc80;border-radius:12px;padding:1rem;text-align:center;cursor:pointer" onclick="toggleForecastList(\'med\')">'+
         '<div style="font-size:28px;font-weight:900;color:#e65100">'+medProb.length+'</div>'+
         '<div style="font-size:11px;color:#e65100;font-weight:700;margin-top:.25rem">中機率 40-69%</div>'+
+        '<div style="font-size:10px;color:#e65100;margin-top:.15rem">▾ 查看名單</div>'+
       '</div>'+
       '<div style="background:var(--cream2);border:1px solid #e0e0e0;border-radius:12px;padding:1rem;text-align:center">'+
         '<div style="font-size:28px;font-weight:900;color:var(--navy)">'+lowProb.length+'</div>'+
@@ -2020,6 +2100,14 @@ function renderBossDashboard() {
       '<div style="font-size:11px;color:#c9a84c;font-weight:700;letter-spacing:.1em;margin-bottom:.25rem">預估可成交金額（高機率客戶）</div>'+
       '<div style="font-size:28px;font-weight:900;color:#f0d080">'+estRevenue+' <span style="font-size:14px;font-weight:500">萬元</span></div>'+
     '</div>' : '')+
+    '<div id="forecastListHigh" style="display:none;margin-top:.75rem;padding:.875rem;background:#f0faf0;border-radius:12px">'+
+      '<div style="font-size:11px;font-weight:700;color:#2e7d52;margin-bottom:.5rem">🟢 高機率（'+highProb.length+'人）</div>'+
+      (highProb.length?highProb.map(function(c){var p=calcCloseProb(c);return '<div style="display:flex;justify-content:space-between;align-items:center;padding:.35rem 0;border-bottom:1px solid #c8e6c9"><span style="font-weight:600;font-size:13px">'+c.customerName+'</span><span style="font-size:11px;color:#888">'+c.salesPerson+'</span><span style="font-weight:700;font-size:12px;color:#2e7d52;background:#e8f5e9;padding:2px 8px;border-radius:20px">'+p+'%</span></div>';}).join(''):'<div style="font-size:12px;color:#888">目前無高機率客戶</div>')+
+    '</div>'+
+    '<div id="forecastListMed" style="display:none;margin-top:.75rem;padding:.875rem;background:#fff8f0;border-radius:12px">'+
+      '<div style="font-size:11px;font-weight:700;color:#e65100;margin-bottom:.5rem">🟡 中機率（'+medProb.length+'人）</div>'+
+      (medProb.length?medProb.map(function(c){var p=calcCloseProb(c);return '<div style="display:flex;justify-content:space-between;align-items:center;padding:.35rem 0;border-bottom:1px solid #ffcc80"><span style="font-weight:600;font-size:13px">'+c.customerName+'</span><span style="font-size:11px;color:#888">'+c.salesPerson+'</span><span style="font-weight:700;font-size:12px;color:#e65100;background:#fff3e0;padding:2px 8px;border-radius:20px">'+p+'%</span></div>';}).join(''):'<div style="font-size:12px;color:#888">目前無中機率客戶</div>')+
+    '</div>'+
     '<div style="margin-top:1rem">'+
     highProb.slice(0,5).map(function(c){
       var p = calcCloseProb(c);
@@ -2177,11 +2265,7 @@ function renderSalesActivity() {
   el.innerHTML = html;
 }
 
-// ══════════════════════════════════════════════
-// 研討會名單待認領
-// 從 customers 找來源是研討會但還未指派的，
-// 管理員也可以在這裡手動新增待認領名單
-// ══════════════════════════════════════════════
+
 var SEMINAR_PENDING_KEY = 'futime_seminar_pending';
 
 function getSeminarPending() {
@@ -2195,59 +2279,18 @@ function saveSeminarPending(list) {
   try { localStorage.setItem(SEMINAR_PENDING_KEY, JSON.stringify(list)); } catch(e) {}
 }
 
-function renderSeminarPending() {
-  var el = document.getElementById('seminarPending');
-  if (!el) return;
-
-  var pending = getSeminarPending();
-
-  var html = '';
-
-  // 新增表單
-  html += '<div style="background:var(--cream2);border-radius:10px;padding:1rem;margin-bottom:1rem">';
-  html += '<div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:.625rem">➕ 新增研討會報名名單</div>';
-  html += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:.5rem;align-items:end">';
-  html += '<div><div style="font-size:11px;color:var(--text-muted);margin-bottom:.25rem">姓名</div><input id="sp_name" type="text" placeholder="客戶姓名" style="width:100%;padding:.5rem .75rem;border:1.5px solid #dde3ea;border-radius:8px;font-size:13px;font-family:inherit;outline:none"></div>';
-  html += '<div><div style="font-size:11px;color:var(--text-muted);margin-bottom:.25rem">聯絡方式</div><input id="sp_contact" type="text" placeholder="電話/Line" style="width:100%;padding:.5rem .75rem;border:1.5px solid #dde3ea;border-radius:8px;font-size:13px;font-family:inherit;outline:none"></div>';
-  html += '<div><div style="font-size:11px;color:var(--text-muted);margin-bottom:.25rem">備註</div><input id="sp_note" type="text" placeholder="場次/介紹人" style="width:100%;padding:.5rem .75rem;border:1.5px solid #dde3ea;border-radius:8px;font-size:13px;font-family:inherit;outline:none"></div>';
-  html += '<button onclick="addSeminarPending()" style="background:var(--navy);color:white;border:none;padding:.5rem 1rem;border-radius:8px;font-size:13px;font-family:inherit;cursor:pointer;white-space:nowrap">新增</button>';
-  html += '</div></div>';
-
-  if (!pending.length) {
-    html += '<div style="color:var(--text-muted);font-size:13px;padding:.5rem">目前無待認領名單</div>';
-  } else {
-    html += '<div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:.5rem">待認領名單（'+pending.length+' 筆）</div>';
-    html += pending.map(function(p, i){
-      var spOpts = SALES.map(function(s){ return '<option value="'+s+'">'+s+'</option>'; }).join('');
-      return '<div style="display:flex;align-items:center;gap:.625rem;padding:.625rem 0;border-bottom:1px solid var(--cream2);flex-wrap:wrap">' +
-        '<div style="flex:1;min-width:120px">' +
-          '<span style="font-weight:700;color:var(--navy)">'+p.name+'</span>' +
-          '<span style="font-size:12px;color:var(--text-muted);margin-left:.5rem">'+p.contact+'</span>' +
-          (p.note ? '<span style="font-size:11px;color:var(--text-muted);margin-left:.5rem">・'+p.note+'</span>' : '') +
-        '</div>' +
-        '<select id="sp_assign_'+i+'" style="padding:.35rem .625rem;border:1.5px solid #dde3ea;border-radius:6px;font-size:12px;font-family:inherit;outline:none">' +
-          '<option value="">指派給...</option>'+spOpts +
-        '</select>' +
-        '<button onclick="assignSeminarLead('+i+')" style="background:#1a3a5c;color:white;border:none;padding:.35rem .75rem;border-radius:6px;font-size:12px;font-family:inherit;cursor:pointer">轉入CRM</button>' +
-        '<button onclick="removeSeminarPending('+i+')" style="background:#fdf0ee;color:#c0392b;border:1px solid #f5c6c3;padding:.35rem .625rem;border-radius:6px;font-size:12px;cursor:pointer">✕</button>' +
-      '</div>';
-    }).join('');
-  }
-
-  el.innerHTML = html;
-}
 
 function addSeminarPending() {
-  var name = (document.getElementById('sp_name').value||'').trim();
-  var contact = (document.getElementById('sp_contact').value||'').trim();
-  var note = (document.getElementById('sp_note').value||'').trim();
+  var name = ((document.getElementById('sp_name')?(document.getElementById('sp_name')||{value:''}).value:'')||'').trim();
+  var contact = ((document.getElementById('sp_contact')?(document.getElementById('sp_contact')||{value:''}).value:'')||'').trim();
+  var note = ((document.getElementById('sp_note')?(document.getElementById('sp_note')||{value:''}).value:'')||'').trim();
   if (!name) { showToast('請輸入客戶姓名'); return; }
   var list = getSeminarPending();
   list.push({ name:name, contact:contact, note:note, addedAt: new Date().toLocaleDateString('zh-TW') });
   saveSeminarPending(list);
-  document.getElementById('sp_name').value = '';
-  document.getElementById('sp_contact').value = '';
-  document.getElementById('sp_note').value = '';
+  var _el_sp_name=document.getElementById('sp_name'); if(_el_sp_name) _el_sp_name.value='';
+  var _el_sp_contact=document.getElementById('sp_contact'); if(_el_sp_contact) _el_sp_contact.value='';
+  var _el_sp_note=document.getElementById('sp_note'); if(_el_sp_note) _el_sp_note.value='';
   renderSeminarPending();
   showToast('✅ 已加入待認領名單');
 }
@@ -2602,7 +2645,8 @@ function renderTodayFollowupList() {
       '</div>' +
       '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:.25rem">' +
         '<span style="font-size:16px;font-weight:800;color:'+probColor+'">'+x.prob+'%</span>' +
-        '<button data-cid="'+c.id+'" onclick="quickSelectCustomer(this.dataset.cid)" style="font-size:11px;background:var(--navy);color:white;border:none;padding:.3rem .75rem;border-radius:6px;cursor:pointer;font-family:inherit">記錄跟進</button>' +
+        '<button data-cid="'+c.id+'" onclick="quickSelectCustomer(this.dataset.cid)" style="font-size:11px;background:var(--navy);color:white;border:none;padding:.3rem .75rem;border-radius:6px;cursor:pointer;font-family:inherit">記錄跟進</button>'+
+        '<button data-cid="'+c.id+'" onclick="showCustomerSummary(this.dataset.cid)" style="font-size:11px;background:#e8f0fb;color:#1565c0;border:1.5px solid #bbcef0;padding:.3rem .75rem;border-radius:6px;cursor:pointer;font-family:inherit">📊 摘要</button>' +
       '</div>' +
     '</div>';
   }).join('');
@@ -2868,176 +2912,12 @@ function updatePainPointsBySegment() {
 }
 
 // ══════════════════════════════════════════════
-// AI 話術建議（呼叫 Claude API）
 // ══════════════════════════════════════════════
-function buildCustomerPrompt(c) {
-  var s = stageOf(c);
-  var prob = calcCloseProb(c);
-  var stageNames = ['','客戶開發','初步接觸','需求分析','產品匹配','異議處理','成交締結','售後服務','轉介紹'];
-  var nl = '\n';
-  var prompt = '';
-  prompt += '你是一位頂尖的台灣房地產顧問，精通富時代地產的八部曲銷售系統。' + nl;
-  prompt += '請根據以下客戶資料，給出具體的話術建議。' + nl + nl;
-  prompt += '【客戶基本資料】' + nl;
-  prompt += '姓名：' + c.customerName + '　年齡：' + (c.customerAge||'未填') + '歲' + nl;
-  prompt += '族群：' + (c.clientSegment||'未設定') + '　購屋目的：' + (c.purchasePurpose||'未填') + nl;
-  prompt += '購買時間軸：' + (c.buyingTimeline||'未填') + '　居住狀況：' + (c.livingStatus||'未填') + nl;
-  if (c.preferredArea) prompt += '偏好區域：' + c.preferredArea + nl;
-  prompt += nl + '【家庭與決策】' + nl;
-  prompt += '家庭成員：' + (c.familyMembers||'未填') + '　KEY MAN：' + (c.keyMan||'未填') + nl;
-  prompt += '家人支持度：' + (c.familySupport||'未填') + '　客戶個性：' + (c.personalityType||'未填') + nl;
-  prompt += nl + '【財務狀況】' + nl;
-  prompt += '自有資金：' + (c.budget||'未填') + '　每月可儲蓄：' + (c.monthlyPayment||'未填') + nl;
-  prompt += nl + '【痛點與需求】' + nl;
-  prompt += '主要痛點：' + (c.painPoints||'未填') + nl;
-  if (c.painPointsNote) prompt += '補充：' + c.painPointsNote + nl;
-  prompt += nl + '【目前銷售進度】' + nl;
-  prompt += '八部曲階段：第' + s + '部曲（' + stageNames[s] + '）' + nl;
-  prompt += '成交預測機率：' + prob + '%' + nl;
-  prompt += '信任狀態：' + (c.currentStatus||'未填') + nl;
-  if (c.decisionBlock) prompt += '決策障礙：' + c.decisionBlock + nl;
-  if (c.objections) prompt += '客戶異議：' + c.objections + nl;
-  if (c.viewedProperties) prompt += '看過案子：' + c.viewedProperties + nl;
-  if (c.whyNotBought) prompt += '未買原因：' + c.whyNotBought + nl;
-  prompt += nl + '請給出以下三點建議，用繁體中文，語氣自然像在跟業務朋友說話：' + nl + nl;
-  prompt += '## 1. 現況判斷（2-3句）' + nl;
-  prompt += '這個客戶目前最核心的問題是什麼？卡在哪裡？' + nl + nl;
-  prompt += '## 2. 本次建議開場白' + nl;
-  prompt += '給一段完整的話術，可以直接用來開啟下一次對話或拜訪。針對這個客戶的族群和痛點設計，不要太制式。' + nl + nl;
-  prompt += '## 3. 預測異議與回應' + nl;
-  prompt += '這個客戶最可能說的1-2個拒絕理由是什麼？各給一個自然的回應方式。';
-  return prompt;
-}
 
-function showAIScriptModal(customerId) {
-  var c = customers.find(function(x){ return x.id && x.id.toString()===customerId.toString(); });
-  if (!c) return;
 
-  // 建立 modal 覆蓋層
-  var overlay = document.getElementById('aiScriptOverlay');
-  if (!overlay) {
-    overlay = document.createElement('div');
-    overlay.id = 'aiScriptOverlay';
-    overlay.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(15,39,68,.7);z-index:3000;padding:1rem;align-items:center;justify-content:center';
-    overlay.innerHTML =
-      '<div style="background:#fff;border-radius:20px;max-width:600px;width:100%;max-height:88vh;overflow-y:auto;display:flex;flex-direction:column">' +
-        '<div style="padding:1.25rem 1.5rem;border-bottom:2px solid var(--cream2);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;z-index:1">' +
-          '<div>' +
-            '<div style="font-size:11px;color:var(--gold);font-weight:700;letter-spacing:.1em">AI SCRIPT ADVISOR</div>' +
-            '<h3 style="color:var(--navy);font-size:16px" id="aiScriptTitle">🤖 AI 話術建議</h3>' +
-          '</div>' +
-          '<button onclick="closeAIScript()" style="background:none;border:none;font-size:24px;cursor:pointer;color:#9e9e9e">✕</button>' +
-        '</div>' +
-        '<div id="aiScriptBody" style="padding:1.5rem;flex:1"></div>' +
-      '</div>';
-    overlay.addEventListener('click', function(e){ if(e.target===overlay) closeAIScript(); });
-    document.body.appendChild(overlay);
-  }
 
-  document.getElementById('aiScriptTitle').textContent = '🤖 '+c.customerName+' 的 AI 話術建議';
-  document.getElementById('aiScriptBody').innerHTML =
-    '<div style="text-align:center;padding:2rem">' +
-      '<div style="width:40px;height:40px;border:4px solid var(--cream2);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 1rem"></div>' +
-      '<div style="color:var(--navy);font-weight:600">Claude 正在分析客戶資料...</div>' +
-      '<div style="color:var(--text-muted);font-size:13px;margin-top:.5rem">約需 5-10 秒</div>' +
-    '</div>';
-  overlay.style.display = 'flex';
 
-  // 呼叫 Claude API
-  var prompt = buildCustomerPrompt(c);
-  fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 1000,
-      messages: [{ role: 'user', content: prompt }]
-    })
-  })
-  .then(function(r){ return r.json(); })
-  .then(function(data){
-    var text = data.content && data.content[0] ? data.content[0].text : '無法取得回應';
-    renderAIScript(text, c);
-  })
-  .catch(function(err){
-    document.getElementById('aiScriptBody').innerHTML =
-      '<div style="color:#c0392b;padding:1rem;background:#fdf0ee;border-radius:8px">❌ 呼叫失敗：'+err.toString()+'</div>';
-  });
-}
 
-function renderAIScript(text, c) {
-  var html = '<div style="font-size:13px;line-height:1.8;color:var(--text)">';
-
-  // markdown → HTML（安全版本，不用 regex 特殊字元）
-  var parts = text.split('\n');
-  var out = [];
-  parts.forEach(function(line) {
-    if (line.indexOf('## ') === 0) {
-      out.push('<div style="font-size:14px;font-weight:700;color:var(--navy);margin:1.25rem 0 .5rem;padding:.5rem .875rem;background:linear-gradient(135deg,#fffbf0,#fff8e7);border-left:3px solid var(--gold);border-radius:0 8px 8px 0">' + line.slice(3) + '</div>');
-    } else if (line.trim() === '') {
-      out.push('<br>');
-    } else {
-      // bold: **text**
-      var l = line.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-      out.push(l + '<br>');
-    }
-  });
-  html += out.join('');
-  html += '</div>';
-
-  var cid = c.id ? c.id.toString() : '';
-  html += '<div style="margin-top:1.5rem;display:flex;gap:.75rem;flex-wrap:wrap">';
-  html += '<button onclick="copyAIScript()" style="background:var(--navy);color:white;border:none;padding:.625rem 1.25rem;border-radius:8px;font-size:13px;font-family:inherit;cursor:pointer">📋 複製話術</button>';
-  html += '<button onclick="saveToJournal_AI(\'' + cid + '\')" style="background:var(--cream2);color:var(--navy);border:1.5px solid #dde3ea;padding:.625rem 1.25rem;border-radius:8px;font-size:13px;font-family:inherit;cursor:pointer">📝 記錄到日誌</button>';
-  html += '<button onclick="closeAIScript()" style="background:#fdf0ee;color:#c0392b;border:1px solid #f5c6c3;padding:.625rem 1rem;border-radius:8px;font-size:13px;cursor:pointer">關閉</button>';
-  html += '</div>';
-
-  document.getElementById('aiScriptBody').innerHTML = html;
-}
-
-function closeAIScript() {
-  var o = document.getElementById('aiScriptOverlay');
-  if (o) o.style.display = 'none';
-}
-
-function copyAIScript() {
-  var body = document.getElementById('aiScriptBody');
-  var text = body ? body.innerText : '';
-  if (navigator.clipboard && window.isSecureContext) {
-    navigator.clipboard.writeText(text).then(function(){ showToast('✅ 已複製話術'); });
-  } else {
-    var ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position = 'fixed'; ta.style.opacity = '0';
-    document.body.appendChild(ta); ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    showToast('✅ 已複製話術');
-  }
-}
-
-function saveToJournal_AI(customerId) {
-  var body = document.getElementById('aiScriptBody');
-  var text = body ? body.innerText.slice(0, 300) : '';
-  var journal = getJournal();
-  var c = customers.find(function(x){ return x.id && x.id.toString()===customerId.toString(); });
-  if (!c) return;
-  journal.unshift({
-    id: Date.now().toString(),
-    customerId: customerId,
-    customerName: c.customerName,
-    salesPerson: currentUser,
-    action: '🤖 AI 話術建議',
-    response: '── 已生成建議 ──',
-    note: text,
-    date: new Date().toISOString().slice(0,10),
-    ts: Date.now()
-  });
-  if (journal.length > 500) journal = journal.slice(0,500);
-  saveJournal(journal);
-  showToast('✅ 已儲存到日誌');
-  closeAIScript();
-}
 
 function formatDate(raw) {
   if (!raw) return '—';
@@ -3170,6 +3050,161 @@ function setChecked(name, val) {}
 
 // ── 新增客戶 ──
 var _saving = false; // deprecated, kept for safety
+// ══════════════════════════════════════════════
+// 語音快速建檔功能
+// ══════════════════════════════════════════════
+var voiceRecognition = null;
+var voiceActive = false;
+
+function toggleVoiceInput() {
+  if (voiceActive) { stopVoiceInput(); } else { startVoiceInput(); }
+}
+
+function startVoiceInput() {
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { showToast('⚠️ 請使用 Chrome 瀏覽器以使用語音功能'); return; }
+
+  voiceRecognition = new SR();
+  voiceRecognition.lang = 'zh-TW';
+  voiceRecognition.continuous = true;   // 持續錄音直到按停止
+  voiceRecognition.interimResults = true;
+
+  voiceActive = true;
+  var btn = document.getElementById('voiceBtn');
+  btn.innerHTML = '⏹ 停止錄音';
+  btn.style.background = 'linear-gradient(135deg,#c0392b,#e74c3c)';
+  btn.style.color = 'white';
+
+  document.getElementById('voiceStatus').style.display = 'block';
+  document.getElementById('voiceListening').style.display = 'flex';
+  document.getElementById('voiceProcessing').style.display = 'none';
+  document.getElementById('voiceTranscript').style.display = 'none';
+  document.getElementById('voiceResult').style.display = 'none';
+
+  var finalTranscript = '';
+
+  voiceRecognition.onresult = function(event) {
+    var interim = '';
+    for (var i = event.resultIndex; i < event.results.length; i++) {
+      if (event.results[i].isFinal) finalTranscript += event.results[i][0].transcript;
+      else interim += event.results[i][0].transcript;
+    }
+    var display = finalTranscript || interim;
+    if (display) {
+      document.getElementById('voiceTranscript').style.display = 'block';
+      document.getElementById('voiceTranscriptText').textContent = display;
+    }
+  };
+
+  voiceRecognition.onend = function() {
+    voiceActive = false;
+    var btn = document.getElementById('voiceBtn');
+    btn.innerHTML = '🎤 開始錄音';
+    btn.style.background = 'linear-gradient(135deg,#c9a84c,#f0d080)';
+    btn.style.color = '#0f2744';
+    document.getElementById('voiceListening').style.display = 'none';
+    if (finalTranscript.trim()) {
+      parseVoiceInput(finalTranscript.trim());
+    } else {
+      document.getElementById('voiceStatus').style.display = 'none';
+      showToast('⚠️ 沒有偵測到語音，請再試一次');
+    }
+  };
+
+  voiceRecognition.onerror = function(event) {
+    voiceActive = false;
+    stopVoiceInput();
+    if (event.error === 'not-allowed') showToast('⚠️ 請允許麥克風權限');
+    else showToast('⚠️ 語音辨識錯誤：' + event.error);
+  };
+
+  voiceRecognition.start();
+}
+
+function stopVoiceInput() {
+  if (voiceRecognition) voiceRecognition.stop();  // onend 會自動觸發解析
+  voiceActive = false;
+  var btn = document.getElementById('voiceBtn');
+  if (btn) {
+    btn.innerHTML = '🎤 開始錄音';
+    btn.style.background = 'linear-gradient(135deg,#c9a84c,#f0d080)';
+    btn.style.color = '#0f2744';
+  }
+}
+
+function parseVoiceInput(transcript) {
+  document.getElementById('voiceProcessing').style.display = 'flex';
+  // 直接用規則解析（不依賴 AI）
+  setTimeout(function() {
+    document.getElementById('voiceProcessing').style.display = 'none';
+    fillFormFromRules(transcript);
+  }, 500);
+}
+
+function fillFormFromRules(transcript) {
+  var data = {};
+
+  // 姓名
+  var nameM = transcript.match(/客戶(.{2,4})[，,\s]|叫(.{2,4})[，,\s]|姓名(.{2,4})/);
+  if (nameM) data.customerName = (nameM[1]||nameM[2]||nameM[3]).trim();
+
+  // 電話 / Line
+  var phoneM = transcript.match(/(\d{4}[-\s]?\d{3}[-\s]?\d{3}|\d{10}|\d{8,9})/);
+  if (phoneM) data.contactInfo = phoneM[1].replace(/[-\s]/g,'');
+
+  // 預算
+  var budgetM = transcript.match(/預算?([一二三四五六七八九十百千萬\d]+萬)/);
+  if (budgetM) data.budget = budgetM[1];
+
+  // 購買時間軸
+  if (/一個月|1個月/.test(transcript)) data.buyingTimeline = '1個月內';
+  else if (/三個月|3個月/.test(transcript)) data.buyingTimeline = '3個月內';
+  else if (/半年/.test(transcript)) data.buyingTimeline = '半年內';
+  else if (/一年|1年/.test(transcript)) data.buyingTimeline = '1年以上';
+  else if (/觀望|詢問/.test(transcript)) data.buyingTimeline = '純詢問觀望';
+
+  // 來源
+  if (/轉介紹|介紹/.test(transcript)) data.leadSource = '轉介紹';
+  else if (/研討會/.test(transcript)) data.leadSource = '研討會';
+  else if (/自己|自開發/.test(transcript)) data.leadSource = '業務自開發';
+
+  // 需求
+  var needM = transcript.match(/([兩二三四五六七八九十\d]+房)/);
+  if (needM) data.customerNeeds = needM[1];
+
+  // 目的
+  if (/自住兼投資/.test(transcript)) data.purchasePurpose = '自住兼投資';
+  else if (/自住/.test(transcript)) data.purchasePurpose = '自住';
+  else if (/投資/.test(transcript)) data.purchasePurpose = '投資';
+
+  fillFormFromVoice(data);
+}
+
+function fillFormFromVoice(data) {
+  var labelMap = {
+    customerName:'姓名', contactInfo:'聯絡方式', leadSource:'來源',
+    customerNeeds:'需求', purchasePurpose:'購買目的', buyingTimeline:'時間軸',
+    budget:'預算', painPoints:'痛點', notes:'備註'
+  };
+  var filled = [];
+  Object.keys(labelMap).forEach(function(key) {
+    if (data[key]) {
+      var el = document.getElementById(key);
+      if (el) { el.value = data[key]; filled.push(labelMap[key] + '：' + data[key]); }
+    }
+  });
+  if (filled.length > 0) {
+    document.getElementById('voiceResult').style.display = 'block';
+    document.getElementById('voiceResultText').innerHTML = filled.map(function(f){
+      return '<div style="padding:.2rem 0;border-bottom:1px solid rgba(201,168,76,.2)">✓ ' + f + '</div>';
+    }).join('');
+    showToast('✅ 已填入 ' + filled.length + ' 個欄位，請確認後儲存');
+  } else {
+    showToast('⚠️ 未能識別客戶資料，請手動填寫');
+  }
+}
+
+
 function saveCustomer() {
   var sp = document.getElementById('salesPerson').value;
   var cn = document.getElementById('customerName').value;
@@ -3204,7 +3239,7 @@ function saveCustomer() {
     referralEffect:getMsValue('ms_referralEffect'), notes:v('notes'),
     contactPref:getMsValue('ms_contactPref'), contactTime:getMsValue('ms_contactTime'),
     personalityType:v('personalityType'), decisionBlock:getMsValue('ms_decisionBlock'),
-    lastFollowupResult:getMsValue('ms_lastFollowup'), nextFollowupAction:getMsValue('ms_nextFollowup'),
+    lastFollowupResult:getMsValue('ms_lastFollowup'), nextFollowupAction:(document.getElementById('ms_nextFollowup')?document.getElementById('ms_nextFollowup').value:''),
     customerActive:v('customerActive')||'進行中',
     seminarAttended:v('seminarAttended'),
     clientSegment:v('clientSegment'),
@@ -3238,7 +3273,8 @@ function clearForm() {
     var el = document.getElementById(id); if(el) el.value = '';
   });
   // 清除新的多選欄位
-  ['ms_contactPref','ms_contactTime','ms_lastFollowup','ms_nextFollowup','ms_decisionBlock'].forEach(function(id){
+  var _nf=document.getElementById('ms_nextFollowup'); if(_nf) _nf.value='';
+  ['ms_contactPref','ms_contactTime','ms_lastFollowup','ms_decisionBlock'].forEach(function(id){
     var wrap = document.getElementById(id);
     if(wrap){ wrap.querySelectorAll('input[type=checkbox]').forEach(function(el){ el.checked=false; }); updateMsDisplay(wrap); }
   });
@@ -3316,14 +3352,6 @@ function showDetail(id) {
   var canEdit = currentRole==='manager' || c.salesPerson===currentUser;
   var actionsDiv = document.getElementById('modalActions');
   actionsDiv.innerHTML = '';
-
-  // AI 話術建議按鈕（所有人都能用）
-  var aiBtn = document.createElement('button');
-  aiBtn.className = 'btn btn-primary';
-  aiBtn.style.cssText = 'flex:2;margin-top:0;background:linear-gradient(135deg,#1a3a5c,#c9a84c)';
-  aiBtn.innerHTML = '🤖 AI 話術建議';
-  aiBtn.addEventListener('click', (function(id){ return function(){ showAIScriptModal(id); }; })(sid));
-  actionsDiv.appendChild(aiBtn);
 
   if (canEdit) {
     var editBtn = document.createElement('button');
@@ -3501,7 +3529,7 @@ function showEdit(id) {
   html += sel('🧠 客戶個性類型','personalityType',ptOpts);
   html += '<div class="form-group"><label>🚧 決策障礙</label><div class="ms-wrap" id="e_ms_decisionBlock"><div class="ms-display" onclick="toggleMs(\'e_ms_decisionBlock\')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div><div class="ms-dropdown"><label class="ms-opt"><input type="checkbox" value="價格超出預算">💰 價格超出預算</label><label class="ms-opt"><input type="checkbox" value="家人尚未同意">👨‍👩‍👧 家人尚未同意</label><label class="ms-opt"><input type="checkbox" value="時機未到在觀望">⏳ 時機未到、在觀望</label><label class="ms-opt"><input type="checkbox" value="還在比較其他物件">🔍 還在比較其他物件</label><label class="ms-opt"><input type="checkbox" value="貸款疑慮">🏦 貸款疑慮</label><label class="ms-opt"><input type="checkbox" value="工作收入不穩定">📉 工作收入不穩定</label><label class="ms-opt"><input type="checkbox" value="純觀望短期不買">👀 純觀望、短期不買</label><label class="ms-opt"><input type="checkbox" value="已在其他業務跟進中">🤝 已在其他業務跟進中</label></div></div></div>';
   html += '<div class="form-group"><label>🔁 上次跟進結果</label><div class="ms-wrap" id="e_ms_lastFollowup"><div class="ms-display" onclick="toggleMs(\'e_ms_lastFollowup\')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div><div class="ms-dropdown"><label class="ms-opt"><input type="checkbox" value="✅ 有進展，下次約好了">✅ 有進展，下次約好了</label><label class="ms-opt"><input type="checkbox" value="💬 有聊，態度正面">💬 有聊，態度正面</label><label class="ms-opt"><input type="checkbox" value="😐 普通，需要再培養">😐 普通，需要再培養</label><label class="ms-opt"><input type="checkbox" value="❌ 拒絕或沒有回應">❌ 拒絕或沒有回應</label><label class="ms-opt"><input type="checkbox" value="🔄 重新建立關係中">🔄 重新建立關係中</label></div></div></div>';
-  html += '<div class="form-group"><label>下次跟進重點</label><div class="ms-wrap" id="e_ms_nextFollowup"><div class="ms-display" onclick="toggleMs(\'e_ms_nextFollowup\')"><span class="ms-placeholder">點選展開（可多選）</span><span class="ms-arrow">▾</span></div><div class="ms-dropdown"><label class="ms-opt"><input type="checkbox" value="分享市場新資訊">📊 分享市場新資訊</label><label class="ms-opt"><input type="checkbox" value="邀請看屋或活動">🏠 邀請看屋或活動</label><label class="ms-opt"><input type="checkbox" value="處理家人疑慮">👨‍👩‍👧 處理家人疑慮</label><label class="ms-opt"><input type="checkbox" value="重新確認需求與預算">💰 重新確認需求與預算</label><label class="ms-opt"><input type="checkbox" value="提供貸款方案試算">🏦 提供貸款方案試算</label><label class="ms-opt"><input type="checkbox" value="等待時機主動聯繫">⏳ 等待時機主動聯繫</label><label class="ms-opt"><input type="checkbox" value="轉介紹開口">🤝 轉介紹開口</label></div></div></div>';
+  html += '<div class="form-group"><label>⚡ 跟進重點 / 話術建議</label><textarea id="e_ms_nextFollowup" placeholder="貼入早會建議或自行填寫，例如：\n1. 下週三約帶看，強調增值潛力\n2. 先解決家人疑慮，邀請一起來" style="min-height:110px;font-size:14px;line-height:1.7;width:100%;padding:.75rem;border:2px solid #e8edf2;border-radius:8px;font-family:inherit;resize:vertical"></textarea></div>';
   html += '</div>';
 
   document.getElementById('editModalBody').innerHTML = html;
@@ -3512,7 +3540,7 @@ function showEdit(id) {
   setMsValue('e_ms_contactPref', c.contactPref || '');
   setMsValue('e_ms_contactTime', c.contactTime || '');
   setMsValue('e_ms_lastFollowup', c.lastFollowupResult || '');
-  setMsValue('e_ms_nextFollowup', c.nextFollowupAction || '');
+  var _enf=document.getElementById('e_ms_nextFollowup'); if(_enf) _enf.value=c.nextFollowupAction||'';
   document.getElementById('editSaveBtn').onclick = function(){ saveEdit(c); };
   document.getElementById('editModal').classList.add('active');
   } catch(err) { alert('編輯錯誤：' + err.message); }
@@ -3552,7 +3580,7 @@ function saveEdit(c) {
     referralEffect: getMsValue('e_ms_referralEffect'), notes: gv('notes'),
     contactPref: getMsValue('e_ms_contactPref'), contactTime: getMsValue('e_ms_contactTime'),
     personalityType: gv('personalityType'), decisionBlock: getMsValue('e_ms_decisionBlock'),
-    lastFollowupResult: getMsValue('e_ms_lastFollowup'), nextFollowupAction: getMsValue('e_ms_nextFollowup'),
+    lastFollowupResult: getMsValue('e_ms_lastFollowup'), nextFollowupAction: (document.getElementById('e_ms_nextFollowup')?document.getElementById('e_ms_nextFollowup').value:''),
     customerActive: gv('customerActive')||'進行中',
     seminarAttended: gv('seminarAttended')
   };
@@ -3634,6 +3662,7 @@ var QUICK_COMMANDS = [
 ];
 
 function buildQuickCommands() {
+  if (!document.getElementById('quickCommandList')) return;
   var html = '';
   QUICK_COMMANDS.forEach(function(g){
     html += '<div class="cmd-category">'+g.cat+'</div>';
@@ -3668,7 +3697,7 @@ function copyWithData(question) {
 }
 
 function getExportText() {
-  var scope = document.getElementById('exportScope').value;
+  var _expEl=document.getElementById('exportScope'); var scope=_expEl?_expEl.value:'mine';
   var format = document.getElementById('exportFormat').value;
   var data = scope==='all' ? customers : customers.filter(function(c){ return c.salesPerson===currentUser; });
   var now = new Date();
@@ -3792,5 +3821,12 @@ function showToast(msg) {
   document.getElementById('apiStatus').textContent = '✅ 雲端已設定，請登入';
 })();
 </script>
+
+  <select id="exportScope" style="display:none"><option value="mine">我的客戶</option></select>
+  <select id="exportFormat" style="display:none"><option value="full">完整資料</option><option value="summary">摘要版</option></select>
+  <div id="exportPreview" style="display:none"></div>
+  <div id="copyAlert" style="display:none"></div>
+  <div id="quickCommandList" style="display:none"></div>
+  <div id="previewLabel" style="display:none"></div>
 </body>
 </html>
