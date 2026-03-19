@@ -180,6 +180,27 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
   .detail-row{grid-template-columns:110px 1fr}
 }
 
+
+/* ── 房貸風控表單欄位縮短 ── */
+#acc-b-mortgage input[type="text"],
+#acc-b-mortgage input[type="number"],
+#acc-b-mortgage select {
+  padding: .4rem .75rem !important;
+  font-size: 13px !important;
+  height: 36px;
+}
+#acc-b-mortgage textarea {
+  min-height: 50px !important;
+  font-size: 13px !important;
+}
+#acc-b-mortgage .form-group {
+  margin-bottom: .625rem;
+}
+#acc-b-mortgage label {
+  font-size: 12px;
+  margin-bottom: .2rem;
+}
+
 /* ── 語音錄音動畫 ── */
 @keyframes voicePulse {
   0%, 100% { opacity:1; transform:scale(1); }
@@ -207,6 +228,11 @@ window.addEventListener('error', function(e) {
   if (!e.filename || e.filename === '') return;
   console.warn('捕捉到錯誤：', e.message, e.filename, e.lineno);
 });
+function toggleGuarantor(val) {
+  var el = document.getElementById('guarantorFields');
+  if (el) el.style.display = val === '有' ? 'block' : 'none';
+}
+
 // 已移除研討會名單功能（stub 保留避免錯誤）
 function renderSeminarPending() {}
 function addSeminarLead() {}
@@ -857,6 +883,107 @@ function claimSeminarLead() {}
               <div class="form-group"><label>滿意度調查表分數</label><input type="number" id="satisfactionSurvey" min="0" max="100" placeholder="分數"></div>
             </div>
             <div class="form-group"><label>售後服務記錄</label><textarea id="afterSalesService" placeholder="提供的售後服務內容"></textarea></div>
+          </div>
+        </div>
+
+
+        <!-- ▌房貸風控評估（七部曲附屬）-->
+        <div class="acc-section">
+          <div class="acc-header" id="acc-h-mortgage" onclick="toggleAcc('mortgage')">
+            <div class="acc-title"><span class="acc-icon">🏦</span>房貸風控評估表</div>
+            <span class="acc-arrow">▼</span>
+          </div>
+          <div class="acc-body" id="acc-b-mortgage">
+
+            <!-- 案件基本資訊 -->
+            <div style="font-size:11px;font-weight:700;color:var(--navy);letter-spacing:.1em;margin-bottom:.75rem;padding-bottom:.4rem;border-bottom:2px solid var(--cream2)">📋 案件基本資訊</div>
+            <div class="form-grid two">
+              <div class="form-group"><label>案號</label><input type="text" id="mtg_caseNo" placeholder="案號"></div>
+              <div class="form-group"><label>主管</label><input type="text" id="mtg_supervisor" placeholder="主管姓名"></div>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group"><label>總價（萬）</label><input type="number" id="mtg_totalPrice" placeholder="例：1200"></div>
+              <div class="form-group"><label>自備款（萬）</label><input type="number" id="mtg_ownFunds" placeholder="例：300"></div>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group"><label>信貸金額（萬）</label><input type="number" id="mtg_personalLoan" placeholder="例：100"></div>
+              <div class="form-group"><label>房貸金額（萬）</label><input type="number" id="mtg_loanAmount" placeholder="例：800"></div>
+            </div>
+
+            <!-- 申請人資料 -->
+            <div style="font-size:11px;font-weight:700;color:var(--navy);letter-spacing:.1em;margin:.875rem 0 .75rem;padding-bottom:.4rem;border-bottom:2px solid var(--cream2)">👤 申請人資料</div>
+            <div class="form-grid two">
+              <div class="form-group"><label>公司名稱</label><input type="text" id="mtg_company" placeholder="任職公司"></div>
+              <div class="form-group"><label>職位</label><input type="text" id="mtg_position" placeholder="職位/職稱"></div>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group"><label>年資（年）</label><input type="number" id="mtg_seniority" placeholder="例：3"></div>
+              <div class="form-group"><label>月收入（萬）</label><input type="number" id="mtg_monthlyIncome" placeholder="例：8" step="0.1"></div>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group"><label>工作地點</label><input type="text" id="mtg_workLocation" placeholder="例：台北市信義區"></div>
+              <div class="form-group"><label>扣繳憑單</label><select id="mtg_taxCert"><option value="">請選擇</option><option>有</option><option>無</option></select></div>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group"><label>薪資轉帳</label><select id="mtg_salaryTransfer"><option value="">請選擇</option><option>有</option><option>無</option></select></div>
+              <div class="form-group"><label>勞保</label><select id="mtg_laborInsurance"><option value="">請選擇</option><option>有</option><option>無</option></select></div>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group"><label>不動產</label><input type="text" id="mtg_realEstate" placeholder="例：有 2 棟 / 無"></div>
+              <div class="form-group"><label>存摺平均餘額（萬）</label><input type="number" id="mtg_bankBalance" placeholder="例：50" step="0.1"></div>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group"><label>銀行定存（萬）</label><input type="number" id="mtg_fixedDeposit" placeholder="例：100" step="0.1"></div>
+              <div class="form-group"><label>租金收入（萬/月）</label><input type="number" id="mtg_rentalIncome" placeholder="例：3" step="0.1"></div>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group"><label>基金投資（萬）</label><input type="number" id="mtg_fundInvest" placeholder="例：50" step="0.1"></div>
+              <div class="form-group"><label>股票投資（萬）</label><input type="number" id="mtg_stockInvest" placeholder="例：30" step="0.1"></div>
+            </div>
+            <div class="form-group"><label>其他收入說明</label><input type="text" id="mtg_otherIncome" placeholder="例：兼職、獎金、加班費等"></div>
+
+            <!-- 負債明細 -->
+            <div style="font-size:11px;font-weight:700;color:var(--navy);letter-spacing:.1em;margin:.875rem 0 .75rem;padding-bottom:.4rem;border-bottom:2px solid var(--cream2)">💳 負債明細</div>
+            <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:0 .5rem;margin-bottom:.25rem">
+              <div style="font-size:11px;color:var(--text-muted);font-weight:600">項目</div>
+              <div style="font-size:11px;color:var(--text-muted);font-weight:600">金額（萬）</div>
+              <div style="font-size:11px;color:var(--text-muted);font-weight:600">每月繳納</div>
+            </div>
+            <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:.35rem .5rem;margin-bottom:.75rem">
+              <div style="font-size:13px;padding:.5rem 0;border-bottom:1px solid var(--cream2);display:flex;align-items:center">助學貸款</div>
+              <div><input type="number" id="mtg_debt_student_amt" placeholder="0" step="0.1" style="width:100%;padding:.4rem .5rem;border:1.5px solid #e8edf2;border-radius:6px;font-size:13px"></div>
+              <div><input type="number" id="mtg_debt_student_monthly" placeholder="0" step="0.1" style="width:100%;padding:.4rem .5rem;border:1.5px solid #e8edf2;border-radius:6px;font-size:13px"></div>
+              <div style="font-size:13px;padding:.5rem 0;border-bottom:1px solid var(--cream2);display:flex;align-items:center">信貸</div>
+              <div><input type="number" id="mtg_debt_personal_amt" placeholder="0" step="0.1" style="width:100%;padding:.4rem .5rem;border:1.5px solid #e8edf2;border-radius:6px;font-size:13px"></div>
+              <div><input type="number" id="mtg_debt_personal_monthly" placeholder="0" step="0.1" style="width:100%;padding:.4rem .5rem;border:1.5px solid #e8edf2;border-radius:6px;font-size:13px"></div>
+              <div style="font-size:13px;padding:.5rem 0;border-bottom:1px solid var(--cream2);display:flex;align-items:center">車貸</div>
+              <div><input type="number" id="mtg_debt_car_amt" placeholder="0" step="0.1" style="width:100%;padding:.4rem .5rem;border:1.5px solid #e8edf2;border-radius:6px;font-size:13px"></div>
+              <div><input type="number" id="mtg_debt_car_monthly" placeholder="0" step="0.1" style="width:100%;padding:.4rem .5rem;border:1.5px solid #e8edf2;border-radius:6px;font-size:13px"></div>
+              <div style="font-size:13px;padding:.5rem 0;border-bottom:1px solid var(--cream2);display:flex;align-items:center">房貸</div>
+              <div><input type="number" id="mtg_debt_house_amt" placeholder="0" step="0.1" style="width:100%;padding:.4rem .5rem;border:1.5px solid #e8edf2;border-radius:6px;font-size:13px"></div>
+              <div><input type="number" id="mtg_debt_house_monthly" placeholder="0" step="0.1" style="width:100%;padding:.4rem .5rem;border:1.5px solid #e8edf2;border-radius:6px;font-size:13px"></div>
+              <div style="font-size:13px;padding:.5rem 0;display:flex;align-items:center">信用卡</div>
+              <div style="grid-column:span 2"><select id="mtg_creditCard" style="width:100%;padding:.4rem .5rem;border:1.5px solid #e8edf2;border-radius:6px;font-size:13px"><option value="">請選擇</option><option>全額繳清</option><option>循環利息</option></select></div>
+            </div>
+
+            <!-- 保證人 -->
+            <div style="font-size:11px;font-weight:700;color:var(--navy);letter-spacing:.1em;margin:.875rem 0 .75rem;padding-bottom:.4rem;border-bottom:2px solid var(--cream2)">👥 保證人資料</div>
+            <div class="form-group">
+              <label>是否有保證人</label>
+              <select id="mtg_hasGuarantor" onchange="toggleGuarantor(this.value)">
+                <option value="">請選擇</option>
+                <option value="無">無</option>
+                <option value="有">有</option>
+              </select>
+            </div>
+            <div id="guarantorFields" style="display:none">
+              <div class="form-group">
+                <label>保證人基本資料</label>
+                <textarea id="mtg_g_company" placeholder="例：王小明，台積電工程師，年資5年，月收入15萬，有勞保扣繳，無負債" style="min-height:70px"></textarea>
+              </div>
+            </div>
+            <div class="form-group" style="margin-top:.75rem"><label>備註</label><textarea id="mtg_notes" placeholder="其他補充說明..." style="min-height:50px"></textarea></div>
+
           </div>
         </div>
 
