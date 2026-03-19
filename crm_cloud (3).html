@@ -2127,13 +2127,47 @@ function renderBossDashboard() {
       var medals = ['🥇','🥈','🥉'];
       var pColor = x.prob >= 70 ? '#2e7d52' : x.prob >= 50 ? '#e65100' : '#1565c0';
       var s = stageOf(c);
-      // 推薦話術方向
+      // 精準推薦邏輯（多層判斷）
+      var days = daysSinceUpdate(c);
       var hint = '';
-      if (!c.familySupport || c.familySupport === '觀望') hint = '💡 建議：邀請家人一起來了解';
-      else if (c.buyingTimeline === '1個月內') hint = '💡 建議：本週安排帶看，推進簽約';
-      else if (c.viewingStatus !== '已完成諮詢') hint = '💡 建議：邀請完成顧問諮詢';
-      else if (!c.budget) hint = '💡 建議：確認資金來源，推進下一步';
-      else hint = '💡 建議：強化信任，引導決策';
+
+      // 最緊急：久未聯繫
+      if (days >= 14) {
+        hint = '🔴 已 '+days+' 天未聯繫，立即主動問候';
+      }
+      // 即將成交但卡關
+      else if (c.buyingTimeline === '1個月內' && c.contractStatus !== '已簽約') {
+        if (!c.familySupport || c.familySupport === '觀望') hint = '👨‍👩‍👧 家人還在觀望，本週安排家人一起來';
+        else if (c.objections) hint = '💬 處理異議：' + c.objections.slice(0,20) + '，推進簽約';
+        else hint = '🏠 本週安排帶看或簽約，時間緊迫';
+      }
+      // 家人未支持（高風險）
+      else if (!c.familySupport || c.familySupport === '觀望') {
+        hint = '👨‍👩‍👧 邀請家人一起來了解，解除後顧之憂';
+      }
+      // 異議未解決
+      else if (c.objections && c.solutions === '') {
+        hint = '💬 先解決異議：' + c.objections.slice(0,25);
+      }
+      // 預算未確認
+      else if (!c.budget && !c.monthlyPayment) {
+        hint = '💰 確認自備款與貸款能力，安排資金規劃';
+      }
+      // 諮詢未完成
+      else if (c.viewingStatus !== '已完整解說') {
+        hint = '📋 邀請完成顧問諮詢，了解完整方案';
+      }
+      // 半年內購買
+      else if (c.buyingTimeline === '3個月內' || c.buyingTimeline === '半年內') {
+        hint = '📅 保持每週聯繫，適時推進帶看';
+      }
+      // 高信任但未決策
+      else if (c.trustScore >= 8) {
+        hint = '✅ 信任度高，引導決策，確認時間點';
+      }
+      else {
+        hint = '🤝 持續維繫關係，等待時機推進';
+      }
 
       return '<div style="padding:1rem;border-bottom:1px solid var(--cream2);display:flex;gap:1rem;align-items:flex-start">'+
         '<div style="font-size:24px;flex-shrink:0">'+medals[i]+'</div>'+
