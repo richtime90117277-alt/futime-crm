@@ -682,7 +682,7 @@ function claimSeminarLead() {}
                   <option>🏠 自住</option>
                   <option>💰 投資</option>
                   <option>🏠💰 自住兼投資</option>
-                  <option>📦 資產配置</option>
+                  
                   <option>🏢 以租養房</option>
                   <option>👴 退休安置</option>
                   <option>🎁 傳承規劃</option>
@@ -914,6 +914,16 @@ function claimSeminarLead() {}
             <div class="form-group">
               <label>⚡ 跟進重點 / 話術建議</label>
               <textarea id="ms_nextFollowup" placeholder="貼入早會建議或自行填寫，例如：&#10;1. 下週三約帶看，強調增值潛力&#10;2. 先解決家人疑慮，邀請一起來&#10;3. 傳送貸款試算表參考" style="min-height:110px;font-size:14px;line-height:1.7"></textarea>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group">
+                <label>📅 預計跟進日期</label>
+                <input type="date" id="nextFollowupDate" style="font-size:15px">
+              </div>
+              <div class="form-group">
+                <label>✅ 截止完成目標</label>
+                <input type="text" id="nextFollowupGoal" placeholder="例：確認帶看時間" style="font-size:14px">
+              </div>
             </div>
             <div class="form-group"><textarea id="notes" placeholder="其他補充說明..." style="min-height:80px"></textarea></div>
           </div>
@@ -3240,6 +3250,8 @@ function saveCustomer() {
     contactPref:getMsValue('ms_contactPref'), contactTime:getMsValue('ms_contactTime'),
     personalityType:v('personalityType'), decisionBlock:getMsValue('ms_decisionBlock'),
     lastFollowupResult:getMsValue('ms_lastFollowup'), nextFollowupAction:(document.getElementById('ms_nextFollowup')?document.getElementById('ms_nextFollowup').value:''),
+      nextFollowupDate:(document.getElementById('nextFollowupDate')?document.getElementById('nextFollowupDate').value:''),
+      nextFollowupGoal:(document.getElementById('nextFollowupGoal')?document.getElementById('nextFollowupGoal').value:''),
     customerActive:v('customerActive')||'進行中',
     seminarAttended:v('seminarAttended'),
     clientSegment:v('clientSegment'),
@@ -3343,7 +3355,7 @@ function showDetail(id) {
     ['轉介紹效果',c.referralEffect],['備註',c.notes],
     ['📱 溝通偏好',c.contactPref],['⏰ 聯繫時段',c.contactTime],
     ['🧠 客戶個性',c.personalityType],['🚧 決策障礙',c.decisionBlock],
-    ['🔁 上次跟進結果',c.lastFollowupResult],['下次跟進重點',c.nextFollowupAction]
+    ['🔁 上次跟進結果',c.lastFollowupResult],['下次跟進重點',c.nextFollowupAction],['📅 預計跟進日期',c.nextFollowupDate],['✅ 截止目標',c.nextFollowupGoal]
   ];
   document.getElementById('modalBody').innerHTML = rows.filter(function(r){ return r[1]; }).map(function(r){
     return '<div class="detail-row"><div class="detail-label">'+r[0]+'</div><div class="detail-value">'+r[1]+'</div></div>';
@@ -3530,6 +3542,7 @@ function showEdit(id) {
   html += '<div class="form-group"><label>🚧 決策障礙</label><div class="ms-wrap" id="e_ms_decisionBlock"><div class="ms-display" onclick="toggleMs(\'e_ms_decisionBlock\')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div><div class="ms-dropdown"><label class="ms-opt"><input type="checkbox" value="價格超出預算">💰 價格超出預算</label><label class="ms-opt"><input type="checkbox" value="家人尚未同意">👨‍👩‍👧 家人尚未同意</label><label class="ms-opt"><input type="checkbox" value="時機未到在觀望">⏳ 時機未到、在觀望</label><label class="ms-opt"><input type="checkbox" value="還在比較其他物件">🔍 還在比較其他物件</label><label class="ms-opt"><input type="checkbox" value="貸款疑慮">🏦 貸款疑慮</label><label class="ms-opt"><input type="checkbox" value="工作收入不穩定">📉 工作收入不穩定</label><label class="ms-opt"><input type="checkbox" value="純觀望短期不買">👀 純觀望、短期不買</label><label class="ms-opt"><input type="checkbox" value="已在其他業務跟進中">🤝 已在其他業務跟進中</label></div></div></div>';
   html += '<div class="form-group"><label>🔁 上次跟進結果</label><div class="ms-wrap" id="e_ms_lastFollowup"><div class="ms-display" onclick="toggleMs(\'e_ms_lastFollowup\')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div><div class="ms-dropdown"><label class="ms-opt"><input type="checkbox" value="✅ 有進展，下次約好了">✅ 有進展，下次約好了</label><label class="ms-opt"><input type="checkbox" value="💬 有聊，態度正面">💬 有聊，態度正面</label><label class="ms-opt"><input type="checkbox" value="😐 普通，需要再培養">😐 普通，需要再培養</label><label class="ms-opt"><input type="checkbox" value="❌ 拒絕或沒有回應">❌ 拒絕或沒有回應</label><label class="ms-opt"><input type="checkbox" value="🔄 重新建立關係中">🔄 重新建立關係中</label></div></div></div>';
   html += '<div class="form-group"><label>⚡ 跟進重點 / 話術建議</label><textarea id="e_ms_nextFollowup" placeholder="貼入早會建議或自行填寫，例如：\n1. 下週三約帶看，強調增值潛力\n2. 先解決家人疑慮，邀請一起來" style="min-height:110px;font-size:14px;line-height:1.7;width:100%;padding:.75rem;border:2px solid #e8edf2;border-radius:8px;font-family:inherit;resize:vertical"></textarea></div>';
+html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0 1rem"><div class="form-group"><label>📅 預計跟進日期</label><input type="date" id="e_nextFollowupDate" style="font-size:15px;width:100%"></div><div class="form-group"><label>✅ 截止完成目標</label><input type="text" id="e_nextFollowupGoal" placeholder="例：確認帶看時間" style="font-size:14px;width:100%"></div></div>';
   html += '</div>';
 
   document.getElementById('editModalBody').innerHTML = html;
@@ -3541,6 +3554,8 @@ function showEdit(id) {
   setMsValue('e_ms_contactTime', c.contactTime || '');
   setMsValue('e_ms_lastFollowup', c.lastFollowupResult || '');
   var _enf=document.getElementById('e_ms_nextFollowup'); if(_enf) _enf.value=c.nextFollowupAction||'';
+  var _end=document.getElementById('e_nextFollowupDate'); if(_end) _end.value=c.nextFollowupDate||'';
+  var _eng=document.getElementById('e_nextFollowupGoal'); if(_eng) _eng.value=c.nextFollowupGoal||'';
   document.getElementById('editSaveBtn').onclick = function(){ saveEdit(c); };
   document.getElementById('editModal').classList.add('active');
   } catch(err) { alert('編輯錯誤：' + err.message); }
@@ -3581,6 +3596,8 @@ function saveEdit(c) {
     contactPref: getMsValue('e_ms_contactPref'), contactTime: getMsValue('e_ms_contactTime'),
     personalityType: gv('personalityType'), decisionBlock: getMsValue('e_ms_decisionBlock'),
     lastFollowupResult: getMsValue('e_ms_lastFollowup'), nextFollowupAction: (document.getElementById('e_ms_nextFollowup')?document.getElementById('e_ms_nextFollowup').value:''),
+      nextFollowupDate: (document.getElementById('e_nextFollowupDate')?document.getElementById('e_nextFollowupDate').value:''),
+      nextFollowupGoal: (document.getElementById('e_nextFollowupGoal')?document.getElementById('e_nextFollowupGoal').value:''),
     customerActive: gv('customerActive')||'進行中',
     seminarAttended: gv('seminarAttended')
   };
