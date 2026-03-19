@@ -1965,13 +1965,49 @@ function calcCloseProb(c) {
 // 流失風險偵測
 // ══════════════════════════════════════════════
 function daysSinceUpdate(c) {
-  // 用 id 當時間戳（若 Google Sheets row id 不夠，改用 creationDate 估算）
-  var d = c.updatedAt || c.creationDate;
-  if (!d) return 999;
+  var now = new Date();
+
+  // 優先：從日誌找這個客戶最近一筆記錄
   try {
-    var diff = (new Date() - new Date(d)) / (1000 * 60 * 60 * 24);
-    return Math.floor(diff);
-  } catch(e) { return 999; }
+    var journal = getJournal();
+    var myLogs = journal.filter(function(j){ return j.customerId === c.id.toString(); });
+    if (myLogs.length > 0) {
+      myLogs.sort(function(a,b){ return new Date(b.date) - new Date(a.date); });
+      var lastLog = new Date(myLogs[0].date);
+      if (!isNaN(lastLog)) {
+        return Math.floor((now - lastLog) / 86400000);
+      }
+    }
+  } catch(e) {}
+
+  // 次選：備註裡的日期（格式：2026/3/4）
+  try {
+    if (c.notes) {
+      var dateMatch = c.notes.match(/(\d{4}\/\d{1,2}\/\d{1,2})/);
+      if (dateMatch) {
+        var d = new Date(dateMatch[1].replace(/\//g, '-'));
+        if (!isNaN(d)) return Math.floor((now - d) / 86400000);
+      }
+    }
+  } catch(e) {}
+
+  // 最後：用 id 時間戳（新版資料）
+  try {
+    var idNum = parseInt(c.id);
+    if (!isNaN(idNum) && idNum > 1000000000000) {  // 合理的時間戳（13位數）
+      return Math.floor((now - new Date(idNum)) / 86400000);
+    }
+  } catch(e) {}
+
+  // creationDate
+  try {
+    if (c.creationDate) {
+      var cd = new Date(c.creationDate);
+      if (!isNaN(cd)) return Math.floor((now - cd) / 86400000);
+    }
+  } catch(e) {}
+
+  return 999;
 }
 
 function stuckDays(c) {
@@ -2809,8 +2845,9 @@ function renderTodayFollowupList() {
   el.innerHTML = recommended.map(function(x){
     var c = x.c;
     var s = stageOf(c);
-    var riskTag = x.risk==='critical' ? '<span style="font-size:10px;color:#c0392b;background:#fdf0ee;padding:2px 6px;border-radius:20px;font-weight:700">🔴 '+(x.days)+'天未跟</span>' :
-                  x.risk==='high' ? '<span style="font-size:10px;color:#856404;background:#fffbf0;padding:2px 6px;border-radius:20px;font-weight:700">🟡 '+(x.days)+'天</span>' : '';
+    var daysLabel = x.days >= 999 ? '久未更新' : x.days + '天';
+    var riskTag = x.risk==='critical' ? '<span style="font-size:10px;color:#c0392b;background:#fdf0ee;padding:2px 6px;border-radius:20px;font-weight:700">🔴 '+daysLabel+'未跟</span>' :
+                  x.risk==='high' ? '<span style="font-size:10px;color:#856404;background:#fffbf0;padding:2px 6px;border-radius:20px;font-weight:700">🟡 '+daysLabel+'</span>' : '';
     var probColor = x.prob>=70?'#2e7d52':x.prob>=40?'#e65100':'#9e9e9e';
     return '<div style="display:flex;align-items:center;gap:.75rem;padding:.75rem 0;border-bottom:1px solid var(--cream2)">' +
       '<div style="flex:1">' +
