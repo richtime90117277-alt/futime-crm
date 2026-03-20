@@ -4,29 +4,33 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>富時代地產 CRM</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=DM+Serif+Display&display=swap" rel="stylesheet" onerror="this.remove()">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet" onerror="this.remove()">
 <style>
 /* 備用字體（Google Fonts 載入失敗時使用）*/
 body { font-family: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif !important; }
 </style>
 <style>
 :root{
-  --gold:#c9a84c;--gold-light:#f0d080;--navy:#0f2744;--navy-mid:#1a3a5c;--navy-light:#234d73;
-  --cream:#faf8f3;--cream2:#f3efe6;--white:#ffffff;--text:#1a2533;--text-soft:#5a6a7a;--text-muted:#8a9aaa;
-  --success:#2e7d52;--success-bg:#edf7f2;--danger:#c0392b;--danger-bg:#fdf0ee;
-  --shadow:0 4px 24px rgba(15,39,68,0.10);--radius:14px;--radius-sm:8px;
+  --gold:#b8962e;--gold-light:#d4af5a;--gold-pale:#fdf4e3;
+  --navy:#07192d;--navy-mid:#0f2744;--navy-light:#1a3a5c;
+  --cream:#faf7f2;--cream2:#f0e9dc;--white:#ffffff;--text:#0f1e2e;--text-soft:#4a5d6e;--text-muted:#8a9aaa;
+  --success:#1e6b42;--success-bg:#e8f5ee;--danger:#b02a20;--danger-bg:#fdf0ee;
+  --shadow:0 2px 12px rgba(7,25,45,.07),0 8px 28px rgba(7,25,45,.05);
+  --shadow-lg:0 8px 40px rgba(7,25,45,.14);
+  --shadow-gold:0 4px 20px rgba(184,150,46,.25);
+  --radius:16px;--radius-sm:10px;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{scroll-behavior:smooth}
 body{font-family:'Noto Sans TC',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;line-height:1.6}
 .login-page{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:1.5rem;background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 60%,#1e4d6b 100%)}
 .login-page::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9a84c' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");pointer-events:none}
-.login-box{background:var(--white);border-radius:24px;box-shadow:0 24px 80px rgba(0,0,0,0.35);max-width:420px;width:100%;overflow:hidden;animation:loginSlide .6s cubic-bezier(.22,.68,0,1.2)}
+.login-box{background:var(--white);border-radius:24px;box-shadow:0 32px 80px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.04);max-width:420px;width:100%;overflow:hidden;animation:loginSlide .7s cubic-bezier(.22,.68,0,1.2)}
 @keyframes loginSlide{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
 .login-header{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-light) 100%);padding:2.5rem 2rem;text-align:center;position:relative;overflow:hidden}
 .login-header::after{content:'';position:absolute;bottom:-30px;left:50%;transform:translateX(-50%);width:200px;height:60px;background:var(--white);border-radius:50%}
-.logo-mark{width:72px;height:72px;background:linear-gradient(135deg,var(--gold) 0%,#e8c060 100%);border-radius:20px;display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:36px;color:var(--white);margin:0 auto 1rem;box-shadow:0 8px 24px rgba(201,168,76,0.4)}
-.login-header h1{color:var(--white);font-size:22px;font-weight:700;letter-spacing:.05em;position:relative;z-index:1}
+.logo-mark{width:72px;height:72px;background:linear-gradient(145deg,#c9a84c 0%,#f0d080 45%,#b8962e 100%);border-radius:22px;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:36px;font-weight:700;color:var(--navy);margin:0 auto 1.25rem;box-shadow:0 8px 32px rgba(184,150,46,.5),inset 0 1px 0 rgba(255,255,255,.3)}
+.login-header h1{color:var(--white);font-size:22px;font-weight:600;letter-spacing:.06em;position:relative;z-index:1;font-family:'Playfair Display',serif}
 .login-header p{color:rgba(255,255,255,0.65);font-size:13px;margin-top:.25rem;position:relative;z-index:1}
 .login-body{padding:2.5rem 2rem 2rem}
 .alert{padding:.875rem 1rem;border-radius:var(--radius-sm);margin-bottom:1.25rem;font-size:14px;font-weight:500;display:none}
@@ -54,7 +58,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
 .ms-opt:hover{background:var(--cream2)}
 .ms-opt input{width:18px;height:18px;margin-top:1px;accent-color:var(--navy);flex-shrink:0;cursor:pointer}
 .ms-group{font-size:11px;font-weight:700;color:var(--navy);padding:.5rem 1rem .2rem;background:var(--cream2);letter-spacing:.05em;position:sticky;top:0}
-.btn-primary{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-light) 100%);color:var(--white);margin-top:1.5rem;box-shadow:0 4px 16px rgba(15,39,68,.25)}
+.btn-primary{background:linear-gradient(135deg,#07192d 0%,#0f2744 60%,#1a3a5c 100%);color:var(--white);margin-top:1.5rem;box-shadow:0 4px 16px rgba(7,25,45,.3)}
 .btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(15,39,68,.32)}
 .btn-primary:active{transform:scale(.98)}
 .btn-secondary{background:var(--cream2);color:var(--navy);border:2px solid #dde3ea;margin-top:0}
@@ -69,11 +73,11 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
 .setup-banner input{margin-top:.75rem;background:white}
 /* APP */
 .app{display:none}
-.app.active{display:flex;flex-direction:column;min-height:100vh}
-.header{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 100%);padding:.875rem 1.25rem;color:var(--white);position:sticky;top:0;z-index:1000;box-shadow:0 2px 20px rgba(0,0,0,.2)}
+.app.active{display:flex;flex-direction:column;min-height:100vh;padding-top:108px}
+.header{background:linear-gradient(160deg,#050f1c 0%,#07192d 50%,#0f2744 100%);padding:.875rem 1.25rem;color:var(--white);position:sticky;top:0;z-index:1000;box-shadow:0 2px 20px rgba(0,0,0,.2)}
 .header-inner{display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto;gap:1rem}
 .header-brand{display:flex;align-items:center;gap:.75rem}
-.header-logo{width:40px;height:40px;background:linear-gradient(135deg,var(--gold),#e8c060);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:18px;color:white;flex-shrink:0}
+.header-logo{width:40px;height:40px;background:linear-gradient(135deg,var(--gold),#e8c060);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--navy);flex-shrink:0;box-shadow:0 3px 12px rgba(184,150,46,.4)}
 .header-name{font-weight:700;font-size:15px}
 .header-role{font-size:11px;opacity:.7;margin-top:.1rem}
 .sync-dot{width:8px;height:8px;border-radius:50%;background:#4caf50;display:inline-block;margin-right:4px;animation:pulse 2s infinite}
@@ -83,11 +87,11 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
 @keyframes spin{to{transform:rotate(360deg)}}
 .logout-btn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:white;padding:.5rem .875rem;border-radius:20px;cursor:pointer;font-size:13px;font-family:inherit;transition:background .2s;white-space:nowrap}
 .logout-btn:hover{background:rgba(255,255,255,.22)}
-.nav-tabs{background:var(--white);display:flex;border-bottom:2px solid var(--cream2);position:sticky;top:68px;z-index:999;box-shadow:0 2px 12px rgba(15,39,68,.06)}
+.nav-tabs{background:var(--white);display:flex;border-bottom:1px solid var(--cream2);position:fixed;top:60px;left:0;right:0;z-index:999;height:48px;box-shadow:0 2px 12px rgba(7,25,45,.06)}
 .nav-tabs button{flex:1;min-width:70px;padding:.875rem .4rem;background:none;border:none;border-bottom:3px solid transparent;color:var(--text-soft);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .2s;white-space:nowrap}
-.nav-tabs button.active{color:var(--navy);border-bottom-color:var(--gold);font-weight:700}
+.nav-tabs button.active{color:var(--navy);border-bottom-color:var(--gold);border-bottom-width:3px;font-weight:700}
 .nav-tabs button:hover:not(.active){color:var(--navy);background:var(--cream)}
-.container{padding:1.5rem 1rem 5rem;max-width:1200px;margin:0 auto;flex:1}
+.container{padding:1.5rem 1rem 5rem;max-width:1200px;margin:0 auto;flex:1;padding-top:1.5rem}
 .page{display:none}
 .page.active{display:block;animation:pageIn .3s ease}
 @keyframes pageIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
@@ -95,11 +99,11 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
 .stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.875rem;margin-bottom:1.5rem}
 @media(min-width:640px){.stats-grid{grid-template-columns:repeat(4,1fr)}}
 .stat-card{background:var(--white);padding:1.25rem;border-radius:var(--radius);box-shadow:var(--shadow);position:relative;overflow:hidden;transition:transform .2s}
-.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--gold-light))}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),#f0d080,var(--gold))}
 .stat-card:hover{transform:translateY(-2px)}
 .stat-value{font-size:30px;font-weight:900;color:var(--navy);line-height:1;margin-bottom:.375rem}
 .stat-label{color:var(--text-muted);font-size:12px;font-weight:500}
-.card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:1.25rem;overflow:visible}
+.card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:1.25rem;overflow:visible;border:1px solid rgba(228,221,208,.6)}
 .card-header{padding:1.25rem 1.5rem;border-bottom:2px solid var(--cream2);display:flex;align-items:center;gap:.75rem;border-radius:var(--radius) var(--radius) 0 0}
 .card-header h3{font-size:16px;font-weight:700;color:var(--navy)}
 .card-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--gold),#e8c060);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
@@ -180,6 +184,209 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
   .detail-row{grid-template-columns:110px 1fr}
 }
 
+/* ════════════════════════════════════════════
+   手機版全面優化 (max-width: 640px)
+   ════════════════════════════════════════════ */
+@media(max-width:640px){
+
+  /* ── Header 縮小 ── */
+  .header { padding:.5rem .875rem; }
+  .header-logo { width:32px; height:32px; font-size:14px; flex-shrink:0; }
+  .header-name { font-size:13px; }
+  .header-role { font-size:10px !important; }
+  .logout-btn { font-size:12px; padding:.375rem .75rem; }
+
+  /* ── Nav：手機只顯示 emoji，2行排列 ── */
+  .nav-tabs {
+    top: 52px !important;
+    height: 44px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+  }
+  .nav-tabs button {
+    font-size: 9px;
+    padding: .5rem .1rem .4rem;
+    min-width: unset;
+    flex-direction: column;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+  }
+  .nav-emoji { font-size: 17px; display: block; }
+  .nav-label { font-size: 9px; display: block; color: inherit; }
+
+  /* ── Container ── */
+  .container { padding: .625rem .625rem 5rem; }
+  .app.active { padding-top: 96px !important; }
+
+  /* ── 週報 header 卡片 ── */
+  #weeklyReportCard {
+    padding: 1rem !important;
+    margin-bottom: .75rem !important;
+    border-radius: 12px !important;
+  }
+
+  /* ── Stats 數字卡片 ── */
+  .stats-grid {
+    grid-template-columns: repeat(2,1fr) !important;
+    gap: .5rem;
+    margin-bottom: .875rem;
+  }
+  .stat-card { padding: .875rem .75rem; }
+  .stat-number { font-size: 24px !important; }
+  .stat-label { font-size: 11px !important; }
+
+  /* ── Card ── */
+  .card { border-radius: 12px; margin-bottom: .75rem; }
+  .card-header { padding: .875rem 1rem; }
+  .card-header h3 { font-size: 14px; }
+  .card-icon { width: 32px !important; height: 32px !important; font-size: 16px !important; }
+  .card-body { padding: .875rem .875rem; }
+
+  /* ── 表單優化：大一點好點擊 ── */
+  .form-group { margin-bottom: .75rem; }
+  .form-group label { font-size: 12px; margin-bottom: .25rem; }
+  input, select, textarea {
+    font-size: 16px !important;  /* 防 iOS 自動縮放 */
+    padding: .625rem .875rem !important;
+  }
+  select { padding-right: 2.5rem !important; }
+  .btn { font-size: 14px; padding: .75rem 1rem; }
+
+  /* ── 新增表單的儲存按鈕固定在底部 ── */
+  .button-row {
+    position: sticky;
+    bottom: 0;
+    background: var(--white);
+    padding: .875rem 0 .5rem;
+    margin: 0 -.875rem;
+    padding-left: .875rem;
+    padding-right: .875rem;
+    box-shadow: 0 -4px 16px rgba(0,0,0,.08);
+    z-index: 10;
+  }
+
+  /* ── Accordion 標題加大 ── */
+  .acc-header { padding: .875rem 1rem; }
+  .acc-title { font-size: 13px; }
+  .acc-icon { font-size: 16px; }
+  .acc-body { padding: .875rem 1rem; }
+
+  /* ── Filter bar 直排 ── */
+  .filter-bar {
+    flex-direction: column;
+    gap: .5rem;
+    padding: .75rem .875rem;
+  }
+  .filter-bar .form-group { min-width: unset; width: 100%; margin: 0; }
+  .filter-bar input, .filter-bar select {
+    font-size: 15px !important;
+  }
+
+  /* ── 客戶卡片按鈕 ── */
+  .customer-card-actions {
+    flex-wrap: wrap;
+    gap: .35rem;
+  }
+
+  /* ── Modal 從底部滑出 ── */
+  .modal-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+  .modal {
+    border-radius: 20px 20px 0 0 !important;
+    max-width: 100% !important;
+    max-height: 92vh;
+    width: 100%;
+  }
+  .modal-head { padding: 1rem 1rem; }
+  .modal-head h3 { font-size: 15px; }
+  .modal-body { padding: .875rem 1rem; }
+  .modal-actions {
+    padding: .75rem 1rem;
+    gap: .5rem;
+    flex-wrap: wrap;
+  }
+  .modal-actions .btn { flex: 1; min-width: 100px; font-size: 13px; }
+
+  /* ── 客戶詳情欄位 ── */
+  .detail-row {
+    grid-template-columns: 90px 1fr;
+    font-size: 12px;
+    padding: .45rem 0;
+    gap: .3rem .5rem;
+  }
+
+  /* ── 排行榜表格 ── */
+  #leaderboardTable th, #leaderboardTable td {
+    padding: .45rem .35rem;
+    font-size: 11px;
+  }
+
+  /* ── 今日跟進名單按鈕 ── */
+  #followTodayList button {
+    font-size: 11px;
+    padding: .35rem .625rem;
+  }
+
+  /* ── 語音建檔區塊 ── */
+  #voiceInputCard {
+    padding: 1rem !important;
+    margin-bottom: .875rem;
+  }
+  #voiceBtn {
+    padding: .5rem 1rem !important;
+    font-size: 12px !important;
+    white-space: nowrap;
+  }
+
+  /* ── 防止橫向滾動 ── */
+  body, .page { overflow-x: hidden; }
+  * { box-sizing: border-box; }
+}
+
+/* ── 超小螢幕 (375px 以下，iPhone SE 等) ── */
+@media(max-width:375px){
+  .nav-tabs button { font-size: 8px; padding: .45rem .05rem; }
+  .nav-emoji { font-size: 15px; }
+  .stat-number { font-size: 20px !important; }
+  .stats-grid { gap: .375rem; }
+}
+
+
+
+
+/* ── 精緻細節升級 ── */
+.card-header { border-bottom: 1px solid var(--cream2) !important; }
+.card-icon { background: linear-gradient(145deg,#c9a84c 0%,#f0d080 50%,#b8962e 100%) !important; box-shadow: var(--shadow-gold); }
+.rank-fill { background: linear-gradient(90deg,var(--gold),#f0d080,var(--gold)) !important; }
+.badge-1{background:#deeaf8;color:#0d4a8a}.badge-2{background:#fff0e0;color:#c45000}
+.badge-3{background:#f0e6f8;color:#5a0e8a}.badge-4{background:#e0f5e8;color:#1a5c30}
+.badge-5{background:#fce8e5;color:#8a1a10}.badge-6{background:#d8f5f0;color:#005048}
+.badge-7{background:#ede0f8;color:#3a0870}.badge-8{background:#fff5d8;color:#8a5200}
+
+/* 數字卡片數值更大更有力 */
+.stat-value { font-size:32px !important; font-family:'Playfair Display',serif; }
+
+/* 精緻分隔線 */
+.filter-bar { border-bottom: 1px solid var(--cream2) !important; }
+.detail-row { border-bottom: 1px solid rgba(228,221,208,.7) !important; }
+
+/* input focus 金色光暈 */
+select:focus,input:focus,textarea:focus {
+  border-color: var(--gold) !important;
+  box-shadow: 0 0 0 3px rgba(184,150,46,.12) !important;
+}
+
+/* 卡片 hover */
+.stat-card:hover { box-shadow: var(--shadow-lg) !important; }
+
+/* 頂部 header 底部金線 */
+.header::after { content:''; position:absolute; bottom:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(184,150,46,.4),transparent); }
+.header { position: relative; }
 
 /* ── 房貸風控表單欄位縮短 ── */
 #acc-b-mortgage input[type="text"],
@@ -337,10 +544,10 @@ function claimSeminarLead() {}
     <div id="dashboard" class="page active">
 
       <!-- 週報標題 -->
-      <div style="background:linear-gradient(135deg,var(--navy),#1a3060);border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between">
+      <div id="weeklyReportCard" style="background:linear-gradient(160deg,#050f1c 0%,#07192d 60%,#0f2744 100%);border-radius:16px;padding:1.25rem 1.5rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between">
         <div>
           <div style="font-size:11px;letter-spacing:.15em;color:var(--gold);font-weight:700;margin-bottom:4px">WEEKLY MANAGEMENT REPORT</div>
-          <div style="font-size:16px;font-weight:700;color:#fff" id="dashWeekLabel">本週管理儀表板</div>
+          <div style="font-size:16px;font-weight:700;color:#fff;font-family:'Playfair Display',serif;letter-spacing:.02em" id="dashWeekLabel">本週管理儀表板</div>
         </div>
         <div style="text-align:right;font-size:12px;color:rgba(255,255,255,.5)" id="dashDateLabel"></div>
       </div>
@@ -350,6 +557,7 @@ function claimSeminarLead() {}
         <div class="stat-card"><div class="stat-value" id="totalCustomers">—</div><div class="stat-label">跟進中客戶</div></div>
         <div class="stat-card"><div class="stat-value" id="monthlyNew">—</div><div class="stat-label">本月新增</div></div>
         <div class="stat-card"><div class="stat-value" id="nearClosing">—</div><div class="stat-label">即將成交</div></div>
+        <div class="stat-card" style="cursor:pointer" onclick="showPage('followupJournal',document.querySelector('.nav-tabs button:nth-child(6)'))"><div class="stat-value" id="followupDueCount" style="color:#c0392b">—</div><div class="stat-label">今日待跟進</div></div>
         <div class="stat-card"><div class="stat-value" id="monthlyClosing">—</div><div class="stat-label">本月成交</div></div>
       </div>
 
@@ -1240,6 +1448,27 @@ function claimSeminarLead() {}
               <option value="7">七部曲：售後服務</option><option value="8">八部曲：轉介紹</option>
             </select>
           </div>
+          <div class="form-group" style="flex:1;min-width:120px">
+            <label>購買時間軸</label>
+            <select id="filterTimeline" onchange="renderCustomers()">
+              <option value="">全部</option>
+              <option value="1個月內">🔴 1個月內</option>
+              <option value="3個月內">🟠 3個月內</option>
+              <option value="半年內">🟡 半年內</option>
+              <option value="1年以上">🔵 1年以上</option>
+              <option value="純詢問觀望">⚪ 純詢問觀望</option>
+            </select>
+          </div>
+          <div class="form-group" style="flex:1;min-width:120px">
+            <label>諮詢狀態</label>
+            <select id="filterViewing" onchange="renderCustomers()">
+              <option value="">全部</option>
+              <option value="已完整解說">✅ 已完整解說</option>
+              <option value="已完成諮詢">✅ 已完成諮詢</option>
+              <option value="已看屋">🏠 已看屋</option>
+              <option value="未預約">⏳ 未預約</option>
+            </select>
+          </div>
         </div>
         <div style="padding:.75rem 1.5rem;border-bottom:1px solid var(--cream2);display:flex;align-items:center;justify-content:space-between">
           <span id="listCount" style="font-size:13px;color:var(--text-muted)">載入中...</span>
@@ -1348,7 +1577,7 @@ var MANAGERS = ['總經理','CRM營運長','知識長','AI訓練長'];
 var DEFAULT_SALES = ['阮智偉','廖一龍','鄭采崴','張書菡','王鈞志','吳玉如','商國泰','郭淑真','高亞琦','陳淑美','侯明智','許亞茵','曾素蘭','林紫君','黃中興','黃彥程','孫運迪','陳丰彥','劉常裕','施向宇','莊環蔭','廉海桃','劉晁綱','游馥宇'];
 var SALES = [];
 var PASSWORDS = {
-  '總經理':'boss2026','CRM營運長':'crm2026','知識長':'know2026','AI訓練長':'ai2026',
+  '總經理':'boss2026','CRM營運長':'CRM2026','知識長':'know2026','AI訓練長':'ai2026',
   '阮智偉':'7433','廖一龍':'8439','鄭采崴':'1862','張書菡':'2626',
   '王鈞志':'5982','吳玉如':'8527','商國泰':'6502','郭淑真':'1319','高亞琦':'4943',
   '陳淑美':'8428','侯明智':'3609','許亞茵':'9910','曾素蘭':'9913','林紫君':'3140',
@@ -2837,6 +3066,8 @@ function renderTodayFollowupList() {
     return isActive(c) && (currentRole==='manager' || c.salesPerson===currentUser);
   });
 
+  var todayDate = new Date(todayStr);
+
   var recommended = myCustomers.map(function(c){
     var prob = calcCloseProb(c);
     var risk = getRiskLevel(c);
@@ -2844,12 +3075,32 @@ function renderTodayFollowupList() {
     var hasJournalToday = journal.some(function(j){
       return j.customerId===c.id.toString() && j.date===todayStr;
     });
-    var score = prob + (risk==='critical'?30:risk==='high'?20:risk==='medium'?10:0);
-    return { c:c, prob:prob, risk:risk, days:days, done:hasJournalToday, score:score };
+
+    // 判斷跟進日期是否到期
+    var followupDue = false;
+    var followupOverdue = false;
+    var followupDaysLeft = null;
+    if (c.nextFollowupDate) {
+      try {
+        var dueDate = new Date(c.nextFollowupDate);
+        var diffDays = Math.floor((dueDate - todayDate) / 86400000);
+        followupDaysLeft = diffDays;
+        if (diffDays <= 0) followupOverdue = true;      // 已過期或今天
+        else if (diffDays <= 2) followupDue = true;     // 2天內到期
+      } catch(e) {}
+    }
+
+    // 分數：過期跟進日期加最高分，確保排最前
+    var score = prob
+      + (risk==='critical'?30:risk==='high'?20:risk==='medium'?10:0)
+      + (followupOverdue ? 50 : followupDue ? 30 : 0);
+
+    return { c:c, prob:prob, risk:risk, days:days, done:hasJournalToday, score:score,
+             followupOverdue:followupOverdue, followupDue:followupDue, followupDaysLeft:followupDaysLeft };
   })
-  .filter(function(x){ return !x.done && x.prob >= 25; })
+  .filter(function(x){ return !x.done && (x.prob >= 25 || x.followupOverdue || x.followupDue); })
   .sort(function(a,b){ return b.score - a.score })
-  .slice(0, 8);
+  .slice(0, 10);
 
   if (!recommended.length) {
     el.innerHTML = '<div style="color:#2e7d52;font-weight:600;padding:.5rem">✅ 今日推薦名單已全部跟進完畢！</div>';
@@ -2862,13 +3113,23 @@ function renderTodayFollowupList() {
     var daysLabel = x.days >= 999 ? '久未更新' : x.days + '天';
     var riskTag = x.risk==='critical' ? '<span style="font-size:10px;color:#c0392b;background:#fdf0ee;padding:2px 6px;border-radius:20px;font-weight:700">🔴 '+daysLabel+'未跟</span>' :
                   x.risk==='high' ? '<span style="font-size:10px;color:#856404;background:#fffbf0;padding:2px 6px;border-radius:20px;font-weight:700">🟡 '+daysLabel+'</span>' : '';
+    // 跟進日期標籤
+    var followupTag = '';
+    if (x.followupOverdue) {
+      var label = x.followupDaysLeft === 0 ? '今天' : Math.abs(x.followupDaysLeft)+'天前';
+      followupTag = '<span style="font-size:10px;color:#fff;background:#c0392b;padding:2px 8px;border-radius:20px;font-weight:700;animation:voicePulse 1.5s infinite">📅 '+label+'到期！</span>';
+    } else if (x.followupDue) {
+      followupTag = '<span style="font-size:10px;color:#856404;background:#fff3cd;padding:2px 8px;border-radius:20px;font-weight:700">📅 '+x.followupDaysLeft+'天後到期</span>';
+    } else if (c.nextFollowupGoal) {
+      followupTag = '<span style="font-size:10px;color:#546e7a;background:#f0f4f8;padding:2px 8px;border-radius:20px">🎯 '+c.nextFollowupGoal.slice(0,12)+'</span>';
+    }
     var probColor = x.prob>=70?'#2e7d52':x.prob>=40?'#e65100':'#9e9e9e';
     return '<div style="display:flex;align-items:center;gap:.75rem;padding:.75rem 0;border-bottom:1px solid var(--cream2)">' +
       '<div style="flex:1">' +
         '<div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap">' +
           '<span style="font-weight:700;color:var(--navy)">'+c.customerName+'</span>' +
           '<span class="badge badge-'+s+'" style="font-size:10px">'+STAGE_NAMES[s]+'</span>' +
-          riskTag +
+          riskTag + followupTag +
         '</div>' +
         '<div style="font-size:12px;color:var(--text-muted);margin-top:.15rem">👤 '+c.salesPerson+(c.buyingTimeline?' ｜ ⏰ '+c.buyingTimeline:'')+'</div>' +
       '</div>' +
@@ -3435,6 +3696,20 @@ function fillFormFromVoice(data) {
 
 
 function saveCustomer() {
+  // ── 資料完整度提醒 ──
+  var missing = [];
+  var v = function(id){ var el=document.getElementById(id); return el?el.value.trim():''; };
+  if (!v('customerName'))    missing.push('客戶姓名');
+  if (!v('contactInfo'))     missing.push('聯絡方式');
+  if (!v('leadSource'))      missing.push('名單來源');
+  if (!v('buyingTimeline'))  missing.push('購買時間軸');
+  if (!v('painPoints'))      missing.push('痛點分析');
+  if (!v('budget'))          missing.push('自有資金');
+
+  if (missing.length > 0) {
+    var msg = '⚠️ 以下重要欄位未填：\n• ' + missing.join('\n• ') + '\n\n確定要儲存嗎？';
+    if (!confirm(msg)) return;
+  }
   var sp = document.getElementById('salesPerson').value;
   var cn = document.getElementById('customerName').value;
   var ci = document.getElementById('contactInfo').value;
@@ -3517,9 +3792,15 @@ function renderCustomers() {
   var fs = document.getElementById('filterSales').value || '';
   var fst = document.getElementById('filterStage').value || '';
   var sr = (document.getElementById('searchInput').value || '').toLowerCase();
+  var ftl = document.getElementById('filterTimeline') ? document.getElementById('filterTimeline').value : '';
+  var fvw = document.getElementById('filterViewing') ? document.getElementById('filterViewing').value : '';
   if (fs) mc = mc.filter(function(c){ return c.salesPerson === fs; });
   if (fst) mc = mc.filter(function(c){ return stageOf(c) === parseInt(fst); });
-  if (sr) mc = mc.filter(function(c){ return (c.customerName+' '+(c.contactInfo||'')).toLowerCase().indexOf(sr) !== -1; });
+  if (ftl) mc = mc.filter(function(c){ return c.buyingTimeline === ftl; });
+  if (fvw) mc = mc.filter(function(c){ return c.viewingStatus === fvw; });
+  if (sr) mc = mc.filter(function(c){ return (c.customerName+' '+(c.contactInfo||'')+' '+(c.notes||'')).toLowerCase().indexOf(sr) !== -1; });
+  // 預設按成交機率排序
+  mc.sort(function(a,b){ return calcCloseProb(b) - calcCloseProb(a); });
   document.getElementById('listCount').textContent = '共 '+mc.length+' 筆';
   var con = document.getElementById('customerListContainer');
   if (!mc.length) { con.innerHTML='<div class="empty-state"><div class="empty-icon">🔍</div>沒有符合的客戶</div>'; return; }
