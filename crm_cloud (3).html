@@ -1468,6 +1468,24 @@ function claimSeminarLead() {}
               <option value="未預約">⏳ 未預約</option>
             </select>
           </div>
+          <div class="form-group" style="flex:1;min-width:120px">
+            <label>研討會</label>
+            <select id="filterSeminar" onchange="renderCustomers()">
+              <option value="">全部</option>
+              <option value="是">🎓 有參加</option>
+              <option value="否">❌ 未參加</option>
+              <option value="已邀請未參加">📩 已邀未參加</option>
+            </select>
+          </div>
+          <div class="form-group" style="flex:1;min-width:120px">
+            <label>信任狀態</label>
+            <select id="filterTrust" onchange="renderCustomers()">
+              <option value="">全部</option>
+              <option value="高度信任">🟢 高度信任</option>
+              <option value="中度信任">🟡 中度信任</option>
+              <option value="基礎信任">🔴 基礎信任</option>
+            </select>
+          </div>
         </div>
         <div style="padding:.75rem 1.5rem;border-bottom:1px solid var(--cream2);display:flex;align-items:center;justify-content:space-between">
           <span id="listCount" style="font-size:13px;color:var(--text-muted)">載入中...</span>
@@ -3797,6 +3815,10 @@ function renderCustomers() {
   if (fst) mc = mc.filter(function(c){ return stageOf(c) === parseInt(fst); });
   if (ftl) mc = mc.filter(function(c){ return c.buyingTimeline === ftl; });
   if (fvw) mc = mc.filter(function(c){ return c.viewingStatus === fvw; });
+  var fsem = document.getElementById('filterSeminar') ? document.getElementById('filterSeminar').value : '';
+  var ftrust = document.getElementById('filterTrust') ? document.getElementById('filterTrust').value : '';
+  if (fsem) mc = mc.filter(function(c){ return c.seminarAttended === fsem; });
+  if (ftrust) mc = mc.filter(function(c){ return c.currentStatus && c.currentStatus.indexOf(ftrust) !== -1; });
   if (sr) mc = mc.filter(function(c){ return (c.customerName+' '+(c.contactInfo||'')+' '+(c.notes||'')).toLowerCase().indexOf(sr) !== -1; });
   // 預設按成交機率排序
   mc.sort(function(a,b){ return calcCloseProb(b) - calcCloseProb(a); });
