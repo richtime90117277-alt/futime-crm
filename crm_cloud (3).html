@@ -73,8 +73,8 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
 .setup-banner input{margin-top:.75rem;background:white}
 /* APP */
 .app{display:none}
-.app.active{display:flex;flex-direction:column;min-height:100vh}
-.header{background:linear-gradient(160deg,#050f1c 0%,#07192d 50%,#0f2744 100%);padding:.875rem 1.25rem;color:var(--white);position:sticky;top:0;z-index:1000;box-shadow:0 1px 0 rgba(184,150,46,.2),0 4px 20px rgba(0,0,0,.25)}
+.app.active{display:flex;flex-direction:column;min-height:100vh;padding-top:108px}
+.header{background:linear-gradient(160deg,#050f1c 0%,#07192d 50%,#0f2744 100%);padding:.875rem 1.25rem;color:var(--white);position:fixed;top:0;left:0;right:0;z-index:1000;box-shadow:0 1px 0 rgba(184,150,46,.2),0 4px 20px rgba(0,0,0,.25);height:60px;display:flex;align-items:center}
 .header-inner{display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto;gap:1rem}
 .header-brand{display:flex;align-items:center;gap:.75rem}
 .header-logo{width:40px;height:40px;background:linear-gradient(135deg,var(--gold),#e8c060);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--navy);flex-shrink:0;box-shadow:0 3px 12px rgba(184,150,46,.4)}
@@ -87,7 +87,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
 @keyframes spin{to{transform:rotate(360deg)}}
 .logout-btn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:white;padding:.5rem .875rem;border-radius:20px;cursor:pointer;font-size:13px;font-family:inherit;transition:background .2s;white-space:nowrap}
 .logout-btn:hover{background:rgba(255,255,255,.22)}
-.nav-tabs{background:var(--white);display:flex;border-bottom:1px solid var(--cream2);position:sticky;top:68px;z-index:999;box-shadow:0 2px 12px rgba(7,25,45,.06)}
+.nav-tabs{background:var(--white);display:flex;border-bottom:1px solid var(--cream2);position:fixed;top:60px;left:0;right:0;z-index:999;box-shadow:0 2px 12px rgba(7,25,45,.06);height:48px}
 .nav-tabs button{flex:1;min-width:70px;padding:.875rem .4rem;background:none;border:none;border-bottom:3px solid transparent;color:var(--text-soft);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .2s;white-space:nowrap}
 .nav-tabs button.active{color:var(--navy);border-bottom-color:var(--gold);border-bottom-width:3px;font-weight:700}
 .nav-tabs button:hover:not(.active){color:var(--navy);background:var(--cream)}
@@ -343,8 +343,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
   }
 
   /* ── 防止橫向滾動 ── */
-  body, .page { overflow-x: hidden; }
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; max-width: 100%; }
 }
 
 /* ── 超小螢幕 (375px 以下，iPhone SE 等) ── */
@@ -438,6 +437,7 @@ function toggleGuarantor(val) {
   var el = document.getElementById('guarantorFields');
   if (el) el.style.display = val === '有' ? 'block' : 'none';
 }
+
 
 // 已移除研討會名單功能（stub 保留避免錯誤）
 function renderSeminarPending() {}
