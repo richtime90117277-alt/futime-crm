@@ -426,6 +426,121 @@ select:focus,input:focus,textarea:focus {
 .acc-header.open .acc-arrow { transform:rotate(180deg); }
 .acc-body { display:none; padding:1.25rem; border-top:1px solid var(--cream2); }
 .acc-body.open { display:block; }
+
+/* ── 異議救援 Modal ── */
+.rescue-overlay {
+  display:none; position:fixed; inset:0;
+  background:rgba(15,39,68,.75); z-index:4000;
+  padding:1rem; align-items:center; justify-content:center;
+}
+.rescue-overlay.active { display:flex; }
+.rescue-modal {
+  background:#fff; border-radius:20px;
+  max-width:600px; width:100%; max-height:92vh;
+  overflow-y:auto; display:flex; flex-direction:column;
+  animation:rescueIn .3s cubic-bezier(.22,.68,0,1.2);
+}
+@keyframes rescueIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
+.rescue-head {
+  background:linear-gradient(135deg,#c0392b,#e74c3c);
+  padding:1.25rem 1.5rem;
+  display:flex; justify-content:space-between; align-items:center;
+  border-radius:20px 20px 0 0; flex-shrink:0;
+}
+.rescue-head h3 { color:#fff; font-size:16px; font-weight:700; }
+.rescue-head p { color:rgba(255,255,255,.75); font-size:12px; margin-top:.2rem; }
+.rescue-close {
+  background:rgba(255,255,255,.2); border:none; color:#fff;
+  width:32px; height:32px; border-radius:50%;
+  font-size:18px; cursor:pointer; display:flex;
+  align-items:center; justify-content:center; flex-shrink:0;
+}
+.rescue-body { padding:1.5rem; flex:1; }
+.rescue-customer-tag {
+  background:linear-gradient(135deg,#fffbf0,#fff8e7);
+  border:1.5px solid #f0d080; border-radius:10px;
+  padding:.75rem 1rem; margin-bottom:1.25rem;
+  font-size:13px; color:#856404; font-weight:600;
+  display:flex; align-items:center; gap:.625rem;
+}
+.rescue-input-wrap { margin-bottom:1.25rem; }
+.rescue-input-wrap label {
+  display:block; font-size:12px; font-weight:700;
+  color:var(--navy); letter-spacing:.06em; margin-bottom:.5rem;
+}
+.rescue-input-wrap textarea {
+  width:100%; padding:.875rem 1rem;
+  border:2px solid #e8edf2; border-radius:10px;
+  font-size:14px; font-family:inherit; resize:none;
+  outline:none; background:var(--cream); min-height:80px;
+  line-height:1.6; transition:border-color .2s;
+}
+.rescue-input-wrap textarea:focus { border-color:#c0392b; background:#fff; }
+
+/* 快速常見異議按鈕 */
+.quick-objections {
+  display:flex; flex-wrap:wrap; gap:.5rem; margin-bottom:1.25rem;
+}
+.quick-obj-btn {
+  background:#fdf0ee; color:#c0392b;
+  border:1px solid #f5c6c3; border-radius:20px;
+  padding:.35rem .875rem; font-size:12px; font-weight:600;
+  font-family:inherit; cursor:pointer; transition:all .15s;
+}
+.quick-obj-btn:hover { background:#c0392b; color:#fff; border-color:#c0392b; }
+
+.rescue-submit-btn {
+  width:100%; padding:1rem;
+  background:linear-gradient(135deg,#c0392b,#e74c3c);
+  color:#fff; border:none; border-radius:10px;
+  font-size:15px; font-weight:700; font-family:inherit;
+  cursor:pointer; transition:all .2s;
+  box-shadow:0 4px 16px rgba(192,57,43,.3);
+}
+.rescue-submit-btn:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(192,57,43,.4); }
+.rescue-submit-btn:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+
+/* 結果區 */
+.rescue-result { display:none; }
+.rescue-result.show { display:block; }
+.rescue-section {
+  background:linear-gradient(135deg,#fffbf0,#fff8e7);
+  border-left:3px solid #c9a84c; border-radius:0 10px 10px 0;
+  padding:1rem 1.125rem; margin-bottom:.875rem;
+}
+.rescue-section h4 {
+  font-size:12px; font-weight:700; color:var(--navy);
+  letter-spacing:.08em; margin-bottom:.625rem;
+  text-transform:uppercase;
+}
+.rescue-section p {
+  font-size:14px; line-height:1.8; color:var(--text);
+}
+.rescue-script {
+  background:linear-gradient(135deg,var(--navy),#1a3a5c);
+  color:#fff; border-radius:10px; padding:1.125rem;
+  font-size:14px; line-height:1.8; margin-bottom:.875rem;
+  position:relative;
+}
+.rescue-script-label {
+  font-size:10px; font-weight:700; letter-spacing:.1em;
+  color:#c9a84c; margin-bottom:.5rem; text-transform:uppercase;
+}
+.rescue-copy-btn {
+  position:absolute; top:.875rem; right:.875rem;
+  background:rgba(255,255,255,.15); border:none; color:#fff;
+  padding:.3rem .75rem; border-radius:6px; font-size:12px;
+  font-family:inherit; cursor:pointer; transition:all .15s;
+}
+.rescue-copy-btn:hover { background:rgba(255,255,255,.25); }
+.rescue-action-row {
+  display:flex; gap:.75rem; margin-top:1.25rem; flex-wrap:wrap;
+}
+.rescue-action-row button {
+  flex:1; padding:.75rem; border-radius:10px;
+  font-size:13px; font-weight:600; font-family:inherit;
+  cursor:pointer; transition:all .2s; margin-top:0;
+}
 </style>
 <script>
 window.addEventListener('error', function(e) {
@@ -537,6 +652,17 @@ function claimSeminarLead() {}
     <button onclick="showPage('followupJournal',this)" id="journalTab">📝 日誌</button>
     <button onclick="showPage('bossDashboard',this)" id="bossTab" style="display:none">🧠 決策</button>
   </nav>
+
+  <!-- 浮動異議救援按鈕 -->
+  <button id="floatRescueBtn" onclick="openRescue(null)"
+    style="position:fixed;bottom:80px;right:16px;z-index:1500;
+    width:52px;height:52px;border-radius:50%;border:none;
+    background:linear-gradient(135deg,#c0392b,#e74c3c);
+    color:#fff;font-size:22px;cursor:pointer;
+    box-shadow:0 4px 20px rgba(192,57,43,.5);
+    display:none;align-items:center;justify-content:center;
+    transition:all .2s;" title="異議救援">🆘</button>
+
   <div class="container">
 
     <!-- DASHBOARD -->
@@ -1813,6 +1939,7 @@ function login() {
 function enterApp() {
   document.getElementById('loginPage').style.display = 'none';
   document.getElementById('mainApp').classList.add('active');
+  var fb=document.getElementById('floatRescueBtn'); if(fb) fb.style.display='flex';
   document.getElementById('userName').textContent = currentUser;
   initApp();
   fetchCustomers();
@@ -3886,6 +4013,14 @@ function showDetail(id) {
   var actionsDiv = document.getElementById('modalActions');
   actionsDiv.innerHTML = '';
 
+  // 🆘 異議救援按鈕（所有人都能用）
+  var rescueBtn = document.createElement('button');
+  rescueBtn.className = 'btn btn-primary';
+  rescueBtn.style.cssText = 'flex:2;margin-top:0;background:linear-gradient(135deg,#c0392b,#e74c3c);box-shadow:0 4px 16px rgba(192,57,43,.25)';
+  rescueBtn.innerHTML = '🆘 異議救援';
+  rescueBtn.addEventListener('click', (function(id){ return function(){ openRescue(id); }; })(sid));
+  actionsDiv.appendChild(rescueBtn);
+
   if (canEdit) {
     var editBtn = document.createElement('button');
     editBtn.className = 'btn btn-secondary';
@@ -4339,6 +4474,146 @@ function showManualCopy(txt) {
 }
 
 // ── Toast 通知 ──
+
+// ══════════════════════════════════════════════
+// 異議處理即時救援
+// ══════════════════════════════════════════════
+var _rescueCustomerId = null;
+
+function openRescue(customerId) {
+  _rescueCustomerId = customerId || null;
+  var overlay = document.getElementById('rescueOverlay');
+
+  // 更新客戶標籤
+  var tag = document.getElementById('rescueCustomerTag');
+  if (customerId) {
+    var c = customers.find(function(x){ return x.id && x.id.toString()===customerId.toString(); });
+    if (c) {
+      var s = stageOf(c);
+      var prob = typeof calcCloseProb === 'function' ? calcCloseProb(c) : '—';
+      tag.innerHTML = '👤 <b>'+c.customerName+'</b>｜'+
+        (c.clientSegment||c.painPoints||'未設定族群')+'｜'+
+        STAGE_NAMES[s]+'｜成交機率 '+prob+'%';
+    }
+  } else {
+    tag.innerHTML = '👤 未指定客戶（通用模式）';
+  }
+
+  // 清空上次結果
+  clearRescue();
+  overlay.classList.add('active');
+  setTimeout(function(){ document.getElementById('rescueObjInput').focus(); }, 300);
+}
+
+function closeRescue() {
+  document.getElementById('rescueOverlay').classList.remove('active');
+}
+
+function fillObjText(text) {
+  document.getElementById('rescueObjInput').value = text;
+  document.getElementById('rescueObjInput').focus();
+}
+
+function clearRescue() {
+  document.getElementById('rescueObjInput').value = '';
+  document.getElementById('rescueResult').classList.remove('show');
+  document.getElementById('rescueSubmitBtn').disabled = false;
+  document.getElementById('rescueSubmitBtn').textContent = '🆘 立即生成話術建議';
+}
+
+function copyRescueScript() {
+  var txt = document.getElementById('rescueScriptText').innerText;
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(txt).then(function(){ showToast('✅ 已複製話術'); });
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = txt; ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    showToast('✅ 已複製話術');
+  }
+}
+
+function runRescue() {
+  var objText = (document.getElementById('rescueObjInput').value || '').trim();
+  if (!objText) { showToast('請輸入客戶說的話'); return; }
+
+  var btn = document.getElementById('rescueSubmitBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ AI 分析中...';
+  document.getElementById('rescueResult').classList.remove('show');
+
+  // 建立 prompt
+  var customerContext = '';
+  if (_rescueCustomerId) {
+    var c = customers.find(function(x){ return x.id && x.id.toString()===_rescueCustomerId.toString(); });
+    if (c) {
+      var s = stageOf(c);
+      customerContext = '\n\n【客戶背景】\n' +
+        '姓名：'+c.customerName+'\n' +
+        '族群：'+(c.clientSegment||'未設定')+'\n' +
+        '購買時間軸：'+(c.buyingTimeline||'未填')+'\n' +
+        '家人支持度：'+(c.familySupport||'未填')+'\n' +
+        '信任狀態：'+(c.currentStatus||'未填')+'\n' +
+        '八部曲進度：第'+s+'部曲（'+STAGE_NAMES[s]+'）\n' +
+        '痛點：'+(c.painPoints||'未填')+'\n' +
+        '決策障礙：'+(c.decisionBlock||'未填');
+    }
+  }
+
+  var prompt = '你是一位頂尖的台灣房地產銷售顧問，精通富時代地產的八部曲系統。' +
+    '業務現在正在和客戶對話，客戶剛說了以下這句話：' +
+    '\n\n「' + objText + '」' +
+    customerContext +
+    '\n\n請立即給出救援建議，以JSON格式回覆（只回JSON，不加其他文字）：' +
+    '{' +
+    '"analysis":"這個異議的本質是什麼？客戶真正擔心的是什麼（2-3句，直接說重點）",' +
+    '"script":"可以直接說出口的話術，要自然口語，不要太制式，2-4句話",' +
+    '"dont":"這種情況最常見的錯誤說法，一句話說清楚不要說什麼",' +
+    '"nextStep":"說完話術之後的下一步具體行動（例如：約時間、傳資料、邀帶看）"' +
+    '}';
+
+  fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 600,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(data){
+    btn.disabled = false;
+    btn.textContent = '🆘 立即生成話術建議';
+    var raw = data.content && data.content[0] ? data.content[0].text : '{}';
+    raw = raw.replace(/```json|```/g,'').trim();
+    try {
+      var result = JSON.parse(raw);
+      document.getElementById('rescueAnalysis').textContent = result.analysis || '—';
+      document.getElementById('rescueScriptText').textContent = result.script || '—';
+      document.getElementById('rescueDont').textContent = result.dont || '—';
+      document.getElementById('rescueNextStep').textContent = result.nextStep || '—';
+      document.getElementById('rescueResult').classList.add('show');
+      // 滾動到結果
+      document.getElementById('rescueResult').scrollIntoView({ behavior:'smooth', block:'start' });
+    } catch(e) {
+      showToast('❌ 解析失敗，請重試');
+    }
+  })
+  .catch(function(){
+    btn.disabled = false;
+    btn.textContent = '🆘 立即生成話術建議';
+    showToast('❌ 網路連線問題，請重試');
+  });
+}
+
+// 關閉背景點擊
+document.addEventListener('click', function(e){
+  var overlay = document.getElementById('rescueOverlay');
+  if (overlay && e.target === overlay) closeRescue();
+});
+
 var toastTimer = null;
 function showToast(msg) {
   var t = document.getElementById('crm-toast');
@@ -4366,5 +4641,95 @@ function showToast(msg) {
   <div id="copyAlert" style="display:none"></div>
   <div id="quickCommandList" style="display:none"></div>
   <div id="previewLabel" style="display:none"></div>
+
+<!-- ══ 異議救援 Modal ══ -->
+<div class="rescue-overlay" id="rescueOverlay">
+  <div class="rescue-modal">
+    <div class="rescue-head">
+      <div>
+        <h3>🆘 異議處理即時救援</h3>
+        <p>輸入客戶說的話，5秒獲得話術建議</p>
+      </div>
+      <button class="rescue-close" onclick="closeRescue()">✕</button>
+    </div>
+    <div class="rescue-body">
+
+      <!-- 客戶資訊標籤 -->
+      <div class="rescue-customer-tag" id="rescueCustomerTag">
+        👤 請選擇客戶後使用此功能
+      </div>
+
+      <!-- 常見異議快選 -->
+      <div style="font-size:12px;font-weight:700;color:var(--navy);letter-spacing:.06em;margin-bottom:.5rem">
+        ⚡ 常見異議快選
+      </div>
+      <div class="quick-objections">
+        <button class="quick-obj-btn" onclick="fillObjText('我先生/太太說要再考慮一下')">👫 另一半要考慮</button>
+        <button class="quick-obj-btn" onclick="fillObjText('現在房市不好，我想等等看')">📉 等房市再說</button>
+        <button class="quick-obj-btn" onclick="fillObjText('頭期款還不夠，等存好再說')">💰 頭期款不夠</button>
+        <button class="quick-obj-btn" onclick="fillObjText('你們的物件價格太貴了')">💸 太貴了</button>
+        <button class="quick-obj-btn" onclick="fillObjText('我朋友說現在買不划算')">🗣️ 朋友說不好</button>
+        <button class="quick-obj-btn" onclick="fillObjText('我還在看其他的，再比較看看')">🔍 還在比較</button>
+        <button class="quick-obj-btn" onclick="fillObjText('貸款不知道能不能過，怕負擔太重')">🏦 擔心貸款</button>
+        <button class="quick-obj-btn" onclick="fillObjText('時機還不對，我感覺現在不是好時機')">⏰ 時機未到</button>
+      </div>
+
+      <!-- 自由輸入 -->
+      <div class="rescue-input-wrap">
+        <label>✍️ 或自己輸入客戶說的話</label>
+        <textarea id="rescueObjInput" placeholder="例：我老婆說要再想想，她覺得現在不是好時機..."></textarea>
+      </div>
+
+      <button class="rescue-submit-btn" id="rescueSubmitBtn" onclick="runRescue()">
+        🆘 立即生成話術建議
+      </button>
+
+      <!-- 結果區 -->
+      <div class="rescue-result" id="rescueResult">
+        <div style="height:1.5rem"></div>
+        <div style="font-size:11px;font-weight:700;color:var(--navy);letter-spacing:.1em;margin-bottom:1rem;padding-bottom:.625rem;border-bottom:2px solid var(--cream2)">
+          📋 AI 話術建議報告
+        </div>
+
+        <div class="rescue-section">
+          <h4>🔍 異議本質分析</h4>
+          <p id="rescueAnalysis"></p>
+        </div>
+
+        <div>
+          <div style="font-size:12px;font-weight:700;color:var(--navy);letter-spacing:.06em;margin-bottom:.625rem">
+            💬 建議開口話術（可直接用）
+          </div>
+          <div class="rescue-script" id="rescueScript">
+            <div class="rescue-script-label">建議話術</div>
+            <div id="rescueScriptText"></div>
+            <button class="rescue-copy-btn" onclick="copyRescueScript()">📋 複製</button>
+          </div>
+        </div>
+
+        <div class="rescue-section">
+          <h4>⚠️ 這句話不要說</h4>
+          <p id="rescueDont"></p>
+        </div>
+
+        <div class="rescue-section">
+          <h4>👣 下一步行動</h4>
+          <p id="rescueNextStep"></p>
+        </div>
+
+        <div class="rescue-action-row">
+          <button onclick="clearRescue()" style="background:var(--cream2);color:var(--navy);border:2px solid #dde3ea">
+            🔄 重新輸入
+          </button>
+          <button onclick="closeRescue()" style="background:var(--navy);color:#fff;border:none">
+            ✅ 知道了，去打電話
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
