@@ -2095,7 +2095,7 @@ function renderCustomerCountLB() {
       }
     } catch(e) {}
   });
-  var ranked = Object.keys(map)
+  var ranked = Object.keys(map).filter(function(sp){ return SALES.indexOf(sp) !== -1; })
     .sort(function(a,b){ return map[b].thisYear - map[a].thisYear || map[b].total - map[a].total; });
   var medals = ['🥇','🥈','🥉'];
   el.innerHTML = ranked.map(function(sp, i) {
@@ -2130,7 +2130,7 @@ function renderSeminarLB() {
       }
     } catch(e) {}
   });
-  var ranked = Object.keys(map).filter(function(sp){ return map[sp] > 0; }).sort(function(a,b){ return map[b]-map[a]; });
+  var ranked = Object.keys(map).filter(function(sp){ return SALES.indexOf(sp) !== -1 && map[sp] > 0; }).sort(function(a,b){ return map[b]-map[a]; });
   var medals = ['🥇','🥈','🥉'];
   var maxVal = ranked.length ? map[ranked[0]] : 1;
   el.innerHTML = ranked.map(function(sp, i) {
@@ -2163,7 +2163,7 @@ function renderConsultLB() {
       }
     } catch(e) {}
   });
-  var ranked = Object.keys(map).filter(function(sp){ return map[sp] > 0; }).sort(function(a,b){ return map[b]-map[a]; });
+  var ranked = Object.keys(map).filter(function(sp){ return SALES.indexOf(sp) !== -1 && map[sp] > 0; }).sort(function(a,b){ return map[b]-map[a]; });
   var medals = ['🥇','🥈','🥉'];
   var maxVal = ranked.length ? map[ranked[0]] : 1;
   el.innerHTML = ranked.map(function(sp, i) {
@@ -2254,8 +2254,10 @@ function renderLeaderboard() {
     countMap[sp] += 1;
   });
 
-  // 排序
-  var ranked = Object.keys(scoreMap).map(function(sp) {
+  // 排序（只顯示現役業務）
+  var ranked = Object.keys(scoreMap).filter(function(sp){
+    return SALES.indexOf(sp) !== -1;
+  }).map(function(sp) {
     return { name: sp, score: scoreMap[sp], count: countMap[sp] };
   }).sort(function(a, b) { return b.score - a.score; });
 
