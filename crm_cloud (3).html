@@ -859,6 +859,26 @@ function claimSeminarLead() {}
             </div>
             <div class="form-grid two">
               <div class="form-group">
+                <label>🎓 2026 研討會邀約</label>
+                <select id="seminar2026">
+                  <option value="">請選擇</option>
+                  <option value="已邀請參加">✅ 已邀請並參加</option>
+                  <option value="已邀請未參加">📩 已邀請尚未參加</option>
+                  <option value="尚未邀請">⏳ 尚未邀請</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>📋 2026 預約諮詢</label>
+                <select id="consult2026">
+                  <option value="">請選擇</option>
+                  <option value="已完成諮詢">✅ 已完成諮詢</option>
+                  <option value="已預約待諮詢">📅 已預約待諮詢</option>
+                  <option value="尚未預約">⏳ 尚未預約</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group">
                 <label>⏳ 購買時間軸</label>
                 <select id="buyingTimeline">
                   <option value="">請選擇</option>
@@ -1633,6 +1653,7 @@ function claimSeminarLead() {}
 
     <!-- LEADERBOARD PAGE -->
     <div id="leaderboard" class="page">
+
       <div class="card">
         <div class="card-header"><div class="card-icon">🏆</div><h3>積分排行榜</h3></div>
         <div class="card-body">
@@ -1642,6 +1663,38 @@ function claimSeminarLead() {}
           <div id="leaderboardList"></div>
         </div>
       </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-icon">👥</div><h3>客戶數排行榜</h3></div>
+        <div class="card-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:1rem">
+            <div style="background:var(--cream2);border-radius:8px;padding:.5rem 1rem;font-size:12px;font-weight:700;color:var(--navy);text-align:center">📊 累積總戶數</div>
+            <div style="background:#e8f0fb;border-radius:8px;padding:.5rem 1rem;font-size:12px;font-weight:700;color:#1565c0;text-align:center">📅 2026年新增</div>
+          </div>
+          <div id="customerCountList"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-icon">🎓</div><h3>2026 研討會邀約排行</h3></div>
+        <div class="card-body"><div id="seminarLBList"></div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-icon">📋</div><h3>2026 預約諮詢排行</h3></div>
+        <div class="card-body"><div id="consultLBList"></div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-icon">🎯</div><h3>2026 業績達成率</h3></div>
+        <div class="card-body">
+          <div style="background:var(--cream2);border-radius:10px;padding:.875rem 1rem;margin-bottom:1rem;font-size:13px;color:var(--text-soft)">
+            💡 輸入各業務的目標業績（萬），系統自動計算達成率
+          </div>
+          <div id="achieveList"></div>
+        </div>
+      </div>
+
     </div>
 
     <div id="staffMgmt" class="page">
@@ -2006,6 +2059,176 @@ function calcScore(c) {
   return score;
 }
 
+
+function renderAllLeaderboards() {
+  renderLeaderboard();
+  renderCustomerCountLB();
+  renderSeminarLB();
+  renderConsultLB();
+  renderAchieveLB();
+}
+
+function renderCustomerCountLB() {
+  var el = document.getElementById('customerCountList');
+  if (!el) return;
+  var thisYear = new Date().getFullYear();
+  var map = {};
+  SALES.forEach(function(sp){ map[sp] = { total:0, thisYear:0 }; });
+  customers.forEach(function(c) {
+    var sp = c.salesPerson || '未指定';
+    if (!map[sp]) map[sp] = { total:0, thisYear:0 };
+    map[sp].total++;
+    try {
+      var yr = new Date(c.creationDate).getFullYear();
+      if (yr === thisYear) map[sp].thisYear++;
+    } catch(e) {}
+  });
+  var ranked = Object.keys(map)
+    .sort(function(a,b){ return map[b].thisYear - map[a].thisYear || map[b].total - map[a].total; });
+  var medals = ['🥇','🥈','🥉'];
+  el.innerHTML = ranked.map(function(sp, i) {
+    var d = map[sp];
+    var isMe = currentRole==='sales' && sp===currentUser;
+    var bg = isMe ? 'background:linear-gradient(135deg,#fffbea,#fff3cd);border:2px solid #f0c040;' : 'background:#fff;border:1px solid var(--cream2);';
+    return '<div style="'+bg+'border-radius:12px;padding:.875rem 1.25rem;margin-bottom:.625rem;display:flex;align-items:center;justify-content:space-between">'+
+      '<div style="display:flex;align-items:center;gap:.625rem">'+
+        '<span style="font-size:20px">'+(medals[i]||((i+1)+'.'))+' </span>'+
+        '<span style="font-weight:700;color:var(--navy)">'+sp+'</span>'+
+      '</div>'+
+      '<div style="display:flex;gap:1.25rem;align-items:center">'+
+        '<div style="text-align:center"><div style="font-size:18px;font-weight:800;color:var(--navy)">'+d.total+'</div><div style="font-size:10px;color:var(--text-muted)">累積</div></div>'+
+        '<div style="text-align:center"><div style="font-size:18px;font-weight:800;color:#1565c0">'+d.thisYear+'</div><div style="font-size:10px;color:#1565c0">'+thisYear+'年</div></div>'+
+      '</div>'+
+    '</div>';
+  }).join('') || '<div class="empty-state">尚無資料</div>';
+}
+
+function renderSeminarLB() {
+  var el = document.getElementById('seminarLBList');
+  if (!el) return;
+  var thisYear = new Date().getFullYear();
+  var map = {};
+  SALES.forEach(function(sp){ map[sp] = 0; });
+  customers.forEach(function(c) {
+    try {
+      var yr = new Date(c.creationDate).getFullYear();
+      if (yr === thisYear && c.seminar2026 && c.seminar2026 !== '尚未邀請') {
+        var sp = c.salesPerson || '未指定';
+        if (!map[sp]) map[sp] = 0;
+        map[sp]++;
+      }
+    } catch(e) {}
+  });
+  var ranked = Object.keys(map).filter(function(sp){ return map[sp] > 0; }).sort(function(a,b){ return map[b]-map[a]; });
+  var medals = ['🥇','🥈','🥉'];
+  var maxVal = ranked.length ? map[ranked[0]] : 1;
+  el.innerHTML = ranked.map(function(sp, i) {
+    var isMe = currentRole==='sales' && sp===currentUser;
+    var bg = isMe ? 'background:linear-gradient(135deg,#fffbea,#fff3cd);border:2px solid #f0c040;' : 'background:#fff;border:1px solid var(--cream2);';
+    var pct = Math.round(map[sp]/maxVal*100);
+    return '<div style="'+bg+'border-radius:12px;padding:.875rem 1.25rem;margin-bottom:.625rem">'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.375rem">'+
+        '<div style="display:flex;align-items:center;gap:.5rem"><span>'+(medals[i]||((i+1)+'.'))+' </span><span style="font-weight:700;color:var(--navy)">'+sp+'</span></div>'+
+        '<span style="font-size:18px;font-weight:800;color:#2e7d32">'+map[sp]+' 人</span>'+
+      '</div>'+
+      '<div style="background:var(--cream2);border-radius:99px;height:6px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,#1b5e20,#4caf50);border-radius:99px"></div></div>'+
+    '</div>';
+  }).join('') || '<div style="color:var(--text-muted);font-size:13px;padding:.5rem">今年尚無研討會邀約記錄</div>';
+}
+
+function renderConsultLB() {
+  var el = document.getElementById('consultLBList');
+  if (!el) return;
+  var thisYear = new Date().getFullYear();
+  var map = {};
+  SALES.forEach(function(sp){ map[sp] = 0; });
+  customers.forEach(function(c) {
+    try {
+      var yr = new Date(c.creationDate).getFullYear();
+      if (yr === thisYear && c.consult2026 && c.consult2026 !== '尚未預約') {
+        var sp = c.salesPerson || '未指定';
+        if (!map[sp]) map[sp] = 0;
+        map[sp]++;
+      }
+    } catch(e) {}
+  });
+  var ranked = Object.keys(map).filter(function(sp){ return map[sp] > 0; }).sort(function(a,b){ return map[b]-map[a]; });
+  var medals = ['🥇','🥈','🥉'];
+  var maxVal = ranked.length ? map[ranked[0]] : 1;
+  el.innerHTML = ranked.map(function(sp, i) {
+    var isMe = currentRole==='sales' && sp===currentUser;
+    var bg = isMe ? 'background:linear-gradient(135deg,#fffbea,#fff3cd);border:2px solid #f0c040;' : 'background:#fff;border:1px solid var(--cream2);';
+    var pct = Math.round(map[sp]/maxVal*100);
+    return '<div style="'+bg+'border-radius:12px;padding:.875rem 1.25rem;margin-bottom:.625rem">'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.375rem">'+
+        '<div style="display:flex;align-items:center;gap:.5rem"><span>'+(medals[i]||((i+1)+'.'))+' </span><span style="font-weight:700;color:var(--navy)">'+sp+'</span></div>'+
+        '<span style="font-size:18px;font-weight:800;color:#1565c0">'+map[sp]+' 人</span>'+
+      '</div>'+
+      '<div style="background:var(--cream2);border-radius:99px;height:6px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,#0d47a1,#42a5f5);border-radius:99px"></div></div>'+
+    '</div>';
+  }).join('') || '<div style="color:var(--text-muted);font-size:13px;padding:.5rem">今年尚無預約諮詢記錄</div>';
+}
+
+function getTargets() {
+  try { return JSON.parse(localStorage.getItem('futime_targets') || '{}'); } catch(e) { return {}; }
+}
+function saveTarget(sp, val) {
+  var t = getTargets(); t[sp] = parseFloat(val) || 0;
+  try { localStorage.setItem('futime_targets', JSON.stringify(t)); } catch(e) {}
+  renderAchieveLB();
+}
+
+function renderAchieveLB() {
+  var el = document.getElementById('achieveList');
+  if (!el) return;
+  var thisYear = new Date().getFullYear();
+  var targets = getTargets();
+  var actual = {};
+  SALES.forEach(function(sp){ actual[sp] = 0; });
+  customers.forEach(function(c) {
+    try {
+      var yr = new Date(c.contractDate).getFullYear();
+      if (yr === thisYear && c.dealAmount) {
+        var sp = c.salesPerson || '未指定';
+        if (!actual[sp]) actual[sp] = 0;
+        actual[sp] += parseFloat(c.dealAmount) || 0;
+      }
+    } catch(e) {}
+  });
+  // 顯示全部業務
+  var ranked = SALES.slice().sort(function(a,b){
+    var pa = targets[a] ? actual[a]/targets[a] : 0;
+    var pb = targets[b] ? actual[b]/targets[b] : 0;
+    return pb - pa;
+  });
+  var medals = ['🥇','🥈','🥉'];
+  el.innerHTML = ranked.map(function(sp, i) {
+    var act = actual[sp] || 0;
+    var tgt = targets[sp] || 0;
+    var pct = tgt > 0 ? Math.min(Math.round(act/tgt*100), 100) : 0;
+    var pctColor = pct >= 100 ? '#1b5e20' : pct >= 60 ? '#e65100' : '#c0392b';
+    var isMe = currentRole==='sales' && sp===currentUser;
+    var bg = isMe ? 'background:linear-gradient(135deg,#fffbea,#fff3cd);border:2px solid #f0c040;' : 'background:#fff;border:1px solid var(--cream2);';
+    return '<div style="'+bg+'border-radius:12px;padding:.875rem 1.25rem;margin-bottom:.625rem">'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">'+
+        '<div style="display:flex;align-items:center;gap:.5rem"><span>'+(medals[i]||'')+' </span><span style="font-weight:700;color:var(--navy)">'+sp+'</span></div>'+
+        '<div style="display:flex;align-items:center;gap:.75rem">'+
+          '<span style="font-size:11px;color:var(--text-muted)">實績 <b style="color:var(--navy)">'+act+'萬</b></span>'+
+          '<span style="font-size:18px;font-weight:800;color:'+pctColor+'">'+pct+'%</span>'+
+        '</div>'+
+      '</div>'+
+      '<div style="background:var(--cream2);border-radius:99px;height:8px;overflow:hidden;margin-bottom:.5rem">'+
+        '<div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,'+pctColor+','+pctColor+'aa);border-radius:99px;transition:.6s"></div>'+
+      '</div>'+
+      '<div style="display:flex;align-items:center;gap:.5rem">'+
+        '<span style="font-size:11px;color:var(--text-muted)">目標：</span>'+
+        '<input type="number" placeholder="輸入目標（萬）" value="'+(tgt||'')+'" data-sp="'+sp+'" onchange="saveTarget(this.dataset.sp,this.value)" style="width:110px;padding:.25rem .5rem;border:1.5px solid #e0d8c8;border-radius:6px;font-size:12px;font-family:inherit">'+
+        '<span style="font-size:11px;color:var(--text-muted)">萬</span>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
 function renderLeaderboard() {
   var container = document.getElementById('leaderboardList');
   if (!container) return;
@@ -2072,7 +2295,7 @@ function fetchCustomers() {
       renderCustomers();
       renderReports();
       renderRecent();
-      renderLeaderboard();
+      renderAllLeaderboards();
       if (currentRole === 'manager') renderBossDashboard();
       renderTrend();
       renderCompleteness();
@@ -3891,7 +4114,7 @@ function saveCustomer() {
       nextFollowupDate:(document.getElementById('nextFollowupDate')?document.getElementById('nextFollowupDate').value:''),
       nextFollowupGoal:(document.getElementById('nextFollowupGoal')?document.getElementById('nextFollowupGoal').value:''),
     customerActive:v('customerActive')||'進行中',
-    seminarAttended:v('seminarAttended'),
+    seminarAttended:v('seminarAttended'), seminar2026:v('seminar2026'), consult2026:v('consult2026'),
     clientSegment:v('clientSegment'),
     preferredArea:v('preferredArea')
   };
@@ -4323,6 +4546,7 @@ function showPage(name, btn) {
   document.querySelectorAll('.nav-tabs button').forEach(function(b){ b.classList.remove('active'); });
   if (btn) btn.classList.add('active');
   if (name === 'bossDashboard') renderBossDashboard();
+  if (name === 'leaderboard') renderAllLeaderboards();
   if (name === 'followupJournal') initJournalPage();
 }
 
@@ -4573,21 +4797,15 @@ function runRescue() {
     '"nextStep":"說完話術之後的下一步具體行動（例如：約時間、傳資料、邀帶看）"' +
     '}';
 
-  fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 600,
-      messages: [{ role: 'user', content: prompt }]
-    })
-  })
-  .then(function(r){ return r.json(); })
-  .then(function(data){
+  // 透過 Apps Script 中轉呼叫 Claude API（解決 CORS 問題）
+  callAPI({ action: 'claudeProxy', prompt: prompt, maxTokens: 600 }, function(res) {
     btn.disabled = false;
     btn.textContent = '🆘 立即生成話術建議';
-    var raw = data.content && data.content[0] ? data.content[0].text : '{}';
-    raw = raw.replace(/```json|```/g,'').trim();
+    if (!res.success) {
+      showToast('❌ ' + (res.error || '呼叫失敗，請重試'));
+      return;
+    }
+    var raw = (res.text || '{}').replace(/```json|```/g,'').trim();
     try {
       var result = JSON.parse(raw);
       document.getElementById('rescueAnalysis').textContent = result.analysis || '—';
@@ -4595,16 +4813,10 @@ function runRescue() {
       document.getElementById('rescueDont').textContent = result.dont || '—';
       document.getElementById('rescueNextStep').textContent = result.nextStep || '—';
       document.getElementById('rescueResult').classList.add('show');
-      // 滾動到結果
       document.getElementById('rescueResult').scrollIntoView({ behavior:'smooth', block:'start' });
     } catch(e) {
       showToast('❌ 解析失敗，請重試');
     }
-  })
-  .catch(function(){
-    btn.disabled = false;
-    btn.textContent = '🆘 立即生成話術建議';
-    showToast('❌ 網路連線問題，請重試');
   });
 }
 
