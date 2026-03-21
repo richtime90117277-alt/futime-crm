@@ -2097,9 +2097,11 @@ function renderCustomerCountLB() {
     if (!map[sp]) map[sp] = { total:0, thisYear:0 };
     map[sp].total++;
     try {
-      // 用簽約日期判斷是否為今年成交
-      var contractYr = c.contractDate ? new Date(c.contractDate).getFullYear() : new Date(c.creationDate).getFullYear();
-      if (contractYr === thisYear) map[sp].thisYear++;
+      // 必須有簽約日期才計入今年成交（空白不算）
+      if (c.contractDate && c.contractDate.toString().trim()) {
+        var contractYr = new Date(c.contractDate).getFullYear();
+        if (contractYr === thisYear) map[sp].thisYear++;
+      }
     } catch(e) {}
   });
   var ranked = Object.keys(map)
@@ -2390,7 +2392,7 @@ function renderDashboard() {
 
   // 2026新戶成交 & 歷年累積
   var closing2026 = closed.filter(function(c){
-    if (!c.contractDate) return false;
+    if (!c.contractDate || !c.contractDate.toString().trim()) return false;
     return new Date(c.contractDate).getFullYear() === 2026;
   }).length;
   var closingAllTime = closed.length;
@@ -2408,7 +2410,7 @@ function renderDashboard() {
     if (isActive(c)) salesMap[sp].active++;
     else {
       salesMap[sp].closed++;
-      if (c.contractDate && new Date(c.contractDate).getFullYear() === 2026) salesMap[sp].closed2026++;
+      if (c.contractDate && c.contractDate.toString().trim() && new Date(c.contractDate).getFullYear() === 2026) salesMap[sp].closed2026++;
     }
     if (parseInt(c.referralCount||0) > 0) salesMap[sp].referral += parseInt(c.referralCount);
   });
