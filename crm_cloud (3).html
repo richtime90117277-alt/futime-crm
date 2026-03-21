@@ -4348,15 +4348,26 @@ function showEdit(id) {
   html += sel('名單來源','leadSource',dynamicSrcOpts);
   html += '</div>';
   html += ef('獲取來源細節','leadSourceDetail',c.leadSourceDetail);
+  var segOpts = ['','首購族','換屋族','投資族','資產配置族','退休族','地緣組'].map(function(s){ return '<option value="'+s+'"'+(s===(c.clientSegment||'')?' selected':'')+'>'+( s===''?'請選擇':s)+'</option>'; }).join('');
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
+  html += sel('🏷️ 客戶族群','e_clientSegment',segOpts);
+  html += ef('📍 偏好區域','preferredArea',c.preferredArea);
+  html += '</div>';
   var semOpts = ['','否','已邀請未參加','是','已邀請參加2026'].map(function(s){ 
     var label = s===''?'請選擇':s==='否'?'❌ 否（未邀請）':s==='已邀請未參加'?'📩 已邀請尚未參加':s==='是'?'✅ 已參加（過往）':'✅ 已邀請並參加（2026）';
     return '<option value="'+s+'"'+(s===(c.seminarAttended||'')?' selected':'')+'>'+label+'</option>'; 
   }).join('');
   html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
   html += sel('🎓 研討會狀態','seminarAttended',semOpts);
+  var consultOpts2 = ['尚未預約','已預約待諮詢','已完成諮詢過往','已完成諮詢'].map(function(s){ 
+    var label = s==='尚未預約'?'❌ 尚未預約':s==='已預約待諮詢'?'📅 已預約待諮詢（2026）':s==='已完成諮詢過往'?'✅ 已完成諮詢（過往）':'✅ 已完成諮詢（2026）';
+    var cur = c.consult2026||c.viewingStatus||'尚未預約';
+    return '<option value="'+s+'"'+(s===cur?' selected':'')+'>'+label+'</option>'; 
+  }).join('');
+  html += sel('📋 顧問諮詢狀態','consult2026',consultOpts2);
+  html += '</div>';
   var cdVal = c.creationDate ? (function(raw){ try { var d=new Date(raw); if(!isNaN(d.getTime())){ var y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),dd=String(d.getDate()).padStart(2,'0'); return y+'-'+m+'-'+dd; } return raw; } catch(e){ return raw||''; } })(c.creationDate) : '';
   html += ef('創建日期','creationDate',cdVal,'date');
-  html += '</div>';
 
   html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem;margin-top:.25rem">二部曲：初步接觸</div>';
   html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
@@ -4394,12 +4405,6 @@ function showEdit(id) {
 
   html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem;margin-top:.25rem">四部曲：產品匹配</div>';
   html += ta('推薦物件','recommendedProperty',c.recommendedProperty);
-  var consultOpts = ['尚未預約','已預約待諮詢','已完成諮詢過往','已完成諮詢'].map(function(s){ 
-    var label = s==='尚未預約'?'❌ 尚未預約':s==='已預約待諮詢'?'📅 已預約待諮詢（2026）':s==='已完成諮詢過往'?'✅ 已完成諮詢（過往）':'✅ 已完成諮詢（2026）';
-    var cur = c.viewingStatus||c.consult2026||'尚未預約';
-    return '<option value="'+s+'"'+(s===cur?' selected':'')+'>'+label+'</option>'; 
-  }).join('');
-  html += sel('📋 顧問諮詢狀態','consult2026',consultOpts);
   html += ta('建議配對物件','matchedProperty',c.matchedProperty);
   html += '<input type="hidden" id="e_productAdvantages" value="'+(c.productAdvantages||'')+'">';
 
@@ -4494,7 +4499,7 @@ function saveEdit(c) {
     painPoints: gv('painPointsEdit'), painPointsNote: gv('painPoints'),
     blueprintCompletion: gv('blueprintCompletion'), matchedProperty: gv('matchedProperty'), viewedProperties: gv('viewedProperties'), whyNotBought: gv('whyNotBought'),
     customerNeeds: gv('customerNeeds'), recommendedProperty: gv('recommendedProperty'),
-    viewingStatus: gv('viewingStatus'), productAdvantages: gv('productAdvantages'),
+    viewingStatus: gv('consult2026'), productAdvantages: gv('productAdvantages'),
     objections: gv('objections'), solutions: gv('solutions'),
     contractStatus: gv('contractStatus'), dealAmount: gv('dealAmount'),
     contractDate: gv('contractDate'), satisfactionScore: gv('satisfactionScore'),
@@ -4512,7 +4517,9 @@ function saveEdit(c) {
       nextFollowupGoal: (document.getElementById('e_nextFollowupGoal')?document.getElementById('e_nextFollowupGoal').value:''),
     customerActive: gv('customerActive')||'進行中',
     seminarAttended: gv('seminarAttended'),
-    consult2026: gv('consult2026')
+    consult2026: gv('consult2026'),
+    clientSegment: gv('clientSegment'),
+    preferredArea: gv('preferredArea')
   };
   var btn = document.getElementById('editSaveBtn');
   btn.disabled = true; btn.textContent = '⏳ 儲存中...';
