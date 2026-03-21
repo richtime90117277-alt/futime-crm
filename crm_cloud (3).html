@@ -2102,14 +2102,14 @@ function renderCustomerCountLB() {
     var d = map[sp];
     var isMe = currentRole==='sales' && sp===currentUser;
     var bg = isMe ? 'background:linear-gradient(135deg,#fffbea,#fff3cd);border:2px solid #f0c040;' : 'background:#fff;border:1px solid var(--cream2);';
-    return '<div style="'+bg+'border-radius:12px;padding:.875rem 1.25rem;margin-bottom:.625rem;display:flex;align-items:center;justify-content:space-between">'+
+    return '<div style="'+bg+'border-radius:10px;padding:.45rem .875rem;margin-bottom:.3rem;display:flex;align-items:center;justify-content:space-between">'+
       '<div style="display:flex;align-items:center;gap:.625rem">'+
         '<span style="font-size:20px">'+(medals[i]||((i+1)+'.'))+' </span>'+
         '<span style="font-weight:700;color:var(--navy)">'+sp+'</span>'+
       '</div>'+
       '<div style="display:flex;gap:1.25rem;align-items:center">'+
         '<div style="text-align:center"><div style="font-size:18px;font-weight:800;color:var(--navy)">'+d.total+'</div><div style="font-size:10px;color:var(--text-muted)">累積</div></div>'+
-        '<div style="text-align:center"><div style="font-size:18px;font-weight:800;color:#1565c0">'+d.thisYear+'</div><div style="font-size:10px;color:#1565c0">'+thisYear+'年</div></div>'+
+        '<div style="text-align:center"><div style="font-size:15px;font-weight:800;color:#1565c0">'+d.thisYear+'</div><div style="font-size:10px;color:#1565c0">'+thisYear+'年</div></div>'+
       '</div>'+
     '</div>';
   }).join('') || '<div class="empty-state">尚無資料</div>';
@@ -2137,10 +2137,10 @@ function renderSeminarLB() {
     var isMe = currentRole==='sales' && sp===currentUser;
     var bg = isMe ? 'background:linear-gradient(135deg,#fffbea,#fff3cd);border:2px solid #f0c040;' : 'background:#fff;border:1px solid var(--cream2);';
     var pct = Math.round(map[sp]/maxVal*100);
-    return '<div style="'+bg+'border-radius:12px;padding:.875rem 1.25rem;margin-bottom:.625rem">'+
+    return '<div style="'+bg+'border-radius:10px;padding:.45rem .875rem;margin-bottom:.3rem">'+
       '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.375rem">'+
         '<div style="display:flex;align-items:center;gap:.5rem"><span>'+(medals[i]||((i+1)+'.'))+' </span><span style="font-weight:700;color:var(--navy)">'+sp+'</span></div>'+
-        '<span style="font-size:18px;font-weight:800;color:#2e7d32">'+map[sp]+' 人</span>'+
+        '<span style="font-size:15px;font-weight:800;color:#2e7d32">'+map[sp]+' 人</span>'+
       '</div>'+
       '<div style="background:var(--cream2);border-radius:99px;height:6px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,#1b5e20,#4caf50);border-radius:99px"></div></div>'+
     '</div>';
@@ -2170,10 +2170,10 @@ function renderConsultLB() {
     var isMe = currentRole==='sales' && sp===currentUser;
     var bg = isMe ? 'background:linear-gradient(135deg,#fffbea,#fff3cd);border:2px solid #f0c040;' : 'background:#fff;border:1px solid var(--cream2);';
     var pct = Math.round(map[sp]/maxVal*100);
-    return '<div style="'+bg+'border-radius:12px;padding:.875rem 1.25rem;margin-bottom:.625rem">'+
+    return '<div style="'+bg+'border-radius:10px;padding:.45rem .875rem;margin-bottom:.3rem">'+
       '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.375rem">'+
         '<div style="display:flex;align-items:center;gap:.5rem"><span>'+(medals[i]||((i+1)+'.'))+' </span><span style="font-weight:700;color:var(--navy)">'+sp+'</span></div>'+
-        '<span style="font-size:18px;font-weight:800;color:#1565c0">'+map[sp]+' 人</span>'+
+        '<span style="font-size:15px;font-weight:800;color:#1565c0">'+map[sp]+' 人</span>'+
       '</div>'+
       '<div style="background:var(--cream2);border-radius:99px;height:6px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,#0d47a1,#42a5f5);border-radius:99px"></div></div>'+
     '</div>';
@@ -2220,7 +2220,7 @@ function renderAchieveLB() {
     var pctColor = pct >= 100 ? '#1b5e20' : pct >= 60 ? '#e65100' : '#c0392b';
     var isMe = currentRole==='sales' && sp===currentUser;
     var bg = isMe ? 'background:linear-gradient(135deg,#fffbea,#fff3cd);border:2px solid #f0c040;' : 'background:#fff;border:1px solid var(--cream2);';
-    return '<div style="'+bg+'border-radius:12px;padding:.875rem 1.25rem;margin-bottom:.625rem">'+
+    return '<div style="'+bg+'border-radius:10px;padding:.45rem .875rem;margin-bottom:.3rem">'+
       '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">'+
         '<div style="display:flex;align-items:center;gap:.5rem"><span>'+(medals[i]||'')+' </span><span style="font-weight:700;color:var(--navy)">'+sp+'</span></div>'+
         '<div style="display:flex;align-items:center;gap:.75rem">'+
@@ -2272,18 +2272,16 @@ function renderLeaderboard() {
     var highlight = isMe ? 'background:linear-gradient(135deg,#fffbea,#fff3cd);border:2px solid #f0c040;' : 'background:#fff;border:1px solid var(--cream2);';
     var maxScore = ranked[0].score || 1;
     var pct = Math.round((r.score / maxScore) * 100);
-    html += '<div style="' + highlight + 'border-radius:12px;padding:1rem 1.25rem;margin-bottom:.75rem;">' +
-      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">' +
-        '<div style="display:flex;align-items:center;gap:.625rem">' +
-          '<span style="font-size:22px">' + medal + '</span>' +
-          '<span style="font-weight:700;font-size:15px;color:var(--navy)">' + r.name + (isMe ? ' 　<span style="font-size:11px;background:#1a3c5e;color:#fff;padding:1px 7px;border-radius:10px">我</span>' : '') + '</span>' +
+    html += '<div style="' + highlight + 'border-radius:10px;padding:.5rem .875rem;margin-bottom:.375rem;display:flex;align-items:center;gap:.625rem">' +
+      '<span style="font-size:18px;flex-shrink:0">' + medal + '</span>' +
+      '<span style="font-weight:700;font-size:14px;color:var(--navy);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + r.name + (isMe ? ' <span style="font-size:10px;background:#1a3c5e;color:#fff;padding:1px 6px;border-radius:8px">我</span>' : '') + '</span>' +
+      '<div style="flex:2;margin:0 .75rem">' +
+        '<div style="background:var(--cream2);border-radius:99px;height:6px;overflow:hidden">' +
+          '<div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,#1a3c5e,#c9a84c);border-radius:99px;transition:.6s"></div>' +
         '</div>' +
-        '<span style="font-size:20px;font-weight:800;color:var(--gold)">' + r.score + '<span style="font-size:12px;font-weight:500;color:var(--text-soft)"> 分</span></span>' +
+        '<div style="font-size:10px;color:var(--text-muted);margin-top:2px">' + r.count + ' 位客戶</div>' +
       '</div>' +
-      '<div style="background:var(--cream2);border-radius:99px;height:8px;overflow:hidden">' +
-        '<div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,#1a3c5e,#c9a84c);border-radius:99px;transition:.6s"></div>' +
-      '</div>' +
-      '<div style="font-size:12px;color:var(--text-soft);margin-top:.375rem">共 ' + r.count + ' 位客戶</div>' +
+      '<span style="font-size:17px;font-weight:800;color:var(--gold);white-space:nowrap">' + r.score + '<span style="font-size:11px;font-weight:500;color:var(--text-soft)"> 分</span></span>' +
     '</div>';
   });
   container.innerHTML = html;
