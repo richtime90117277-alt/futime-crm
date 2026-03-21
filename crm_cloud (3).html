@@ -2155,7 +2155,8 @@ function renderConsultLB() {
   SALES.forEach(function(sp){ map[sp] = 0; });
   customers.forEach(function(c) {
     try {
-      if (c.consult2026 === '已完成諮詢' || c.consult2026 === '已預約待諮詢') {
+      var consultVal = c.consult2026 || c.viewingStatus || '';
+      if (consultVal === '已完成諮詢' || consultVal === '已預約待諮詢' || consultVal === '已預約諮詢' || consultVal === '已完成諮詢過往') {
         var sp = c.salesPerson || '未指定';
         if (!map[sp]) map[sp] = 0;
         map[sp]++;
