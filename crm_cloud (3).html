@@ -864,32 +864,23 @@ function claimSeminarLead() {}
             <div class="form-grid two">
               <div class="form-group"><label>創建日期 *</label><input type="date" id="creationDate" required></div>
               <div class="form-group">
-                <label>🎓 是否參加過研討會</label>
+                <label>🎓 研討會狀態</label>
                 <select id="seminarAttended">
                   <option value="">請選擇</option>
-                  <option value="是">✅ 是</option>
-                  <option value="否">❌ 否</option>
-                  <option value="已邀請未參加">📩 已邀請未參加</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-grid two">
-              <div class="form-group">
-                <label>🎓 2026 研討會邀約</label>
-                <select id="seminar2026">
-                  <option value="">請選擇</option>
-                  <option value="已邀請參加">✅ 已邀請並參加</option>
+                  <option value="否">❌ 否（未邀請）</option>
                   <option value="已邀請未參加">📩 已邀請尚未參加</option>
-                  <option value="尚未邀請">⏳ 尚未邀請</option>
+                  <option value="是">✅ 已參加（過往）</option>
+                  <option value="已邀請參加2026">✅ 已邀請並參加（2026）</option>
                 </select>
               </div>
               <div class="form-group">
-                <label>📋 2026 預約諮詢</label>
+                <label>📋 顧問諮詢狀態</label>
                 <select id="consult2026">
                   <option value="">請選擇</option>
-                  <option value="已完成諮詢">✅ 已完成諮詢</option>
-                  <option value="已預約待諮詢">📅 已預約待諮詢</option>
-                  <option value="尚未預約">⏳ 尚未預約</option>
+                  <option value="尚未預約">❌ 尚未預約</option>
+                  <option value="已預約待諮詢">📅 已預約待諮詢（2026）</option>
+                  <option value="已完成諮詢過往">✅ 已完成諮詢（過往）</option>
+                  <option value="已完成諮詢">✅ 已完成諮詢（2026）</option>
                 </select>
               </div>
             </div>
@@ -2132,8 +2123,7 @@ function renderSeminarLB() {
   SALES.forEach(function(sp){ map[sp] = 0; });
   customers.forEach(function(c) {
     try {
-      var yr = new Date(c.creationDate).getFullYear();
-      if (yr === thisYear && c.seminar2026 && c.seminar2026 !== '尚未邀請') {
+      if (c.seminarAttended === '已邀請參加2026') {
         var sp = c.salesPerson || '未指定';
         if (!map[sp]) map[sp] = 0;
         map[sp]++;
@@ -2165,8 +2155,7 @@ function renderConsultLB() {
   SALES.forEach(function(sp){ map[sp] = 0; });
   customers.forEach(function(c) {
     try {
-      var yr = new Date(c.creationDate).getFullYear();
-      if (yr === thisYear && c.consult2026 && c.consult2026 !== '尚未預約') {
+      if (c.consult2026 === '已完成諮詢' || c.consult2026 === '已預約待諮詢') {
         var sp = c.salesPerson || '未指定';
         if (!map[sp]) map[sp] = 0;
         map[sp]++;
@@ -4151,7 +4140,7 @@ function saveCustomer() {
       nextFollowupDate:(document.getElementById('nextFollowupDate')?document.getElementById('nextFollowupDate').value:''),
       nextFollowupGoal:(document.getElementById('nextFollowupGoal')?document.getElementById('nextFollowupGoal').value:''),
     customerActive:v('customerActive')||'進行中',
-    seminarAttended:v('seminarAttended'), seminar2026:v('seminar2026'), consult2026:v('consult2026'),
+    seminarAttended:v('seminarAttended'), consult2026:v('consult2026'),
     clientSegment:v('clientSegment'),
     preferredArea:v('preferredArea')
   };
@@ -4359,9 +4348,12 @@ function showEdit(id) {
   html += sel('名單來源','leadSource',dynamicSrcOpts);
   html += '</div>';
   html += ef('獲取來源細節','leadSourceDetail',c.leadSourceDetail);
-  var semOpts = ['','是','否','已邀請未參加'].map(function(s){ return '<option value="'+s+'"'+(s===(c.seminarAttended||'')?' selected':'')+'>'+( s===''?'請選擇':s==='是'?'✅ 是':s==='否'?'❌ 否':'📩 已邀請未參加')+'</option>'; }).join('');
+  var semOpts = ['','否','已邀請未參加','是','已邀請參加2026'].map(function(s){ 
+    var label = s===''?'請選擇':s==='否'?'❌ 否（未邀請）':s==='已邀請未參加'?'📩 已邀請尚未參加':s==='是'?'✅ 已參加（過往）':'✅ 已邀請並參加（2026）';
+    return '<option value="'+s+'"'+(s===(c.seminarAttended||'')?' selected':'')+'>'+label+'</option>'; 
+  }).join('');
   html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
-  html += sel('🎓 是否參加過研討會','seminarAttended',semOpts);
+  html += sel('🎓 研討會狀態','seminarAttended',semOpts);
   var cdVal = c.creationDate ? (function(raw){ try { var d=new Date(raw); if(!isNaN(d.getTime())){ var y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),dd=String(d.getDate()).padStart(2,'0'); return y+'-'+m+'-'+dd; } return raw; } catch(e){ return raw||''; } })(c.creationDate) : '';
   html += ef('創建日期','creationDate',cdVal,'date');
   html += '</div>';
@@ -4402,8 +4394,12 @@ function showEdit(id) {
 
   html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem;margin-top:.25rem">四部曲：產品匹配</div>';
   html += ta('推薦物件','recommendedProperty',c.recommendedProperty);
-  var consultOpts = ['尚未預約','已預約諮詢','已完成諮詢'].map(function(s){ return '<option'+(s===(c.viewingStatus||'尚未預約')?' selected':'')+'>'+s+'</option>'; }).join('');
-  html += sel('顧問諮詢狀態','viewingStatus',consultOpts);
+  var consultOpts = ['尚未預約','已預約待諮詢','已完成諮詢過往','已完成諮詢'].map(function(s){ 
+    var label = s==='尚未預約'?'❌ 尚未預約':s==='已預約待諮詢'?'📅 已預約待諮詢（2026）':s==='已完成諮詢過往'?'✅ 已完成諮詢（過往）':'✅ 已完成諮詢（2026）';
+    var cur = c.viewingStatus||c.consult2026||'尚未預約';
+    return '<option value="'+s+'"'+(s===cur?' selected':'')+'>'+label+'</option>'; 
+  }).join('');
+  html += sel('📋 顧問諮詢狀態','consult2026',consultOpts);
   html += ta('建議配對物件','matchedProperty',c.matchedProperty);
   html += '<input type="hidden" id="e_productAdvantages" value="'+(c.productAdvantages||'')+'">';
 
@@ -4515,7 +4511,8 @@ function saveEdit(c) {
       nextFollowupDate: (document.getElementById('e_nextFollowupDate')?document.getElementById('e_nextFollowupDate').value:''),
       nextFollowupGoal: (document.getElementById('e_nextFollowupGoal')?document.getElementById('e_nextFollowupGoal').value:''),
     customerActive: gv('customerActive')||'進行中',
-    seminarAttended: gv('seminarAttended')
+    seminarAttended: gv('seminarAttended'),
+    consult2026: gv('consult2026')
   };
   var btn = document.getElementById('editSaveBtn');
   btn.disabled = true; btn.textContent = '⏳ 儲存中...';
