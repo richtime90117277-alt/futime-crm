@@ -1668,8 +1668,8 @@ function claimSeminarLead() {}
         <div class="card-header"><div class="card-icon">👥</div><h3>客戶數排行榜</h3></div>
         <div class="card-body">
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:1rem">
-            <div style="background:var(--cream2);border-radius:8px;padding:.5rem 1rem;font-size:12px;font-weight:700;color:var(--navy);text-align:center">📊 累積總戶數</div>
-            <div style="background:#e8f0fb;border-radius:8px;padding:.5rem 1rem;font-size:12px;font-weight:700;color:#1565c0;text-align:center">📅 2026年新增</div>
+            <div style="background:var(--cream2);border-radius:8px;padding:.5rem 1rem;font-size:12px;font-weight:700;color:var(--navy);text-align:center">🏆 累積成交戶數</div>
+            <div style="background:#e8f0fb;border-radius:8px;padding:.5rem 1rem;font-size:12px;font-weight:700;color:#1565c0;text-align:center">📅 2026年成交</div>
           </div>
           <div id="customerCountList"></div>
         </div>
@@ -2075,12 +2075,15 @@ function renderCustomerCountLB() {
   var map = {};
   SALES.forEach(function(sp){ map[sp] = { total:0, thisYear:0 }; });
   customers.forEach(function(c) {
+    // 只計算已成交的客戶
+    if (!c.contractStatus || (c.contractStatus !== '已簽約' && c.contractStatus !== '已付款')) return;
     var sp = c.salesPerson || '未指定';
     if (!map[sp]) map[sp] = { total:0, thisYear:0 };
     map[sp].total++;
     try {
-      var yr = new Date(c.creationDate).getFullYear();
-      if (yr === thisYear) map[sp].thisYear++;
+      // 用簽約日期判斷是否為今年成交
+      var contractYr = c.contractDate ? new Date(c.contractDate).getFullYear() : new Date(c.creationDate).getFullYear();
+      if (contractYr === thisYear) map[sp].thisYear++;
     } catch(e) {}
   });
   var ranked = Object.keys(map)
