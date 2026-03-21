@@ -678,6 +678,22 @@ function claimSeminarLead() {}
       </div>
 
       <!-- 核心四格 -->
+      <!-- 2026新戶 & 累積成交 大卡片 -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.875rem;margin-bottom:1rem">
+        <div style="background:linear-gradient(135deg,#07192d 0%,#1a3a5c 100%);border-radius:var(--radius);padding:1.25rem 1rem;box-shadow:var(--shadow-gold);position:relative;overflow:hidden">
+          <div style="position:absolute;top:-10px;right:-10px;font-size:60px;opacity:.08">🆕</div>
+          <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.6);letter-spacing:.1em;margin-bottom:.4rem">2026 新增成交</div>
+          <div id="closing2026" style="font-size:40px;font-weight:900;color:#f0d080;line-height:1">—</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.5);margin-top:.25rem">戶</div>
+        </div>
+        <div style="background:linear-gradient(135deg,#1e3a5f 0%,#0f2744 100%);border-radius:var(--radius);padding:1.25rem 1rem;box-shadow:var(--shadow);position:relative;overflow:hidden;border:1px solid rgba(184,150,46,.3)">
+          <div style="position:absolute;top:-10px;right:-10px;font-size:60px;opacity:.08">📦</div>
+          <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.6);letter-spacing:.1em;margin-bottom:.4rem">歷年累積成交</div>
+          <div id="closingAllTime" style="font-size:40px;font-weight:900;color:#b8d4f8;line-height:1">—</div>
+          <div style="font-size:12px;color:rgba(255,255,255,.5);margin-top:.25rem">戶（含過往）</div>
+        </div>
+      </div>
+
       <div class="stats-grid" style="margin-bottom:1rem">
         <div class="stat-card"><div class="stat-value" id="totalCustomers">—</div><div class="stat-label">跟進中客戶</div></div>
         <div class="stat-card"><div class="stat-value" id="monthlyNew">—</div><div class="stat-label">本月新增</div></div>
@@ -2372,24 +2388,39 @@ function renderDashboard() {
     return d.getMonth()===thisMonth && d.getFullYear()===thisYear;
   }).length;
 
+  // 2026新戶成交 & 歷年累積
+  var closing2026 = closed.filter(function(c){
+    if (!c.contractDate) return false;
+    return new Date(c.contractDate).getFullYear() === 2026;
+  }).length;
+  var closingAllTime = closed.length;
+  var el2026 = document.getElementById('closing2026');
+  var elAll = document.getElementById('closingAllTime');
+  if (el2026) el2026.textContent = closing2026;
+  if (elAll) elAll.textContent = closingAllTime;
+
   // ── 業務績效一覽 ──
   var salesMap = {};
   customers.forEach(function(c){
     var sp = c.salesPerson || '未指定';
-    if (!salesMap[sp]) salesMap[sp] = { total:0, active:0, closed:0, referral:0 };
+    if (!salesMap[sp]) salesMap[sp] = { total:0, active:0, closed:0, closed2026:0, referral:0 };
     salesMap[sp].total++;
     if (isActive(c)) salesMap[sp].active++;
-    else salesMap[sp].closed++;
+    else {
+      salesMap[sp].closed++;
+      if (c.contractDate && new Date(c.contractDate).getFullYear() === 2026) salesMap[sp].closed2026++;
+    }
     if (parseInt(c.referralCount||0) > 0) salesMap[sp].referral += parseInt(c.referralCount);
   });
   var salesList = Object.keys(salesMap).map(function(sp){
     return { name:sp, data:salesMap[sp] };
-  }).sort(function(a,b){ return b.data.closed - a.data.closed || b.data.total - a.data.total; });
+  }).sort(function(a,b){ return b.data.closed2026 - a.data.closed2026 || b.data.closed - a.data.closed; });
 
   var spHtml = '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13px">';
   spHtml += '<tr style="background:var(--navy);color:#fff">';
-  ['業務', '總客戶', '跟進中', '已成交', '轉介紹數', '成交率'].forEach(function(h){
-    spHtml += '<th style="padding:.5rem .75rem;text-align:center;font-weight:700;font-size:11px">'+h+'</th>';
+  ['業務', '總客戶', '跟進中', '2026成交', '累積成交', '轉介紹數', '成交率'].forEach(function(h){
+    var color = h==='2026成交' ? 'color:#f0d080;' : h==='累積成交' ? 'color:#b8d4f8;' : '';
+    spHtml += '<th style="padding:.5rem .75rem;text-align:center;font-weight:700;font-size:11px;'+color+'">'+h+'</th>';
   });
   spHtml += '</tr>';
   salesList.forEach(function(sp, idx){
@@ -2399,9 +2430,10 @@ function renderDashboard() {
     var isMe = currentRole === 'sales' && sp.name === currentUser;
     if (isMe) bg = '#fffbea';
     spHtml += '<tr style="background:'+bg+(isMe?';font-weight:700':'')+'">';
-    spHtml += '<td style="padding:.5rem .75rem;font-weight:700;color:var(--navy)">'+sp.name+(isMe?' 👤':'')+( d.closed >= 5 ? ' ⭐':'')+'</td>';
+    spHtml += '<td style="padding:.5rem .75rem;font-weight:700;color:var(--navy)">'+sp.name+(isMe?' 👤':'')+( d.closed2026 >= 3 ? ' ⭐':'')+'</td>';
     spHtml += '<td style="padding:.5rem .75rem;text-align:center">'+d.total+'</td>';
     spHtml += '<td style="padding:.5rem .75rem;text-align:center;color:#1565c0">'+d.active+'</td>';
+    spHtml += '<td style="padding:.5rem .75rem;text-align:center;color:#b8962e;font-weight:800;font-size:15px">'+d.closed2026+'</td>';
     spHtml += '<td style="padding:.5rem .75rem;text-align:center;color:#2e7d32;font-weight:700">'+d.closed+'</td>';
     spHtml += '<td style="padding:.5rem .75rem;text-align:center;color:var(--gold)">'+d.referral+'</td>';
     var rateColor = rate >= 20 ? '#2e7d32' : rate >= 10 ? '#e65100' : '#c62828';
