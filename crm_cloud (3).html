@@ -5025,8 +5025,58 @@ function runRescue() {
       document.getElementById('rescueNextStep').textContent = result.nextStep || '—';
       document.getElementById('rescueResult').classList.add('show');
       document.getElementById('rescueResult').scrollIntoView({ behavior:'smooth', block:'start' });
+      // 有指定客戶才顯示「存入客戶紀錄」按鈕
+      var saveBtn = document.getElementById('rescueSaveBtn');
+      if (saveBtn) saveBtn.style.display = _rescueCustomerId ? 'block' : 'none';
     } catch(e) {
       showToast('❌ 解析失敗，請重試');
+    }
+  });
+}
+
+// 把SOS結果存入客戶跟進紀錄
+function saveRescueToCustomer() {
+  if (!_rescueCustomerId) { showToast('請先指定客戶'); return; }
+  var c = customers.find(function(x){ return x.id && x.id.toString()===_rescueCustomerId.toString(); });
+  if (!c) { showToast('找不到客戶資料'); return; }
+
+  var objText = document.getElementById('rescueObjInput').value || '';
+  var analysis = document.getElementById('rescueAnalysis').textContent || '';
+  var script   = document.getElementById('rescueScriptText').textContent || '';
+  var dont     = document.getElementById('rescueDont').textContent || '';
+  var nextStep = document.getElementById('rescueNextStep').textContent || '';
+
+  var today = new Date().toLocaleDateString('zh-TW');
+  var saveBtn = document.getElementById('rescueSaveBtn');
+
+  // 組成跟進備註
+  var sosNote = '['+today+'] 🆘 SOS異議救援\n' +
+    '客戶說：「'+objText+'」\n' +
+    '分析：'+analysis+'\n' +
+    '話術：'+script+'\n' +
+    '不要說：'+dont+'\n' +
+    '下一步：'+nextStep;
+
+  // 更新客戶的跟進重點和備註
+  var updatePayload = Object.assign({}, c, {
+    nextFollowupAction: nextStep,
+    notes: sosNote + (c.notes ? '\n\n' + c.notes : '')
+  });
+
+  saveBtn.disabled = true;
+  saveBtn.textContent = '儲存中...';
+
+  callAPI({ action: 'update', customer: updatePayload }, function(res) {
+    saveBtn.disabled = false;
+    saveBtn.textContent = '💾 存入客戶紀錄';
+    if (res.success) {
+      // 更新本地資料
+      var idx = customers.findIndex(function(x){ return x.id && x.id.toString()===_rescueCustomerId.toString(); });
+      if (idx > -1) customers[idx] = updatePayload;
+      showToast('✅ 已存入 '+c.customerName+' 的跟進紀錄！');
+      saveBtn.style.display = 'none';
+    } else {
+      showToast('❌ 儲存失敗，請重試');
     }
   });
 }
@@ -5136,6 +5186,9 @@ function showToast(msg) {
         <div class="rescue-action-row">
           <button onclick="clearRescue()" style="background:var(--cream2);color:var(--navy);border:2px solid #dde3ea">
             🔄 重新輸入
+          </button>
+          <button onclick="saveRescueToCustomer()" id="rescueSaveBtn" style="background:#27ae60;color:#fff;border:none;display:none">
+            💾 存入客戶紀錄
           </button>
           <button onclick="closeRescue()" style="background:var(--navy);color:#fff;border:none">
             ✅ 知道了，去打電話
