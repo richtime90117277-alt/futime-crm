@@ -2037,6 +2037,8 @@ function initApp() {
   document.getElementById('customerForm').onsubmit = function(e){ e.preventDefault(); saveCustomer(); };
   buildQuickCommands();
   renderStaffList();
+  // 初始化SOS快選按鈕（通用模式）
+  renderQuickObjButtons(null);
 }
 
 // ── 從雲端載入客戶 ──
@@ -4760,15 +4762,115 @@ function openRescue(customerId) {
       tag.innerHTML = '👤 <b>'+c.customerName+'</b>｜'+
         (c.clientSegment||c.painPoints||'未設定族群')+'｜'+
         STAGE_NAMES[s]+'｜成交機率 '+prob+'%';
+      // 根據客戶族群動態調整快選按鈕
+      renderQuickObjButtons(c);
     }
   } else {
     tag.innerHTML = '👤 未指定客戶（通用模式）';
+    renderQuickObjButtons(null);
   }
 
   // 清空上次結果
   clearRescue();
   overlay.classList.add('active');
   setTimeout(function(){ document.getElementById('rescueObjInput').focus(); }, 300);
+}
+
+// 根據客戶族群動態產生快選按鈕
+function renderQuickObjButtons(customer) {
+  var container = document.getElementById('quickObjContainer');
+  if (!container) return;
+
+  // 預設通用異議
+  var buttons = [
+    { label: '👫 另一半要考慮', text: '我先生/太太說要再考慮一下' },
+    { label: '📉 等房市再說',   text: '現在房市不好，我想等等看' },
+    { label: '💰 頭期款不夠',  text: '頭期款還不夠，等存好再說' },
+    { label: '💸 太貴了',       text: '你們的物件價格太貴了' },
+    { label: '🗣️ 朋友說不好',  text: '我朋友說現在買不划算' },
+    { label: '🔍 還在比較',     text: '我還在看其他的，再比較看看' },
+    { label: '🏦 擔心貸款',     text: '貸款不知道能不能過，怕負擔太重' },
+    { label: '⏰ 時機未到',     text: '時機還不對，我感覺現在不是好時機' }
+  ];
+
+  // 根據族群加入專屬異議
+  if (customer) {
+    var seg = (customer.clientSegment || '').toLowerCase();
+    var stage = stageOf(customer);
+
+    // 投資族
+    if (seg.indexOf('投資') > -1 || seg.indexOf('investor') > -1) {
+      buttons = [
+        { label: '📈 股票比較好', text: '我現在股票放著就好，不想動' },
+        { label: '💸 投報率不夠', text: '房地產投報率感覺不如股票' },
+        { label: '🔒 資金被鎖住', text: '買房子資金都鎖死了不靈活' },
+        { label: '📉 等房價跌',   text: '現在價格太高，等跌了再買' },
+        { label: '👫 另一半要考慮', text: '我先生/太太說要再考慮一下' },
+        { label: '🏦 貸款問題',   text: '我名下已經有房，貸款成數會受限' },
+        { label: '⏰ 時機未到',   text: '時機還不對，我感覺現在不是好時機' },
+        { label: '🔍 還在比較',   text: '我還在看其他案子，再比較看看' }
+      ];
+    }
+
+    // 首購族
+    else if (seg.indexOf('首購') > -1 || seg.indexOf('first') > -1) {
+      buttons = [
+        { label: '💰 頭期款不夠',  text: '頭期款還不夠，等存好再說' },
+        { label: '🏦 怕貸款壓力',  text: '貸款每個月要繳那麼多，壓力好大' },
+        { label: '👨‍👩‍👧 父母反對',    text: '我爸媽說現在不適合買，叫我再等' },
+        { label: '📉 等房價跌',    text: '現在買感覺太貴，等跌了再說' },
+        { label: '👫 另一半猶豫',  text: '我另一半說要再想想看' },
+        { label: '🔍 還在比較',    text: '我還在看其他案子，再比較看看' },
+        { label: '⏰ 時機未到',    text: '時機還不對，感覺現在不是好時機' },
+        { label: '🗣️ 朋友說不好', text: '我朋友說現在買不划算' }
+      ];
+    }
+
+    // 換屋族
+    else if (seg.indexOf('換屋') > -1 || seg.indexOf('upgrade') > -1) {
+      buttons = [
+        { label: '🏠 舊屋還沒賣',  text: '我現在的房子還沒賣掉，沒辦法買' },
+        { label: '💸 價差不夠',    text: '換屋的價差算起來不太夠' },
+        { label: '👫 另一半猶豫',  text: '我先生/太太說要再考慮一下' },
+        { label: '📉 等房價跌',    text: '現在價格太高，等跌了再換' },
+        { label: '🏦 貸款問題',    text: '現在有房貸，不知道還能貸多少' },
+        { label: '🔍 還在比較',    text: '我還在看其他案子，再比較看看' },
+        { label: '⏰ 時機未到',    text: '時機還不對，感覺現在不是好時機' },
+        { label: '🗣️ 朋友說不好', text: '我朋友說現在換不划算' }
+      ];
+    }
+
+    // 長輩置產
+    else if (seg.indexOf('長輩') > -1 || seg.indexOf('父母') > -1 || seg.indexOf('養老') > -1) {
+      buttons = [
+        { label: '👨‍👩‍👧 子女反對',    text: '我小孩說不用買，叫我別亂花錢' },
+        { label: '💰 動用存款顧慮', text: '這麼大一筆錢動用掉，感覺不安心' },
+        { label: '🏠 現在住的夠用', text: '我現在住的地方還好，不一定要換' },
+        { label: '📉 等房價跌',    text: '現在買感覺太貴了，等跌了再說' },
+        { label: '🏦 年紀貸款問題', text: '我年紀比較大，不知道貸款好不好過' },
+        { label: '⏰ 時機未到',    text: '時機還不對，感覺現在不是好時機' },
+        { label: '🔍 還在比較',    text: '我還在看其他案子，再比較看看' },
+        { label: '🗣️ 朋友說不好', text: '我朋友說現在買不划算' }
+      ];
+    }
+
+    // 根據八部曲階段加入特殊異議
+    if (stage >= 5) {
+      // 五部曲以後快到成交，加入臨門一腳異議
+      buttons.unshift({ label: '🤔 再想想', text: '可以讓我再想個幾天嗎' });
+      buttons.unshift({ label: '💳 訂金問題', text: '現在要付訂金我還沒準備好' });
+    }
+  }
+
+  // 重新渲染按鈕
+  container.innerHTML = '';
+  buttons.forEach(function(b) {
+    var btn = document.createElement('button');
+    btn.className = 'quick-obj-btn';
+    btn.innerHTML = b.label;
+    btn.onclick = function(){ fillObjText(b.text); };
+    container.appendChild(btn);
+  });
 }
 
 function closeRescue() {
@@ -4980,19 +5082,12 @@ function showToast(msg) {
         👤 請選擇客戶後使用此功能
       </div>
 
-      <!-- 常見異議快選 -->
+      <!-- 常見異議快選（根據客戶族群動態調整） -->
       <div style="font-size:12px;font-weight:700;color:var(--navy);letter-spacing:.06em;margin-bottom:.5rem">
         ⚡ 常見異議快選
       </div>
-      <div class="quick-objections">
-        <button class="quick-obj-btn" onclick="fillObjText('我先生/太太說要再考慮一下')">👫 另一半要考慮</button>
-        <button class="quick-obj-btn" onclick="fillObjText('現在房市不好，我想等等看')">📉 等房市再說</button>
-        <button class="quick-obj-btn" onclick="fillObjText('頭期款還不夠，等存好再說')">💰 頭期款不夠</button>
-        <button class="quick-obj-btn" onclick="fillObjText('你們的物件價格太貴了')">💸 太貴了</button>
-        <button class="quick-obj-btn" onclick="fillObjText('我朋友說現在買不划算')">🗣️ 朋友說不好</button>
-        <button class="quick-obj-btn" onclick="fillObjText('我還在看其他的，再比較看看')">🔍 還在比較</button>
-        <button class="quick-obj-btn" onclick="fillObjText('貸款不知道能不能過，怕負擔太重')">🏦 擔心貸款</button>
-        <button class="quick-obj-btn" onclick="fillObjText('時機還不對，我感覺現在不是好時機')">⏰ 時機未到</button>
+      <div class="quick-objections" id="quickObjContainer">
+        <!-- 由 renderQuickObjButtons() 動態產生 -->
       </div>
 
       <!-- 自由輸入 -->
