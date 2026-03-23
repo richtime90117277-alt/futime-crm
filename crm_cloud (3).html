@@ -4911,24 +4911,41 @@ function runRescue() {
   btn.textContent = '⏳ AI 分析中...';
   document.getElementById('rescueResult').classList.remove('show');
 
-  // 建立 prompt
-  var customerContext = '';
+  // ── 新版：從 Google Sheets 話術庫動態讀取話術 ──
+  var customerObj = null;
   if (_rescueCustomerId) {
-    var c = customers.find(function(x){ return x.id && x.id.toString()===_rescueCustomerId.toString(); });
-    if (c) {
-      var s = stageOf(c);
-      customerContext = '\n\n【客戶背景】\n' +
-        '姓名：'+c.customerName+'\n' +
-        '族群：'+(c.clientSegment||'未設定')+'\n' +
-        '購買時間軸：'+(c.buyingTimeline||'未填')+'\n' +
-        '家人支持度：'+(c.familySupport||'未填')+'\n' +
-        '信任狀態：'+(c.currentStatus||'未填')+'\n' +
-        '八部曲進度：第'+s+'部曲（'+STAGE_NAMES[s]+'）\n' +
-        '痛點：'+(c.painPoints||'未填')+'\n' +
-        '決策障礙：'+(c.decisionBlock||'未填');
-    }
+    customerObj = customers.find(function(x){ return x.id && x.id.toString()===_rescueCustomerId.toString(); }) || null;
   }
 
+  // 呼叫 Apps Script 的 claudeSOS（話術從 Sheets 讀取）
+  callAPI({ action: 'claudeSOS', customer: customerObj, objText: objText }, function(res) {
+    btn.disabled = false;
+    btn.textContent = '🆘 立即生成話術建議';
+    if (!res.success) {
+      showToast('❌ ' + (res.error || '呼叫失敗，請重試'));
+      return;
+    }
+    var raw = (res.text || '{}').replace(/```json|```/g,'').trim();
+    try {
+      var result = JSON.parse(raw);
+      document.getElementById('rescueAnalysis').textContent = result.analysis || '—';
+      document.getElementById('rescueScriptText').textContent = result.script || '—';
+      document.getElementById('rescueDont').textContent = result.dont || '—';
+      document.getElementById('rescueNextStep').textContent = result.nextStep || '—';
+      document.getElementById('rescueResult').classList.add('show');
+      document.getElementById('rescueResult').scrollIntoView({ behavior:'smooth', block:'start' });
+      var saveBtn = document.getElementById('rescueSaveBtn');
+      if (saveBtn) saveBtn.style.display = _rescueCustomerId ? 'block' : 'none';
+    } catch(e) {
+      showToast('❌ 解析失敗，請重試');
+    }
+  });
+}
+
+// ── 以下為舊版備份（已停用，話術已移至 Google Sheets 話術庫）──
+function runRescue_OLD_BACKUP() {
+  var objText = '';
+  var customerContext = '';
   var prompt = '你是一位頂尖的台灣房地產銷售顧問，精通富時代地產的八部曲系統。\n' +
     '你的回答風格來自富時代創辦人阮智偉的真實成交經驗，口語化、有鉤子、不說教、不給客戶壓力。\n\n' +
     '【核心原則】\n' +
@@ -5007,31 +5024,7 @@ function runRescue() {
     '"dont":"業務最容易在這裡犯的錯，一句話點出來",' +
     '"nextStep":"具體的下一個動作，包含時間點、聯絡方式、說什麼"' +
     '}';
-
-  // 透過 Apps Script 中轉呼叫 Claude API（解決 CORS 問題）
-  callAPI({ action: 'claudeProxy', prompt: prompt, maxTokens: 600 }, function(res) {
-    btn.disabled = false;
-    btn.textContent = '🆘 立即生成話術建議';
-    if (!res.success) {
-      showToast('❌ ' + (res.error || '呼叫失敗，請重試'));
-      return;
-    }
-    var raw = (res.text || '{}').replace(/```json|```/g,'').trim();
-    try {
-      var result = JSON.parse(raw);
-      document.getElementById('rescueAnalysis').textContent = result.analysis || '—';
-      document.getElementById('rescueScriptText').textContent = result.script || '—';
-      document.getElementById('rescueDont').textContent = result.dont || '—';
-      document.getElementById('rescueNextStep').textContent = result.nextStep || '—';
-      document.getElementById('rescueResult').classList.add('show');
-      document.getElementById('rescueResult').scrollIntoView({ behavior:'smooth', block:'start' });
-      // 有指定客戶才顯示「存入客戶紀錄」按鈕
-      var saveBtn = document.getElementById('rescueSaveBtn');
-      if (saveBtn) saveBtn.style.display = _rescueCustomerId ? 'block' : 'none';
-    } catch(e) {
-      showToast('❌ 解析失敗，請重試');
-    }
-  });
+  // ── 備份函式結束，不執行 ──
 }
 
 // 把SOS結果存入客戶跟進紀錄
