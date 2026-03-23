@@ -1667,7 +1667,25 @@ function claimSeminarLead() {}
           <div style="font-size:13px;color:var(--text-soft);margin-bottom:1rem;background:var(--cream2);padding:.75rem 1rem;border-radius:8px;line-height:1.8">
             📋 <b>積分規則：</b>基本資料完整 +1｜購買時間軸 +1｜痛點分析 +1｜自有資金 +2｜顧問諮詢完成 +3｜看過案子+原因 +2｜決策障礙 +1｜轉介紹≥1 +3｜<b>成交 +10</b>
           </div>
-          <div id="leaderboardList"></div>
+          <!-- Tab 切換 -->
+          <div style="display:flex;gap:.5rem;margin-bottom:1.25rem">
+            <button id="lbTabWeek" onclick="switchLbTab('week')" style="flex:1;padding:.6rem;border-radius:8px;border:2px solid var(--gold);background:var(--navy);color:#fff;font-size:13px;font-weight:700;cursor:pointer">🗓️ 本週積分</button>
+            <button id="lbTabTotal" onclick="switchLbTab('total')" style="flex:1;padding:.6rem;border-radius:8px;border:2px solid #dde3ea;background:var(--cream2);color:var(--navy);font-size:13px;font-weight:700;cursor:pointer">📊 累積總分</button>
+          </div>
+          <div id="lbWeekLabel" style="font-size:12px;color:var(--text-muted);margin-bottom:.75rem;text-align:center"></div>
+          <!-- 本週排行 -->
+          <div id="lbWeekPanel">
+            <div id="leaderboardList"></div>
+            <div style="margin-top:1rem;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+              <button onclick="saveAllWeekScores()" style="flex:1;min-width:140px;padding:.65rem 1rem;background:linear-gradient(135deg,var(--gold),#c9a84c);color:var(--navy);border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">💾 儲存本週積分</button>
+              <div id="lbSaveStatus" style="font-size:12px;color:var(--text-soft)"></div>
+            </div>
+          </div>
+          <!-- 累積排行 -->
+          <div id="lbTotalPanel" style="display:none">
+            <div id="lbTotalList"></div>
+            <div id="lbTotalWeekCount" style="font-size:12px;color:var(--text-muted);text-align:center;margin-top:.75rem"></div>
+          </div>
         </div>
       </div>
 
@@ -2242,9 +2260,117 @@ function renderAchieveLB() {
   }).join('');
 }
 
+// ── 週積分Tab切換 ──
+var _lbCurrentTab = 'week';
+function switchLbTab(tab) {
+  _lbCurrentTab = tab;
+  var weekBtn  = document.getElementById('lbTabWeek');
+  var totalBtn = document.getElementById('lbTabTotal');
+  var weekPanel  = document.getElementById('lbWeekPanel');
+  var totalPanel = document.getElementById('lbTotalPanel');
+  if (tab === 'week') {
+    weekBtn.style.background  = 'var(--navy)'; weekBtn.style.color = '#fff'; weekBtn.style.borderColor = 'var(--gold)';
+    totalBtn.style.background = 'var(--cream2)'; totalBtn.style.color = 'var(--navy)'; totalBtn.style.borderColor = '#dde3ea';
+    weekPanel.style.display  = '';
+    totalPanel.style.display = 'none';
+    renderLeaderboard();
+  } else {
+    totalBtn.style.background = 'var(--navy)'; totalBtn.style.color = '#fff'; totalBtn.style.borderColor = 'var(--gold)';
+    weekBtn.style.background  = 'var(--cream2)'; weekBtn.style.color = 'var(--navy)'; weekBtn.style.borderColor = '#dde3ea';
+    weekPanel.style.display  = 'none';
+    totalPanel.style.display = '';
+    renderTotalLeaderboard();
+  }
+}
+
+// ── 取得當前週標籤（週二起算→週一結束）──
+function getCurrentWeekLabel() {
+  var now = new Date();
+  var day = now.getDay(); // 0=日 1=一 ... 6=六
+  var offset = day === 0 ? 5 : day === 1 ? 6 : day - 2;
+  var weekStart = new Date(now);
+  weekStart.setDate(now.getDate() - offset);
+  weekStart.setHours(0,0,0,0);
+  var yr = weekStart.getFullYear();
+  var startOfYear = new Date(yr, 0, 1);
+  var weekNum = Math.ceil(((weekStart - startOfYear) / 86400000 + 1) / 7);
+  return yr + '-W' + (weekNum < 10 ? '0' + weekNum : weekNum);
+}
+
+// ── 儲存所有業務本週積分到Google Sheets ──
+function saveAllWeekScores() {
+  var statusEl = document.getElementById('lbSaveStatus');
+  if (statusEl) statusEl.textContent = '儲存中...';
+  var scoreMap = {};
+  var countMap = {};
+  customers.forEach(function(c) {
+    var sp = c.salesPerson || '未指定';
+    if (SALES.indexOf(sp) === -1) return;
+    if (!scoreMap[sp]) { scoreMap[sp] = 0; countMap[sp] = 0; }
+    scoreMap[sp] += calcScore(c);
+    countMap[sp] += 1;
+  });
+  var weekLabel = getCurrentWeekLabel();
+  var salesList = Object.keys(scoreMap);
+  var done = 0;
+  if (salesList.length === 0) {
+    if (statusEl) statusEl.textContent = '⚠️ 無業務資料';
+    return;
+  }
+  salesList.forEach(function(sp) {
+    api({ action: 'saveWeekScore', salesPerson: sp, score: scoreMap[sp], weekLabel: weekLabel }, function(res) {
+      done++;
+      if (done === salesList.length) {
+        if (statusEl) statusEl.textContent = '✅ 已儲存（' + weekLabel + '）';
+        setTimeout(function(){ if(statusEl) statusEl.textContent = ''; }, 3000);
+      }
+    });
+  });
+}
+
+// ── 累積總分排行 ──
+function renderTotalLeaderboard() {
+  var container = document.getElementById('lbTotalList');
+  var countEl   = document.getElementById('lbTotalWeekCount');
+  if (!container) return;
+  container.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:1rem">載入中...</div>';
+  api({ action: 'getAllWeekHistory' }, function(res) {
+    if (!res || !res.success || !res.totals || res.totals.length === 0) {
+      container.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:1rem">尚無累積記錄，請先儲存本週積分</div>';
+      return;
+    }
+    var medals = ['🥇','🥈','🥉'];
+    var maxTotal = res.totals[0].total || 1;
+    var html = '';
+    res.totals.forEach(function(r, i) {
+      var medal = medals[i] || ('　' + (i+1) + '.');
+      var pct = Math.round((r.total / maxTotal) * 100);
+      var isMe = (currentRole === 'sales' && r.salesPerson === currentUser);
+      var highlight = isMe ? 'background:linear-gradient(135deg,#fffbea,#fff3cd);border:2px solid #f0c040;' : 'background:#fff;border:1px solid var(--cream2);';
+      html += '<div style="' + highlight + 'border-radius:10px;padding:.5rem .875rem;margin-bottom:.375rem;display:flex;align-items:center;gap:.625rem">' +
+        '<span style="font-size:18px;flex-shrink:0">' + medal + '</span>' +
+        '<span style="font-weight:700;font-size:14px;color:var(--navy);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + r.salesPerson + (isMe ? ' <span style="font-size:10px;background:#1a3c5e;color:#fff;padding:1px 6px;border-radius:8px">我</span>' : '') + '</span>' +
+        '<div style="flex:2;margin:0 .75rem">' +
+          '<div style="background:var(--cream2);border-radius:99px;height:6px;overflow:hidden">' +
+            '<div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,#1a3c5e,#c9a84c);border-radius:99px;transition:.6s"></div>' +
+          '</div>' +
+        '</div>' +
+        '<span style="font-size:17px;font-weight:800;color:var(--gold);white-space:nowrap">' + r.total + '<span style="font-size:11px;font-weight:500;color:var(--text-soft)"> 分</span></span>' +
+      '</div>';
+    });
+    container.innerHTML = html;
+    if (countEl) countEl.textContent = '共計算 ' + res.weekCount + ' 個週期';
+  });
+}
+
 function renderLeaderboard() {
   var container = document.getElementById('leaderboardList');
   if (!container) return;
+
+  // 更新週標籤顯示
+  var weekLabel = getCurrentWeekLabel();
+  var labelEl = document.getElementById('lbWeekLabel');
+  if (labelEl) labelEl.textContent = '📅 週期：' + weekLabel + '（週二 00:00 起算，週一 23:59 結算）';
 
   // 統計每個業務的積分
   var scoreMap = {};
