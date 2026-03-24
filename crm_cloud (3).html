@@ -4430,7 +4430,7 @@ function showEdit(id) {
   var salesOpts = SALES.map(function(s){ return '<option'+(s===c.salesPerson?' selected':'')+'>'+s+'</option>'; }).join('');
   var srcOpts = ['','緣故','轉介紹','社群經營','展場活動','網路廣告','其他'].map(function(s){ return '<option'+(s===c.leadSource?' selected':'')+'>'+s+'</option>'; }).join('');
   var acqOpts = ['','主動搭訕','經過介紹','活動認識','線上接觸'].map(function(s){ return '<option'+(s===c.acquisitionMethod?' selected':'')+'>'+s+'</option>'; }).join('');
-  var statusOpts = ['','基礎信任(1-4分)','中度信任(5-7分)','高度信任(8-10分)','中階信任(5-7分)','稱定信任(5-7分)'].map(function(s){ return '<option'+(s===c.currentStatus?' selected':'')+'>'+s+'</option>'; }).join('');
+  var statusOpts = ['','基礎信任(1-4分)','中度信任(5-7分)','高度信任(8-10分)'].map(function(s){ return '<option'+(s===c.currentStatus?' selected':'')+'>'+s+'</option>'; }).join('');
   var viewOpts = ['','已預約','已帶看','已完整解說'].map(function(s){ return '<option'+(s===c.viewingStatus?' selected':'')+'>'+s+'</option>'; }).join('');
   var caOpts = ['進行中','已成交'].map(function(s){ return '<option value="'+s+'"'+(s===(c.customerActive||( c.contractDate&&c.contractDate.toString().trim()?'已成交':'進行中'))?' selected':'')+'>'+( s==='進行中'?'🟢 進行中（跟進中）':'✅ 已成交（歷史客戶）')+'</option>'; }).join('');
   var contractOpts = ['未簽約','已下定','已簽約','已付款'].map(function(s){ return '<option'+(s===c.contractStatus?' selected':'')+'>'+s+'</option>'; }).join('');
@@ -4477,7 +4477,22 @@ function showEdit(id) {
   html += sel('名單來源','leadSource',dynamicSrcOpts);
   html += '</div>';
   html += ef('獲取來源細節','leadSourceDetail',c.leadSourceDetail);
-  var segOpts = ['','首購族','換屋族','投資族','資產配置族','退休族','地緣組'].map(function(s){ return '<option value="'+s+'"'+(s===(c.clientSegment||'')?' selected':'')+'>'+( s===''?'請選擇':s)+'</option>'; }).join('');
+  var SEG_LIST = [
+    { val:'', label:'請選擇' },
+    { val:'新鮮人',   label:'🟡 新鮮人（剛出社會、首購）' },
+    { val:'雙薪無殼', label:'👫 雙薪無殼（收入不低但未買）' },
+    { val:'月光族',   label:'🔵 月光族（存款少、現金流緊）' },
+    { val:'高資產',   label:'🔴 高資產（多筆資產、升級配置）' },
+    { val:'退休規劃', label:'🌅 退休規劃族（55歲以上）' },
+    { val:'租屋族',   label:'🟠 租屋族（長期租房）' },
+    { val:'有老屋',   label:'🟢 有老屋族（舊屋換新）' },
+    { val:'換屋族',   label:'🔄 換屋族（已有房要換）' },
+    { val:'地緣組',   label:'📍 地緣組（只買熟悉區域）' },
+    { val:'股票族',   label:'📈 股票族（資產多元配置）' },
+    { val:'定存族',   label:'🏦 定存族（保守理財）' },
+    { val:'包租公',   label:'🏢 包租公/婆（以租養房）' },
+  ];
+  var segOpts = SEG_LIST.map(function(s){ return '<option value="'+s.val+'"'+(s.val===(c.clientSegment||'')?' selected':'')+'>'+s.label+'</option>'; }).join('');
   html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
   html += sel('🏷️ 客戶族群','e_clientSegment',segOpts);
   html += ef('📍 偏好區域','preferredArea',c.preferredArea);
@@ -4488,8 +4503,8 @@ function showEdit(id) {
   }).join('');
   html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
   html += sel('🎓 研討會狀態','seminarAttended',semOpts);
-  var consultOpts2 = ['尚未預約','已預約待諮詢','已完成諮詢過往','已完成諮詢'].map(function(s){ 
-    var label = s==='尚未預約'?'❌ 尚未預約':s==='已預約待諮詢'?'📅 已預約待諮詢（2026）':s==='已完成諮詢過往'?'✅ 已完成諮詢（過往）':'✅ 已完成諮詢（2026）';
+  var consultOpts2 = ['','尚未預約','已預約待諮詢','已完成諮詢過往','已完成諮詢'].map(function(s){ 
+    var label = s===''?'請選擇':s==='尚未預約'?'❌ 尚未預約':s==='已預約待諮詢'?'📅 已預約待諮詢（2026）':s==='已完成諮詢過往'?'✅ 已完成諮詢（過往）':'✅ 已完成諮詢（2026）';
     var cur = c.consult2026||c.viewingStatus||'尚未預約';
     return '<option value="'+s+'"'+(s===cur?' selected':'')+'>'+label+'</option>'; 
   }).join('');
@@ -4515,7 +4530,7 @@ function showEdit(id) {
   html += sel('當前信任狀態','currentStatus',statusOpts);
 
   html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem;margin-top:.25rem">三部曲：需求分析</div>';
-  var purposeOpts = ['','🏠 自住','💰 投資','🏠💰 自住兼投資','📦 資產配置'].map(function(s){ return '<option value="'+s+'"'+(s===(c.purchasePurpose||'')?' selected':'')+'>'+( s===''?'請選擇':s)+'</option>'; }).join('');
+  var purposeOpts = ['','🏠 自住','💰 投資','🏠💰 自住兼投資','🏢 以租養房','👴 退休安置','🎁 傳承規劃'].map(function(s){ return '<option value="'+s+'"'+(s===(c.purchasePurpose||'')?' selected':'')+'>'+( s===''?'請選擇':s)+'</option>'; }).join('');
   var tlOpts = ['','1個月內','3個月內','半年內','1年以上','純詢問觀望'].map(function(s){ return '<option'+(s===(c.buyingTimeline||'')?' selected':'')+'>'+( s===''?'請選擇':s)+'</option>'; }).join('');
   html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
   html += sel('購屋主要目的','purchasePurpose',purposeOpts);
