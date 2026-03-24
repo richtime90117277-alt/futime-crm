@@ -2444,7 +2444,7 @@ function renderLeaderboard() {
   // 更新週標籤顯示
   var weekLabel = getCurrentWeekLabel();
   var labelEl = document.getElementById('lbWeekLabel');
-  if (labelEl) labelEl.textContent = '📅 週期：' + weekLabel + '（週二 00:00 起算，週一 23:59 結算）';
+  if (labelEl) labelEl.textContent = '⚡ 今日快閃競賽：只計算今天新增的客戶，23:59 截止';
 
   // 統計每個業務的積分（只計算本週有更新的客戶）
   var scoreMap = {};
@@ -2461,9 +2461,42 @@ function renderLeaderboard() {
     String(weekStartDate.getMonth()+1).padStart(2,'0') + '-' +
     String(weekStartDate.getDate()).padStart(2,'0');
 
+  // 今日快閃模式：今天新增 或 今天有更新的客戶都算
+  var todayStr = (function(){
+    var t = new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Taipei'}));
+    return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');
+  })();
+
   customers.forEach(function(c) {
     var sp = c.salesPerson || '未指定';
     if (!scoreMap[sp]) { scoreMap[sp] = 0; countMap[sp] = 0; }
+
+    var isToday = false;
+
+    // 1. 今天新增：用 id（timestamp）判斷
+    if (c.id) {
+      var idNum = parseInt(c.id);
+      if (!isNaN(idNum)) {
+        var d = new Date(idNum);
+        var dStr = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+        if (dStr === todayStr) isToday = true;
+      }
+    }
+
+    // 2. 今天新增：creationDate 欄位
+    if (!isToday && c.creationDate) {
+      var cd = c.creationDate.toString().slice(0,10);
+      if (cd === todayStr) isToday = true;
+    }
+
+    // 3. 今天有更新：updatedAt 欄位（格式 2026-03-24 xx:xx:xx）
+    if (!isToday && c.updatedAt) {
+      var ud = c.updatedAt.toString().slice(0,10);
+      if (ud === todayStr) isToday = true;
+    }
+
+    if (!isToday) return;
+
     scoreMap[sp] += calcScore(c);
     countMap[sp] += 1;
   });
