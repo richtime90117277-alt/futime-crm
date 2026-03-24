@@ -2464,27 +2464,6 @@ function renderLeaderboard() {
   customers.forEach(function(c) {
     var sp = c.salesPerson || '未指定';
     if (!scoreMap[sp]) { scoreMap[sp] = 0; countMap[sp] = 0; }
-
-    // 判斷本週是否有更新：優先用 updatedAt，沒有的話用 id（建立時間戳）
-    var updated = false;
-    if (c.updatedAt && c.updatedAt.toString().trim()) {
-      // updatedAt 格式：2026-03-24 15:45:00
-      var updDateStr = c.updatedAt.toString().slice(0, 10);
-      if (updDateStr >= weekStartStr) updated = true;
-    }
-    if (!updated && c.id) {
-      // id 是 timestamp，用它判斷是否本週新增
-      var idNum = parseInt(c.id);
-      if (!isNaN(idNum)) {
-        var idDate = new Date(idNum);
-        var idDateStr = idDate.getFullYear() + '-' +
-          String(idDate.getMonth()+1).padStart(2,'0') + '-' +
-          String(idDate.getDate()).padStart(2,'0');
-        if (idDateStr >= weekStartStr) updated = true;
-      }
-    }
-    if (!updated) return;
-
     scoreMap[sp] += calcScore(c);
     countMap[sp] += 1;
   });
