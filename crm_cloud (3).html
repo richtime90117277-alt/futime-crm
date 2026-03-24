@@ -2318,7 +2318,7 @@ function saveAllWeekScores() {
     return;
   }
   salesList.forEach(function(sp) {
-    api({ action: 'saveWeekScore', salesPerson: sp, score: scoreMap[sp], weekLabel: weekLabel }, function(res) {
+    callAPI({ action: 'saveWeekScore', salesPerson: sp, score: scoreMap[sp], weekLabel: weekLabel }, function(res) {
       done++;
       if (done === salesList.length) {
         if (statusEl) statusEl.textContent = '✅ 已儲存（' + weekLabel + '）';
@@ -2334,7 +2334,7 @@ function renderTotalLeaderboard() {
   var countEl   = document.getElementById('lbTotalWeekCount');
   if (!container) return;
   container.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:1rem">載入中...</div>';
-  api({ action: 'getAllWeekHistory' }, function(res) {
+  callAPI({ action: 'getAllWeekHistory' }, function(res) {
     if (!res || !res.success || !res.totals || res.totals.length === 0) {
       container.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:1rem">尚無累積記錄，請先儲存本週積分</div>';
       return;
