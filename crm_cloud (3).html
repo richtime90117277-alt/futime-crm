@@ -2333,7 +2333,7 @@ function saveAllWeekScores() {
     // 只算本週有更新的
     var upd2 = false;
     if (c.updatedAt) {
-      try { var d2 = new Date(c.updatedAt); if (!isNaN(d2.getTime()) && d2 >= wkStart2) upd2 = true; } catch(e) {}
+      try { var s2 = c.updatedAt.toString().replace('上午','AM').replace('下午','PM'); var d2 = new Date(s2); if (!isNaN(d2.getTime()) && d2 >= wkStart2) upd2 = true; } catch(e) {}
     }
     if (!upd2) return;
     scoreMap[sp] += calcScore(c);
@@ -2457,7 +2457,8 @@ function renderLeaderboard() {
     var updated = false;
     if (c.updatedAt) {
       try {
-        var upd = new Date(c.updatedAt);
+        var updStr = c.updatedAt.toString().replace('上午','AM').replace('下午','PM');
+        var upd = new Date(updStr);
         if (!isNaN(upd.getTime()) && upd >= weekStartTai) updated = true;
       } catch(e) {}
     }
