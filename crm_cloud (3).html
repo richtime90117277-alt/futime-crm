@@ -2305,10 +2305,25 @@ function saveAllWeekScores() {
   if (statusEl) statusEl.textContent = '儲存中...';
   var scoreMap = {};
   var countMap = {};
+
+  // 只計算本週有更新的客戶（與排行榜邏輯一致）
+  var nowTai2 = new Date(new Date().toLocaleString('en-US', {timeZone:'Asia/Taipei'}));
+  var dow2 = nowTai2.getDay();
+  var dft2 = dow2 === 0 ? 5 : dow2 === 1 ? 6 : dow2 - 2;
+  var wkStart2 = new Date(nowTai2);
+  wkStart2.setDate(nowTai2.getDate() - dft2);
+  wkStart2.setHours(0, 0, 0, 0);
+
   customers.forEach(function(c) {
     var sp = c.salesPerson || '未指定';
     if (SALES.indexOf(sp) === -1) return;
     if (!scoreMap[sp]) { scoreMap[sp] = 0; countMap[sp] = 0; }
+    // 只算本週有更新的
+    var upd2 = false;
+    if (c.updatedAt) {
+      try { var d2 = new Date(c.updatedAt); if (!isNaN(d2.getTime()) && d2 >= wkStart2) upd2 = true; } catch(e) {}
+    }
+    if (!upd2) return;
     scoreMap[sp] += calcScore(c);
     countMap[sp] += 1;
   });
@@ -2374,21 +2389,39 @@ function renderLeaderboard() {
   var labelEl = document.getElementById('lbWeekLabel');
   if (labelEl) labelEl.textContent = '📅 週期：' + weekLabel + '（週二 00:00 起算，週一 23:59 結算）';
 
-  // 統計每個業務的積分
+  // 統計每個業務的積分（只計算本週有更新的客戶）
   var scoreMap = {};
   var countMap = {};
+
+  // 計算本週起始時間（台北時間，週二 00:00）
+  var nowTai = new Date(new Date().toLocaleString('en-US', {timeZone:'Asia/Taipei'}));
+  var dayOfWeek = nowTai.getDay();
+  var daysFromTue = dayOfWeek === 0 ? 5 : dayOfWeek === 1 ? 6 : dayOfWeek - 2;
+  var weekStartTai = new Date(nowTai);
+  weekStartTai.setDate(nowTai.getDate() - daysFromTue);
+  weekStartTai.setHours(0, 0, 0, 0);
+
   customers.forEach(function(c) {
     var sp = c.salesPerson || '未指定';
     if (!scoreMap[sp]) { scoreMap[sp] = 0; countMap[sp] = 0; }
+
+    // 只算本週有更新的客戶（updatedAt 在本週起始之後）
+    var updated = false;
+    if (c.updatedAt) {
+      try {
+        var upd = new Date(c.updatedAt);
+        if (!isNaN(upd.getTime()) && upd >= weekStartTai) updated = true;
+      } catch(e) {}
+    }
+    if (!updated) return; // 本週沒更新就跳過
+
     scoreMap[sp] += calcScore(c);
     countMap[sp] += 1;
   });
 
-  // 排序（只顯示現役業務）
-  var ranked = Object.keys(scoreMap).filter(function(sp){
-    return SALES.indexOf(sp) !== -1;
-  }).map(function(sp) {
-    return { name: sp, score: scoreMap[sp], count: countMap[sp] };
+  // 排序（只顯示現役業務，包含本週 0 分的也顯示）
+  var ranked = SALES.map(function(sp) {
+    return { name: sp, score: scoreMap[sp] || 0, count: countMap[sp] || 0 };
   }).sort(function(a, b) { return b.score - a.score; });
 
   if (ranked.length === 0) {
