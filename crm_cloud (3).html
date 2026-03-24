@@ -1680,6 +1680,16 @@ function claimSeminarLead() {}
               <button onclick="saveAllWeekScores()" style="flex:1;min-width:140px;padding:.65rem 1rem;background:linear-gradient(135deg,var(--gold),#c9a84c);color:var(--navy);border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">💾 儲存本週積分</button>
               <div id="lbSaveStatus" style="font-size:12px;color:var(--text-soft)"></div>
             </div>
+            <!-- 補存歷史積分（僅 manager 可見） -->
+            <div id="lbHistoryPanel" style="display:none;margin-top:1rem;background:var(--cream2);border-radius:10px;padding:1rem">
+              <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:.5rem">📅 補存歷史積分（Manager 專用）</div>
+              <div style="font-size:12px;color:var(--text-soft);margin-bottom:.75rem">系統自動計算目前所有客戶積分，存入指定週期。用於補存上週未儲存的記錄。</div>
+              <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+                <input type="text" id="historyWeekLabel" placeholder="週標籤，例：2026-W11" style="flex:2;min-width:140px;padding:.5rem .75rem;border:1.5px solid #e0d8c8;border-radius:6px;font-size:13px;font-family:inherit">
+                <button onclick="saveSystemScoresToWeek()" style="flex:1;min-width:120px;padding:.5rem 1rem;background:linear-gradient(135deg,#1a3c5e,#2d5f8a);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">⚡ 一鍵補存</button>
+              </div>
+              <div id="historyStatus" style="font-size:12px;color:var(--text-soft);margin-top:.5rem"></div>
+            </div>
           </div>
           <!-- 累積排行 -->
           <div id="lbTotalPanel" style="display:none">
@@ -2045,11 +2055,13 @@ function initApp() {
     document.getElementById('staffTab').style.display = '';
     document.getElementById('bossTab').style.display = '';
     var expEl=document.getElementById('exportScope'); if(expEl) expEl.innerHTML='<option value="all">全部客戶</option><option value="mine">我的客戶</option>';
+    var histPanel = document.getElementById('lbHistoryPanel'); if(histPanel) histPanel.style.display = 'block';
   } else {
     sp.innerHTML = '<option value="'+currentUser+'" selected>'+currentUser+'</option>';
     sp.disabled = true;
     document.getElementById('reportsTab').style.display = 'none';
     document.getElementById('staffTab').style.display = 'none';
+    var histPanel2 = document.getElementById('lbHistoryPanel'); if(histPanel2) histPanel2.style.display = 'none';
   }
   document.getElementById('creationDate').valueAsDate = new Date();
   document.getElementById('customerForm').onsubmit = function(e){ e.preventDefault(); saveCustomer(); };
@@ -2342,6 +2354,42 @@ function saveAllWeekScores() {
         setTimeout(function(){ if(statusEl) statusEl.textContent = ''; }, 3000);
       }
     });
+  });
+}
+
+// ── 補存歷史積分（Manager 專用）──
+// 用目前系統所有客戶積分，一鍵存入指定週標籤
+function saveSystemScoresToWeek() {
+  var weekLabel = document.getElementById('historyWeekLabel').value.trim();
+  if (!weekLabel || !/^\d{4}-W\d{2}$/.test(weekLabel)) {
+    showToast('⚠️ 請輸入正確格式，例如：2026-W11');
+    return;
+  }
+  var statusEl = document.getElementById('historyStatus');
+  if (statusEl) statusEl.textContent = '計算中...';
+
+  // 用所有客戶（不限週期）計算各業務積分
+  var scoreMap = {};
+  customers.forEach(function(c) {
+    var sp = c.salesPerson || '未指定';
+    if (SALES.indexOf(sp) === -1) return;
+    if (!scoreMap[sp]) scoreMap[sp] = 0;
+    scoreMap[sp] += calcScore(c);
+  });
+
+  var scores = SALES.map(function(sp) {
+    return { salesPerson: sp, score: scoreMap[sp] || 0 };
+  });
+
+  if (statusEl) statusEl.textContent = '儲存中...';
+  callAPI({ action: 'saveWeekScoreBatch', weekLabel: weekLabel, scores: scores }, function(res) {
+    if (res && res.success) {
+      if (statusEl) statusEl.textContent = '✅ 已補存 ' + res.count + ' 位業務（' + weekLabel + '）';
+      showToast('✅ ' + weekLabel + ' 歷史積分補存完成！');
+      document.getElementById('historyWeekLabel').value = '';
+    } else {
+      if (statusEl) statusEl.textContent = '❌ 失敗：' + (res ? res.error : '未知錯誤');
+    }
   });
 }
 
