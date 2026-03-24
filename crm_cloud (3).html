@@ -2336,6 +2336,13 @@ function saveAllWeekScores() {
     var upd2 = false;
     if (c.updatedAt) {
       var upd2Str = c.updatedAt.toString().slice(0,10); if (upd2Str >= weekStartStr) upd2 = true;
+    } else if (c.id) {
+      var id2 = parseInt(c.id);
+      if (!isNaN(id2)) {
+        var id2Date = new Date(id2);
+        var id2Str = id2Date.getFullYear()+'-'+String(id2Date.getMonth()+1).padStart(2,'0')+'-'+String(id2Date.getDate()).padStart(2,'0');
+        if (id2Str >= weekStartStr) upd2 = true;
+      }
     }
     if (!upd2) return;
     scoreMap[sp] += calcScore(c);
@@ -2458,13 +2465,25 @@ function renderLeaderboard() {
     var sp = c.salesPerson || '未指定';
     if (!scoreMap[sp]) { scoreMap[sp] = 0; countMap[sp] = 0; }
 
-    // 只算本週有更新的客戶（比對 updatedAt 日期字串前10碼 yyyy-MM-dd）
+    // 判斷本週是否有更新：優先用 updatedAt，沒有的話用 id（建立時間戳）
     var updated = false;
-    if (c.updatedAt) {
+    if (c.updatedAt && c.updatedAt.toString().trim()) {
+      // updatedAt 格式：2026-03-24 15:45:00
       var updDateStr = c.updatedAt.toString().slice(0, 10);
       if (updDateStr >= weekStartStr) updated = true;
     }
-    if (!updated) return; // 本週沒更新就跳過
+    if (!updated && c.id) {
+      // id 是 timestamp，用它判斷是否本週新增
+      var idNum = parseInt(c.id);
+      if (!isNaN(idNum)) {
+        var idDate = new Date(idNum);
+        var idDateStr = idDate.getFullYear() + '-' +
+          String(idDate.getMonth()+1).padStart(2,'0') + '-' +
+          String(idDate.getDate()).padStart(2,'0');
+        if (idDateStr >= weekStartStr) updated = true;
+      }
+    }
+    if (!updated) return;
 
     scoreMap[sp] += calcScore(c);
     countMap[sp] += 1;
