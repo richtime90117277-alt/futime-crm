@@ -2285,12 +2285,14 @@ function switchLbTab(tab) {
 
 // ── 取得當前週標籤（週二起算→週一結束）──
 function getCurrentWeekLabel() {
+  // 與 Apps Script 一致：使用台北時區計算，週二 00:00 起算
   var now = new Date();
-  var day = now.getDay(); // 0=日 1=一 ... 6=六
+  var tai = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Taipei' }));
+  var day = tai.getDay(); // 0=日 1=一 2=二 ... 6=六
   var offset = day === 0 ? 5 : day === 1 ? 6 : day - 2;
-  var weekStart = new Date(now);
-  weekStart.setDate(now.getDate() - offset);
-  weekStart.setHours(0,0,0,0);
+  var weekStart = new Date(tai);
+  weekStart.setDate(tai.getDate() - offset);
+  weekStart.setHours(0, 0, 0, 0);
   var yr = weekStart.getFullYear();
   var startOfYear = new Date(yr, 0, 1);
   var weekNum = Math.ceil(((weekStart - startOfYear) / 86400000 + 1) / 7);
