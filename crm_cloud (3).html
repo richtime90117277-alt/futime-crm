@@ -869,8 +869,26 @@ function claimSeminarLead() {}
                   <option value="">請選擇</option>
                   <option value="否">❌ 否（未邀請）</option>
                   <option value="已邀請未參加">📩 已邀請尚未參加</option>
-                  <option value="是">✅ 已參加（過往）</option>
-                  <option value="已邀請參加2026">✅ 已邀請並參加（2026）</option>
+                  <option value="已邀請並參加">✅ 已邀請並參加</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>📅 研討會時間（年月）</label>
+                <select id="seminarDate">
+                  <option value="">請選擇</option>
+                  <option>2025年12月</option>
+                  <option>2026年01月</option>
+                  <option>2026年02月</option>
+                  <option>2026年03月</option>
+                  <option>2026年04月</option>
+                  <option>2026年05月</option>
+                  <option>2026年06月</option>
+                  <option>2026年07月</option>
+                  <option>2026年08月</option>
+                  <option>2026年09月</option>
+                  <option>2026年10月</option>
+                  <option>2026年11月</option>
+                  <option>2026年12月</option>
                 </select>
               </div>
               <div class="form-group">
@@ -1625,9 +1643,9 @@ function claimSeminarLead() {}
             <label>研討會</label>
             <select id="filterSeminar" onchange="renderCustomers()">
               <option value="">全部</option>
-              <option value="是">🎓 有參加</option>
-              <option value="否">❌ 未參加</option>
+              <option value="已邀請並參加">✅ 已參加</option>
               <option value="已邀請未參加">📩 已邀未參加</option>
+              <option value="否">❌ 未邀請</option>
             </select>
           </div>
           <div class="form-group" style="flex:1;min-width:120px">
@@ -2155,7 +2173,7 @@ function renderSeminarLB() {
   SALES.forEach(function(sp){ map[sp] = 0; });
   customers.forEach(function(c) {
     try {
-      if (c.seminarAttended === '已邀請參加2026') {
+      if (c.seminarAttended === '已邀請並參加' || c.seminarAttended === '已邀請參加2026') {
         var sp = c.salesPerson || '未指定';
         if (!map[sp]) map[sp] = 0;
         map[sp]++;
@@ -2464,22 +2482,6 @@ function renderLeaderboard() {
   customers.forEach(function(c) {
     var sp = c.salesPerson || '未指定';
     if (!scoreMap[sp]) { scoreMap[sp] = 0; countMap[sp] = 0; }
-    // ✅ 只計算本週有更新的客戶
-    var isThisWeek = false;
-    if (c.updatedAt) {
-      var updStr = c.updatedAt.toString().slice(0, 10);
-      if (updStr >= weekStartStr) isThisWeek = true;
-    } else if (c.id) {
-      var idNum = parseInt(c.id);
-      if (!isNaN(idNum)) {
-        var idDate = new Date(idNum);
-        var idStr = idDate.getFullYear() + '-' +
-          String(idDate.getMonth()+1).padStart(2,'0') + '-' +
-          String(idDate.getDate()).padStart(2,'0');
-        if (idStr >= weekStartStr) isThisWeek = true;
-      }
-    }
-    if (!isThisWeek) return;
     scoreMap[sp] += calcScore(c);
     countMap[sp] += 1;
   });
@@ -2733,8 +2735,8 @@ function renderDashboard() {
   if (tlEl) tlEl.innerHTML = tlHtml || '<div style="color:var(--text-soft);font-size:13px">尚無資料</div>';
 
   // ── 研討會效益 ──
-  var semYes = customers.filter(function(c){ return c.seminarAttended==='是'; });
-  var semNo  = customers.filter(function(c){ return c.seminarAttended!=='是'; });
+  var semYes = customers.filter(function(c){ return c.seminarAttended==='已邀請並參加'||c.seminarAttended==='是'||c.seminarAttended==='已邀請參加2026'; });
+  var semNo  = customers.filter(function(c){ return !(c.seminarAttended==='已邀請並參加'||c.seminarAttended==='是'||c.seminarAttended==='已邀請參加2026'); });
   var semYesClosed = semYes.filter(function(c){ return !isActive(c); }).length;
   var semNoClosed  = semNo.filter(function(c){ return !isActive(c); }).length;
   var semYesRate = semYes.length > 0 ? Math.round(semYesClosed/semYes.length*100) : 0;
@@ -2790,7 +2792,7 @@ function calcCloseProb(c) {
   Object.keys(trustScore).forEach(function(k){ if(ts.indexOf(k.split('(')[0])!==-1) score += trustScore[k]; });
 
   // 研討會出席
-  if (c.seminarAttended === '是') score += 8;
+  if (c.seminarAttended === '已邀請並參加' || c.seminarAttended === '是' || c.seminarAttended === '已邀請參加2026') score += 8;
 
   // 八部曲進度
   var s = stageOf(c);
@@ -3411,7 +3413,7 @@ function assignSeminarLead(i) {
     contactInfo: p.contact,
     leadSource: '展場活動',
     leadSourceDetail: p.note || '研討會名單',
-    seminarAttended: '是',
+    seminarAttended: '已邀請並參加',
     creationDate: new Date().toISOString().slice(0,10),
     customerActive: '進行中',
     notes: '來源：研討會待認領名單' + (p.note ? '（'+p.note+'）' : '')
@@ -3847,8 +3849,8 @@ function renderTrend() {
   var lastClosedAmt = lastClosed.reduce(function(s,c){ return s+(parseFloat(c.dealAmount)||0); }, 0);
 
   // 研討會
-  var thisSemar = customers.filter(function(c){ return c.seminarAttended==='是' && inMonth(c.creationDate, thisMonth, thisYear); }).length;
-  var lastSemar = customers.filter(function(c){ return c.seminarAttended==='是' && inMonth(c.creationDate, lastMonth, lastYear); }).length;
+  var thisSemar = customers.filter(function(c){ return (c.seminarAttended==='已邀請並參加'||c.seminarAttended==='是'||c.seminarAttended==='已邀請參加2026') && inMonth(c.creationDate, thisMonth, thisYear); }).length;
+  var lastSemar = customers.filter(function(c){ return (c.seminarAttended==='已邀請並參加'||c.seminarAttended==='是'||c.seminarAttended==='已邀請參加2026') && inMonth(c.creationDate, lastMonth, lastYear); }).length;
 
   // 轉換率
   var thisRate = thisNewCount > 0 ? Math.round(thisClosed.length/thisNewCount*100) : 0;
@@ -4369,7 +4371,7 @@ function saveCustomer() {
       nextFollowupDate:(document.getElementById('nextFollowupDate')?document.getElementById('nextFollowupDate').value:''),
       nextFollowupGoal:(document.getElementById('nextFollowupGoal')?document.getElementById('nextFollowupGoal').value:''),
     customerActive:v('customerActive')||'進行中',
-    seminarAttended:v('seminarAttended'), consult2026:v('consult2026'),
+    seminarAttended:v('seminarAttended'), seminarDate:v('seminarDate'), consult2026:v('consult2026'),
     clientSegment:v('clientSegment'),
     preferredArea:v('preferredArea')
   };
@@ -4422,7 +4424,7 @@ function renderCustomers() {
   if (fvw) mc = mc.filter(function(c){ return c.viewingStatus === fvw; });
   var fsem = document.getElementById('filterSeminar') ? document.getElementById('filterSeminar').value : '';
   var ftrust = document.getElementById('filterTrust') ? document.getElementById('filterTrust').value : '';
-  if (fsem) mc = mc.filter(function(c){ return c.seminarAttended === fsem; });
+  if (fsem) mc = mc.filter(function(c){ var sa = (c.seminarAttended==='是'||c.seminarAttended==='已邀請參加2026') ? '已邀請並參加' : (c.seminarAttended||''); return sa === fsem; });
   if (ftrust) mc = mc.filter(function(c){ return c.currentStatus && c.currentStatus.indexOf(ftrust) !== -1; });
   if (sr) mc = mc.filter(function(c){ return (c.customerName+' '+(c.contactInfo||'')+' '+(c.notes||'')).toLowerCase().indexOf(sr) !== -1; });
   // 預設按成交機率排序
@@ -4444,7 +4446,7 @@ function renderCustomers() {
     if (risk === 'critical') riskBadge = '<span style="font-size:10px;color:#c0392b;background:#fdf0ee;padding:2px 6px;border-radius:20px;font-weight:700">🔴停滯</span>';
     else if (risk === 'high') riskBadge = '<span style="font-size:10px;color:#856404;background:#fffbf0;padding:2px 6px;border-radius:20px;font-weight:700">🟡注意</span>';
     return '<div class="customer-item" onclick="showDetail(\''+c.id.toString()+'\')">' +
-      '<div class="customer-head"><span class="customer-name">'+c.customerName+'</span><span style="display:flex;gap:.375rem;align-items:center;flex-wrap:wrap"><span class="badge badge-'+s+'">'+s+'️⃣ '+STAGE_NAMES[s]+'</span>'+(c.seminarAttended==='是'||c.seminarAttended==='已邀請未參加'?'<span style="background:#e8f5e9;color:#2e7d32;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600">🎓 研討會</span>':'')+probBadge+riskBadge+'</span></div>'+
+      '<div class="customer-head"><span class="customer-name">'+c.customerName+'</span><span style="display:flex;gap:.375rem;align-items:center;flex-wrap:wrap"><span class="badge badge-'+s+'">'+s+'️⃣ '+STAGE_NAMES[s]+'</span>'+((c.seminarAttended==='已邀請並參加'||c.seminarAttended==='是'||c.seminarAttended==='已邀請參加2026'||c.seminarAttended==='已邀請未參加')?'<span style="background:#e8f5e9;color:#2e7d32;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600">🎓 研討會</span>':'')+probBadge+riskBadge+'</span></div>'+
       manInfo+
       '<div class="customer-meta">📞 '+(c.contactInfo||'—')+' ｜ 來源：'+(c.leadSource||'—')+'</div>'+
       '<div class="customer-meta">信任：'+(c.trustScore?c.trustScore+'/10':'—')+' ｜ '+(c.contractStatus||'未簽約')+(c.dealAmount?' ｜ '+c.dealAmount+'萬':'')+'</div>'+
@@ -4461,7 +4463,7 @@ function showDetail(id) {
   document.getElementById('modalTitle').textContent = c.customerName+' — '+STAGE_NAMES[s];
   var rows = [
     ['負責業務',c.salesPerson],['聯絡方式',c.contactInfo],['年齡',c.customerAge],['🏷️ 名單類型',c.clientType],['名單來源',c.leadSource],
-    ['獲取來源',c.leadSourceDetail],['🎓 參加研討會',c.seminarAttended],['創建日期',formatDate(c.creationDate)],
+    ['獲取來源',c.leadSourceDetail],['🎓 研討會狀態',c.seminarAttended],['📅 研討會時間',c.seminarDate],['創建日期',formatDate(c.creationDate)],
     ['信任評分',c.trustScore?c.trustScore+'/10':''],['專業評分',c.professionalScore?c.professionalScore+'/10':''],
     ['信任狀態',c.currentStatus],
     ['✅ 信任檢核',c.trustChecks],['✅ 專業形象檢核',c.proChecks],
@@ -4597,12 +4599,18 @@ function showEdit(id) {
   html += sel('🏷️ 客戶族群','e_clientSegment',segOpts);
   html += ef('📍 偏好區域','preferredArea',c.preferredArea);
   html += '</div>';
-  var semOpts = ['','否','已邀請未參加','是','已邀請參加2026'].map(function(s){ 
-    var label = s===''?'請選擇':s==='否'?'❌ 否（未邀請）':s==='已邀請未參加'?'📩 已邀請尚未參加':s==='是'?'✅ 已參加（過往）':'✅ 已邀請並參加（2026）';
-    return '<option value="'+s+'"'+(s===(c.seminarAttended||'')?' selected':'')+'>'+label+'</option>'; 
+  var semOpts = ['','否','已邀請未參加','已邀請並參加'].map(function(s){ 
+    var label = s===''?'請選擇':s==='否'?'❌ 否（未邀請）':s==='已邀請未參加'?'📩 已邀請尚未參加':'✅ 已邀請並參加';
+    // backwards compat: old values '是' and '已邀請參加2026' map to '已邀請並參加'
+    var cur = (c.seminarAttended==='是'||c.seminarAttended==='已邀請參加2026') ? '已邀請並參加' : (c.seminarAttended||'');
+    return '<option value="'+s+'"'+(s===cur?' selected':'')+'>'+label+'</option>'; 
+  }).join('');
+  var semDateOpts = ['','2025年12月','2026年01月','2026年02月','2026年03月','2026年04月','2026年05月','2026年06月','2026年07月','2026年08月','2026年09月','2026年10月','2026年11月','2026年12月'].map(function(s){
+    return '<option value="'+s+'"'+(s===(c.seminarDate||'')?' selected':'')+'>'+( s||'請選擇')+'</option>';
   }).join('');
   html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
   html += sel('🎓 研討會狀態','seminarAttended',semOpts);
+  html += sel('📅 研討會時間（年月）','seminarDate',semDateOpts);
   var consultOpts2 = ['','尚未預約','已預約待諮詢','已完成諮詢過往','已完成諮詢'].map(function(s){ 
     var label = s===''?'請選擇':s==='尚未預約'?'❌ 尚未預約':s==='已預約待諮詢'?'📅 已預約待諮詢（2026）':s==='已完成諮詢過往'?'✅ 已完成諮詢（過往）':'✅ 已完成諮詢（2026）';
     var cur = c.consult2026||c.viewingStatus||'尚未預約';
@@ -4761,6 +4769,7 @@ function saveEdit(c) {
       nextFollowupGoal: (document.getElementById('e_nextFollowupGoal')?document.getElementById('e_nextFollowupGoal').value:''),
     customerActive: gv('customerActive')||'進行中',
     seminarAttended: gv('seminarAttended'),
+    seminarDate: gv('seminarDate'),
     consult2026: gv('consult2026'),
     clientSegment: gv('clientSegment'),
     preferredArea: gv('preferredArea')
