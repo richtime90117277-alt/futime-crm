@@ -2318,33 +2318,30 @@ function saveAllWeekScores() {
   var scoreMap = {};
   var countMap = {};
 
-  // 只計算本週有更新的客戶（與排行榜邏輯一致）
+  // 與排行榜邏輯一致：只計算本週有 updatedAt 或本週新建的客戶
   var nowTai2 = new Date(new Date().toLocaleString('en-US', {timeZone:'Asia/Taipei'}));
   var dow2 = nowTai2.getDay();
   var dft2 = dow2 === 0 ? 5 : dow2 === 1 ? 6 : dow2 - 2;
-  var wkStart2Date = new Date(nowTai2);
-  wkStart2Date.setDate(nowTai2.getDate() - dft2);
-  var weekStartStr = wkStart2Date.getFullYear() + '-' +
-    String(wkStart2Date.getMonth()+1).padStart(2,'0') + '-' +
-    String(wkStart2Date.getDate()).padStart(2,'0');
+  var wkStart2 = new Date(nowTai2);
+  wkStart2.setDate(nowTai2.getDate() - dft2);
+  wkStart2.setHours(0, 0, 0, 0);
+  var wkStartStr2 = wkStart2.getFullYear() + '-' +
+    String(wkStart2.getMonth()+1).padStart(2,'0') + '-' +
+    String(wkStart2.getDate()).padStart(2,'0');
 
   customers.forEach(function(c) {
     var sp = c.salesPerson || '未指定';
     if (SALES.indexOf(sp) === -1) return;
     if (!scoreMap[sp]) { scoreMap[sp] = 0; countMap[sp] = 0; }
-    // 只算本週有更新的
-    var upd2 = false;
-    if (c.updatedAt) {
-      var upd2Str = c.updatedAt.toString().slice(0,10); if (upd2Str >= weekStartStr) upd2 = true;
-    } else if (c.id) {
-      var id2 = parseInt(c.id);
-      if (!isNaN(id2)) {
-        var id2Date = new Date(id2);
-        var id2Str = id2Date.getFullYear()+'-'+String(id2Date.getMonth()+1).padStart(2,'0')+'-'+String(id2Date.getDate()).padStart(2,'0');
-        if (id2Str >= weekStartStr) upd2 = true;
-      }
+    var inWeek2 = false;
+    if (c.updatedAt && c.updatedAt.toString().trim()) {
+      if (c.updatedAt.toString().slice(0,10) >= wkStartStr2) inWeek2 = true;
     }
-    if (!upd2) return;
+    if (!inWeek2 && c.id) {
+      var idNum2 = parseInt(c.id);
+      if (!isNaN(idNum2) && new Date(idNum2) >= wkStart2) inWeek2 = true;
+    }
+    if (!inWeek2) return;
     scoreMap[sp] += calcScore(c);
     countMap[sp] += 1;
   });
@@ -2461,9 +2458,37 @@ function renderLeaderboard() {
     String(weekStartDate.getMonth()+1).padStart(2,'0') + '-' +
     String(weekStartDate.getDate()).padStart(2,'0');
 
+  // 本週積分：只計算本週（週二 00:00 後）有 updatedAt 或新建的客戶
+  var nowTai = new Date(new Date().toLocaleString('en-US', {timeZone:'Asia/Taipei'}));
+  var dow = nowTai.getDay();
+  var dft = dow === 0 ? 5 : dow === 1 ? 6 : dow - 2;
+  var wkStart = new Date(nowTai);
+  wkStart.setDate(nowTai.getDate() - dft);
+  wkStart.setHours(0, 0, 0, 0);
+  var wkStartStr = wkStart.getFullYear() + '-' +
+    String(wkStart.getMonth()+1).padStart(2,'0') + '-' +
+    String(wkStart.getDate()).padStart(2,'0');
+
   customers.forEach(function(c) {
     var sp = c.salesPerson || '未指定';
     if (!scoreMap[sp]) { scoreMap[sp] = 0; countMap[sp] = 0; }
+
+    var inWeek = false;
+
+    // 1. updatedAt 欄位（格式 2026-03-25 xx:xx:xx）
+    if (c.updatedAt && c.updatedAt.toString().trim()) {
+      var udStr = c.updatedAt.toString().slice(0, 10);
+      if (udStr >= wkStartStr) inWeek = true;
+    }
+
+    // 2. 本週新建：用 id timestamp 判斷
+    if (!inWeek && c.id) {
+      var idNum = parseInt(c.id);
+      if (!isNaN(idNum) && new Date(idNum) >= wkStart) inWeek = true;
+    }
+
+    if (!inWeek) return;
+
     scoreMap[sp] += calcScore(c);
     countMap[sp] += 1;
   });
