@@ -2587,39 +2587,62 @@ function saveSystemScoresToWeek() {
   });
 }
 
-// ── 累積總分排行 ──
+// ── 累積總分排行（直接從現有客戶資料計算，不依賴週期歷史）──
 function renderTotalLeaderboard() {
   var container = document.getElementById('lbTotalList');
   var countEl   = document.getElementById('lbTotalWeekCount');
   if (!container) return;
-  container.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:1rem">載入中...</div>';
-  callAPI({ action: 'getAllWeekHistory' }, function(res) {
-    if (!res || !res.success || !res.totals || res.totals.length === 0) {
-      container.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:1rem">尚無累積記錄，請先儲存本週積分</div>';
-      return;
-    }
-    var medals = ['🥇','🥈','🥉'];
-    var maxTotal = res.totals[0].total || 1;
-    var html = '';
-    res.totals.forEach(function(r, i) {
-      var medal = medals[i] || ('　' + (i+1) + '.');
-      var pct = Math.round((r.total / maxTotal) * 100);
-      var isMe = (currentRole === 'sales' && r.salesPerson === currentUser);
-      var highlight = isMe ? 'background:linear-gradient(135deg,#fffbea,#fff3cd);border:2px solid #f0c040;' : 'background:#fff;border:1px solid var(--cream2);';
-      html += '<div style="' + highlight + 'border-radius:10px;padding:.5rem .875rem;margin-bottom:.375rem;display:flex;align-items:center;gap:.625rem">' +
-        '<span style="font-size:18px;flex-shrink:0">' + medal + '</span>' +
-        '<span style="font-weight:700;font-size:14px;color:var(--navy);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + r.salesPerson + (isMe ? ' <span style="font-size:10px;background:#1a3c5e;color:#fff;padding:1px 6px;border-radius:8px">我</span>' : '') + '</span>' +
-        '<div style="flex:2;margin:0 .75rem">' +
-          '<div style="background:var(--cream2);border-radius:99px;height:6px;overflow:hidden">' +
-            '<div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,#1a3c5e,#c9a84c);border-radius:99px;transition:.6s"></div>' +
-          '</div>' +
-        '</div>' +
-        '<span style="font-size:17px;font-weight:800;color:var(--gold);white-space:nowrap">' + r.total + '<span style="font-size:11px;font-weight:500;color:var(--text-soft)"> 分</span></span>' +
-      '</div>';
-    });
-    container.innerHTML = html;
-    if (countEl) countEl.textContent = '共計算 ' + res.weekCount + ' 個週期';
+  container.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:1rem">計算中...</div>';
+
+  // 直接從 customers 累計每位業務的總積分
+  var scoreMap = {};
+  var countMap = {};
+  SALES.forEach(function(sp){ scoreMap[sp] = 0; countMap[sp] = 0; });
+
+  customers.forEach(function(c) {
+    var sp = c.salesPerson || '未指定';
+    if (!scoreMap[sp] && scoreMap[sp] !== 0) { scoreMap[sp] = 0; countMap[sp] = 0; }
+    scoreMap[sp] += calcScore(c);
+    countMap[sp] += 1;
   });
+
+  // 排序
+  var sorted = Object.keys(scoreMap).filter(function(sp){ return scoreMap[sp] > 0; }).sort(function(a,b){ return scoreMap[b]-scoreMap[a]; });
+
+  if (sorted.length === 0) {
+    container.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:1rem">尚無客戶資料</div>';
+    if (countEl) countEl.textContent = '';
+    return;
+  }
+
+  var medals = ['🥇','🥈','🥉'];
+  var maxTotal = scoreMap[sorted[0]] || 1;
+  var html = '';
+  sorted.forEach(function(sp, i) {
+    var total = scoreMap[sp];
+    var cnt   = countMap[sp];
+    var medal = i < 3 ? medals[i] : (i+1) + '.';
+    var pct   = Math.round((total / maxTotal) * 100);
+    var isMe  = (currentRole === 'sales' && sp === currentUser);
+    var highlight = isMe
+      ? 'background:linear-gradient(135deg,#fffbea,#fff3cd);border:2px solid #f0c040;'
+      : 'background:#fff;border:1px solid var(--cream2);';
+    html += '<div style="'+highlight+'border-radius:10px;padding:.5rem .875rem;margin-bottom:.375rem;display:flex;align-items:center;gap:.625rem">' +
+      '<span style="font-size:18px;flex-shrink:0;min-width:28px;text-align:center">' + medal + '</span>' +
+      '<span style="font-weight:700;font-size:14px;color:var(--navy);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' +
+        sp + (isMe ? ' <span style="font-size:10px;background:#1a3c5e;color:#fff;padding:1px 6px;border-radius:8px">我</span>' : '') +
+        '<span style="font-size:11px;color:var(--text-muted);font-weight:400;margin-left:.375rem">' + cnt + '位客戶</span>' +
+      '</span>' +
+      '<div style="flex:2;margin:0 .75rem">' +
+        '<div style="background:var(--cream2);border-radius:99px;height:6px;overflow:hidden">' +
+          '<div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,#1a3c5e,#c9a84c);border-radius:99px;transition:.6s"></div>' +
+        '</div>' +
+      '</div>' +
+      '<span style="font-size:17px;font-weight:800;color:var(--gold);white-space:nowrap">' + total + '<span style="font-size:11px;font-weight:500;color:var(--text-soft)"> 分</span></span>' +
+    '</div>';
+  });
+  container.innerHTML = html;
+  if (countEl) countEl.textContent = '依目前所有 ' + customers.length + ' 位客戶即時計算';
 }
 
 function renderLeaderboard() {
