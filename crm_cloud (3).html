@@ -427,6 +427,156 @@ select:focus,input:focus,textarea:focus {
 .acc-body { display:none; padding:1.25rem; border-top:1px solid var(--cream2); }
 .acc-body.open { display:block; }
 
+/* ══════════════════════════════════════════════
+   必填 / 加分 欄位視覺系統 v14
+   ══════════════════════════════════════════════ */
+
+/* 必填欄位：金框 + 金色角標 */
+.field-required {
+  position: relative;
+}
+.field-required label::after {
+  content: ' ✦ 必填';
+  font-size: 10px;
+  font-weight: 800;
+  color: #c9a84c;
+  background: linear-gradient(135deg,#fffbf0,#fff8e7);
+  border: 1px solid #f0d080;
+  padding: 1px 6px;
+  border-radius: 10px;
+  margin-left: 6px;
+  letter-spacing: .04em;
+  vertical-align: middle;
+}
+.field-required input,
+.field-required select,
+.field-required textarea {
+  border-color: #d4b04a !important;
+  background: linear-gradient(to bottom, #fffdf6, #fffbf0) !important;
+}
+.field-required input:focus,
+.field-required select:focus,
+.field-required textarea:focus {
+  border-color: var(--gold) !important;
+  box-shadow: 0 0 0 3px rgba(201,168,76,.2) !important;
+  background: #fff !important;
+}
+
+/* 加分欄位：藍框 + 藍色角標（對AI準確率有幫助）*/
+.field-boost {
+  position: relative;
+}
+.field-boost label::after {
+  content: ' ⚡ 加分';
+  font-size: 10px;
+  font-weight: 800;
+  color: #1565c0;
+  background: #e3f0fb;
+  border: 1px solid #b3d4f5;
+  padding: 1px 6px;
+  border-radius: 10px;
+  margin-left: 6px;
+  letter-spacing: .04em;
+  vertical-align: middle;
+}
+.field-boost input,
+.field-boost select,
+.field-boost textarea {
+  border-color: #90c4f5 !important;
+  background: linear-gradient(to bottom, #f5faff, #eef6ff) !important;
+}
+.field-boost input:focus,
+.field-boost select:focus,
+.field-boost textarea:focus {
+  border-color: #1565c0 !important;
+  box-shadow: 0 0 0 3px rgba(21,101,192,.15) !important;
+  background: #fff !important;
+}
+
+/* 圖例說明條 */
+.field-legend {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: .625rem 1rem;
+  background: #fafafa;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+.field-legend-item {
+  display: flex;
+  align-items: center;
+  gap: .375rem;
+  font-size: 12px;
+  color: var(--text-soft);
+  font-weight: 600;
+}
+.legend-dot-gold { width:10px; height:10px; border-radius:50%; background:var(--gold); }
+.legend-dot-blue { width:10px; height:10px; border-radius:50%; background:#1565c0; }
+
+/* ══════════════════════════════════════════════
+   SOS 場景標籤系統 v14
+   ══════════════════════════════════════════════ */
+.sos-stage-select {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin-bottom: 1rem;
+}
+.sos-stage-btn {
+  background: var(--cream);
+  border: 1.5px solid #dde5ed;
+  border-radius: 20px;
+  padding: .3rem .875rem;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all .15s;
+  color: var(--navy);
+}
+.sos-stage-btn:hover { background: var(--cream2); border-color: var(--navy); }
+.sos-stage-btn.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+
+/* 對話接龍預測區塊 */
+.rescue-predictions {
+  margin-top: .875rem;
+  border: 1.5px solid #dde5ed;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.rescue-predictions-head {
+  background: #f0f4f8;
+  padding: .625rem 1rem;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--navy);
+  letter-spacing: .08em;
+  border-bottom: 1px solid #dde5ed;
+}
+.prediction-item {
+  padding: .75rem 1rem;
+  border-bottom: 1px solid #f0f4f8;
+  font-size: 13px;
+  line-height: 1.65;
+}
+.prediction-item:last-child { border-bottom: none; }
+.prediction-q {
+  font-weight: 700;
+  color: #c0392b;
+  margin-bottom: .3rem;
+  display: flex;
+  align-items: flex-start;
+  gap: .375rem;
+}
+.prediction-a {
+  color: var(--text);
+  padding-left: 1.125rem;
+}
+.prediction-q::before { content: '💬'; font-size: 12px; flex-shrink:0; margin-top:1px; }
+
 /* ── 異議救援 Modal ── */
 .rescue-overlay {
   display:none; position:fixed; inset:0;
@@ -839,13 +989,18 @@ function claimSeminarLead() {}
             <span class="acc-arrow">▼</span>
           </div>
           <div class="acc-body open" id="acc-b-s1">
-            <div class="form-grid two">
-              <div class="form-group"><label>客戶姓名 *</label><input type="text" id="customerName" placeholder="請輸入客戶姓名" required></div>
-              <div class="form-group"><label>聯絡方式 *</label><input type="text" id="contactInfo" placeholder="電話 / Line ID / 其他" required></div>
+            <!-- 圖例說明 -->
+            <div class="field-legend">
+              <div class="field-legend-item"><div class="legend-dot-gold"></div> 必填（AI準確度基礎）</div>
+              <div class="field-legend-item"><div class="legend-dot-blue"></div> 加分（讓AI更精準）</div>
             </div>
             <div class="form-grid two">
-              <div class="form-group"><label>年齡</label><input type="number" id="customerAge" placeholder="請輸入年齡" min="18" max="99"></div>
-              <div class="form-group">
+              <div class="form-group field-required"><label>客戶姓名</label><input type="text" id="customerName" placeholder="請輸入客戶姓名" required></div>
+              <div class="form-group field-required"><label>聯絡方式</label><input type="text" id="contactInfo" placeholder="電話 / Line ID / 其他" required></div>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group field-boost"><label>年齡</label><input type="number" id="customerAge" placeholder="請輸入年齡" min="18" max="99"></div>
+              <div class="form-group field-required">
                 <label>🏷️ 名單類型</label>
                 <select id="clientType" onchange="updateLeadSourceOptions()">
                   <option value="">請選擇</option>
@@ -855,14 +1010,14 @@ function claimSeminarLead() {}
               </div>
             </div>
             <div class="form-grid two">
-              <div class="form-group">
+              <div class="form-group field-boost">
                 <label>名單來源</label>
                 <select id="leadSource"><option value="">請先選名單類型</option></select>
               </div>
-              <div class="form-group"><label>來源細節</label><input type="text" id="leadSourceDetail" placeholder="例：爬山、FB/IG、咖啡展"></div>
+              <div class="form-group field-boost"><label>來源細節</label><input type="text" id="leadSourceDetail" placeholder="例：爬山、FB/IG、咖啡展"></div>
             </div>
             <div class="form-grid two">
-              <div class="form-group"><label>創建日期 *</label><input type="date" id="creationDate" required></div>
+              <div class="form-group field-required"><label>創建日期</label><input type="date" id="creationDate" required></div>
               <div class="form-group">
                 <label>🎓 研討會狀態</label>
                 <select id="seminarAttended">
@@ -903,7 +1058,7 @@ function claimSeminarLead() {}
               </div>
             </div>
             <div class="form-grid two">
-              <div class="form-group">
+              <div class="form-group field-required">
                 <label>⏳ 購買時間軸</label>
                 <select id="buyingTimeline">
                   <option value="">請選擇</option>
@@ -914,7 +1069,7 @@ function claimSeminarLead() {}
                   <option>純詢問觀望</option>
                 </select>
               </div>
-              <div class="form-group">
+              <div class="form-group field-required">
                 <label>🏷️ 客戶狀態</label>
                 <select id="customerActive">
                   <option value="進行中">🟢 進行中（跟進中）</option>
@@ -923,7 +1078,7 @@ function claimSeminarLead() {}
               </div>
             </div>
             <div class="form-grid two">
-              <div class="form-group">
+              <div class="form-group field-boost">
                 <label>📱 溝通偏好</label>
                 <div class="ms-wrap" id="ms_contactPref">
                   <div class="ms-display" onclick="toggleMs('ms_contactPref')"><span class="ms-placeholder">點選展開（可多選）</span><span class="ms-arrow">▾</span></div>
@@ -936,7 +1091,7 @@ function claimSeminarLead() {}
                   </div>
                 </div>
               </div>
-              <div class="form-group">
+              <div class="form-group field-boost">
                 <label>⏰ 最佳聯繫時段</label>
                 <div class="ms-wrap" id="ms_contactTime">
                   <div class="ms-display" onclick="toggleMs('ms_contactTime')"><span class="ms-placeholder">點選展開（可多選）</span><span class="ms-arrow">▾</span></div>
@@ -950,7 +1105,7 @@ function claimSeminarLead() {}
                 </div>
               </div>
             </div>
-            <div class="form-group">
+            <div class="form-group field-boost">
               <label>🧠 客戶個性類型</label>
               <select id="personalityType">
                 <option value="">請選擇</option>
@@ -970,18 +1125,22 @@ function claimSeminarLead() {}
             <span class="acc-arrow">▼</span>
           </div>
           <div class="acc-body" id="acc-b-s2">
+            <div class="field-legend">
+              <div class="field-legend-item"><div class="legend-dot-gold"></div> 必填（AI準確度基礎）</div>
+              <div class="field-legend-item"><div class="legend-dot-blue"></div> 加分（讓AI更精準）</div>
+            </div>
             <div class="form-grid two">
-              <div class="form-group">
+              <div class="form-group field-boost">
                 <label>家庭成員</label>
                 <input type="text" id="familyMembers" placeholder="例：2大人 / 1小孩(8歲) / 長輩">
               </div>
-              <div class="form-group">
+              <div class="form-group field-required">
                 <label>KEY MAN（決策者）</label>
                 <input type="text" id="keyMan" placeholder="例：本人、配偶、父母">
               </div>
             </div>
             <div class="form-grid two">
-              <div class="form-group">
+              <div class="form-group field-boost">
                 <label>居住狀況</label>
                 <select id="livingStatus">
                   <option value="">請選擇</option>
@@ -990,7 +1149,7 @@ function claimSeminarLead() {}
                   <option>租屋中</option>
                 </select>
               </div>
-              <div class="form-group">
+              <div class="form-group field-required">
                 <label>家人購屋支持度</label>
                 <select id="familySupport">
                   <option value="">請選擇</option>
@@ -1050,8 +1209,12 @@ function claimSeminarLead() {}
           </div>
           <div class="acc-body" id="acc-b-s3">
             <!-- 客戶族群 + 購屋目的 -->
+            <div class="field-legend">
+              <div class="field-legend-item"><div class="legend-dot-gold"></div> 必填（AI準確度基礎）</div>
+              <div class="field-legend-item"><div class="legend-dot-blue"></div> 加分（讓AI更精準）</div>
+            </div>
             <div class="form-grid two">
-              <div class="form-group">
+              <div class="form-group field-required">
                 <label>🏷️ 客戶族群（主要）</label>
                 <select id="clientSegment" onchange="updatePainPointsBySegment()">
                   <option value="">請選擇族群</option>
@@ -1075,7 +1238,7 @@ function claimSeminarLead() {}
                   </optgroup>
                 </select>
               </div>
-              <div class="form-group">
+              <div class="form-group field-required">
                 <label>購屋主要目的</label>
                 <select id="purchasePurpose">
                   <option value="">請選擇</option>
@@ -1090,18 +1253,18 @@ function claimSeminarLead() {}
               </div>
             </div>
             <div class="form-grid two">
-              <div class="form-group"><label>自有資金（萬元）＆來源</label><input type="text" id="budget" placeholder="例：300萬，來自存款／父母贊助／賣股票"></div>
+              <div class="form-group field-required"><label>自有資金（萬元）＆來源</label><input type="text" id="budget" placeholder="例：300萬，來自存款／父母贊助／賣股票"></div>
               <div class="form-group" id="geographyGroupDiv" style="display:none">
                 <label>📍 偏好區域（地緣組專用）</label>
                 <input type="text" id="preferredArea" placeholder="例：青埔、板橋、中和自住圈">
               </div>
             </div>
             <div class="form-grid two">
-              <div class="form-group"><label>每月可儲蓄（萬元）</label><input type="text" id="monthlyPayment" placeholder="例：3萬"></div>
+              <div class="form-group field-boost"><label>每月可儲蓄（萬元）</label><input type="text" id="monthlyPayment" placeholder="例：3萬"></div>
               <input type="hidden" id="blueprintCompletion" value="">
             </div>
             <input type="hidden" id="customerNeeds" value="">
-            <div class="form-group">
+            <div class="form-group field-boost">
               <label>痛點分析（可多選）</label>
               <div class="ms-wrap" id="ms_painPoint">
                 <div class="ms-display" onclick="toggleMs('ms_painPoint')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div>
@@ -1201,7 +1364,11 @@ function claimSeminarLead() {}
             <span class="acc-arrow">▼</span>
           </div>
           <div class="acc-body" id="acc-b-s5">
-            <div class="form-group">
+            <div class="field-legend">
+              <div class="field-legend-item"><div class="legend-dot-gold"></div> 必填（AI準確度基礎）</div>
+              <div class="field-legend-item"><div class="legend-dot-blue"></div> 加分（讓AI更精準）</div>
+            </div>
+            <div class="form-group field-required">
               <label>🚧 決策障礙（卡點）</label>
               <div class="ms-wrap" id="ms_decisionBlock">
                 <div class="ms-display" onclick="toggleMs('ms_decisionBlock')"><span class="ms-placeholder">點選展開（可多選）</span><span class="ms-arrow">▾</span></div>
@@ -5000,6 +5167,11 @@ var _rescueCustomerId = null;
 
 function openRescue(customerId) {
   _rescueCustomerId = customerId || null;
+  // 重置階段選擇
+  _currentSosStage = '';
+  var allStageBtns = document.querySelectorAll('.sos-stage-btn');
+  allStageBtns.forEach(function(b){ b.classList.remove('active'); });
+
   var overlay = document.getElementById('rescueOverlay');
 
   // 更新客戶標籤
@@ -5012,13 +5184,11 @@ function openRescue(customerId) {
       tag.innerHTML = '👤 <b>'+c.customerName+'</b>｜'+
         (c.clientSegment||c.painPoints||'未設定族群')+'｜'+
         STAGE_NAMES[s]+'｜成交機率 '+prob+'%';
-      // 根據客戶族群動態調整快選按鈕
-      renderQuickObjButtons(c);
     }
   } else {
     tag.innerHTML = '👤 未指定客戶（通用模式）';
-    renderQuickObjButtons(null);
   }
+  renderQuickObjButtonsWithStage();
 
   // 清空上次結果
   clearRescue();
@@ -5027,92 +5197,97 @@ function openRescue(customerId) {
 }
 
 // 根據客戶族群動態產生快選按鈕
+// renderQuickObjButtons 保留兼容性，統一呼叫新版
 function renderQuickObjButtons(customer) {
+  renderQuickObjButtonsWithStage();
+}
+
+// ★ 銷售階段選擇
+var _currentSosStage = '';
+function selectSosStage(btn) {
+  // 切換 active 狀態
+  var all = document.querySelectorAll('.sos-stage-btn');
+  all.forEach(function(b){ b.classList.remove('active'); });
+  if (_currentSosStage === btn.dataset.stage) {
+    // 再點一次取消選取
+    _currentSosStage = '';
+  } else {
+    btn.classList.add('active');
+    _currentSosStage = btn.dataset.stage;
+  }
+  // 重新渲染異議快選（根據階段動態調整）
+  renderQuickObjButtonsWithStage();
+}
+
+function renderQuickObjButtonsWithStage() {
   var container = document.getElementById('quickObjContainer');
   if (!container) return;
+  var c = null;
+  if (_rescueCustomerId) {
+    c = customers.find(function(x){ return x.id && x.id.toString()===_rescueCustomerId.toString(); }) || null;
+  }
+  var stage = parseInt((c && c.salesStage) || '1') || 1;
+  var segment = (c && c.clientSegment) || '';
 
-  // 預設通用異議
-  var buttons = [
-    { label: '👫 另一半要考慮', text: '我先生/太太說要再考慮一下' },
-    { label: '📉 等房市再說',   text: '現在房市不好，我想等等看' },
-    { label: '💰 頭期款不夠',  text: '頭期款還不夠，等存好再說' },
-    { label: '💸 太貴了',       text: '你們的物件價格太貴了' },
-    { label: '🗣️ 朋友說不好',  text: '我朋友說現在買不划算' },
-    { label: '🔍 還在比較',     text: '我還在看其他的，再比較看看' },
-    { label: '🏦 擔心貸款',     text: '貸款不知道能不能過，怕負擔太重' },
-    { label: '⏰ 時機未到',     text: '時機還不對，我感覺現在不是好時機' }
-  ];
+  // 依銷售階段標籤覆蓋預設
+  var stageButtons = {
+    '破冰':    [
+      { label:'😶 不想聊', text:'你們是業務我不需要' },
+      { label:'🤨 你要賺什麼', text:'介紹我買房你賺什麼' },
+      { label:'💤 隨便看看', text:'我只是隨便看看' }
+    ],
+    '挖需':    [
+      { label:'🙄 我知道了', text:'我都知道，你說的我懂' },
+      { label:'💰 還在存錢', text:'頭期款還不夠，等存夠再說' },
+      { label:'⏳ 時機未到', text:'現在不是好時機' }
+    ],
+    '帶看後':  [
+      { label:'🤔 再想想', text:'我需要再考慮一下' },
+      { label:'📞 問老婆', text:'我要回去跟老婆討論' },
+      { label:'🔍 再比較', text:'我想再看看其他案子' }
+    ],
+    '異議處理':[
+      { label:'💸 太貴了', text:'這個價格我覺得有點貴' },
+      { label:'👨‍👩‍👧 家人反對', text:'我家人反對，覺得現在不適合買' },
+      { label:'📉 房價要跌', text:'我覺得房價快要跌了再等等' },
+      { label:'🏦 貸款問題', text:'我不確定我能貸多少，怕貸不到' }
+    ],
+    '締結':    [
+      { label:'✍️ 再想想', text:'可以讓我再想幾天嗎' },
+      { label:'💳 沒帶錢', text:'今天沒帶訂金，改天再來' },
+      { label:'📋 要看合約', text:'我要先看完合約再決定' }
+    ],
+    '追蹤':    [
+      { label:'📵 已讀不回', text:'（已讀不回，沒有回應）' },
+      { label:'😑 沒空', text:'最近很忙，之後再說' },
+      { label:'❄️ 態度冷淡', text:'（電話接了但態度冷淡）' }
+    ]
+  };
 
-  // 根據族群加入專屬異議
-  if (customer) {
-    var seg = (customer.clientSegment || '').toLowerCase();
-    var stage = stageOf(customer);
-
-    // 投資族
-    if (seg.indexOf('投資') > -1 || seg.indexOf('investor') > -1) {
+  var buttons = [];
+  if (_currentSosStage && stageButtons[_currentSosStage]) {
+    buttons = stageButtons[_currentSosStage].slice();
+  } else {
+    // 無選階段，依客戶族群顯示
+    if (segment.indexOf('股票') >= 0) {
       buttons = [
-        { label: '📈 股票比較好', text: '我現在股票放著就好，不想動' },
-        { label: '💸 投報率不夠', text: '房地產投報率感覺不如股票' },
-        { label: '🔒 資金被鎖住', text: '買房子資金都鎖死了不靈活' },
-        { label: '📉 等房價跌',   text: '現在價格太高，等跌了再買' },
-        { label: '👫 另一半要考慮', text: '我先生/太太說要再考慮一下' },
-        { label: '🏦 貸款問題',   text: '我名下已經有房，貸款成數會受限' },
-        { label: '⏰ 時機未到',   text: '時機還不對，我感覺現在不是好時機' },
-        { label: '🔍 還在比較',   text: '我還在看其他案子，再比較看看' }
+        { label:'📈 不動本金', text:'我股票都在跑，不想動本金' },
+        { label:'💹 股票更好', text:'我覺得放股票比房子報酬高' }
       ];
     }
-
-    // 首購族
-    else if (seg.indexOf('首購') > -1 || seg.indexOf('first') > -1) {
-      buttons = [
-        { label: '💰 頭期款不夠',  text: '頭期款還不夠，等存好再說' },
-        { label: '🏦 怕貸款壓力',  text: '貸款每個月要繳那麼多，壓力好大' },
-        { label: '👨‍👩‍👧 父母反對',    text: '我爸媽說現在不適合買，叫我再等' },
-        { label: '📉 等房價跌',    text: '現在買感覺太貴，等跌了再說' },
-        { label: '👫 另一半猶豫',  text: '我另一半說要再想想看' },
-        { label: '🔍 還在比較',    text: '我還在看其他案子，再比較看看' },
-        { label: '⏰ 時機未到',    text: '時機還不對，感覺現在不是好時機' },
-        { label: '🗣️ 朋友說不好', text: '我朋友說現在買不划算' }
-      ];
-    }
-
-    // 換屋族
-    else if (seg.indexOf('換屋') > -1 || seg.indexOf('upgrade') > -1) {
-      buttons = [
-        { label: '🏠 舊屋還沒賣',  text: '我現在的房子還沒賣掉，沒辦法買' },
-        { label: '💸 價差不夠',    text: '換屋的價差算起來不太夠' },
-        { label: '👫 另一半猶豫',  text: '我先生/太太說要再考慮一下' },
-        { label: '📉 等房價跌',    text: '現在價格太高，等跌了再換' },
-        { label: '🏦 貸款問題',    text: '現在有房貸，不知道還能貸多少' },
-        { label: '🔍 還在比較',    text: '我還在看其他案子，再比較看看' },
-        { label: '⏰ 時機未到',    text: '時機還不對，感覺現在不是好時機' },
-        { label: '🗣️ 朋友說不好', text: '我朋友說現在換不划算' }
-      ];
-    }
-
-    // 長輩置產
-    else if (seg.indexOf('長輩') > -1 || seg.indexOf('父母') > -1 || seg.indexOf('養老') > -1) {
-      buttons = [
-        { label: '👨‍👩‍👧 子女反對',    text: '我小孩說不用買，叫我別亂花錢' },
-        { label: '💰 動用存款顧慮', text: '這麼大一筆錢動用掉，感覺不安心' },
-        { label: '🏠 現在住的夠用', text: '我現在住的地方還好，不一定要換' },
-        { label: '📉 等房價跌',    text: '現在買感覺太貴了，等跌了再說' },
-        { label: '🏦 年紀貸款問題', text: '我年紀比較大，不知道貸款好不好過' },
-        { label: '⏰ 時機未到',    text: '時機還不對，感覺現在不是好時機' },
-        { label: '🔍 還在比較',    text: '我還在看其他案子，再比較看看' },
-        { label: '🗣️ 朋友說不好', text: '我朋友說現在買不划算' }
-      ];
-    }
-
-    // 根據八部曲階段加入特殊異議
+    buttons = buttons.concat([
+      { label:'💸 太貴了', text:'這個價格太貴了' },
+      { label:'🤔 考慮一下', text:'我需要再考慮一下' },
+      { label:'👨‍👩‍👧 家人反對', text:'家人反對，說現在不適合買' },
+      { label:'📉 房價要跌', text:'我覺得房價快要跌了' },
+      { label:'🏦 貸款問題', text:'我不確定能貸多少' }
+    ]);
     if (stage >= 5) {
-      // 五部曲以後快到成交，加入臨門一腳異議
-      buttons.unshift({ label: '🤔 再想想', text: '可以讓我再想個幾天嗎' });
-      buttons.unshift({ label: '💳 訂金問題', text: '現在要付訂金我還沒準備好' });
+      buttons.unshift({ label:'⏱️ 再想想', text:'可以讓我再想個幾天嗎' });
+      buttons.unshift({ label:'💳 訂金問題', text:'現在要付訂金我還沒準備好' });
     }
   }
 
-  // 重新渲染按鈕
   container.innerHTML = '';
   buttons.forEach(function(b) {
     var btn = document.createElement('button');
@@ -5135,6 +5310,7 @@ function fillObjText(text) {
 function clearRescue() {
   document.getElementById('rescueObjInput').value = '';
   document.getElementById('rescueResult').classList.remove('show');
+  document.getElementById('rescuePredictionsWrap').style.display = 'none';
   document.getElementById('rescueSubmitBtn').disabled = false;
   document.getElementById('rescueSubmitBtn').textContent = '🆘 立即生成話術建議';
 }
@@ -5160,15 +5336,20 @@ function runRescue() {
   btn.disabled = true;
   btn.textContent = '⏳ AI 分析中...';
   document.getElementById('rescueResult').classList.remove('show');
+  document.getElementById('rescuePredictionsWrap').style.display = 'none';
 
-  // ── 新版：從 Google Sheets 話術庫動態讀取話術 ──
   var customerObj = null;
   if (_rescueCustomerId) {
     customerObj = customers.find(function(x){ return x.id && x.id.toString()===_rescueCustomerId.toString(); }) || null;
   }
 
-  // 呼叫 Apps Script 的 claudeSOS（話術從 Sheets 讀取）
-  callAPI({ action: 'claudeSOS', customer: customerObj, objText: objText }, function(res) {
+  // ★ 傳入目前選取的銷售階段
+  callAPI({
+    action: 'claudeSOS',
+    customer: customerObj,
+    objText: objText,
+    salesStage: _currentSosStage || ''
+  }, function(res) {
     btn.disabled = false;
     btn.textContent = '🆘 立即生成話術建議';
     if (!res.success) {
@@ -5182,6 +5363,25 @@ function runRescue() {
       document.getElementById('rescueScriptText').textContent = result.script || '—';
       document.getElementById('rescueDont').textContent = result.dont || '—';
       document.getElementById('rescueNextStep').textContent = result.nextStep || '—';
+
+      // ★ 對話接龍渲染
+      var pWrap = document.getElementById('rescuePredictionsWrap');
+      var pList = document.getElementById('rescuePredictionsList');
+      if (result.nextPredictions && result.nextPredictions.length > 0) {
+        pList.innerHTML = '';
+        result.nextPredictions.forEach(function(p) {
+          var item = document.createElement('div');
+          item.className = 'prediction-item';
+          item.innerHTML =
+            '<div class="prediction-q">' + (p['客戶可能說'] || p.q || '') + '</div>' +
+            '<div class="prediction-a">👉 ' + (p['接話'] || p.a || '') + '</div>';
+          pList.appendChild(item);
+        });
+        pWrap.style.display = 'block';
+      } else {
+        pWrap.style.display = 'none';
+      }
+
       document.getElementById('rescueResult').classList.add('show');
       document.getElementById('rescueResult').scrollIntoView({ behavior:'smooth', block:'start' });
       var saveBtn = document.getElementById('rescueSaveBtn');
@@ -5375,6 +5575,19 @@ function showToast(msg) {
         👤 請選擇客戶後使用此功能
       </div>
 
+      <!-- ★ 新增：銷售階段快選 -->
+      <div style="font-size:12px;font-weight:700;color:var(--navy);letter-spacing:.06em;margin-bottom:.5rem">
+        📍 現在在哪個階段？
+      </div>
+      <div class="sos-stage-select" id="sosStageContainer">
+        <button class="sos-stage-btn" data-stage="破冰" onclick="selectSosStage(this)">🤝 破冰</button>
+        <button class="sos-stage-btn" data-stage="挖需" onclick="selectSosStage(this)">🔍 挖需</button>
+        <button class="sos-stage-btn" data-stage="帶看後" onclick="selectSosStage(this)">🏠 帶看後</button>
+        <button class="sos-stage-btn" data-stage="異議處理" onclick="selectSosStage(this)">⚔️ 異議處理</button>
+        <button class="sos-stage-btn" data-stage="締結" onclick="selectSosStage(this)">✍️ 締結</button>
+        <button class="sos-stage-btn" data-stage="追蹤" onclick="selectSosStage(this)">📲 追蹤</button>
+      </div>
+
       <!-- 常見異議快選（根據客戶族群動態調整） -->
       <div style="font-size:12px;font-weight:700;color:var(--navy);letter-spacing:.06em;margin-bottom:.5rem">
         ⚡ 常見異議快選
@@ -5385,7 +5598,7 @@ function showToast(msg) {
 
       <!-- 自由輸入 -->
       <div class="rescue-input-wrap">
-        <label>✍️ 或自己輸入客戶說的話</label>
+        <label>✍️ 輸入客戶說的話</label>
         <textarea id="rescueObjInput" placeholder="例：我老婆說要再想想，她覺得現在不是好時機..."></textarea>
       </div>
 
@@ -5424,6 +5637,17 @@ function showToast(msg) {
         <div class="rescue-section">
           <h4>👣 下一步行動</h4>
           <p id="rescueNextStep"></p>
+        </div>
+
+        <!-- ★ 新增：對話接龍預測區塊 -->
+        <div id="rescuePredictionsWrap" style="display:none">
+          <div style="font-size:12px;font-weight:700;color:var(--navy);letter-spacing:.06em;margin-bottom:.5rem;margin-top:.25rem">
+            🔮 客戶接下來可能說的話（預先準備）
+          </div>
+          <div class="rescue-predictions">
+            <div class="rescue-predictions-head">對話接龍 — 客戶說完你的話術後，可能出現的回應與接法</div>
+            <div id="rescuePredictionsList"></div>
+          </div>
         </div>
 
         <div class="rescue-action-row">
