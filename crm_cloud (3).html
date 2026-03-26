@@ -2289,7 +2289,12 @@ function renderAllLeaderboards() {
   renderCustomerCountLB();
   renderSeminarLB();
   renderConsultLB();
-  renderAchieveLB();
+  // 先載入目標再渲染達成率
+  if (Object.keys(_targetsCache).length === 0) {
+    loadTargets(function(){ renderAchieveLB(); });
+  } else {
+    renderAchieveLB();
+  }
 }
 
 function renderCustomerCountLB() {
@@ -2397,20 +2402,33 @@ function renderConsultLB() {
   }).join('') || '<div style="color:var(--text-muted);font-size:13px;padding:.5rem">今年尚無預約諮詢記錄</div>';
 }
 
-function getTargets() {
-  try { return JSON.parse(localStorage.getItem('futime_targets') || '{}'); } catch(e) { return {}; }
+// ── 業績目標：存入/讀取 Google Sheets ──
+var _targetsCache = {};
+
+function loadTargets(cb) {
+  callAPI({ action: 'getTargets' }, function(res) {
+    if (res && res.success && res.targets) {
+      _targetsCache = res.targets;
+    }
+    if (cb) cb();
+  });
 }
+
 function saveTarget(sp, val) {
-  var t = getTargets(); t[sp] = parseFloat(val) || 0;
-  try { localStorage.setItem('futime_targets', JSON.stringify(t)); } catch(e) {}
+  var num = parseFloat(val) || 0;
+  _targetsCache[sp] = num;
+  // 即時更新畫面，背景儲存
   renderAchieveLB();
+  callAPI({ action: 'saveTarget', salesPerson: sp, target: num }, function(res) {
+    if (!res || !res.success) showToast('⚠️ 目標儲存失敗，請重試');
+  });
 }
 
 function renderAchieveLB() {
   var el = document.getElementById('achieveList');
   if (!el) return;
   var thisYear = new Date().getFullYear();
-  var targets = getTargets();
+  var targets = _targetsCache;
   var actual = {};
   SALES.forEach(function(sp){ actual[sp] = 0; });
   customers.forEach(function(c) {
@@ -2423,7 +2441,6 @@ function renderAchieveLB() {
       }
     } catch(e) {}
   });
-  // 顯示全部業務
   var ranked = SALES.slice().sort(function(a,b){
     var pa = targets[a] ? actual[a]/targets[a] : 0;
     var pb = targets[b] ? actual[b]/targets[b] : 0;
@@ -2439,7 +2456,7 @@ function renderAchieveLB() {
     var bg = isMe ? 'background:linear-gradient(135deg,#fffbea,#fff3cd);border:2px solid #f0c040;' : 'background:#fff;border:1px solid var(--cream2);';
     return '<div style="'+bg+'border-radius:10px;padding:.45rem .875rem;margin-bottom:.3rem">'+
       '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem">'+
-        '<div style="display:flex;align-items:center;gap:.5rem"><span>'+(medals[i]||'')+' </span><span style="font-weight:700;color:var(--navy)">'+sp+'</span></div>'+
+        '<div style="display:flex;align-items:center;gap:.5rem"><span>'+(i<3?medals[i]:'')+' </span><span style="font-weight:700;color:var(--navy)">'+sp+'</span></div>'+
         '<div style="display:flex;align-items:center;gap:.75rem">'+
           '<span style="font-size:11px;color:var(--text-muted)">實績 <b style="color:var(--navy)">'+act+'萬</b></span>'+
           '<span style="font-size:18px;font-weight:800;color:'+pctColor+'">'+pct+'%</span>'+
@@ -2450,8 +2467,11 @@ function renderAchieveLB() {
       '</div>'+
       '<div style="display:flex;align-items:center;gap:.5rem">'+
         '<span style="font-size:11px;color:var(--text-muted)">目標：</span>'+
-        '<input type="number" placeholder="輸入目標（萬）" value="'+(tgt||'')+'" data-sp="'+sp+'" onchange="saveTarget(this.dataset.sp,this.value)" style="width:110px;padding:.25rem .5rem;border:1.5px solid #e0d8c8;border-radius:6px;font-size:12px;font-family:inherit">'+
+        '<input type="number" placeholder="輸入目標（萬）" value="'+(tgt||'')+'" data-sp="'+sp+'"'+
+          ' onchange="saveTarget(this.dataset.sp,this.value)"'+
+          ' style="width:110px;padding:.25rem .5rem;border:1.5px solid #e0d8c8;border-radius:6px;font-size:12px;font-family:inherit">'+
         '<span style="font-size:11px;color:var(--text-muted)">萬</span>'+
+        '<span style="font-size:10px;color:#27ae60;margin-left:.25rem">✓ 自動儲存</span>'+
       '</div>'+
     '</div>';
   }).join('');
@@ -2654,29 +2674,58 @@ function renderLeaderboard() {
   var labelEl = document.getElementById('lbWeekLabel');
   if (labelEl) labelEl.textContent = '📅 週期：' + weekLabel + '（週二 00:00 起算，週一 23:59 結算）';
 
-  // 統計每個業務的積分（只計算本週有更新的客戶）
-  var scoreMap = {};
-  var countMap = {};
-
-  // 本週起始日期字串，格式 2026-03-24（週二）
+  // 計算本週起始日期字串 yyyy-MM-dd
   var nowTai = new Date(new Date().toLocaleString('en-US', {timeZone:'Asia/Taipei'}));
   var dayOfWeek = nowTai.getDay();
   var daysFromTue = dayOfWeek === 0 ? 5 : dayOfWeek === 1 ? 6 : dayOfWeek - 2;
   var weekStartDate = new Date(nowTai);
   weekStartDate.setDate(nowTai.getDate() - daysFromTue);
-  // 只比對日期字串前10碼 yyyy-MM-dd，不管時間格式
+  weekStartDate.setHours(0, 0, 0, 0);
   var weekStartStr = weekStartDate.getFullYear() + '-' +
     String(weekStartDate.getMonth()+1).padStart(2,'0') + '-' +
     String(weekStartDate.getDate()).padStart(2,'0');
 
+  // 統計：只計算本週有更新 OR 本週新增的客戶
+  var scoreMap = {};
+  var countMap = {};
+  SALES.forEach(function(sp){ scoreMap[sp] = 0; countMap[sp] = 0; });
+
   customers.forEach(function(c) {
     var sp = c.salesPerson || '未指定';
-    if (!scoreMap[sp]) { scoreMap[sp] = 0; countMap[sp] = 0; }
+    if (!scoreMap[sp] && scoreMap[sp] !== 0) { scoreMap[sp] = 0; countMap[sp] = 0; }
+
+    var isThisWeek = false;
+
+    // 方式1：updatedAt 欄位
+    if (c.updatedAt) {
+      var updStr = c.updatedAt.toString().replace(/\//g, '-').slice(0,10);
+      if (updStr >= weekStartStr) isThisWeek = true;
+    }
+
+    // 方式2：creationDate 欄位
+    if (!isThisWeek && c.creationDate) {
+      var crtStr = c.creationDate.toString().replace(/\//g, '-').slice(0,10);
+      if (crtStr >= weekStartStr) isThisWeek = true;
+    }
+
+    // 方式3：id 是 timestamp（毫秒）
+    if (!isThisWeek && c.id) {
+      var idNum = parseInt(c.id);
+      if (!isNaN(idNum) && idNum > 1000000000000) {
+        var idDate = new Date(idNum);
+        var idStr = idDate.getFullYear() + '-' +
+          String(idDate.getMonth()+1).padStart(2,'0') + '-' +
+          String(idDate.getDate()).padStart(2,'0');
+        if (idStr >= weekStartStr) isThisWeek = true;
+      }
+    }
+
+    if (!isThisWeek) return;
     scoreMap[sp] += calcScore(c);
     countMap[sp] += 1;
   });
 
-  // 排序（只顯示現役業務，包含本週 0 分的也顯示）
+  // 排序（顯示所有現役業務，包含本週 0 分的）
   var ranked = SALES.map(function(sp) {
     return { name: sp, score: scoreMap[sp] || 0, count: countMap[sp] || 0 };
   }).sort(function(a, b) { return b.score - a.score; });
@@ -2687,23 +2736,29 @@ function renderLeaderboard() {
   }
 
   var medals = ['🥇','🥈','🥉'];
+  var maxScore = ranked[0].score || 1;
   var html = '';
   ranked.forEach(function(r, i) {
     var medal = medals[i] || ('　' + (i+1) + '.');
     var isMe = (currentRole === 'sales' && r.name === currentUser);
     var highlight = isMe ? 'background:linear-gradient(135deg,#fffbea,#fff3cd);border:2px solid #f0c040;' : 'background:#fff;border:1px solid var(--cream2);';
-    var maxScore = ranked[0].score || 1;
     var pct = Math.round((r.score / maxScore) * 100);
+    // 0分的業務進度條不顯示（避免誤導）
+    var barWidth = r.score > 0 ? pct : 0;
     html += '<div style="' + highlight + 'border-radius:10px;padding:.5rem .875rem;margin-bottom:.375rem;display:flex;align-items:center;gap:.625rem">' +
-      '<span style="font-size:18px;flex-shrink:0">' + medal + '</span>' +
-      '<span style="font-weight:700;font-size:14px;color:var(--navy);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + r.name + (isMe ? ' <span style="font-size:10px;background:#1a3c5e;color:#fff;padding:1px 6px;border-radius:8px">我</span>' : '') + '</span>' +
+      '<span style="font-size:18px;flex-shrink:0;min-width:24px;text-align:center">' + medal + '</span>' +
+      '<span style="font-weight:700;font-size:14px;color:var(--navy);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' +
+        r.name + (isMe ? ' <span style="font-size:10px;background:#1a3c5e;color:#fff;padding:1px 6px;border-radius:8px">我</span>' : '') +
+      '</span>' +
       '<div style="flex:2;margin:0 .75rem">' +
         '<div style="background:var(--cream2);border-radius:99px;height:6px;overflow:hidden">' +
-          '<div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,#1a3c5e,#c9a84c);border-radius:99px;transition:.6s"></div>' +
+          '<div style="height:100%;width:' + barWidth + '%;background:linear-gradient(90deg,#1a3c5e,#c9a84c);border-radius:99px;transition:.6s"></div>' +
         '</div>' +
-        '<div style="font-size:10px;color:var(--text-muted);margin-top:2px">' + r.count + ' 位客戶</div>' +
+        '<div style="font-size:10px;color:var(--text-muted);margin-top:2px">' + (r.count > 0 ? r.count + ' 位客戶' : '本週未更新') + '</div>' +
       '</div>' +
-      '<span style="font-size:17px;font-weight:800;color:var(--gold);white-space:nowrap">' + r.score + '<span style="font-size:11px;font-weight:500;color:var(--text-soft)"> 分</span></span>' +
+      '<span style="font-size:17px;font-weight:800;color:' + (r.score > 0 ? 'var(--gold)' : 'var(--text-muted)') + ';white-space:nowrap">' +
+        r.score + '<span style="font-size:11px;font-weight:500;color:var(--text-soft)"> 分</span>' +
+      '</span>' +
     '</div>';
   });
   container.innerHTML = html;
