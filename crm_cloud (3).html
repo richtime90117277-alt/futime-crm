@@ -5389,8 +5389,10 @@ function clearRescue() {
   document.getElementById('rescueObjInput').value = '';
   document.getElementById('rescueResult').classList.remove('show');
   document.getElementById('rescuePredictionsWrap').style.display = 'none';
+  var sceneEl = document.getElementById('rescueSceneType');
+  if (sceneEl) sceneEl.style.display = 'none';
   document.getElementById('rescueSubmitBtn').disabled = false;
-  document.getElementById('rescueSubmitBtn').textContent = '🆘 立即生成話術建議';
+  document.getElementById('rescueSubmitBtn').textContent = '🧠 智偉哥，這個怎麼辦？';
 }
 
 function copyRescueScript() {
@@ -5412,9 +5414,11 @@ function runRescue() {
 
   var btn = document.getElementById('rescueSubmitBtn');
   btn.disabled = true;
-  btn.textContent = '⏳ AI 分析中...';
+  btn.textContent = '⏳ 智偉哥分析中...';
   document.getElementById('rescueResult').classList.remove('show');
   document.getElementById('rescuePredictionsWrap').style.display = 'none';
+  var sceneEl = document.getElementById('rescueSceneType');
+  if (sceneEl) sceneEl.style.display = 'none';
 
   var customerObj = null;
   if (_rescueCustomerId) {
@@ -5429,7 +5433,7 @@ function runRescue() {
     salesStage: _currentSosStage || ''
   }, function(res) {
     btn.disabled = false;
-    btn.textContent = '🆘 立即生成話術建議';
+    btn.textContent = '🧠 智偉哥，這個怎麼辦？';
     if (!res.success) {
       showToast('❌ ' + (res.error || '呼叫失敗，請重試'));
       return;
@@ -5437,6 +5441,22 @@ function runRescue() {
     var raw = (res.text || '{}').replace(/```json|```/g,'').trim();
     try {
       var result = JSON.parse(raw);
+
+      // ★ 場景類型標籤
+      var sceneMap = {
+        '異議處理': { icon:'⚔️', color:'#c0392b', bg:'#fdf0ee' },
+        '主動出擊': { icon:'🎯', color:'#1565c0', bg:'#e3f0fb' },
+        '追蹤破冰': { icon:'🧊', color:'#6a1b9a', bg:'#f3e5f5' },
+        '心態困境': { icon:'💪', color:'#2e7d32', bg:'#e8f5e9' },
+        '情境設計': { icon:'✨', color:'#e65100', bg:'#fff3e0' }
+      };
+      var sceneEl = document.getElementById('rescueSceneType');
+      if (sceneEl && result.sceneType) {
+        var sc = sceneMap[result.sceneType] || { icon:'🧠', color:'#0f2744', bg:'#f0f4f8' };
+        sceneEl.innerHTML = '<span style="background:'+sc.bg+';color:'+sc.color+';border:1.5px solid '+sc.color+'40;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;">'+sc.icon+' '+result.sceneType+'</span>';
+        sceneEl.style.display = 'block';
+      }
+
       document.getElementById('rescueAnalysis').textContent = result.analysis || '—';
       document.getElementById('rescueScriptText').textContent = result.script || '—';
       document.getElementById('rescueDont').textContent = result.dont || '—';
@@ -5676,19 +5696,20 @@ function showToast(msg) {
 
       <!-- 自由輸入 -->
       <div class="rescue-input-wrap">
-        <label>✍️ 輸入客戶說的話</label>
-        <textarea id="rescueObjInput" placeholder="例：我老婆說要再想想，她覺得現在不是好時機..."></textarea>
+        <label>✍️ 輸入你現在遇到的狀況</label>
+        <textarea id="rescueObjInput" placeholder="什麼都可以輸入，例如：&#10;▸ 客戶說：「我老婆覺得現在不是時機」&#10;▸ 客戶幸運升級了，應該怎麼跟他說讓他超有感？&#10;▸ 已讀不回三天，要怎麼丟鉤子？&#10;▸ 帶看後不知道怎麼締結"></textarea>
       </div>
 
       <button class="rescue-submit-btn" id="rescueSubmitBtn" onclick="runRescue()">
-        🆘 立即生成話術建議
+        🧠 智偉哥，這個怎麼辦？
       </button>
 
       <!-- 結果區 -->
       <div class="rescue-result" id="rescueResult">
         <div style="height:1.5rem"></div>
-        <div style="font-size:11px;font-weight:700;color:var(--navy);letter-spacing:.1em;margin-bottom:1rem;padding-bottom:.625rem;border-bottom:2px solid var(--cream2)">
-          📋 AI 話術建議報告
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;padding-bottom:.625rem;border-bottom:2px solid var(--cream2)">
+          <div style="font-size:11px;font-weight:700;color:var(--navy);letter-spacing:.1em">📋 智偉哥建議報告</div>
+          <div id="rescueSceneType" style="display:none"></div>
         </div>
 
         <div class="rescue-section">
