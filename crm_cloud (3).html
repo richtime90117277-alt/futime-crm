@@ -2573,13 +2573,14 @@ function saveAllWeekScores() {
     var sp = c.salesPerson || '未指定';
     if (SALES.indexOf(sp) === -1) return;
     if (!scoreMap[sp]) { scoreMap[sp] = 0; countMap[sp] = 0; }
-    // 只算本週有更新的
+    // 只算本週有更新的（updatedAt 或 id timestamp，不用 creationDate）
     var upd2 = false;
     if (c.updatedAt) {
-      var upd2Str = c.updatedAt.toString().slice(0,10); if (upd2Str >= weekStartStr) upd2 = true;
+      var upd2Str = c.updatedAt.toString().replace(/\//g, '-').slice(0,10);
+      if (upd2Str >= weekStartStr) upd2 = true;
     } else if (c.id) {
       var id2 = parseInt(c.id);
-      if (!isNaN(id2)) {
+      if (!isNaN(id2) && id2 > 1000000000000) {
         var id2Date = new Date(id2);
         var id2Str = id2Date.getFullYear()+'-'+String(id2Date.getMonth()+1).padStart(2,'0')+'-'+String(id2Date.getDate()).padStart(2,'0');
         if (id2Str >= weekStartStr) upd2 = true;
@@ -2732,19 +2733,13 @@ function renderLeaderboard() {
 
     var isThisWeek = false;
 
-    // 方式1：updatedAt 欄位
+    // 方式1：updatedAt 欄位（Apps Script AB欄，每次新增/編輯都寫入）
     if (c.updatedAt) {
       var updStr = c.updatedAt.toString().replace(/\//g, '-').slice(0,10);
       if (updStr >= weekStartStr) isThisWeek = true;
     }
 
-    // 方式2：creationDate 欄位
-    if (!isThisWeek && c.creationDate) {
-      var crtStr = c.creationDate.toString().replace(/\//g, '-').slice(0,10);
-      if (crtStr >= weekStartStr) isThisWeek = true;
-    }
-
-    // 方式3：id 是 timestamp（毫秒）
+    // 方式2：id 是 timestamp（毫秒）— 代表本週新增的客戶
     if (!isThisWeek && c.id) {
       var idNum = parseInt(c.id);
       if (!isNaN(idNum) && idNum > 1000000000000) {
@@ -2755,6 +2750,10 @@ function renderLeaderboard() {
         if (idStr >= weekStartStr) isThisWeek = true;
       }
     }
+
+    // ⚠️ 注意：不使用 creationDate 作為 fallback
+    // creationDate 是客戶建立時填的「預計日期欄位」，不等於本週有操作
+    // 若客戶沒有 updatedAt（舊資料），本週沒更新過就不計入週積分
 
     if (!isThisWeek) return;
     scoreMap[sp] += calcScore(c);
