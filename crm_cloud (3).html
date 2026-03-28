@@ -2513,6 +2513,24 @@ function renderAchieveLB() {
   }).join('');
 }
 
+// ── 日期 Parse 工具（處理 Apps Script zh-TW 格式：2026/3/5 上午9:00:00）──
+function parseTWDate(raw) {
+  if (!raw) return null;
+  try {
+    var s = raw.toString().replace('上午','').replace('下午','').trim();
+    var datePart = s.split(' ')[0]; // '2026/3/5'
+    var parts = datePart.split('/');
+    if (parts.length === 3) {
+      var y = parseInt(parts[0]);
+      var m = parseInt(parts[1]) - 1;
+      var d = parseInt(parts[2]);
+      if (!isNaN(y) && !isNaN(m) && !isNaN(d)) return new Date(y, m, d);
+    }
+    var dt = new Date(raw);
+    return isNaN(dt.getTime()) ? null : dt;
+  } catch(e) { return null; }
+}
+
 // ── 週積分Tab切換 ──
 var _lbCurrentTab = 'week';
 function switchLbTab(tab) {
@@ -2565,7 +2583,7 @@ function saveAllWeekScores() {
   var dft2 = dow2 === 0 ? 5 : dow2 === 1 ? 6 : dow2 - 2;
   var wkStart2Date = new Date(nowTai2);
   wkStart2Date.setDate(nowTai2.getDate() - dft2);
-  var weekStartStr = wkStart2Date.getFullYear() + '-' +
+  wkStart2Date.setHours(0, 0, 0, 0);
     String(wkStart2Date.getMonth()+1).padStart(2,'0') + '-' +
     String(wkStart2Date.getDate()).padStart(2,'0');
 
@@ -2573,17 +2591,16 @@ function saveAllWeekScores() {
     var sp = c.salesPerson || '未指定';
     if (SALES.indexOf(sp) === -1) return;
     if (!scoreMap[sp]) { scoreMap[sp] = 0; countMap[sp] = 0; }
-    // 只算本週有更新的（updatedAt 或 id timestamp，不用 creationDate）
+    // 只算本週有更新的（用 Date 物件比較，避免 zh-TW 格式月份不補零導致字串比較錯誤）
     var upd2 = false;
     if (c.updatedAt) {
-      var upd2Str = c.updatedAt.toString().replace(/\//g, '-').slice(0,10);
-      if (upd2Str >= weekStartStr) upd2 = true;
-    } else if (c.id) {
+      var updDate2 = parseTWDate(c.updatedAt);
+      if (updDate2 && updDate2 >= wkStart2Date) upd2 = true;
+    }
+    if (!upd2 && c.id) {
       var id2 = parseInt(c.id);
       if (!isNaN(id2) && id2 > 1000000000000) {
-        var id2Date = new Date(id2);
-        var id2Str = id2Date.getFullYear()+'-'+String(id2Date.getMonth()+1).padStart(2,'0')+'-'+String(id2Date.getDate()).padStart(2,'0');
-        if (id2Str >= weekStartStr) upd2 = true;
+        if (new Date(id2) >= wkStart2Date) upd2 = true;
       }
     }
     if (!upd2) return;
@@ -2733,27 +2750,19 @@ function renderLeaderboard() {
 
     var isThisWeek = false;
 
-    // 方式1：updatedAt 欄位（Apps Script AB欄，每次新增/編輯都寫入）
+    // 方式1：updatedAt 欄位（用 Date 物件比較，避免 zh-TW 格式月份不補零導致字串比較錯誤）
     if (c.updatedAt) {
-      var updStr = c.updatedAt.toString().replace(/\//g, '-').slice(0,10);
-      if (updStr >= weekStartStr) isThisWeek = true;
+      var updDate = parseTWDate(c.updatedAt);
+      if (updDate && updDate >= weekStartDate) isThisWeek = true;
     }
 
     // 方式2：id 是 timestamp（毫秒）— 代表本週新增的客戶
     if (!isThisWeek && c.id) {
       var idNum = parseInt(c.id);
       if (!isNaN(idNum) && idNum > 1000000000000) {
-        var idDate = new Date(idNum);
-        var idStr = idDate.getFullYear() + '-' +
-          String(idDate.getMonth()+1).padStart(2,'0') + '-' +
-          String(idDate.getDate()).padStart(2,'0');
-        if (idStr >= weekStartStr) isThisWeek = true;
+        if (new Date(idNum) >= weekStartDate) isThisWeek = true;
       }
     }
-
-    // ⚠️ 注意：不使用 creationDate 作為 fallback
-    // creationDate 是客戶建立時填的「預計日期欄位」，不等於本週有操作
-    // 若客戶沒有 updatedAt（舊資料），本週沒更新過就不計入週積分
 
     if (!isThisWeek) return;
     scoreMap[sp] += calcScore(c);
