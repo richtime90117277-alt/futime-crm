@@ -71,6 +71,35 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
 .setup-banner h4{color:#856404;font-size:15px;margin-bottom:.5rem}
 .setup-banner p{color:#856404;font-size:13px;line-height:1.7}
 .setup-banner input{margin-top:.75rem;background:white}
+/* ── 預警清單 ── */
+.alert-panel{background:#fff;border:2.5px solid #e53935;border-radius:14px;overflow:hidden;margin-bottom:1rem;box-shadow:0 4px 20px rgba(229,57,53,.12)}
+.alert-panel-head{background:linear-gradient(135deg,#b71c1c,#e53935);padding:.75rem 1.25rem;display:flex;align-items:center;justify-content:space-between}
+.alert-panel-head h4{color:#fff;font-size:14px;font-weight:700;margin:0;display:flex;align-items:center;gap:.5rem}
+.alert-panel-badge{background:rgba(255,255,255,.25);color:#fff;font-size:12px;font-weight:700;padding:2px 8px;border-radius:20px}
+.alert-panel-body{padding:.75rem}
+.alert-item{display:flex;align-items:center;gap:.75rem;padding:.625rem .75rem;border-radius:10px;margin-bottom:.5rem;cursor:pointer;transition:all .15s}
+.alert-item:last-child{margin-bottom:0}
+.alert-item:hover{transform:translateX(3px)}
+.alert-item.type-a{background:#fff5f5;border:1.5px solid #ffcdd2}
+.alert-item.type-b{background:#fff8e1;border:1.5px solid #ffe082}
+.alert-item.type-c{background:#e8f5e9;border:1.5px solid #a5d6a7}
+.alert-item-icon{font-size:20px;flex-shrink:0;width:28px;text-align:center}
+.alert-item-main{flex:1;min-width:0}
+.alert-item-name{font-size:14px;font-weight:700;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.alert-item-sub{font-size:11px;color:var(--text-soft);margin-top:2px}
+.alert-item-badge{font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+.alert-item-badge.red{background:#ffebee;color:#c62828}
+.alert-item-badge.orange{background:#fff3e0;color:#e65100}
+.alert-item-badge.green{background:#e8f5e9;color:#2e7d52}
+/* 登入後彈窗 */
+.rescue-alert-overlay{display:none;position:fixed;inset:0;background:rgba(10,20,40,.7);z-index:5000;align-items:center;justify-content:center;padding:1rem}
+.rescue-alert-overlay.active{display:flex}
+.rescue-alert-modal{background:#fff;border-radius:20px;max-width:440px;width:100%;max-height:88vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.4);animation:loginSlide .4s cubic-bezier(.22,.68,0,1.2)}
+.rescue-alert-head{background:linear-gradient(135deg,#b71c1c,#e53935);padding:1.25rem 1.5rem;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:space-between}
+.rescue-alert-head h3{color:#fff;font-size:16px;font-weight:700;margin:0}
+.rescue-alert-head p{color:rgba(255,255,255,.8);font-size:12px;margin-top:.2rem}
+.rescue-alert-close{background:rgba(255,255,255,.2);border:none;color:#fff;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.rescue-alert-body{padding:1.25rem}
 /* APP */
 .app{display:none}
 .app.active{display:flex;flex-direction:column;height:100vh;overflow:hidden}
@@ -826,6 +855,9 @@ function claimSeminarLead() {}
         </div>
         <div style="text-align:right;font-size:12px;color:rgba(255,255,255,.5)" id="dashDateLabel"></div>
       </div>
+
+      <!-- 今日救援清單 -->
+      <div id="dashAlertPanel" style="display:none;margin-bottom:1rem"></div>
 
       <!-- 核心四格 -->
       <!-- 2026新戶 & 累積成交 大卡片 -->
@@ -1692,6 +1724,9 @@ function claimSeminarLead() {}
         <div style="font-size:12px;color:rgba(255,255,255,.5)" id="journalDateLabel"></div>
       </div>
 
+      <!-- 今日救援清單（日誌版） -->
+      <div id="journalAlertPanel" style="display:none;margin-bottom:1rem"></div>
+
       <!-- 快速記錄 -->
       <div class="card" style="margin-bottom:1rem;border:2px solid var(--gold)">
         <div class="card-header" style="background:linear-gradient(135deg,#fffbf0,#fff8e7)">
@@ -2220,6 +2255,7 @@ function enterApp() {
 
 function logout() {
   currentUser = null; currentRole = null; customers = [];
+  _rescueAlertShownThisSession = false;
   document.getElementById('loginPage').style.display = 'flex';
   document.getElementById('mainApp').classList.remove('active');
   document.getElementById('userSelect').value = '';
@@ -2785,6 +2821,7 @@ function fetchCustomers() {
       if (currentRole === 'manager') renderBossDashboard();
       renderTrend();
       renderCompleteness();
+      runRescueAlerts();
     } else {
       showToast('⚠️ 載入失敗：'+res.error);
     }
@@ -3123,8 +3160,157 @@ function getRiskLevel(c) {
 }
 
 // ══════════════════════════════════════════════
-// 老闆決策面板渲染
+// 今日救援預警系統
+// 三條規則：
+//   A) A級客戶（成交率≥70%）超過7天未跟進  → 🔴
+//   B) 成交關鍵階段（五六部曲）卡住超過10天 → 🟠
+//   C) 新名單（創建≤14天）超過3天未首聯繫  → 🟡
 // ══════════════════════════════════════════════
+var RESCUE_ALERT_THRESHOLD = { A: 7, B: 10, C: 3 };
+
+function calcRescueAlerts() {
+  var active = customers.filter(function(c) {
+    return isActive(c) && (currentRole === 'manager' || c.salesPerson === currentUser);
+  });
+
+  var alerts = [];
+
+  active.forEach(function(c) {
+    var days = daysSinceUpdate(c);
+    var prob = calcCloseProb(c);
+    var stage = stageOf(c);
+
+    // ── 規則 A：A級客戶（≥70%）超過7天 ──
+    if (prob >= 70 && days >= RESCUE_ALERT_THRESHOLD.A) {
+      alerts.push({
+        type: 'a',
+        icon: '🔴',
+        customer: c,
+        days: days,
+        prob: prob,
+        reason: 'A級客戶 ' + prob + '% 成交率，已 ' + days + ' 天未跟進',
+        urgency: prob + days * 0.5   // 排序用
+      });
+      return; // 已命中最高級，不重複
+    }
+
+    // ── 規則 B：五六部曲卡住超過10天 ──
+    if ((stage === 5 || stage === 6) && days >= RESCUE_ALERT_THRESHOLD.B) {
+      var stageNames = { 5: '五部曲（異議處理）', 6: '六部曲（成交締結）' };
+      alerts.push({
+        type: 'b',
+        icon: '🟠',
+        customer: c,
+        days: days,
+        prob: prob,
+        reason: '卡在' + stageNames[stage] + '，已 ' + days + ' 天未推進',
+        urgency: days * 0.8
+      });
+      return;
+    }
+
+    // ── 規則 C：新名單 3 天未首聯繫 ──
+    var isNewLead = false;
+    try {
+      if (c.creationDate) {
+        var cd = new Date(c.creationDate);
+        if (!isNaN(cd)) {
+          var ageDays = Math.floor((new Date() - cd) / 86400000);
+          isNewLead = ageDays <= 14; // 14天內建立的算新名單
+        }
+      }
+    } catch(e) {}
+    if (isNewLead && stage === 1 && days >= RESCUE_ALERT_THRESHOLD.C) {
+      alerts.push({
+        type: 'c',
+        icon: '🟡',
+        customer: c,
+        days: days,
+        prob: prob,
+        reason: '新名單已建立，' + days + ' 天仍未首次聯繫',
+        urgency: days * 0.3
+      });
+    }
+  });
+
+  // 依緊迫度排序，最多顯示12筆
+  alerts.sort(function(a, b) { return b.urgency - a.urgency; });
+  return alerts.slice(0, 12);
+}
+
+function buildAlertItemHtml(a, clickable) {
+  var typeClass = { a: 'type-a', b: 'type-b', c: 'type-c' };
+  var badgeClass = { a: 'red', b: 'orange', c: 'green' };
+  var onclick = clickable ? ' onclick="showDetail(\'' + a.customer.id + '\')"' : '';
+  return '<div class="alert-item ' + typeClass[a.type] + '"' + onclick + '>' +
+    '<div class="alert-item-icon">' + a.icon + '</div>' +
+    '<div class="alert-item-main">' +
+      '<div class="alert-item-name">' + a.customer.customerName +
+        (currentRole === 'manager' ? ' <span style="font-size:11px;font-weight:400;color:var(--text-muted)">（' + a.customer.salesPerson + '）</span>' : '') +
+      '</div>' +
+      '<div class="alert-item-sub">' + a.reason + '</div>' +
+    '</div>' +
+    '<div class="alert-item-badge ' + badgeClass[a.type] + '">' + a.days + '天</div>' +
+  '</div>';
+}
+
+function renderRescueAlertPanel(alerts, targetId) {
+  var el = document.getElementById(targetId);
+  if (!el) return;
+  if (!alerts || !alerts.length) {
+    el.style.display = 'none';
+    return;
+  }
+  var typeLabels = { a: '🔴 A級未跟進', b: '🟠 成交卡關', c: '🟡 新名單未聯繫' };
+  var counts = { a: 0, b: 0, c: 0 };
+  alerts.forEach(function(a) { counts[a.type]++; });
+  var summaryParts = [];
+  if (counts.a) summaryParts.push(typeLabels.a + ' ' + counts.a + '人');
+  if (counts.b) summaryParts.push(typeLabels.b + ' ' + counts.b + '人');
+  if (counts.c) summaryParts.push(typeLabels.c + ' ' + counts.c + '人');
+
+  el.style.display = 'block';
+  el.innerHTML =
+    '<div class="alert-panel">' +
+      '<div class="alert-panel-head">' +
+        '<h4>🚨 今日需要行動 <span class="alert-panel-badge">' + alerts.length + ' 位客戶</span></h4>' +
+        '<span style="font-size:11px;color:rgba(255,255,255,.7)">' + summaryParts.join('　') + '</span>' +
+      '</div>' +
+      '<div class="alert-panel-body">' +
+        alerts.map(function(a) { return buildAlertItemHtml(a, true); }).join('') +
+      '</div>' +
+    '</div>';
+}
+
+var _rescueAlertShownThisSession = false;
+
+function showRescueAlertPopup(alerts) {
+  if (!alerts.length) return;
+  if (_rescueAlertShownThisSession) return; // 每次登入只彈一次
+  _rescueAlertShownThisSession = true;
+
+  var subtitle = document.getElementById('rescueAlertSubtitle');
+  if (subtitle) subtitle.textContent = '共 ' + alerts.length + ' 位客戶需要今日行動';
+
+  var body = document.getElementById('rescueAlertModalBody');
+  if (body) body.innerHTML = alerts.map(function(a) { return buildAlertItemHtml(a, false); }).join('');
+
+  document.getElementById('rescueAlertOverlay').classList.add('active');
+}
+
+function closeRescueAlertPopup() {
+  document.getElementById('rescueAlertOverlay').classList.remove('active');
+}
+
+function runRescueAlerts() {
+  var alerts = calcRescueAlerts();
+  renderRescueAlertPanel(alerts, 'dashAlertPanel');
+  renderRescueAlertPanel(alerts, 'journalAlertPanel');
+  // 登入後首次載入才彈窗
+  showRescueAlertPopup(alerts);
+}
+
+
 function getWeekRange() {
   var now = new Date();
   var day = now.getDay(); // 0=日,1=一...6=六
@@ -5762,6 +5948,24 @@ function showToast(msg) {
         </div>
       </div>
 
+    </div>
+  </div>
+</div>
+
+<!-- 登入後預警彈窗 -->
+<div class="rescue-alert-overlay" id="rescueAlertOverlay">
+  <div class="rescue-alert-modal">
+    <div class="rescue-alert-head">
+      <div>
+        <h3>🚨 今日需要救援的客戶</h3>
+        <p id="rescueAlertSubtitle">系統偵測到以下客戶需要立即行動</p>
+      </div>
+      <button class="rescue-alert-close" onclick="closeRescueAlertPopup()">✕</button>
+    </div>
+    <div class="rescue-alert-body" id="rescueAlertModalBody"></div>
+    <div style="padding:.75rem 1.25rem 1.25rem;display:flex;gap:.75rem">
+      <button class="btn btn-primary" style="flex:1;margin-top:0;font-size:14px" onclick="closeRescueAlertPopup();showPage('followupJournal',document.querySelector('#journalTab'))">📝 前往日誌跟進</button>
+      <button class="btn btn-secondary" style="flex:1;margin-top:0;font-size:14px" onclick="closeRescueAlertPopup()">稍後處理</button>
     </div>
   </div>
 </div>
