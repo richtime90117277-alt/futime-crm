@@ -2027,36 +2027,27 @@ var customers = [];
 var MANAGERS = ['總經理','CRM營運長','知識長','AI訓練長'];
 var DEFAULT_SALES = ['阮智偉','廖一龍','鄭采崴','張書菡','王鈞志','吳玉如','商國泰','郭淑真','高亞琦','陳淑美','侯明智','許亞茵','曾素蘭','林紫君','黃中興','黃彥程','孫運迪','陳丰彥','劉常裕','施向宇','莊環蔭','廉海桃','劉晁綱','游馥宇'];
 var SALES = [];
-var PASSWORDS = {
-  '總經理':'boss2026','CRM營運長':'CRM2026','知識長':'know2026','AI訓練長':'ai2026',
-  '阮智偉':'7433','廖一龍':'8439','鄭采崴':'1862','張書菡':'2626',
-  '王鈞志':'5982','吳玉如':'8527','商國泰':'6502','郭淑真':'1319','高亞琦':'4943',
-  '陳淑美':'8428','侯明智':'3609','許亞茵':'9910','曾素蘭':'9913','林紫君':'3140',
-  '黃中興':'5851','黃彥程':'2508','孫運迪':'1681','陳丰彥':'3993','劉常裕':'4053',
-  '施向宇':'1354','莊環蔭':'4134','廉海桃':'1908','劉晁綱':'1552','游馥宇':'3320'
-};
+// 密碼已移至後端（Apps Script 系統密碼工作表）
+// HTML 不存任何密碼，由 verifyPassword action 驗證
+var PASSWORDS = {}; // 保留空物件避免舊代碼報錯
 var STAGE_NAMES = ['','客戶開發','初步接觸','需求分析','產品匹配','異議處理','成交締結','售後服務','轉介紹'];
 var STAFF_KEY = 'futime_sales_list';
 var PASSWORDS_KEY = 'futime_passwords';
 
-// ── 密碼管理 ──
-function loadPasswords() {
-  try {
-    var saved = localStorage.getItem(PASSWORDS_KEY);
-    if (saved) {
-      var extra = JSON.parse(saved);
-      Object.keys(extra).forEach(function(k){ PASSWORDS[k] = extra[k]; });
-    }
-  } catch(e) {}
-}
-function savePasswords() {
-  try { localStorage.setItem(PASSWORDS_KEY, JSON.stringify(PASSWORDS)); } catch(e) {}
-}
+// ── 密碼管理（v13+：密碼移至後端，不在前端存明文）──
+function loadPasswords() { /* 已棄用，密碼由後端 verifyPassword 驗證 */ }
+function savePasswords() { /* 已棄用 */ }
 function setStaffPassword(name, pwd) {
   if (!pwd || pwd.length < 4) { showToast('⚠️ 密碼至少4碼'); return; }
-  PASSWORDS[name] = pwd;
-  savePasswords();
-  showToast('✅ 已設定 '+name+' 的密碼');
+  // 改存後端，不在前端存明文
+  callAPI({ action: 'setPassword', user: name, password: pwd }, function(res) {
+    if (res && res.success) {
+      showToast('✅ 已設定 '+name+' 的密碼（存入後端）');
+      renderStaffList();
+    } else {
+      showToast('❌ 設定失敗：'+(res && res.error ? res.error : '未知錯誤'));
+    }
+  });
 }
 
 // ── 業務名單（從 localStorage 讀取，沒有就用預設）──
@@ -2226,7 +2217,7 @@ function setOffline() {
   dot.className='sync-dot offline'; txt.textContent='連線失敗';
 }
 
-// ── 登入 ──
+// ── 登入（後端驗證，密碼不存在前端）──
 function login() {
   var u = document.getElementById('userSelect').value;
   var p = document.getElementById('passwordInput').value;
@@ -2237,11 +2228,20 @@ function login() {
   };
   if (!u) return showErr('🔒 請選擇身份');
   if (!p) return showErr('🔒 請輸入密碼');
-  var ok = PASSWORDS[u] ? p === PASSWORDS[u] : false;
-  if (!ok) return showErr('🔒 帳號或密碼錯誤');
-  currentUser = u;
-  currentRole = MANAGERS.indexOf(u) !== -1 ? 'manager' : 'sales';
-  enterApp();
+
+  var btn = document.querySelector('#loginPage .btn-primary');
+  if (btn) { btn.disabled = true; btn.textContent = '🔐 驗證中...'; }
+
+  callAPI({ action: 'verifyPassword', user: u, password: p }, function(res) {
+    if (btn) { btn.disabled = false; btn.textContent = '🔐 登入系統'; }
+    if (res && res.success) {
+      currentUser = u;
+      currentRole = res.role;
+      enterApp();
+    } else {
+      showErr('🔒 ' + (res && res.error ? res.error : '帳號或密碼錯誤'));
+    }
+  });
 }
 
 function enterApp() {
