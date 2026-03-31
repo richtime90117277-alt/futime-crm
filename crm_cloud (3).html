@@ -856,6 +856,9 @@ function claimSeminarLead() {}
         <div style="text-align:right;font-size:12px;color:rgba(255,255,255,.5)" id="dashDateLabel"></div>
       </div>
 
+      <!-- 公司整體業績目標卡片 -->
+      <div id="companyTargetCard" style="margin-bottom:1rem"></div>
+
       <!-- 今日救援清單 -->
       <div id="dashAlertPanel" style="display:none;margin-bottom:1rem"></div>
 
@@ -2280,7 +2283,8 @@ function initApp() {
   } else {
     sp.innerHTML = '<option value="'+currentUser+'" selected>'+currentUser+'</option>';
     sp.disabled = true;
-    document.getElementById('reportsTab').style.display = 'none';
+    // 業務可以看排行榜，但不能看業務管理
+    document.getElementById('reportsTab').style.display = '';
     document.getElementById('staffTab').style.display = 'none';
     var histPanel2 = document.getElementById('lbHistoryPanel'); if(histPanel2) histPanel2.style.display = 'none';
   }
@@ -2501,14 +2505,19 @@ function renderAchieveLB() {
       '<div style="background:var(--cream2);border-radius:99px;height:8px;overflow:hidden;margin-bottom:.5rem">'+
         '<div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,'+pctColor+','+pctColor+'aa);border-radius:99px;transition:.6s"></div>'+
       '</div>'+
-      '<div style="display:flex;align-items:center;gap:.5rem">'+
-        '<span style="font-size:11px;color:var(--text-muted)">目標：</span>'+
-        '<input type="number" placeholder="輸入目標（萬）" value="'+(tgt||'')+'" data-sp="'+sp+'"'+
-          ' onchange="saveTarget(this.dataset.sp,this.value)"'+
-          ' style="width:110px;padding:.25rem .5rem;border:1.5px solid #e0d8c8;border-radius:6px;font-size:12px;font-family:inherit">'+
-        '<span style="font-size:11px;color:var(--text-muted)">萬</span>'+
-        '<span style="font-size:10px;color:#27ae60;margin-left:.25rem">✓ 自動儲存</span>'+
-      '</div>'+
+      // 管理員：顯示可編輯輸入框；業務：只顯示目標數字
+      (currentRole === 'manager' ?
+        '<div style="display:flex;align-items:center;gap:.5rem">'+
+          '<span style="font-size:11px;color:var(--text-muted)">目標：</span>'+
+          '<input type="number" placeholder="輸入目標（萬）" value="'+(tgt||'')+'" data-sp="'+sp+'"'+
+            ' onchange="saveTarget(this.dataset.sp,this.value)"'+
+            ' style="width:110px;padding:.25rem .5rem;border:1.5px solid #e0d8c8;border-radius:6px;font-size:12px;font-family:inherit">'+
+          '<span style="font-size:11px;color:var(--text-muted)">萬</span>'+
+          '<span style="font-size:10px;color:#27ae60;margin-left:.25rem">✓ 自動儲存</span>'+
+        '</div>'
+      :
+        '<div style="font-size:11px;color:var(--text-muted)">目標：<b style="color:var(--navy)">'+(tgt > 0 ? tgt+'萬' : '未設定')+'</b></div>'
+      )+
     '</div>';
   }).join('');
 }
@@ -2821,7 +2830,11 @@ function fetchCustomers() {
         });
         return clean;
       });
-      renderDashboard();
+      // 先載入業績目標，確保 Dashboard 業績卡片數字正確
+      loadTargets(function() {
+        renderDashboard();
+        renderCompanyTargetCard();
+      });
       renderCustomers();
       renderReports();
       renderRecent();
@@ -3055,8 +3068,77 @@ function renderDashboard() {
   renderTrend();
   // ── 資料完整度 ──
   renderCompleteness();
+  // ── 公司整體業績目標卡片 ──
+  renderCompanyTargetCard();
 }
 
+// ══════════════════════════════════════════════
+// 公司整體業績目標 vs 實際（Dashboard 頂部卡片）
+// ══════════════════════════════════════════════
+function renderCompanyTargetCard() {
+  var el = document.getElementById('companyTargetCard');
+  if (!el) return;
+
+  var thisYear = new Date().getFullYear();
+
+  // 計算全公司實際業績（加總所有今年成交金額）
+  var totalActual = 0;
+  customers.forEach(function(c) {
+    try {
+      if (c.contractDate && c.dealAmount) {
+        var yr = new Date(c.contractDate).getFullYear();
+        if (yr === thisYear) totalActual += parseFloat(c.dealAmount) || 0;
+      }
+    } catch(e) {}
+  });
+
+  // 從 _targetsCache 加總所有業務目標
+  var totalTarget = 0;
+  Object.keys(_targetsCache).forEach(function(sp) {
+    totalTarget += parseFloat(_targetsCache[sp]) || 0;
+  });
+
+  var pct = totalTarget > 0 ? Math.min(Math.round(totalActual / totalTarget * 100), 999) : 0;
+  var pctColor = pct >= 100 ? '#1b5e20' : pct >= 60 ? '#e65100' : '#c0392b';
+  var remaining = totalTarget > totalActual ? Math.round(totalTarget - totalActual) : 0;
+
+  // 管理員才能看到目標設定提示；業務只看數字
+  var managerHint = currentRole === 'manager'
+    ? '<div style="font-size:11px;color:rgba(255,255,255,.5);margin-top:.25rem">目標在排行榜「業績達成率」區塊設定</div>'
+    : '';
+
+  el.innerHTML =
+    '<div style="background:linear-gradient(135deg,#07192d,#0f2744);border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:0;border:1px solid rgba(184,150,46,.3)">' +
+      '<div style="font-size:11px;letter-spacing:.12em;color:var(--gold);font-weight:700;margin-bottom:.75rem">🏢 ' + thisYear + ' 公司整體業績</div>' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;margin-bottom:1rem">' +
+        // 實際業績
+        '<div style="background:rgba(255,255,255,.07);border-radius:10px;padding:.75rem;text-align:center">' +
+          '<div style="font-size:10px;color:rgba(255,255,255,.5);margin-bottom:.25rem">實際業績</div>' +
+          '<div style="font-size:22px;font-weight:900;color:#f0d080">' + (totalActual > 0 ? totalActual : '—') + '</div>' +
+          '<div style="font-size:10px;color:rgba(255,255,255,.4)">萬</div>' +
+        '</div>' +
+        // 年度目標
+        '<div style="background:rgba(255,255,255,.07);border-radius:10px;padding:.75rem;text-align:center">' +
+          '<div style="font-size:10px;color:rgba(255,255,255,.5);margin-bottom:.25rem">年度目標</div>' +
+          '<div style="font-size:22px;font-weight:900;color:#b8d4f8">' + (totalTarget > 0 ? totalTarget : '—') + '</div>' +
+          '<div style="font-size:10px;color:rgba(255,255,255,.4)">萬</div>' +
+        '</div>' +
+        // 達成率
+        '<div style="background:rgba(255,255,255,.07);border-radius:10px;padding:.75rem;text-align:center">' +
+          '<div style="font-size:10px;color:rgba(255,255,255,.5);margin-bottom:.25rem">達成率</div>' +
+          '<div style="font-size:22px;font-weight:900;color:' + pctColor + '">' + (totalTarget > 0 ? pct + '%' : '—') + '</div>' +
+          '<div style="font-size:10px;color:rgba(255,255,255,.4)">' + (remaining > 0 ? '還差 ' + remaining + ' 萬' : totalTarget > 0 ? '🎉 達標！' : '未設定目標') + '</div>' +
+        '</div>' +
+      '</div>' +
+      // 進度條
+      (totalTarget > 0 ?
+        '<div style="background:rgba(255,255,255,.12);border-radius:99px;height:10px;overflow:hidden">' +
+          '<div style="height:100%;width:' + Math.min(pct,100) + '%;background:linear-gradient(90deg,' + pctColor + ',' + pctColor + 'aa);border-radius:99px;transition:1s"></div>' +
+        '</div>'
+      : '') +
+      managerHint +
+    '</div>';
+}
 
 // ══════════════════════════════════════════════
 // 成交預測評分引擎（0–100分）
