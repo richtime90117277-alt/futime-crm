@@ -5287,7 +5287,7 @@ function saveEdit(c) {
     seminarAttended: gv('seminarAttended'),
     seminarDate: gv('seminarDate'),
     consult2026: gv('consult2026'),
-    clientSegment: gv('clientSegment'),
+    clientSegment: gv('e_clientSegment') || gv('clientSegment'),
     preferredArea: gv('preferredArea')
   };
   var btn = document.getElementById('editSaveBtn');
