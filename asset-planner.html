@@ -128,16 +128,16 @@ canvas{border-radius:6px}
 .proj-sub{font-size:11px;color:#5a7090;margin-bottom:16px}
 .proj-compare{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
 .proj-col{border-radius:10px;padding:14px;text-align:center}
-.proj-col.buy{background:rgba(46,139,87,.12);border:1px solid rgba(82,199,124,.25)}
-.proj-col.nobuy{background:rgba(150,40,30,.1);border:1px solid rgba(224,92,74,.2)}
+.proj-col.buy{background:rgba(192,57,43,.12);border:1px solid rgba(224,92,74,.25)}
+.proj-col.nobuy{background:rgba(46,139,87,.1);border:1px solid rgba(82,199,124,.2)}
 .proj-col-label{font-size:10px;letter-spacing:1px;margin-bottom:10px;font-weight:bold}
-.proj-col.buy .proj-col-label{color:#52c77c}
-.proj-col.nobuy .proj-col-label{color:#e05c4a}
+.proj-col.buy .proj-col-label{color:#e05c4a}
+.proj-col.nobuy .proj-col-label{color:#52c77c}
 .proj-yr-row{margin-bottom:10px}
 .proj-yr-lbl{font-size:10px;color:#5a7090;margin-bottom:3px}
 .proj-yr-val{font-size:16px;font-weight:bold}
-.proj-col.buy .proj-yr-val{color:#a8f0c8}
-.proj-col.nobuy .proj-yr-val{color:#f0a090}
+.proj-col.buy .proj-yr-val{color:#ffaa90}
+.proj-col.nobuy .proj-yr-val{color:#a8f0c8}
 .proj-diff{background:linear-gradient(135deg,rgba(201,146,43,.15),rgba(201,146,43,.05));border:1px solid rgba(201,146,43,.3);border-radius:8px;padding:14px;text-align:center}
 .proj-diff-lbl{font-size:10px;color:#c8a870;letter-spacing:1px;margin-bottom:6px}
 .proj-diff-val{font-size:24px;font-weight:bold;color:#f5d87a}
@@ -278,12 +278,8 @@ canvas{border-radius:6px}
         <div class="fl"><label>自備款（萬元）★</label><input type="number" id="iDwn" placeholder="300" oninput="ca()"></div>
       </div>
       <div class="g2">
-        <div class="fl"><label>年利率</label>
-          <select id="iRat" onchange="ca()">
-            <option value="2.0">2.0%</option><option value="2.2">2.2%</option>
-            <option value="2.5" selected>2.5%（建議）</option>
-            <option value="2.8">2.8%</option><option value="3.0">3.0%</option>
-          </select>
+        <div class="fl"><label>年利率（%）可自填</label>
+          <input type="number" id="iRat" value="2.5" min="1" max="10" step="0.1" placeholder="2.5" oninput="ca()">
         </div>
         <div class="fl"><label>貸款年期</label>
           <select id="iYrs" onchange="ca()">
@@ -293,12 +289,8 @@ canvas{border-radius:6px}
           </select>
         </div>
       </div>
-      <div class="fl"><label>預估年增值率</label>
-        <select id="iGrowth" onchange="ca()">
-          <option value="3">3%（保守）</option>
-          <option value="5" selected>5%（合理）</option>
-          <option value="7">7%（樂觀）</option>
-        </select>
+      <div class="fl"><label>預估年增值率（%）可自填</label>
+        <input type="number" id="iGrowth" value="5" min="1" max="20" step="0.5" placeholder="5" oninput="ca()">
       </div>
       <div class="lbox">
         <div class="lc"><div class="ll">貸款金額</div><div class="lv" id="lAmt">—</div></div>
@@ -395,8 +387,8 @@ canvas{border-radius:6px}
         <canvas id="myChart" height="180"></canvas>
       </div>
       <div class="chart-legend">
-        <div class="cl-item"><div class="cl-dot" style="background:#52c77c"></div>現在買（資產增值）</div>
-        <div class="cl-item"><div class="cl-dot" style="background:#e05c4a"></div>繼續等（存款累積）</div>
+        <div class="cl-item"><div class="cl-dot" style="background:#e05c4a"></div>現在買（資產增值）</div>
+        <div class="cl-item"><div class="cl-dot" style="background:#52c77c"></div>繼續等（存款累積）</div>
       </div>
     </div>
 
@@ -583,7 +575,7 @@ function drawChart(buyArr,nobuyArr){
   }
   ctx.stroke();
   // dots at 5,10
-  [[5,buyArr[5],'#52c77c'],[10,buyArr[10],'#52c77c'],[5,nobuyArr[5],'#e05c4a'],[10,nobuyArr[10],'#e05c4a']].forEach(function(pt){
+  [[5,buyArr[5],'#e05c4a'],[10,buyArr[10],'#e05c4a'],[5,nobuyArr[5],'#52c77c'],[10,nobuyArr[10],'#52c77c']].forEach(function(pt){
     ctx.beginPath();ctx.arc(xPos(pt[0]),yPos(pt[1]),4,0,Math.PI*2);
     ctx.fillStyle=pt[2];ctx.fill();
   });
@@ -676,7 +668,10 @@ function doGen(){
   g('chartSub').textContent='年增值率 '+parseFloat(g('iGrowth').value)+'%，以 '+nm+' 目前收支結構試算';
   setTimeout(function(){drawChart(buyArr,nobuyArr)},100);
 
-  g('projSub').textContent='以年增值率 '+parseFloat(g('iGrowth').value)+'% 試算，'+nm+' 的10年資產對比';
+  // 自備款年化報酬率（IRR 近似：10年淨增值 / 自備款 / 10年）
+  var netGain10 = buyArr[10] - dw;
+  var annualizedROI = dw > 0 ? (Math.pow(buyArr[10]/dw, 1/10) - 1) * 100 : 0;
+  g('projSub').textContent='年增值率 '+parseFloat(g('iGrowth').value)+'%，'+nm+' 以自備款 '+fmtW(dw)+' 進場，年化報酬率約 '+annualizedROI.toFixed(1)+'%';
   g('buy5').textContent=fmtW(buyArr[5]);g('buy10').textContent=fmtW(buyArr[10]);
   g('nobuy5').textContent=fmtW(nobuyArr[5]);g('nobuy10').textContent=fmtW(nobuyArr[10]);
   var diff=buyArr[10]-nobuyArr[10];
