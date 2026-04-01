@@ -2158,7 +2158,9 @@ function callAPI(payload, callback) {
   if (!url) { callback({ success: false, error: '尚未設定 API 網址' }); return; }
   setSyncing(true);
   var controller = new AbortController();
-  var timer = setTimeout(function(){ controller.abort(); }, 15000);
+  // 生成接談劇本需要更長時間（Claude 生成完整報告約 20-30 秒）
+  var isLongOp = payload && (payload.action === 'generateFullScript' || payload.action === 'saveToNotion');
+  var timer = setTimeout(function(){ controller.abort(); }, isLongOp ? 90000 : 15000);
   fetch(url, {
     method: 'POST',
     body: JSON.stringify(payload),
