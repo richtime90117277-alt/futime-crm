@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>富時代｜收支規劃</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0d1b2e;color:#e0d8cc;font-family:sans-serif;font-size:14px}
+.tb{background:#0a1520;border-bottom:1px solid rgba(201,146,43,.3);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:99}
+.logo{display:flex;align-items:center;gap:8px}
+.lm{width:30px;height:30px;border:1.5px solid #c9922b;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#c9922b;font-weight:bold;font-size:13px}
+.ln{color:#e8b84b;font-weight:bold;font-size:12px;letter-spacing:1px}
+.ls{color:#6a7f98;font-size:10px}
+.tabs{display:flex;gap:6px}
+.tab{padding:5px 14px;border-radius:20px;border:1px solid rgba(201,146,43,.3);background:transparent;color:#6a7f98;font-size:11px;cursor:pointer;font-family:sans-serif}
+.tab.on{background:#c9922b;color:#0d1b2e;font-weight:bold;border-color:#c9922b}
+.main{max-width:560px;margin:0 auto;padding:14px 12px 110px}
+.card{background:#142238;border:1px solid rgba(201,146,43,.2);border-radius:10px;margin-bottom:12px;overflow:hidden}
+.ch{background:#1a2d45;padding:9px 14px;border-bottom:1px solid rgba(201,146,43,.15);display:flex;align-items:center;gap:8px}
+.cn{font-size:10px;border:1px solid #c9922b;color:#c9922b;padding:2px 6px;border-radius:3px;font-weight:bold}
+.ct{font-size:13px;font-weight:bold;color:#f0e8d8}
+.cb{padding:14px;display:grid;gap:10px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fl label{display:block;font-size:11px;color:#6a7f98;margin-bottom:4px;font-weight:bold;letter-spacing:.5px}
+.fl input,.fl select{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:8px 10px;color:#e0d8cc;font-size:13px;font-family:sans-serif}
+.fl input:focus,.fl select:focus{outline:none;border-color:#c9922b;background:rgba(201,146,43,.06)}
+.fl input::placeholder{color:rgba(255,255,255,.2)}
+.fl select option{background:#142238}
+.st{display:flex;justify-content:space-between;align-items:center;background:rgba(201,146,43,.1);border:1px solid rgba(201,146,43,.2);border-radius:6px;padding:8px 12px;margin-top:4px}
+.stl{font-size:11px;color:#e8b84b;font-weight:bold}
+.stv{font-size:18px;font-weight:bold;color:#f5d87a}
+.lbox{background:#0d1b2e;border:1px solid rgba(201,146,43,.2);border-radius:8px;padding:12px;margin-top:4px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.lc .ll{font-size:10px;color:#6a7f98;margin-bottom:3px}
+.lc .lv{font-size:13px;color:#e0d8cc;font-weight:bold}
+.lc .lv.big{font-size:20px;color:#f5d87a}
+.mw{display:flex;gap:8px;align-items:center}
+.mw input{flex:1}
+.mc{font-size:11px;color:#6a7f98;white-space:nowrap;min-width:80px}
+.svr{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);cursor:pointer}
+.svr:last-child{border-bottom:none}
+.sck{width:20px;height:20px;border:1.5px solid rgba(255,255,255,.25);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:11px;color:transparent;flex-shrink:0;transition:all .15s}
+.sck.on{background:#2e8b57;border-color:#2e8b57;color:#fff}
+.svd{flex:1;font-size:12px;color:#e0d8cc}
+.sva{font-size:12px;color:#52c77c;font-weight:bold;white-space:nowrap;display:flex;align-items:center;gap:3px}
+.mini{width:64px;border:1px solid rgba(255,255,255,.12);border-radius:4px;padding:4px 6px;font-size:12px;background:#0d1b2e;color:#e0d8cc;text-align:right;font-family:sans-serif}
+.gbar{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(to top,#0d1b2e 65%,transparent);padding:16px 14px 14px;display:flex;gap:8px;justify-content:center;z-index:98}
+.bgen{flex:1;max-width:340px;background:linear-gradient(135deg,#c9922b,#e8b84b);border:none;border-radius:8px;padding:13px;color:#0d1b2e;font-size:14px;font-weight:bold;cursor:pointer;font-family:sans-serif}
+.bclr{background:transparent;border:1px solid rgba(255,255,255,.18);border-radius:8px;padding:13px 14px;color:#6a7f98;font-size:12px;cursor:pointer;font-family:sans-serif}
+/* report */
+#vR{display:none;max-width:560px;margin:0 auto;padding:14px 12px 80px}
+.rh{background:#1a2d45;border:1px solid rgba(201,146,43,.3);border-radius:10px;padding:20px;margin-bottom:12px}
+.rl{font-size:10px;letter-spacing:2px;color:#c9922b;margin-bottom:6px}
+.rn{font-size:22px;font-weight:bold;color:#fff;margin-bottom:4px}
+.rp{font-size:12px;color:#6a7f98}
+.rd{font-size:10px;color:rgba(255,255,255,.25);margin-top:8px;letter-spacing:.5px}
+.ng{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.nc{background:#142238;border:1px solid rgba(201,146,43,.2);border-radius:10px;padding:14px;position:relative;overflow:hidden}
+.nc::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px}
+.nc.i::after{background:linear-gradient(90deg,#c9922b,#e8b84b)}
+.nc.e::after{background:linear-gradient(90deg,#c0392b,#e74c3c)}
+.nc.l::after{background:linear-gradient(90deg,#2980b9,#3498db)}
+.nc.s::after{background:linear-gradient(90deg,#2e8b57,#52c77c)}
+.ncl{font-size:10px;color:#6a7f98;letter-spacing:.5px;margin-bottom:6px}
+.ncv{font-size:16px;font-weight:bold;color:#f0e8d8}
+.ncu{font-size:10px;color:#6a7f98;margin-top:3px}
+.rb{background:#142238;border:1px solid rgba(201,146,43,.2);border-radius:10px;margin-bottom:12px;overflow:hidden}
+.rbh{padding:9px 14px;background:#1a2d45;border-bottom:1px solid rgba(201,146,43,.15);font-size:11px;font-weight:bold;letter-spacing:.5px;color:#e8b84b}
+.rr{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px}
+.rr:last-child{border-bottom:none}
+.rrl{color:#6a7f98}
+.rrv{font-weight:bold}
+.rrv.p{color:#52c77c}
+.rrv.n{color:#e74c3c}
+.rrt{background:rgba(201,146,43,.1);border-top:1px solid rgba(201,146,43,.2)!important}
+.rrt .rrl{color:#e8b84b;font-weight:bold;font-size:14px}
+.rrt .rrv{font-size:20px}
+.sp{background:#142238;border:2px solid #c9922b;border-radius:10px;padding:20px;margin-bottom:12px;text-align:center}
+.spl{font-size:10px;letter-spacing:2px;color:#c9922b;margin-bottom:8px}
+.spv{font-size:40px;font-weight:bold;color:#fff}
+.sps{font-size:11px;color:#6a7f98;margin-top:6px}
+.rat{background:#142238;border:1px solid rgba(201,146,43,.2);border-radius:10px;padding:16px;margin-bottom:12px}
+.ratt{font-size:11px;font-weight:bold;letter-spacing:.5px;color:#e8b84b;margin-bottom:12px}
+.ratn{font-size:42px;font-weight:bold;text-align:center;margin-bottom:4px}
+.rats{text-align:center;font-size:11px;color:#6a7f98;margin-bottom:12px}
+.bbg{height:14px;background:rgba(255,255,255,.07);border-radius:7px;overflow:hidden}
+.bfi{height:100%;border-radius:7px;transition:width .5s}
+.bleg{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,.3);margin-top:4px}
+.vd{border-radius:10px;padding:14px 16px;margin-bottom:12px;border:1px solid transparent;line-height:1.8;font-size:13px}
+.vd.gs{background:rgba(46,139,87,.12);border-color:rgba(82,199,124,.3);color:#a8f0c8}
+.vd.gw{background:rgba(201,146,43,.1);border-color:rgba(201,146,43,.35);color:#f5d87a}
+.vd.gd{background:rgba(192,57,43,.12);border-color:rgba(192,57,43,.35);color:#ffaa9a}
+.vdh{font-size:15px;font-weight:bold;display:block;margin-bottom:6px}
+.sh{background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.15);border-radius:8px;padding:12px 14px;margin-bottom:14px}
+.shl{font-size:10px;letter-spacing:1px;color:#c9922b;font-weight:bold;margin-bottom:6px}
+.sht{font-size:12px;line-height:1.8;font-style:italic;color:#c8c0b0}
+.bbk{background:transparent;border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:10px 16px;color:#6a7f98;font-size:12px;cursor:pointer;font-family:sans-serif}
+@media(max-width:360px){.g2,.ng,.lbox{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="tb">
+  <div class="logo">
+    <div class="lm">富</div>
+    <div><div class="ln">RICH TIME REALTY</div><div class="ls">財富規劃分析系統</div></div>
+  </div>
+  <div class="tabs">
+    <button class="tab on" id="tI" onclick="sw('I')">輸入</button>
+    <button class="tab" id="tR" onclick="doGen()">報告</button>
+  </div>
+</div>
+
+<div id="vI" class="main">
+  <div class="card">
+    <div class="ch"><span class="cn">01</span><span class="ct">客戶資訊</span></div>
+    <div class="cb">
+      <div class="g2">
+        <div class="fl"><label>客戶姓名</label><input type="text" id="iName" placeholder="例：王小明"></div>
+        <div class="fl"><label>諮詢顧問</label><input type="text" id="iAdv" placeholder="例：玉如副總"></div>
+      </div>
+      <div class="fl"><label>目標物件</label><input type="text" id="iProp" placeholder="例：中和XX建案 3房 1,500萬"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ch"><span class="cn">02</span><span class="ct">每月收入</span></div>
+    <div class="cb">
+      <div class="g2">
+        <div class="fl"><label>月薪（稅後）★</label><input type="number" id="iSal" placeholder="0" oninput="ca()"></div>
+        <div class="fl"><label>年終 ÷ 12</label><input type="number" id="iBon" placeholder="0" oninput="ca()"></div>
+      </div>
+      <div class="g2">
+        <div class="fl"><label>配偶月收入</label><input type="number" id="iSpo" placeholder="0" oninput="ca()"></div>
+        <div class="fl"><label>投資配息</label><input type="number" id="iInv" placeholder="0" oninput="ca()"></div>
+      </div>
+      <div class="g2">
+        <div class="fl"><label>租金收入</label><input type="number" id="iRen" placeholder="0" oninput="ca()"></div>
+        <div class="fl"><label>其他</label><input type="number" id="iOtI" placeholder="0" oninput="ca()"></div>
+      </div>
+      <div class="st"><span class="stl">總月收入</span><span class="stv" id="stI">$0</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ch"><span class="cn">03</span><span class="ct">每月支出明細</span></div>
+    <div class="cb">
+      <div class="g2">
+        <div class="fl"><label>現有房租／房貸</label><input type="number" id="iRnt" placeholder="0" oninput="ca()"></div>
+        <div class="fl"><label>車貸</label><input type="number" id="iCar" placeholder="0" oninput="ca()"></div>
+      </div>
+      <div class="g2">
+        <div class="fl"><label>信貸／學貸</label><input type="number" id="iOLn" placeholder="0" oninput="ca()"></div>
+        <div class="fl"><label>保險費</label><input type="number" id="iIns" placeholder="0" oninput="ca()"></div>
+      </div>
+      <div class="fl">
+        <label>三餐（每天多少元）★ 細問</label>
+        <div class="mw">
+          <input type="number" id="iMel" placeholder="300" oninput="ca()">
+          <span class="mc" id="mMo">= $0 /月</span>
+        </div>
+      </div>
+      <div class="g2">
+        <div class="fl"><label>交通費</label><input type="number" id="iTrn" placeholder="0" oninput="ca()"></div>
+        <div class="fl"><label>娛樂／購物</label><input type="number" id="iEnt" placeholder="0" oninput="ca()"></div>
+      </div>
+      <div class="g2">
+        <div class="fl"><label>孝親費</label><input type="number" id="iPar" placeholder="0" oninput="ca()"></div>
+        <div class="fl"><label>其他固定</label><input type="number" id="iOtE" placeholder="0" oninput="ca()"></div>
+      </div>
+      <div class="st"><span class="stl">生活總支出</span><span class="stv" id="stE">$0</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ch"><span class="cn">04</span><span class="ct">購屋貸款試算</span></div>
+    <div class="cb">
+      <div class="g2">
+        <div class="fl"><label>總價（萬元）★</label><input type="number" id="iPrc" placeholder="1200" oninput="ca()"></div>
+        <div class="fl"><label>自備款（萬元）★</label><input type="number" id="iDwn" placeholder="300" oninput="ca()"></div>
+      </div>
+      <div class="g2">
+        <div class="fl"><label>年利率</label>
+          <select id="iRat" onchange="ca()">
+            <option value="2.0">2.0%</option>
+            <option value="2.2">2.2%</option>
+            <option value="2.5" selected>2.5%（建議）</option>
+            <option value="2.8">2.8%</option>
+            <option value="3.0">3.0%</option>
+          </select>
+        </div>
+        <div class="fl"><label>貸款年期</label>
+          <select id="iYrs" onchange="ca()">
+            <option value="20">20年</option>
+            <option value="25">25年</option>
+            <option value="30" selected>30年</option>
+            <option value="35">35年</option>
+            <option value="40">40年</option>
+          </select>
+        </div>
+      </div>
+      <div class="lbox">
+        <div class="lc"><div class="ll">貸款金額</div><div class="lv" id="lAmt">—</div></div>
+        <div class="lc"><div class="ll">成數</div><div class="lv" id="lLtv">—</div></div>
+        <div class="lc"><div class="ll">每月攤還</div><div class="lv big" id="lMon">—</div></div>
+        <div class="lc"><div class="ll">佔月收入</div><div class="lv" id="lRat">—</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ch"><span class="cn">05</span><span class="ct">開源節流建議</span></div>
+    <div class="cb" style="gap:0;padding-top:10px;padding-bottom:10px">
+      <div class="svr" onclick="ts(0)">
+        <div class="sck" id="sk0">✓</div>
+        <span class="svd">解儲蓄型保單（保費×40%釋放）</span>
+        <span class="sva">+<span id="sv0">0</span>/月</span>
+      </div>
+      <div class="svr" onclick="ts(1)">
+        <div class="sck" id="sk1">✓</div>
+        <span class="svd">娛樂消費砍半</span>
+        <span class="sva">+<span id="sv1">0</span>/月</span>
+      </div>
+      <div class="svr" onclick="ts(2)">
+        <div class="sck" id="sk2">✓</div>
+        <span class="svd">提升配偶／兼職收入</span>
+        <span class="sva">+<input class="mini" type="number" id="sv2i" placeholder="0" oninput="ca()" onclick="event.stopPropagation()">/月</span>
+      </div>
+      <div class="svr" onclick="ts(3)">
+        <div class="sck" id="sk3">✓</div>
+        <span class="svd">其他（自訂）</span>
+        <span class="sva">+<input class="mini" type="number" id="sv3i" placeholder="0" oninput="ca()" onclick="event.stopPropagation()">/月</span>
+      </div>
+      <div class="st" style="margin-top:10px"><span class="stl">節流後每月多出</span><span class="stv" id="stS">+$0</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="gbar" id="gbar">
+  <button class="bclr" onclick="clr()">清除</button>
+  <button class="bgen" onclick="doGen()">📊 產生報告 → 給客戶看</button>
+</div>
+
+<div id="vR">
+  <div class="rh">
+    <div class="rl">WEALTH PLANNING ANALYSIS</div>
+    <div class="rn" id="rN">—</div>
+    <div class="rp" id="rP">—</div>
+    <div class="rd" id="rD">—</div>
+  </div>
+  <div class="ng">
+    <div class="nc i"><div class="ncl">MONTHLY INCOME</div><div class="ncv" id="nI">—</div><div class="ncu">每月總收入</div></div>
+    <div class="nc e"><div class="ncl">LIVING EXPENSES</div><div class="ncv" id="nE">—</div><div class="ncu">每月生活支出</div></div>
+    <div class="nc l"><div class="ncl">MORTGAGE/MONTH</div><div class="ncv" id="nL">—</div><div class="ncu">購屋每月攤還</div></div>
+    <div class="nc s"><div class="ncl">SAVINGS FREED</div><div class="ncv" id="nS">—</div><div class="ncu">節流釋放金額</div></div>
+  </div>
+  <div class="rb">
+    <div class="rbh">📋 收支總覽</div>
+    <div class="rr"><span class="rrl">每月總收入</span><span class="rrv p" id="rvI">—</span></div>
+    <div class="rr"><span class="rrl">生活支出</span><span class="rrv n" id="rvE">—</span></div>
+    <div class="rr"><span class="rrl">購屋月繳</span><span class="rrv n" id="rvL">—</span></div>
+    <div class="rr"><span class="rrl">節流增加</span><span class="rrv p" id="rvS">—</span></div>
+    <div class="rr rrt"><span class="rrl">購屋後每月剩餘</span><span class="rrv" id="rvR">—</span></div>
+  </div>
+  <div class="sp">
+    <div class="spl">MONTHLY SURPLUS AFTER PURCHASE</div>
+    <div class="spv" id="spV">—</div>
+    <div class="sps" id="spS">每月購屋後仍可自由運用</div>
+  </div>
+  <div class="rat">
+    <div class="ratt">📊 房貸負擔比</div>
+    <div class="ratn" id="ratN">—</div>
+    <div class="rats">房貸佔月收入比例（安全線 30%）</div>
+    <div class="bbg"><div class="bfi" id="bfi" style="width:0%"></div></div>
+    <div class="bleg"><span>0%</span><span>30% 安全</span><span>50% 警戒</span><span>100%</span></div>
+  </div>
+  <div class="vd" id="vdB"></div>
+  <div class="sh"><div class="shl">💬 建議收尾話術（顧問參考）</div><div class="sht" id="shT">—</div></div>
+  <button class="bbk" onclick="sw('I')">← 返回修改</button>
+</div>
+
+<script>
+var SK=[false,false,false,false];
+function g(id){return document.getElementById(id)}
+function nv(id){return parseFloat(g(id).value)||0}
+function fmt(v){return '$'+(Math.round(v)||0).toLocaleString('zh-TW')}
+function fmtW(v){return (v/10000).toFixed(1)+'萬'}
+function ca(){
+  var inc=nv('iSal')+nv('iBon')+nv('iSpo')+nv('iInv')+nv('iRen')+nv('iOtI');
+  g('stI').textContent=fmt(inc);
+  var meal=(nv('iMel')||0)*30;
+  g('mMo').textContent='= '+fmt(meal)+' /月';
+  var exp=nv('iRnt')+nv('iCar')+nv('iOLn')+nv('iIns')+meal+nv('iTrn')+nv('iEnt')+nv('iPar')+nv('iOtE');
+  g('stE').textContent=fmt(exp);
+  var pr=nv('iPrc')*10000,dw=nv('iDwn')*10000,ln=Math.max(0,pr-dw);
+  var rt=parseFloat(g('iRat').value)/100/12,nm=parseInt(g('iYrs').value)*12,mn=0;
+  if(ln>0&&rt>0) mn=ln*rt*Math.pow(1+rt,nm)/(Math.pow(1+rt,nm)-1);
+  var ltv=pr>0?Math.round(ln/pr*100):0,ratio=inc>0?mn/inc*100:0;
+  g('lAmt').textContent=ln>0?fmtW(ln):'—';
+  g('lLtv').textContent=ln>0?ltv+'%':'—';
+  g('lMon').textContent=mn>0?fmt(mn)+' /月':'—';
+  g('lRat').textContent=mn>0?ratio.toFixed(1)+'%':'—';
+  var s0=SK[0]?Math.round(nv('iIns')*0.4):0;
+  var s1=SK[1]?Math.round(nv('iEnt')*0.5):0;
+  var s2=SK[2]?nv('sv2i'):0,s3=SK[3]?nv('sv3i'):0;
+  g('sv0').textContent=Math.round(nv('iIns')*0.4).toLocaleString('zh-TW');
+  g('sv1').textContent=Math.round(nv('iEnt')*0.5).toLocaleString('zh-TW');
+  g('stS').textContent='+'+fmt(s0+s1+s2+s3);
+  window._C={inc:inc,exp:exp,mn:mn,ratio:ratio,ts:s0+s1+s2+s3};
+}
+function ts(i){
+  SK[i]=!SK[i];
+  g('sk'+i).className='sck'+(SK[i]?' on':'');
+  ca();
+}
+function sw(m){
+  var isI=m==='I';
+  g('vI').style.display=isI?'block':'none';
+  g('vR').style.display=isI?'none':'block';
+  g('gbar').style.display=isI?'flex':'none';
+  g('tI').className='tab'+(isI?' on':'');
+  g('tR').className='tab'+(!isI?' on':'');
+  window.scrollTo(0,0);
+}
+function doGen(){
+  ca();
+  var C=window._C||{};
+  if(!C.inc||!C.mn){alert('請先填寫月收入與房貸資料');return;}
+  var nm=g('iName').value||'尊貴客戶',adv=g('iAdv').value||'富時代顧問',prop=g('iProp').value||'目標物件';
+  var rem=C.inc+C.ts-C.exp-C.mn,r=C.ratio;
+  var d=new Date();
+  g('rN').textContent=nm+' 財富規劃分析';
+  g('rP').textContent='目標物件：'+prop;
+  g('rD').textContent='分析日期：'+d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日　｜　顧問：'+adv;
+  g('nI').textContent=fmt(C.inc);g('nE').textContent=fmt(C.exp);
+  g('nL').textContent=fmt(C.mn);g('nS').textContent=C.ts>0?'+'+fmt(C.ts):'—';
+  g('rvI').textContent='+'+fmt(C.inc);g('rvE').textContent='-'+fmt(C.exp);
+  g('rvL').textContent='-'+fmt(C.mn);g('rvS').textContent=C.ts>0?'+'+fmt(C.ts):'$0';
+  var rEl=g('rvR');rEl.textContent=fmt(rem);rEl.className='rrv '+(rem>=0?'p':'n');
+  g('spV').textContent=fmt(Math.abs(rem));
+  g('spV').style.color=rem>=0?'#fff':'#ff9a8a';
+  g('spS').textContent=rem>=0?'每月購屋後仍可自由運用':'⚠️ 每月缺口，建議調整方案';
+  var pct=Math.min(r,100);
+  g('bfi').style.width=pct+'%';
+  g('bfi').style.background=r<30?'linear-gradient(90deg,#2e8b57,#52c77c)':r<50?'linear-gradient(90deg,#c9922b,#e8b84b)':'linear-gradient(90deg,#c0392b,#e74c3c)';
+  g('ratN').textContent=r.toFixed(1)+'%';
+  g('ratN').style.color=r<30?'#52c77c':r<50?'#e8b84b':'#ff7a6a';
+  var vb=g('vdB'),sh=g('shT');
+  if(r<30&&rem>0){
+    vb.className='vd gs';
+    vb.innerHTML='<span class="vdh">✅ '+nm+'，你完全負擔得起。</span>房貸負擔比只有 <b>'+r.toFixed(1)+'%</b>，遠低於安全警戒線。扣掉所有開銷，每月還有 <b>'+fmt(rem)+'</b> 自由運用。這套房子不只是你的家，更是你資產增值的起點。';
+    sh.textContent='「'+nm+'，你看這個數字——每月還剩 '+fmt(rem)+'，這不是壓力，這是你在幫自己存錢。你現在唯一要決定的是，你要讓這筆錢繼續放著，還是讓它幫你工作？」';
+  }else if(r<50&&rem>0){
+    vb.className='vd gw';
+    vb.innerHTML='<span class="vdh">✅ '+nm+'，在合理範圍，你能做到。</span>房貸負擔比 <b>'+r.toFixed(1)+'%</b>，屬於正常範圍。每月剩餘 <b>'+fmt(rem)+'</b>。這是最保守的數字，實際生活比這輕鬆。';
+    sh.textContent='「我們用的是最保守的數字，實際你的負擔比這更輕。你看這個剩餘 '+fmt(rem)+'，這是最壞情況。'+nm+'，你覺得這樣的生活你可以接受嗎？」（等點頭）→ 直接引導確認名單。';
+  }else if(rem>0){
+    vb.className='vd gw';
+    vb.innerHTML='<span class="vdh">⚠️ 負擔比偏高，但每月仍有盈餘。</span>房貸佔月收入 <b>'+r.toFixed(1)+'%</b>。建議增加頭期款，或搭配節流方案。每月剩餘 <b>'+fmt(rem)+'</b>。';
+    sh.textContent='「我想跟你多討論頭期款這個部分，如果自備款調高一些，月繳就會下來很多。你現在手邊能動用的資金大概是多少？」';
+  }else{
+    vb.className='vd gd';
+    vb.innerHTML='<span class="vdh">🔴 現有方案需要調整。</span>目前月繳後每月缺口 <b>'+fmt(Math.abs(rem))+'</b>。建議重新評估：調高頭期款、選擇較低總價物件，或提升月收入後再規劃。';
+    sh.textContent='「現在的數字告訴我們要先解決一件事。你手邊還有沒有可以調出來的資金？或者我們換個方向，先看一個入門款，讓你先進場，之後再換屋。」';
+  }
+  sw('R');
+}
+function clr(){
+  if(!confirm('確定清除？'))return;
+  document.querySelectorAll('input').forEach(function(el){el.value=''});
+  SK=[false,false,false,false];
+  for(var i=0;i<4;i++) g('sk'+i).className='sck';
+  ca();
+}
+ca();
+</script>
+</body>
+</html>
