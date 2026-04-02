@@ -178,13 +178,15 @@ canvas{border-radius:6px}
 .save-msg{font-size:13px;color:#c8a870}
 
 @media(max-width:380px){.g2,.ng,.lbox,.proj-compare{grid-template-columns:1fr}.seg-grid{grid-template-columns:1fr 1fr}}
+#presaleTable table{min-width:320px}
+#presaleTable th,#presaleTable td{white-space:nowrap}
 </style>
 </head>
 <body>
 
 <div id="saveOverlay">
   <div class="save-spinner"></div>
-  <div class="save-msg">正在生成報告圖片...</div>
+  <div class="save-msg" id="saveMsg">正在生成報告圖片...</div>
 </div>
 
 <div class="tb">
@@ -209,16 +211,28 @@ canvas{border-radius:6px}
       </div>
       <div class="fl"><label>目標物件</label><input type="text" id="iProp" placeholder="例：中和XX建案 3房 1,500萬"></div>
       <div class="fl">
-        <label>客戶族群（選一個）</label>
-        <div class="seg-grid">
-          <button class="seg-btn" id="sg0" onclick="setSeg(0)">🟡 新鮮人／首購</button>
-          <button class="seg-btn" id="sg1" onclick="setSeg(1)">👫 雙薪無殼</button>
-          <button class="seg-btn" id="sg2" onclick="setSeg(2)">🔴 高資產</button>
-          <button class="seg-btn" id="sg3" onclick="setSeg(3)">🌅 退休規劃</button>
-          <button class="seg-btn" id="sg4" onclick="setSeg(4)">🟠 租屋族</button>
-          <button class="seg-btn" id="sg5" onclick="setSeg(5)">📈 股票族</button>
-          <button class="seg-btn" id="sg6" onclick="setSeg(6)">🏦 定存族</button>
-          <button class="seg-btn" id="sg7" onclick="setSeg(7)">🔄 換屋族</button>
+        <label>客戶族群（可複選，選最符合的）</label>
+        <div style="margin-top:8px">
+          <div style="font-size:10px;color:#c9922b;letter-spacing:1px;font-weight:bold;margin-bottom:6px;display:flex;align-items:center;gap:6px"><span>💼</span> 資產條件</div>
+          <div class="seg-grid" style="margin-bottom:12px">
+            <button class="seg-btn" id="sg0" onclick="setSeg(0)">🟡 新鮮人（首購）</button>
+            <button class="seg-btn" id="sg1" onclick="setSeg(1)">👫 雙薪無殼</button>
+            <button class="seg-btn" id="sg2" onclick="setSeg(2)">🔴 高資產</button>
+            <button class="seg-btn" id="sg3" onclick="setSeg(3)">🌅 退休規劃族</button>
+          </div>
+          <div style="font-size:10px;color:#c9922b;letter-spacing:1px;font-weight:bold;margin-bottom:6px;display:flex;align-items:center;gap:6px"><span>🏠</span> 居住狀態</div>
+          <div class="seg-grid" style="margin-bottom:12px">
+            <button class="seg-btn" id="sg4" onclick="setSeg(4)">🟠 租屋族</button>
+            <button class="seg-btn" id="sg8" onclick="setSeg(8)">🏡 有老屋族</button>
+            <button class="seg-btn" id="sg7" onclick="setSeg(7)">🔄 換屋族</button>
+            <button class="seg-btn" id="sg9" onclick="setSeg(9)">📍 地緣組</button>
+          </div>
+          <div style="font-size:10px;color:#c9922b;letter-spacing:1px;font-weight:bold;margin-bottom:6px;display:flex;align-items:center;gap:6px"><span>💰</span> 投資偏好</div>
+          <div class="seg-grid">
+            <button class="seg-btn" id="sg5" onclick="setSeg(5)">📈 股票族</button>
+            <button class="seg-btn" id="sg6" onclick="setSeg(6)">🏦 定存族</button>
+            <button class="seg-btn" id="sg10" onclick="setSeg(10)">🏢 包租公/婆</button>
+          </div>
         </div>
       </div>
     </div>
@@ -264,6 +278,10 @@ canvas{border-radius:6px}
       </div>
       <div class="g2">
         <div class="fl"><label>孝親費</label><input type="number" id="iPar" placeholder="0" oninput="ca()"></div>
+        <div class="fl"><label>育兒費（托育/補習）</label><input type="number" id="iKid" placeholder="0" oninput="ca()"></div>
+      </div>
+      <div class="g2">
+        <div class="fl"><label>訂閱費（串流/軟體）</label><input type="number" id="iSub" placeholder="0" oninput="ca()"></div>
         <div class="fl"><label>其他固定</label><input type="number" id="iOtE" placeholder="0" oninput="ca()"></div>
       </div>
       <div class="st"><span class="stl">生活總支出</span><span class="stv" id="stE">$0</span></div>
@@ -273,6 +291,12 @@ canvas{border-radius:6px}
   <div class="card">
     <div class="ch"><span class="cn">04</span><span class="ct">購屋貸款試算</span></div>
     <div class="cb">
+      <!-- 成屋/預售屋 切換 -->
+      <div style="display:flex;gap:8px;margin-bottom:4px">
+        <button class="seg-btn on" id="modeReady" onclick="setMortgageMode('ready')" style="flex:1;padding:9px">🏠 成屋貸款</button>
+        <button class="seg-btn" id="modePresale" onclick="setMortgageMode('presale')" style="flex:1;padding:9px">🏗️ 預售屋工程款</button>
+      </div>
+
       <div class="g2">
         <div class="fl"><label>總價（萬元）★</label><input type="number" id="iPrc" placeholder="1200" oninput="ca()"></div>
         <div class="fl"><label>自備款（萬元）★</label><input type="number" id="iDwn" placeholder="300" oninput="ca()"></div>
@@ -298,6 +322,31 @@ canvas{border-radius:6px}
         <div class="lc"><div class="ll">每月攤還</div><div class="lv big" id="lMon">—</div></div>
         <div class="lc"><div class="ll">佔月收入</div><div class="lv" id="lRat">—</div></div>
       </div>
+
+      <!-- 預售屋工程款區塊 -->
+      <div id="presaleSection" style="display:none;margin-top:12px">
+        <div style="background:linear-gradient(90deg,rgba(201,146,43,.12),rgba(201,146,43,.04));border:1px solid rgba(201,146,43,.25);border-radius:10px;padding:14px;margin-bottom:10px">
+          <div style="font-size:11px;font-weight:bold;color:#c8a870;margin-bottom:10px;letter-spacing:.8px">🏗️ 預售工程款試算</div>
+          <div class="g2" style="margin-bottom:10px">
+            <div class="fl"><label>貸款成數（%）</label>
+              <select id="iLtvPct" onchange="calcPresale()">
+                <option value="70">7成（套房/車位）</option>
+                <option value="75" selected>7.5成（一般）</option>
+                <option value="80">8成（2房+）</option>
+              </select>
+            </div>
+            <div class="fl"><label>交屋預計（月後）</label>
+              <input type="number" id="iDelivery" value="36" min="6" max="120" oninput="calcPresale()">
+            </div>
+          </div>
+          <div id="presaleTable" style="overflow-x:auto"></div>
+        </div>
+        <div style="background:rgba(201,146,43,.08);border:1px solid rgba(201,146,43,.2);border-radius:8px;padding:12px;text-align:center">
+          <div style="font-size:10px;color:#5a7090;margin-bottom:4px;letter-spacing:1px">每月需存金額（工程款期間）</div>
+          <div style="font-size:22px;font-weight:bold;color:#f5d87a" id="monthlySaveNeeded">—</div>
+          <div style="font-size:11px;color:#5a7090;margin-top:4px" id="presaleSummary">—</div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -306,6 +355,8 @@ canvas{border-radius:6px}
     <div class="cb" style="padding-top:10px;padding-bottom:10px">
       <div class="svr" onclick="ts(0)"><div class="sck" id="sk0">✓</div><span class="svd">解儲蓄型保單（保費×40%釋放）</span><span class="sva">+<span id="sv0">0</span>/月</span></div>
       <div class="svr" onclick="ts(1)"><div class="sck" id="sk1">✓</div><span class="svd">娛樂消費砍半</span><span class="sva">+<span id="sv1">0</span>/月</span></div>
+      <div class="svr" onclick="ts(4)"><div class="sck" id="sk4">✓</div><span class="svd">訂閱費整理（串流/軟體）</span><span class="sva">+<span id="sv4">0</span>/月</span></div>
+      <div class="svr" onclick="ts(5)"><div class="sck" id="sk5">✓</div><span class="svd">三餐外食改自煮（省30%）</span><span class="sva">+<span id="sv5">0</span>/月</span></div>
       <div class="svr" onclick="ts(2)"><div class="sck" id="sk2">✓</div><span class="svd">提升配偶／兼職收入</span><span class="sva">+<input class="mini" type="number" id="sv2i" placeholder="0" oninput="ca()" onclick="event.stopPropagation()">/月</span></div>
       <div class="svr" onclick="ts(3)"><div class="sck" id="sk3">✓</div><span class="svd">其他（自訂）</span><span class="sva">+<input class="mini" type="number" id="sv3i" placeholder="0" oninput="ca()" onclick="event.stopPropagation()">/月</span></div>
       <div class="st" style="margin-top:12px"><span class="stl">節流後每月多出</span><span class="stv" id="stS">+$0</span></div>
@@ -387,8 +438,8 @@ canvas{border-radius:6px}
         <canvas id="myChart" height="180"></canvas>
       </div>
       <div class="chart-legend">
-        <div class="cl-item"><div class="cl-dot" style="background:#e05c4a"></div>現在買（資產增值）</div>
-        <div class="cl-item"><div class="cl-dot" style="background:#52c77c"></div>繼續等（存款累積）</div>
+        <div class="cl-item"><div class="cl-dot" style="background:#e8b84b"></div>現在買（資產增值）</div>
+        <div class="cl-item"><div class="cl-dot" style="background:#5a7090"></div>繼續等（存款累積）</div>
       </div>
     </div>
 
@@ -484,7 +535,7 @@ canvas{border-radius:6px}
 </div>
 
 <script>
-var SK=[false,false,false,false],SEG=-1,chartInst=null;
+var SK=[false,false,false,false,false,false],SEG=-1,chartInst=null,MORTGAGE_MODE='ready';
 function g(id){return document.getElementById(id)}
 function nv(id){return parseFloat(g(id).value)||0}
 function fmt(v){return '$'+(Math.round(v)||0).toLocaleString('zh-TW')}
@@ -506,10 +557,16 @@ var SEGS=[
   {icon:'🏦',name:'定存族',tag:'保守理財',
    pain:'定存利率1.6%，通膨3%，你每年其實在虧。這不是投資建議，這是數學。讓我們看看同樣的本金，換個方式運用，十年後差距有多大。'},
   {icon:'🔄',name:'換屋族',tag:'舊屋換新',
-   pain:'你現在住的地方，你滿意嗎？換屋不是花錢，是讓你的資產升級。用現有房子的增值，撬動一間更好的，這就是換屋的邏輯。'}
+   pain:'你現在住的地方，你滿意嗎？換屋不是花錢，是讓你的資產升級。用現有房子的增值，撬動一間更好的，這就是換屋的邏輯。'},
+  {icon:'🏡',name:'有老屋族',tag:'舊屋換新',
+   pain:'你現在住的房子可能是父母留下來的，或者買了很多年了。舊的格局、舊的設備，但你可以用它的增值換到更好的生活品質。這是你的資產，讓它替你升級。'},
+  {icon:'📍',name:'地緣組',tag:'只買熟悉區域',
+   pain:'你對這個區域很了解，你知道這裡的生活機能、交通、未來發展。這種熟悉感本身就是一種優勢。讓我們看看你最了解的這個區域，能幫你的資產帶來什麼。'},
+  {icon:'🏢',name:'包租公／婆',tag:'以租養房',
+   pain:'你現在的目標是讓房子幫你繳房貸。這套物件的租金收益率、鄰近租屋需求、以及未來出租的可行性，都是我們一起來看的重點。'}
 ];
 
-function setSeg(i){SEG=i;for(var j=0;j<8;j++) g('sg'+j).className='seg-btn'+(j===i?' on':'')}
+function setSeg(i){SEG=i;for(var j=0;j<=10;j++){var el=g('sg'+j);if(el)el.className='seg-btn'+(j===i?' on':'');}}
 function ts(i){SK[i]=!SK[i];g('sk'+i).className='sck'+(SK[i]?' on':'');ca()}
 
 function ca(){
@@ -517,7 +574,7 @@ function ca(){
   g('stI').textContent=fmt(inc);
   var meal=(nv('iMel')||0)*30;
   g('mMo').textContent='= '+fmt(meal)+' /月';
-  var exp=nv('iRnt')+nv('iCar')+nv('iOLn')+nv('iIns')+meal+nv('iTrn')+nv('iEnt')+nv('iPar')+nv('iOtE');
+  var exp=nv('iRnt')+nv('iCar')+nv('iOLn')+nv('iIns')+meal+nv('iTrn')+nv('iEnt')+nv('iPar')+nv('iKid')+nv('iSub')+nv('iOtE');
   g('stE').textContent=fmt(exp);
   var pr=nv('iPrc')*10000,dw=nv('iDwn')*10000,ln=Math.max(0,pr-dw);
   var rt=parseFloat(g('iRat').value)/100/12,nm=parseInt(g('iYrs').value)*12,mn=0;
@@ -530,10 +587,84 @@ function ca(){
   var s0=SK[0]?Math.round(nv('iIns')*0.4):0;
   var s1=SK[1]?Math.round(nv('iEnt')*0.5):0;
   var s2=SK[2]?nv('sv2i'):0,s3=SK[3]?nv('sv3i'):0;
+  var s4=SK[4]?Math.round(nv('iSub')*0.7):0;
+  var s5=SK[5]?Math.round(meal*0.3):0;
   g('sv0').textContent=Math.round(nv('iIns')*0.4).toLocaleString('zh-TW');
   g('sv1').textContent=Math.round(nv('iEnt')*0.5).toLocaleString('zh-TW');
-  g('stS').textContent='+'+fmt(s0+s1+s2+s3);
-  window._C={inc:inc,exp:exp,mn:mn,ratio:ratio,ts:s0+s1+s2+s3,pr:pr,dw:dw,ln:ln};
+  g('sv4').textContent=Math.round(nv('iSub')*0.7).toLocaleString('zh-TW');
+  g('sv5').textContent=Math.round(meal*0.3).toLocaleString('zh-TW');
+  g('stS').textContent='+'+fmt(s0+s1+s2+s3+s4+s5);
+  window._C={inc:inc,exp:exp,mn:mn,ratio:ratio,ts:s0+s1+s2+s3+s4+s5,pr:pr,dw:dw,ln:ln};
+  // 預售試算
+  if(MORTGAGE_MODE==='presale') calcPresale();
+}
+
+function setMortgageMode(mode){
+  MORTGAGE_MODE=mode;
+  g('modeReady').className='seg-btn'+(mode==='ready'?' on':'');
+  g('modePresale').className='seg-btn'+(mode==='presale'?' on':'');
+  g('presaleSection').style.display=mode==='presale'?'block':'none';
+  if(mode==='presale') calcPresale();
+}
+
+function calcPresale(){
+  var pr=nv('iPrc');
+  if(!pr){g('presaleTable').innerHTML='<div style="color:#5a7090;font-size:12px;text-align:center;padding:10px">請先輸入總價</div>';return;}
+  var ltvPct=parseInt(g('iLtvPct').value)||75;
+  var delivery=parseInt(g('iDelivery').value)||36;
+  var isB=ltvPct<=70;
+  var depositPct=isB?3:2;
+  var contractPct=isB?3:2;
+  var worklPct=isB?3:2;
+  var b1fPct=isB?3:2;
+  var f5Pct=isB?3:2;
+  var f10Pct=isB?3:2;
+  var f15Pct=isB?3:2;
+  var demolPct=2;
+  var usePct=2;
+  var bankPct=ltvPct;
+  var delivPct=5;
+  var d=delivery;
+  var stages=[
+    {name:'訂金（7天內）',pct:depositPct,when:'現在'},
+    {name:'簽約金',pct:contractPct,when:'訂後7天內'},
+    {name:'放樣勘驗',pct:worklPct,when:Math.round(d*0.08)+'個月後'},
+    {name:'B1F板完成',pct:b1fPct,when:Math.round(d*0.20)+'個月後'},
+    {name:'5F板完成',pct:f5Pct,when:Math.round(d*0.35)+'個月後'},
+    {name:'10F板完成',pct:f10Pct,when:Math.round(d*0.50)+'個月後'},
+    {name:'15F板完成',pct:f15Pct,when:Math.round(d*0.65)+'個月後'},
+    {name:'拆架完成',pct:demolPct,when:Math.round(d*0.78)+'個月後'},
+    {name:'使照取得',pct:usePct,when:Math.round(d*0.90)+'個月後'},
+    {name:'🏦 銀行貸款（交屋撥付）',pct:bankPct,when:d+'個月後（交屋）'},
+    {name:'🔑 交屋尾款',pct:delivPct,when:d+'個月後（交屋）'}
+  ];
+  var total=stages.reduce(function(a,s){return a+s.pct;},0);
+  var rows='<table style="width:100%;border-collapse:collapse;font-size:12px">';
+  rows+='<tr style="background:rgba(201,146,43,.15)"><th style="padding:7px 8px;text-align:left;color:#c8a870;font-size:10px">款項</th><th style="padding:7px 8px;text-align:center;color:#c8a870;font-size:10px">%</th><th style="padding:7px 8px;text-align:right;color:#c8a870;font-size:10px">金額（萬）</th><th style="padding:7px 8px;text-align:right;color:#c8a870;font-size:10px">時間點</th></tr>';
+  var selfTotal=0;
+  stages.forEach(function(s,i){
+    var amt=Math.round(pr*s.pct/100*10)/10;
+    var isBank=s.name.indexOf('銀行')>=0;
+    var isDeliv=s.name.indexOf('交屋尾款')>=0;
+    var rowBg=isBank?'rgba(37,118,183,.12)':isDeliv?'rgba(201,146,43,.1)':i%2===0?'rgba(255,255,255,.025)':'transparent';
+    var nc=isBank?'#5dade2':isDeliv?'#e8b84b':'#d4c9b8';
+    var ac=isBank?'#5dade2':isDeliv?'#f5d87a':'#e8e0d0';
+    rows+='<tr style="background:'+rowBg+';border-bottom:1px solid rgba(255,255,255,.04)">';
+    rows+='<td style="padding:7px 8px;color:'+nc+'">'+s.name+'</td>';
+    rows+='<td style="padding:7px 8px;text-align:center;color:#7a9ab8;font-size:11px">'+s.pct+'%</td>';
+    rows+='<td style="padding:7px 8px;text-align:right;color:'+ac+';font-weight:bold">'+amt+'</td>';
+    rows+='<td style="padding:7px 8px;text-align:right;color:#5a7090;font-size:11px">'+s.when+'</td>';
+    rows+='</tr>';
+    if(!isBank&&!isDeliv) selfTotal+=amt;
+  });
+  rows+='<tr style="background:rgba(201,146,43,.12);border-top:1px solid rgba(201,146,43,.3)"><td colspan="2" style="padding:8px;color:#c8a870;font-weight:bold;font-size:11px">總計</td><td style="padding:8px;text-align:right;color:#f5d87a;font-weight:bold;font-size:13px">'+Math.round(pr*total/100*10)/10+'萬</td><td style="padding:8px;text-align:right;color:#5a7090;font-size:10px">100%</td></tr>';
+  rows+='</table>';
+  g('presaleTable').innerHTML=rows;
+  var payNow=pr*(depositPct+contractPct)/100;
+  var remainToSave=selfTotal-payNow;
+  var monthlyNeed=d>2?Math.round(remainToSave*10000/d):0;
+  g('monthlySaveNeeded').textContent=monthlyNeed>0?fmt(monthlyNeed)+' /月':'—';
+  g('presaleSummary').textContent=(isB?'B戶（套房）':'A戶（2房+）')+' · 自備 '+Math.round(selfTotal*10)/10+'萬（含訂約金 '+Math.round(payNow*10)/10+'萬）＋銀行貸款 '+Math.round(pr*bankPct/100*10)/10+'萬交屋撥付';
 }
 
 function sw(m){
@@ -576,21 +707,21 @@ function drawChart(buyArr,nobuyArr){
     ctx.fillText(xi+'年',xPos(xi),H-pad.b+14);
   }
   // buy line
-  ctx.beginPath();ctx.strokeStyle='#52c77c';ctx.lineWidth=2.5;ctx.lineJoin='round';
+  ctx.beginPath();ctx.strokeStyle='#e8b84b';ctx.lineWidth=2.5;ctx.lineJoin='round';
   for(var bi=0;bi<=10;bi++){
     var bx=xPos(bi),by=yPos(buyArr[bi]);
     bi===0?ctx.moveTo(bx,by):ctx.lineTo(bx,by);
   }
   ctx.stroke();
   // nobuy line
-  ctx.beginPath();ctx.strokeStyle='#e05c4a';ctx.lineWidth=2.5;ctx.lineJoin='round';
+  ctx.beginPath();ctx.strokeStyle='#5a7090';ctx.lineWidth=2.5;ctx.lineJoin='round';
   for(var ni=0;ni<=10;ni++){
     var nx=xPos(ni),ny2=yPos(nobuyArr[ni]);
     ni===0?ctx.moveTo(nx,ny2):ctx.lineTo(nx,ny2);
   }
   ctx.stroke();
   // dots at 5,10
-  [[5,buyArr[5],'#e05c4a'],[10,buyArr[10],'#e05c4a'],[5,nobuyArr[5],'#52c77c'],[10,nobuyArr[10],'#52c77c']].forEach(function(pt){
+  [[5,buyArr[5],'#e8b84b'],[10,buyArr[10],'#e8b84b'],[5,nobuyArr[5],'#5a7090'],[10,nobuyArr[10],'#5a7090']].forEach(function(pt){
     ctx.beginPath();ctx.arc(xPos(pt[0]),yPos(pt[1]),4,0,Math.PI*2);
     ctx.fillStyle=pt[2];ctx.fill();
   });
@@ -670,28 +801,40 @@ function doGen(){
     sh.textContent='「現在的數字告訴我們要先解決一件事，'+nm+'。你手邊還有沒有可以調出來的資金？或者我們換個方向，先看一個入門款，讓你先進場，之後再換屋。」';
   }
 
-  // 資產投影數據
+  // 資產投影數據 — 修正邏輯
+  // 現在買：房產市值 - 剩餘貸款 (淨資產)
+  // 繼續等：自備款 + 每月存款累積
   var pr=C.pr,dw=C.dw,ln=C.ln;
   var monthlySave=Math.max(C.inc-C.exp,0);
+  // 等待情境：每月可多存月攤還金額（因為沒買房）
+  var monthlySaveWait=Math.max(C.inc-C.exp+C.mn,0);
   var buyArr=[],nobuyArr=[];
   for(var yi=0;yi<=10;yi++){
-    var lnRemain=ln*Math.pow(1-0.035,yi); // 簡化剩餘貸款
+    // 買：房產市值增值，扣除剩餘貸款本金（以30年攤還試算剩餘）
+    var nm2=parseInt(g('iYrs').value)*12;
+    var rt2=parseFloat(g('iRat').value)/100/12;
+    var paidMos=Math.min(yi*12,nm2);
+    var lnRemain=ln;
+    if(rt2>0){
+      lnRemain=ln*(Math.pow(1+rt2,nm2)-Math.pow(1+rt2,paidMos))/(Math.pow(1+rt2,nm2)-1);
+    }
     buyArr.push(pr*Math.pow(1+growth,yi)-lnRemain);
-    nobuyArr.push(dw+monthlySave*yi*12*(1+0.015));
+    // 不買：自備款存款+每月可多存的錢（包含原本要付的月攤還）以1.5%年利率累積
+    nobuyArr.push(dw*Math.pow(1.015,yi)+monthlySaveWait*12*(Math.pow(1.015,yi)-1)/0.015);
   }
 
   g('chartSub').textContent='年增值率 '+parseFloat(g('iGrowth').value)+'%，以 '+nm+' 目前收支結構試算';
   setTimeout(function(){drawChart(buyArr,nobuyArr)},100);
 
-  // 自備款年化報酬率（IRR 近似：10年淨增值 / 自備款 / 10年）
-  var netGain10 = buyArr[10] - dw;
+  // 自備款年化報酬率（以自備款為本金，10年淨資產增長）
   var annualizedROI = dw > 0 ? (Math.pow(buyArr[10]/dw, 1/10) - 1) * 100 : 0;
   g('projSub').textContent='年增值率 '+parseFloat(g('iGrowth').value)+'%，'+nm+' 以自備款 '+fmtW(dw)+' 進場，年化報酬率約 '+annualizedROI.toFixed(1)+'%';
   g('buy5').textContent=fmtW(buyArr[5]);g('buy10').textContent=fmtW(buyArr[10]);
   g('nobuy5').textContent=fmtW(nobuyArr[5]);g('nobuy10').textContent=fmtW(nobuyArr[10]);
   var diff=buyArr[10]-nobuyArr[10];
-  g('projDiff').textContent=fmtW(Math.abs(diff));
-  g('projDiffSub').textContent=diff>0?nm+' 現在買，10年後資產多出這個數字':'建議重新評估購屋方案';
+  g('projDiff').textContent=(diff>=0?'':'-')+fmtW(Math.abs(diff));
+  g('projDiff').style.color=diff>=0?'#f5d87a':'#ff8870';
+  g('projDiffSub').textContent=diff>0?nm+' 現在買，10年後資產淨值多出這個數字（現在買 '+fmtW(buyArr[10])+' vs 繼續等 '+fmtW(nobuyArr[10])+'）':'建議重新評估購屋方案';
 
   // 換屋路徑 — 名字貫穿
   var price5=pr*Math.pow(1+growth,5),price10=pr*Math.pow(1+growth,10);
@@ -794,6 +937,21 @@ function doGen(){
         q1: nm+'，你現在住的地方，你最不滿意的一件事是什麼？（等回答）',
         q2: '你有沒有評估過，你現在的房子現值大概是多少？跟當初買進的差距呢？（等回答）',
         q3: '如果用現有房子的增值做頭期款，你覺得你可以換到什麼樣的物件？（等回答）'
+      },
+      8: { // 有老屋族
+        q1: nm+'，你現在住的房子是幾年的屋齡？現在住起來有沒有哪裡讓你覺得不方便？（等回答）',
+        q2: '你有沒有想過，如果把這間房子拿去換屋，你的生活品質可以提升多少？（等回答）',
+        q3: '你知道嗎，你現在這間的市值，說不定比你想像的高很多。我們一起算一下。（等回答）'
+      },
+      9: { // 地緣組
+        q1: nm+'，你在這個區域住多久了？你最喜歡這裡哪一點？（等回答）',
+        q2: '既然你對這裡這麼了解，你覺得這個區域未來5年的發展，最值得期待的是什麼？（等回答）',
+        q3: '你對這個區域的熟悉度，其實是你進場的最大優勢。你有沒有想過，在你最熟的地方先卡一個位？（等回答）'
+      },
+      10: { // 包租公/婆
+        q1: nm+'，你現在有在評估租金報酬率嗎？你對這個物件的租金水平有沒有做過調查？（等回答）',
+        q2: '如果這個物件每個月可以幫你多一筆固定收入，你覺得多少才算值得？（等回答）',
+        q3: '以租養貸的概念，就是讓房客幫你繳房貸。你想知道這個物件的以租養貸成立度嗎？（等回答）'
       }
     };
 
@@ -827,45 +985,82 @@ function doGen(){
   sw('R');
 }
 
-// 儲存圖片（截圖整個報告區）
+// 儲存報告 - 使用 html2canvas 截圖並轉 PDF (手機友善)
 function saveImg(){
   var nm=g('iName').value||'客戶報告';
-  // 用 html2canvas 如果有，否則提示長截圖
-  if(typeof html2canvas!=='undefined'){
-    g('saveOverlay').className='show';
-    html2canvas(g('reportContent'),{
-      backgroundColor:'#08111e',scale:2,useCORS:true
-    }).then(function(canvas){
+  g('saveOverlay').className='show';
+  g('saveMsg').textContent='正在生成報告，請稍候…';
+  
+  if(typeof html2canvas==='undefined'){
+    g('saveOverlay').className='';
+    fallbackSave(nm);
+    return;
+  }
+  
+  var target=g('reportContent');
+  // 先捲到頂
+  window.scrollTo(0,0);
+  
+  html2canvas(target,{
+    backgroundColor:'#08111e',
+    scale:2,
+    useCORS:true,
+    logging:false,
+    windowWidth:580,
+    onclone:function(doc){
+      // 確保 canvas 圖表也渲染
+      var c=doc.getElementById('myChart');
+      if(c&&chartInst){/* already rendered */}
+    }
+  }).then(function(canvas){
+    g('saveMsg').textContent='圖片已生成，準備下載…';
+    var imgData=canvas.toDataURL('image/jpeg',0.92);
+    
+    // 嘗試用 jsPDF 製作 PDF（更適合手機分享）
+    if(typeof window.jspdf!=='undefined'||typeof window.jsPDF!=='undefined'){
+      var jsPDF=window.jsPDF||window.jspdf.jsPDF;
+      var pdf=new jsPDF({orientation:'portrait',unit:'px',format:[580,canvas.height/2]});
+      pdf.addImage(imgData,'JPEG',0,0,580,canvas.height/2);
+      pdf.save(nm+'_富時代報告.pdf');
+      g('saveOverlay').className='';
+    } else {
+      // fallback: 直接下載 PNG
       var link=document.createElement('a');
       link.download=nm+'_富時代財富規劃報告.png';
-      link.href=canvas.toDataURL('image/png');
+      link.href=imgData;
+      link.style.display='none';
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
       g('saveOverlay').className='';
-    }).catch(function(){
-      g('saveOverlay').className='';
-      fallbackSave();
-    });
-  } else {
-    fallbackSave();
-  }
+    }
+  }).catch(function(e){
+    console.error(e);
+    g('saveOverlay').className='';
+    fallbackSave(nm);
+  });
 }
-function fallbackSave(){
-  alert('請對報告頁面做長截圖，傳送給 '+g('iName').value+'。\n\nTip：iPhone 按側鍵+音量鍵，Android 按電源+音量下。');
+function fallbackSave(nm){
+  var name=nm||g('iName').value||'客戶';
+  alert('提示：\n\niPhone：按側鍵＋音量上鍵截圖\nAndroid：按電源＋音量下截圖\n\n或長按報告截長圖後傳給 '+name+'。');
 }
 
 function clr(){
   if(!confirm('確定清除？'))return;
   document.querySelectorAll('input').forEach(function(el){el.value=''});
-  SK=[false,false,false,false];SEG=-1;
-  for(var i=0;i<4;i++) g('sk'+i).className='sck';
-  for(var i=0;i<8;i++) g('sg'+i).className='seg-btn';
+  SK=[false,false,false,false,false,false];SEG=-1;
+  for(var i=0;i<6;i++){var sk=g('sk'+i);if(sk)sk.className='sck';}
+  for(var i=0;i<=10;i++){var sg=g('sg'+i);if(sg)sg.className='seg-btn';}
   ca();
 }
 
-// 嘗試載入 html2canvas
+// 嘗試載入 html2canvas + jsPDF
 var s=document.createElement('script');
 s.src='https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
 document.head.appendChild(s);
+var s2=document.createElement('script');
+s2.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+document.head.appendChild(s2);
 
 ca();
 </script>
