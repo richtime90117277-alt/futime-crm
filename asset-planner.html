@@ -466,6 +466,15 @@ canvas{border-radius:6px}
     </div>
 
     <div class="sh"><div class="shl">💬 建議收尾話術（顧問參考）</div><div class="sht" id="shT">—</div></div>
+
+    <!-- 動態問句引導區塊 -->
+    <div id="dynQBox" style="display:none;background:linear-gradient(160deg,#0f1e30,#0c1824);border:1.5px solid rgba(201,146,43,.4);border-radius:14px;padding:20px;margin-bottom:14px">
+      <div style="font-size:9px;letter-spacing:3px;color:#c9922b;margin-bottom:10px;font-weight:bold">NEXT QUESTIONS — 顧問接下來問</div>
+      <div style="font-size:11px;color:#5a7090;margin-bottom:14px" id="dynQSub">根據客戶狀況，系統建議以下三個問句引導到成交</div>
+      <div id="dynQ1" style="background:rgba(201,146,43,.08);border-left:3px solid #c9922b;border-radius:0 8px 8px 0;padding:12px 14px;margin-bottom:10px;font-size:13px;color:#e8e0d0;line-height:1.7"></div>
+      <div id="dynQ2" style="background:rgba(201,146,43,.06);border-left:3px solid rgba(201,146,43,.5);border-radius:0 8px 8px 0;padding:12px 14px;margin-bottom:10px;font-size:13px;color:#e8e0d0;line-height:1.7"></div>
+      <div id="dynQ3" style="background:rgba(201,146,43,.04);border-left:3px solid rgba(201,146,43,.3);border-radius:0 8px 8px 0;padding:12px 14px;font-size:13px;color:#e8e0d0;line-height:1.7"></div>
+    </div>
   </div>
 
   <div class="save-bar">
@@ -734,6 +743,86 @@ function doGen(){
   } else {
     g('mortgageSection').style.display='none';
   }
+
+  // ── 動態問句引導 ──
+  // 根據族群＋財務數字，自動生成3個引導問句
+  // 問句語言：對客戶友善，像「顧問在幫我思考」
+  (function(){
+    var seg = SEG;
+    var segName = seg>=0 ? SEGS[seg].name : '';
+    var q1='', q2='', q3='';
+    var remFmt = fmt(Math.abs(rem));
+
+    // 依族群設計不同切入角度
+    var segQs = {
+      0: { // 新鮮人
+        q1: nm+'，你現在住的地方租金一個月大概是多少？（等回答）',
+        q2: '你有沒有想過，再過三年，你覺得自己的薪水會在哪個水位？（等回答）',
+        q3: '如果有一個方式，讓你現在的租金直接變成你自己的資產，你願意了解一下嗎？（等回答）'
+      },
+      1: { // 雙薪無殼
+        q1: nm+'，你跟另一半有沒有討論過，最晚想在幾歲前擁有自己的房子？（等回答）',
+        q2: '你們現在每個月付出去的租金，如果加起來算10年，大概是多少？（等回答）',
+        q3: '如果這筆錢可以變成你們自己的資產，你們會怎麼分配第一步？（等回答）'
+      },
+      2: { // 高資產
+        q1: nm+'，你現在的資產配置裡，有沒有哪一塊你覺得還沒有充分發揮效益的？（等回答）',
+        q2: '以你目前的資金規模，如果用槓桿方式進場，你能接受的月付上限大概是多少？（等回答）',
+        q3: '你有沒有設定一個目標，希望幾年內讓這個資產幫你產生穩定的現金流？（等回答）'
+      },
+      3: { // 退休規劃
+        q1: nm+'，你預計幾歲退休？退休後你希望每個月有多少生活費是靠被動收入？（等回答）',
+        q2: '你現在的退休規劃裡，房地產這個部分有沒有列進去？（等回答）',
+        q3: '如果現在進場，到你退休的時候，這個房子大概能幫你累積多少？你有沒有算過？（等回答）'
+      },
+      4: { // 租屋族
+        q1: nm+'，你現在的房東，你覺得他當初買這間房子花了多少錢？現在市值大概是多少？（等回答）',
+        q2: '你一個月付租金多少？如果這筆錢是在繳自己的房貸，你覺得感覺會不一樣嗎？（等回答）',
+        q3: '你有沒有想過，再租個五年，你的租金總共付出去的是多少？那筆錢去哪裡了？（等回答）'
+      },
+      5: { // 股票族
+        q1: nm+'，你的股票部位，有沒有哪一塊是你不太想動、但也沒有特別在增值的？（等回答）',
+        q2: '房地產的槓桿跟股票的差別，你有沒有想過，用同樣的本金，哪個能做到更大的控制？（等回答）',
+        q3: '如果不動你現有的股票，另外開一個新的資產配置，你覺得有沒有可能？（等回答）'
+      },
+      6: { // 定存族
+        q1: nm+'，你現在定存的利率大概是多少？你有沒有算過，通膨每年讓你的錢縮水多少？（等回答）',
+        q2: '如果有一個方式，讓同樣的本金產生三到五倍的效益，你願意了解一下嗎？（等回答）',
+        q3: '你目前定存的金額，最快什麼時候可以動用？你有沒有想過讓它做更多事？（等回答）'
+      },
+      7: { // 換屋族
+        q1: nm+'，你現在住的地方，你最不滿意的一件事是什麼？（等回答）',
+        q2: '你有沒有評估過，你現在的房子現值大概是多少？跟當初買進的差距呢？（等回答）',
+        q3: '如果用現有房子的增值做頭期款，你覺得你可以換到什麼樣的物件？（等回答）'
+      }
+    };
+
+    // 財務補充問句（依數字狀況疊加）
+    if(rem<0){
+      // 負擔比高：先討論頭期款
+      q1 = nm+'，你現在手邊可以馬上動用的現金，大概是多少？保險有沒有可以活化的部分？（等回答）';
+      q2 = '如果頭期款多個50到100萬，月繳大概可以降多少你知道嗎？我幫你算一下。（等回答）';
+      q3 = segQs[seg>=0?seg:0]?segQs[seg>=0?seg:0].q3:'你覺得哪個方向對你來說最可行？（等回答）';
+    } else if(r>30&&r<50){
+      // 合理範圍但偏高
+      q1 = segQs[seg>=0?seg:0]?segQs[seg>=0?seg:0].q1:'你覺得目前這個月繳金額，你的生活還能接受嗎？（等回答）';
+      q2 = nm+'，我們用的是最保守的數字。你現在的生活開銷，有沒有哪一塊其實可以調整的？（等回答）';
+      q3 = segQs[seg>=0?seg:0]?segQs[seg>=0?seg:0].q3:'你有沒有設定一個時間點，希望在這個時間點之前做決定？（等回答）';
+    } else {
+      // 財務健康：依族群走
+      var sq = segQs[seg>=0?seg:0]||segQs[0];
+      q1 = sq.q1; q2 = sq.q2; q3 = sq.q3;
+    }
+
+    // 替換名字
+    q1=q1.replace(/nm/g,nm); q2=q2.replace(/nm/g,nm); q3=q3.replace(/nm/g,nm);
+
+    g('dynQBox').style.display='block';
+    g('dynQSub').textContent='根據 '+nm+' 的財務狀況'+(segName?'（'+segName+'）':'')+'，建議接下來這樣問：';
+    g('dynQ1').innerHTML='<b style="color:#c9922b;font-size:11px;letter-spacing:1px;display:block;margin-bottom:6px">問句 1 ─ 先打開</b>'+q1;
+    g('dynQ2').innerHTML='<b style="color:#c9922b;font-size:11px;letter-spacing:1px;display:block;margin-bottom:6px">問句 2 ─ 深挖</b>'+q2;
+    g('dynQ3').innerHTML='<b style="color:#c9922b;font-size:11px;letter-spacing:1px;display:block;margin-bottom:6px">問句 3 ─ 推進</b>'+q3;
+  })();
 
   sw('R');
 }
