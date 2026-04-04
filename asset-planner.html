@@ -715,22 +715,24 @@ function calcPresale(){
   var isB=(ltvPct<=70); // 7成=套房
   var d=delivery;
 
-  // 所有金額四捨五入取整萬，確保加總一致
-  var pct=function(p){return Math.round(pr*p/100);};
+  // 所有金額無條件進位取整萬
+  var pct=function(p){return Math.ceil(pr*p/100);};
 
   // 訂金固定10萬，含在簽約金6%裡
   var depositAmt=10;
-  var contractAmt=pct(6)-depositAmt; // 簽約金 = 總價×6% - 10萬
+  var contractAmt=pct(6)-depositAmt; // 簽約金 = ceil(總價×6%) - 10萬
 
   // 工程款%：套房(7成) B1F~15F為3%，其餘均2%
   var wPct=2, bPct=isB?3:2, f5p=isB?3:2, f10p=isB?3:2, f15p=isB?3:2;
   var bankAmt=pct(ltvPct);
-  var delivAmt=pct(5);
   var wAmt=pct(wPct), b1Amt=pct(bPct), f5Amt=pct(f5p), f10Amt=pct(f10p), f15Amt=pct(f15p);
   var demolAmt=pct(2), useAmt=pct(2);
 
-  // 總計 = 各項整萬加總（與表格完全一致）
-  var totalAmt=depositAmt+contractAmt+wAmt+b1Amt+f5Amt+f10Amt+f15Amt+demolAmt+useAmt+bankAmt+delivAmt;
+  // 交屋尾款 = 總價 - 其他所有項加總，確保總計 = 總價
+  var subTotal=depositAmt+contractAmt+wAmt+b1Amt+f5Amt+f10Amt+f15Amt+demolAmt+useAmt+bankAmt;
+  var delivAmt=pr-subTotal; // 尾款補差，總計必等於總價
+
+  var totalAmt=pr; // 總計就是總價，保證一致
 
   var whn=function(r){return Math.round(d*r)+'個月後';};
 
