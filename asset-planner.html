@@ -594,15 +594,19 @@ canvas{border-radius:6px}
       <div style="background:rgba(224,92,74,.08);border:1px solid rgba(224,92,74,.2);border-radius:10px;padding:14px">
         <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center">
           <div style="text-align:center">
-            <div style="font-size:9px;color:#2ecc71;letter-spacing:1px;margin-bottom:4px">✅ 現在買</div>
-            <div style="font-size:11px;color:#5a7090;margin-bottom:2px">10年後資產</div>
-            <div style="font-size:20px;font-weight:bold;color:#f5d87a" id="buy10">—</div>
+            <div style="font-size:9px;color:#2ecc71;letter-spacing:1px;margin-bottom:4px">✅ 現在買（房屋市值）</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:4px">
+              <div><div style="font-size:9px;color:#5a7090">5年後</div><div style="font-size:15px;font-weight:bold;color:#f5d87a" id="buy5">—</div></div>
+              <div><div style="font-size:9px;color:#5a7090">10年後</div><div style="font-size:15px;font-weight:bold;color:#f5d87a" id="buy10">—</div></div>
+            </div>
           </div>
           <div style="font-size:28px;color:#e05c4a;font-weight:bold">VS</div>
           <div style="text-align:center">
-            <div style="font-size:9px;color:#e05c4a;letter-spacing:1px;margin-bottom:4px">❌ 繼續等</div>
-            <div style="font-size:11px;color:#5a7090;margin-bottom:2px">10年後存款</div>
-            <div style="font-size:20px;font-weight:bold;color:#7a9ab8" id="nobuy10">—</div>
+            <div style="font-size:9px;color:#e05c4a;letter-spacing:1px;margin-bottom:4px">❌ 繼續等（存款累積）</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:4px">
+              <div><div style="font-size:9px;color:#5a7090">5年後</div><div style="font-size:15px;font-weight:bold;color:#7a9ab8" id="nobuy5">—</div></div>
+              <div><div style="font-size:9px;color:#5a7090">10年後</div><div style="font-size:15px;font-weight:bold;color:#7a9ab8" id="nobuy10">—</div></div>
+            </div>
           </div>
         </div>
         <div style="text-align:center;margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.07)">
@@ -1021,28 +1025,56 @@ function doGen(){
   // ── ⑤ 不買的代價 ────────────────────────────────
   var monthlyRise=Math.round(C.pr*growth/12);
   var yearlyRise=Math.round(C.pr*growth);
-  g('waitSubtitle').textContent='以年增值率 '+parseFloat(g('iGrowth').value)+'% 計算，'+nm+' 每等一個月，差距就在擴大。';
+  g('waitSubtitle').textContent='以年增值率 '+parseFloat(g('iGrowth').value)+'% 計算，'+nm+' 用自備款 '+fmtW(C.dw)+' 槓桿 '+fmtW(C.pr)+' 資產，每等一個月損失如下。';
   g('waitMonthly').textContent=fmt(monthlyRise);
   g('waitYearly').textContent=fmt(yearlyRise);
 
-  // 10年對比計算
+  // ── 10年對比計算（正確槓桿邏輯）──────────────────
+  // 現在買：顯示【房屋總市值】，不扣貸款
+  //   → 你用自備款撬動全棟資產，槓桿增值才是核心
+  // 繼續等：自備款複利 + (月結餘 + 省下的月繳) 累積存款
+  //   → 繼續等的人把月繳也存起來，對比才公平
   var buyArr=[],nobuyArr=[];
-  var equity=C.pr-C.ln, savings=C.dw;
-  var monthlySavings=rem>0?rem:0;
+  var rt_mo=parseFloat(g('iRat').value)/100/12; // 月利率
+  var yrs_n=parseInt(g('iYrs').value)*12;       // 總期數
+  var savRate=0.02/12; // 存款月利率（年化2%）
+  var monthlySave=rem>0?rem:0; // 每月結餘（扣掉月繳後）
+  // 繼續等的人：月結餘 + 不用繳的月繳 都存起來
+  var monthlySaveNoBuy=monthlySave+C.mn;
+
   for(var i=0;i<=10;i++){
-    var propValue=C.pr*Math.pow(1+growth,i);
-    var loanBal=C.ln*Math.pow(1+0.025,i)-(C.mn*(Math.pow(1+0.025,i)-1)/0.025*12);
-    buyArr.push(Math.max(propValue-Math.max(loanBal,0),0));
-    nobuyArr.push(savings*Math.pow(1.02,i)+monthlySavings*12*((Math.pow(1.02,i)-1)/0.02));
+    // 買房側：房屋總市值（年增值，無槓桿扣除）
+    var propVal=C.pr*Math.pow(1+growth,i);
+    buyArr.push(propVal);
+
+    // 繼續等側：自備款年化2%複利 + 每月存款複利
+    var savingsAcc=C.dw*10000*Math.pow(1+0.02,i);
+    var monthlyAcc=monthlySaveNoBuy>0?(monthlySaveNoBuy*Math.pow(1+savRate*12,i)-monthlySaveNoBuy)/0.02*12:0;
+    // 更精確的月複利公式
+    var moAcc=monthlySaveNoBuy>0?monthlySaveNoBuy*12*((Math.pow(1.02,i)-1)/0.02):0;
+    nobuyArr.push(savingsAcc+moAcc);
   }
+
+  var buy5v =Math.round(buyArr[5]/10000)*10000;
   var buy10v=Math.round(buyArr[10]/10000)*10000;
+  var nobuy5v =Math.round(nobuyArr[5]/10000)*10000;
   var nobuy10v=Math.round(nobuyArr[10]/10000)*10000;
   var diff=buy10v-nobuy10v;
+
+  // 年化報酬率（自備款角度）
+  // 年化報酬率：(10年後房價/自備款)^(1/10) - 1，單位一致（元）
+  var buy10_yuan=C.pr*Math.pow(1+growth,10); // 萬
+  var annRet=C.dw>0?((Math.pow(buy10_yuan/C.dw,0.1)-1)*100):0;
+
+  g('buy5').textContent=fmtW(buy5v);
   g('buy10').textContent=fmtW(buy10v);
+  g('nobuy5').textContent=fmtW(nobuy5v);
   g('nobuy10').textContent=fmtW(nobuy10v);
   g('projDiff').textContent=(diff>0?'+':'')+fmtW(Math.abs(diff));
-  g('projDiff').style.color=diff>0?'#e05c4a':'#2ecc71';
-  g('projDiffSub').textContent=diff>0?nm+' 現在買，10年後資產多出這個數字':nm+' 繼續等反而更划算，建議重新評估';
+  g('projDiff').style.color=diff>0?'#e05c4a':'#7a9ab8';
+  g('projDiffSub').textContent=diff>0?
+    nm+' 現在買，10年後房屋市值多出這個數字（自備款年化報酬 '+annRet.toFixed(1)+'%）':
+    nm+' 在此條件下存款成長較快，建議重新評估頭期款比例';
 
   // ── ⑥ 你能做到 ──────────────────────────────────
   g('nI').textContent=fmt(C.inc); g('nE').textContent=fmt(C.exp);
@@ -1102,8 +1134,8 @@ function doGen(){
   // ── ⑦ 折線圖 ────────────────────────────────────
   var labels=[],buyData=[],nobuyData=[];
   for(var i=0;i<=10;i++){labels.push(i+'年');buyData.push(Math.round(buyArr[i]));nobuyData.push(Math.round(nobuyArr[i]));}
-  g('chartName').textContent=nm+' 的資產成長曲線';
-  g('chartSub').textContent='現在買 vs 繼續等，'+nm+' 的10年財富走向';
+  g('chartName').textContent=nm+' 的資產成長曲線（房屋市值 vs 存款）';
+  g('chartSub').textContent='年增值率 '+parseFloat(g('iGrowth').value)+'%，'+nm+' 以自備款 '+fmtW(C.dw)+' 進場，年化報酬率約 '+annRet.toFixed(1)+'%';
   if(chartInst){chartInst.destroy();}
   var ctx=g('myChart').getContext('2d');
   chartInst=new Chart(ctx,{type:'line',data:{labels:labels,datasets:[
