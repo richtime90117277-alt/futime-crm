@@ -1331,34 +1331,25 @@ function doGen(){
   }}});
 
   // ── ⑧ 房貸風控摘要 ──────────────────────────────
-  var mFields=[['m_name','m_phone','m_company','m_position','m_seniority','m_workloc',
-    'm_taxcert','m_labor','m_salary_transfer',
-    'm_active1','m_active2','m_passive1','m_passive2','m_passive3',
-    'm_exp1','m_exp2','m_exp3',
-    'm_fund','m_stock','m_realestate','m_deposit','m_bankbal',
-    'm_studentloan','m_personalloan','m_carloan','m_homeloan','m_creditcard',
-    'g_name','g_position','g_company','g_seniority','g_workloc','g_taxcert',
-    'g_salary_transfer','g_income','g_fund','g_stock','g_realestate',
-    'g_deposit','g_bankbal','g_studentloan','g_personalloan','g_carloan','g_homeloan']];
-  var hasM=mFields[0].some(function(id){var el=g(id);return el&&el.value&&el.value!=='';});
-  if(hasM){
-    var mSec=g('mortgageSection'); mSec.style.display='block';
-    var tA2=(parseFloat((g('m_fund')||{}).value)||0)+(parseFloat((g('m_stock')||{}).value)||0)+(parseFloat((g('m_realestate')||{}).value)||0)+(parseFloat((g('m_deposit')||{}).value)||0)+(parseFloat((g('m_bankbal')||{}).value)||0);
-    var tD2=(parseFloat((g('m_studentloan')||{}).value)||0)+(parseFloat((g('m_personalloan')||{}).value)||0)+(parseFloat((g('m_carloan')||{}).value)||0)+(parseFloat((g('m_homeloan')||{}).value)||0);
-    var tI2=(parseFloat((g('m_active1')||{}).value)||0)+(parseFloat((g('m_active2')||{}).value)||0)+(parseFloat((g('m_passive1')||{}).value)||0)+(parseFloat((g('m_passive2')||{}).value)||0)+(parseFloat((g('m_passive3')||{}).value)||0);
+  // ── ⑧ 房貸風控摘要（用 Section 04 資產資料）──────
+  var gName=(g('g_name')||{}).value||'';
+  var gCompany=(g('g_company')||{}).value||'';
+  // 用已填的資產負債資料判斷是否顯示
+  var hasAssetData=(totalAsset>0||totalDebt>0||gName!='');
+  if(hasAssetData){
+    var mSec=g('mortgageSection'); if(mSec) mSec.style.display='block';
     var html2='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">';
-    html2+='<div style="background:rgba(201,146,43,.08);border:1px solid rgba(201,146,43,.2);border-radius:8px;padding:12px"><div style="font-size:10px;color:#5a7090;margin-bottom:4px">申請人</div><div style="font-size:14px;font-weight:bold;color:#e8e0d0">'+((g('m_name')||{}).value||'—')+'</div><div style="font-size:11px;color:#7a9ab8;margin-top:2px">'+((g('m_company')||{}).value||'')+'　'+((g('m_position')||{}).value||'')+'</div></div>';
-    html2+='<div style="background:rgba(201,146,43,.08);border:1px solid rgba(201,146,43,.2);border-radius:8px;padding:12px"><div style="font-size:10px;color:#5a7090;margin-bottom:4px">月收入</div><div style="font-size:20px;font-weight:bold;color:#f5d87a">'+fmt(tI2)+'</div></div>';
+    html2+='<div style="background:rgba(93,173,226,.08);border:1px solid rgba(93,173,226,.2);border-radius:8px;padding:12px"><div style="font-size:10px;color:#5a7090;margin-bottom:4px">資產總計</div><div style="font-size:20px;font-weight:bold;color:#5dade2">'+totalAsset+'萬</div></div>';
+    html2+='<div style="background:rgba(192,57,43,.08);border:1px solid rgba(224,92,74,.2);border-radius:8px;padding:12px"><div style="font-size:10px;color:#5a7090;margin-bottom:4px">負債總計</div><div style="font-size:20px;font-weight:bold;color:#ffaa90">'+totalDebt+'萬</div></div>';
     html2+='</div>';
-    html2+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">';
-    html2+='<div style="background:rgba(93,173,226,.08);border:1px solid rgba(93,173,226,.2);border-radius:8px;padding:12px"><div style="font-size:10px;color:#5a7090;margin-bottom:4px">資產總計</div><div style="font-size:18px;font-weight:bold;color:#5dade2">'+tA2+'萬</div></div>';
-    html2+='<div style="background:rgba(192,57,43,.08);border:1px solid rgba(224,92,74,.2);border-radius:8px;padding:12px"><div style="font-size:10px;color:#5a7090;margin-bottom:4px">負債總計</div><div style="font-size:18px;font-weight:bold;color:#ffaa90">'+tD2+'萬</div></div>';
-    html2+='</div>';
-    if((g('g_name')||{}).value){
-      html2+='<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:10px;margin-top:10px"><div style="font-size:10px;color:#5a7090;margin-bottom:4px">保證人</div><div style="font-size:13px;color:#d4c9b8;font-weight:bold">'+((g('g_name')||{}).value)+'　'+((g('g_company')||{}).value||'')+'</div></div>';
+    html2+='<div style="display:flex;justify-content:space-between;align-items:center;background:rgba(93,173,226,.06);border:1px solid rgba(93,173,226,.15);border-radius:8px;padding:12px 16px">';
+    html2+='<span style="font-size:11px;color:#5dade2">淨資產</span>';
+    html2+='<span style="font-size:20px;font-weight:bold;color:'+(netAsset>=0?'#5dade2':'#ffaa90')+'">'+netAsset+'萬</span></div>';
+    if(gName){
+      html2+='<div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:10px;margin-top:10px"><div style="font-size:10px;color:#5a7090;margin-bottom:4px">保證人</div><div style="font-size:13px;color:#d4c9b8;font-weight:bold">'+gName+'　'+gCompany+'</div></div>';
     }
-    g('mortgageSummary').innerHTML=html2;
-  } else { g('mortgageSection').style.display='none'; }
+    var ms=g('mortgageSummary'); if(ms) ms.innerHTML=html2;
+  } else { var mSec2=g('mortgageSection'); if(mSec2) mSec2.style.display='none'; }
 
   // ── ⑨ 動態問句 ──────────────────────────────────
   var seg=SEG>=0?SEGS[SEG]:null;
