@@ -180,9 +180,84 @@ canvas{border-radius:6px}
 @media(max-width:380px){.g2,.ng,.lbox,.proj-compare{grid-template-columns:1fr}.seg-grid{grid-template-columns:1fr 1fr}}
 #presaleTable table{min-width:320px}
 #presaleTable th,#presaleTable td{white-space:nowrap}
+
+@media print {
+  body { background: #08111e !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  #vI, .gbar, .save-bar, #dynQBox, .nav-bar { display: none !important; }
+  #vR { display: block !important; }
+  .rh { page-break-after: avoid; }
+  .chart-section { page-break-inside: avoid; }
+  @page { margin: 0; size: A4; }
+  .print-header { display: flex !important; }
+}
+.print-header { display: none; align-items: center; gap: 12px; padding: 12px 18px; background: rgba(201,146,43,.08); border-bottom: 1px solid rgba(201,146,43,.2); margin-bottom: 14px; border-radius: 10px; }
+.print-header-logo { font-size: 20px; }
+.print-header-info { flex: 1; }
+.print-header-title { font-size: 13px; font-weight: bold; color: #c8a870; }
+.print-header-sub { font-size: 11px; color: #5a7090; margin-top: 2px; }
 </style>
 </head>
 <body>
+
+<!-- SPLASH SCREEN -->
+<div id="vSplash" style="
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  background:#08111e;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  z-index:9999;
+  padding:40px 32px;
+  cursor:pointer;
+">
+  <div style="max-width:360px;width:100%;text-align:center">
+
+    <!-- Logo 小字 -->
+    <div style="font-size:9px;letter-spacing:4px;color:#3a5060;margin-bottom:48px;font-weight:500">
+      FUTIME REAL ESTATE
+    </div>
+
+    <!-- 主文案 -->
+    <div style="margin-bottom:48px">
+      <p style="font-size:22px;font-weight:700;color:#e8e0d0;line-height:1.6;margin:0 0 12px">
+        數字不會說謊。
+      </p>
+      <p style="font-size:22px;font-weight:700;color:#e8e0d0;line-height:1.6;margin:0 0 12px">
+        但大多數人<br>從來沒看過<br>自己的數字。
+      </p>
+      <p style="font-size:16px;color:#c9922b;font-weight:600;line-height:1.8;margin:24px 0 0">
+        這份報告，<br>是你看清楚的開始。
+      </p>
+    </div>
+
+    <!-- 分隔線 -->
+    <div style="width:40px;height:1px;background:rgba(201,146,43,.4);margin:0 auto 40px"></div>
+
+    <!-- 副文案 -->
+    <p style="font-size:12px;color:#3a5060;line-height:2;margin:0 0 48px">
+      在真實數字面前做決定。<br>
+      在模擬場景中看見未來。<br>
+      在資產與負債之間，找到你的答案。
+    </p>
+
+    <!-- CTA -->
+    <div onclick="closeSplash()" style="
+      display:inline-block;
+      background:linear-gradient(135deg,#c9922b,#e8b84b);
+      color:#08111e;
+      font-size:13px;
+      font-weight:700;
+      letter-spacing:2px;
+      padding:14px 40px;
+      border-radius:100px;
+      cursor:pointer;
+    ">開始規劃</div>
+
+    <!-- 底部小字 -->
+    <p style="font-size:9px;color:#2a3a4a;margin-top:32px;letter-spacing:1px">
+      點擊任意處進入
+    </p>
+  </div>
+</div>
 
 <div id="saveOverlay">
   <div class="save-spinner"></div>
@@ -417,6 +492,41 @@ canvas{border-radius:6px}
       <div class="fl"><label>預估年增值率（%）可自填</label>
         <input type="number" id="iGrowth" value="5" min="1" max="20" step="0.5" placeholder="5" oninput="ca()">
       </div>
+      <div style="background:rgba(201,146,43,.06);border:1px solid rgba(201,146,43,.2);border-radius:8px;padding:10px;margin-top:4px">
+        <div style="font-size:9px;color:#c9922b;letter-spacing:1px;font-weight:bold;margin-bottom:8px">📊 實際歷史漲幅參考（2016→2024，內政部實價登錄）</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+          <div onclick="setGrowth(7.1)" style="cursor:pointer;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:8px;transition:.2s" onmouseover="this.style.borderColor='#c9922b'" onmouseout="this.style.borderColor='rgba(255,255,255,.1)'">
+            <div style="font-size:10px;font-weight:bold;color:#e8e0d0">🏙️ 桃園（桃園區）</div>
+            <div style="font-size:16px;font-weight:bold;color:#f5d87a;margin:2px 0">7.1% /年</div>
+            <div style="font-size:9px;color:#5a7090">20→34萬/坪　+74%</div>
+          </div>
+          <div onclick="setGrowth(4.6)" style="cursor:pointer;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:8px;transition:.2s" onmouseover="this.style.borderColor='#c9922b'" onmouseout="this.style.borderColor='rgba(255,255,255,.1)'">
+            <div style="font-size:10px;font-weight:bold;color:#e8e0d0">🏙️ 新北（板橋/新莊等）</div>
+            <div style="font-size:16px;font-weight:bold;color:#f5d87a;margin:2px 0">4.6% /年</div>
+            <div style="font-size:9px;color:#5a7090">平均約 +40%</div>
+          </div>
+          <div onclick="setGrowth(5.3)" style="cursor:pointer;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:8px;transition:.2s" onmouseover="this.style.borderColor='#c9922b'" onmouseout="this.style.borderColor='rgba(255,255,255,.1)'">
+            <div style="font-size:10px;font-weight:bold;color:#e8e0d0">🏙️ 新北（林口/五股）</div>
+            <div style="font-size:16px;font-weight:bold;color:#f5d87a;margin:2px 0">5.3% /年</div>
+            <div style="font-size:9px;color:#5a7090">28→42萬/坪　+51%</div>
+          </div>
+          <div onclick="setGrowth(5)" style="cursor:pointer;background:rgba(201,146,43,.1);border:1px solid rgba(201,146,43,.3);border-radius:6px;padding:8px;transition:.2s">
+            <div style="font-size:10px;font-weight:bold;color:#c8a870">✅ 保守估算（預設）</div>
+            <div style="font-size:16px;font-weight:bold;color:#f5d87a;margin:2px 0">5.0% /年</div>
+            <div style="font-size:9px;color:#5a7090">低於歷史均值，穩健</div>
+          </div>
+        </div>
+        <div style="font-size:9px;color:#3a5060;margin-top:8px">點擊任一格自動帶入　｜　資料來源：內政部實價登錄（LandChart整理）</div>
+      </div>
+      <div class="fl"><label>💰 預期月租金（投資用）</label>
+        <input type="number" id="iRentIncome" placeholder="0（自住填0）" oninput="ca()" style="border-color:rgba(201,146,43,.4)">
+      </div>
+      <div id="rentOffsetBox" style="display:none;background:rgba(201,146,43,.08);border:1px solid rgba(201,146,43,.2);border-radius:8px;padding:10px;margin-top:4px">
+        <div style="display:flex;justify-content:space-between;font-size:12px">
+          <span style="color:#c8a870">月租金抵銷房貸後</span>
+          <span style="color:#f5d87a;font-weight:bold" id="rentNetLabel">—</span>
+        </div>
+      </div>
       <div class="lbox">
         <div class="lc"><div class="ll">貸款金額</div><div class="lv" id="lAmt">—</div></div>
         <div class="lc"><div class="ll">成數</div><div class="lv" id="lLtv">—</div></div>
@@ -472,6 +582,13 @@ canvas{border-radius:6px}
 <!-- REPORT -->
 <div id="vR">
   <div id="reportContent">
+    <div class="print-header" id="printHeader">
+      <div class="print-header-logo">🏢</div>
+      <div class="print-header-info">
+        <div class="print-header-title">富時代地產開發｜財富規劃分析系統</div>
+        <div class="print-header-sub" id="printHeaderSub">—</div>
+      </div>
+    </div>
 
     <!-- ① 封面感 Header -->
     <div class="rh">
@@ -546,6 +663,9 @@ canvas{border-radius:6px}
             <div style="font-size:10px;color:#5a7090;margin-bottom:2px">房貸成數</div>
             <div style="font-size:20px;font-weight:bold;color:#e8b84b" id="oppLtv">—</div>
           </div>
+        </div>
+        <div id="oppRent" style="display:none;text-align:center;padding:12px;background:rgba(46,204,113,.08);border:1px solid rgba(46,204,113,.25);border-radius:10px;margin-top:10px"></div>
+        <div style="display:none"><!-- placeholder -->
         </div>
       </div>
 
@@ -705,9 +825,10 @@ canvas{border-radius:6px}
 
   </div>
 
-  <div class="save-bar">
-    <button class="btn-save" onclick="saveImg()">📥 儲存報告圖片（傳給客戶）</button>
-    <button class="bbk" onclick="sw('I')">← 修改</button>
+  <div class="save-bar" style="display:flex;gap:8px;flex-wrap:wrap">
+    <button class="btn-save" onclick="saveImg()" style="flex:1">📥 儲存圖片</button>
+    <button class="btn-save" onclick="printPDF()" style="flex:1;background:linear-gradient(135deg,#1e5799,#2980b9)">🖨️ 匯出 PDF</button>
+    <button class="bbk" style="width:100%" onclick="sw('I')">← 修改</button>
   </div>
 </div>
 
@@ -772,7 +893,21 @@ function ca(){
   g('sv4').textContent=Math.round(nv('iSub')*0.7).toLocaleString('zh-TW');
   g('sv5').textContent=Math.round(meal*0.3).toLocaleString('zh-TW');
   g('stS').textContent='+'+fmt(s0+s1+s2+s3+s4+s5);
-  window._C={inc:inc,exp:exp,mn:mn,ratio:ratio,ts:s0+s1+s2+s3+s4+s5,pr:pr,dw:dw,ln:ln};
+  // 租金抵銷
+  var rentInc=nv('iRentIncome');
+  var netMn=mn-rentInc; // 實際月負擔（房貸-租金）
+  if(rentInc>0&&mn>0){
+    g('rentOffsetBox').style.display='block';
+    var netLabel=netMn>0?'+'+fmt(rentInc)+' 租金後，實際月負擔 '+fmt(netMn):'🎉 租金完全覆蓋房貸！每月還多 '+fmt(Math.abs(netMn));
+    g('rentNetLabel').textContent=netLabel;
+  } else {
+    g('rentOffsetBox').style.display='none';
+  }
+  // ratio 改用實際月負擔（扣租金）計算
+  var effMn=Math.max(netMn,0); // 有效月負擔
+  ratio=inc>0?effMn/inc*100:0;
+  window._C={inc:inc,exp:exp,mn:mn,ratio:ratio,ts:s0+s1+s2+s3+s4+s5,pr:pr,dw:dw,ln:ln,rent:rentInc,effMn:effMn};
+  lsSave(); // 自動記憶
   // 預售試算
   if(MORTGAGE_MODE==='presale') calcPresale();
 }
@@ -921,15 +1056,19 @@ function drawChart(buyArr,nobuyArr){
 function doGen(){
   ca();
   var C=window._C||{};
-  if(!C.inc||!C.mn){alert('請先填寫月收入與房貸資料');return;}
+  if(!C.inc){alert('請先填寫月收入');return;}
   var nm=g('iName').value||'尊貴客戶',adv=g('iAdv').value||'富時代顧問',prop=g('iProp').value||'目標物件';
-  var rem=C.inc+C.ts-C.exp-C.mn, r=C.ratio;
+  var rentInc=C.rent||0;
+  var rem=C.inc+C.ts-C.exp-C.effMn, r=C.ratio; // 月結餘用租金抵銷後負擔
   var growth=parseFloat(g('iGrowth').value)/100;
   var d=new Date();
   var isPresale=(MORTGAGE_MODE==='presale');
 
   // ── Header ──────────────────────────────────────
   g('rN').textContent=nm+' 的專屬財富規劃報告';
+  // 更新列印 header 副標
+  var phSub=g('printHeaderSub');
+  if(phSub) phSub.textContent='顧問：'+adv+'　｜　'+d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日';
   g('rP').textContent='目標物件：'+prop;
   g('rD').textContent='分析日期：'+d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日　｜　顧問：'+adv;
 
@@ -998,7 +1137,7 @@ function doGen(){
   if(isPresale){
     g('oppReady').style.display='none';
     g('oppPresale').style.display='block';
-    g('oppPriceP').textContent=C.pr?C.pr+'萬':'—';
+    g('oppPriceP').textContent=C.pr?fmtW(C.pr):'—';
     var deliv=parseInt((g('iDelivery')||{}).value)||36;
     g('oppDelivery').textContent=deliv+'個月後';
     // 預售摘要卡
@@ -1006,8 +1145,10 @@ function doGen(){
     g('oppMonthlySave').textContent=mnSave>0?fmt(mnSave):'—';
     // 摘要卡：訂+簽、工程款、銀行貸款
     var bankPct=parseInt((g('iLtvPct')||{}).value)||75;
-    var bankAmt=C.pr?Math.ceil(C.pr*bankPct/100):0;
-    var selfAmt=C.pr?C.pr-bankAmt:0;
+    // C.pr 是元，轉萬顯示
+    var prW=C.pr?Math.round(C.pr/10000):0;
+    var bankAmt=prW?Math.ceil(prW*bankPct/100):0;
+    var selfAmt=prW?prW-bankAmt:0;
     g('presaleSummaryCards').innerHTML=
       '<div style="text-align:center;background:rgba(255,255,255,.04);border-radius:8px;padding:10px"><div style="font-size:9px;color:#5a7090;margin-bottom:4px">自備工程款</div><div style="font-size:16px;font-weight:bold;color:#e8b84b">'+selfAmt+'萬</div></div>'+
       '<div style="text-align:center;background:rgba(255,255,255,.04);border-radius:8px;padding:10px"><div style="font-size:9px;color:#5a7090;margin-bottom:4px">銀行貸款</div><div style="font-size:16px;font-weight:bold;color:#5dade2">'+bankAmt+'萬</div></div>'+
@@ -1015,55 +1156,96 @@ function doGen(){
   } else {
     g('oppReady').style.display='block';
     g('oppPresale').style.display='none';
-    g('oppPrice').textContent=C.pr?C.pr+'萬':'—';
-    g('oppDwn').textContent=C.dw?C.dw+'萬':'—';
+    g('oppPrice').textContent=C.pr?fmtW(C.pr):'—';
+    g('oppDwn').textContent=C.dw?fmtW(C.dw):'—';
     g('oppMn').textContent=C.mn?fmt(C.mn):'—';
     var ltv=C.pr&&C.ln?Math.round(C.ln/C.pr*100)+'%':'—';
     g('oppLtv').textContent=ltv;
+    // 租金顯示
+    var rentEl=g('oppRent');
+    if(rentEl){
+      if(rentInc>0){
+        var cov=C.mn>0?Math.round(rentInc/C.mn*100):0;
+        rentEl.style.display='block';
+        rentEl.innerHTML='<span style="color:#c8a870;font-size:10px">月租金抵銷</span><br><span style="font-size:18px;font-weight:bold;color:#2ecc71">'+fmt(rentInc)+'</span><span style="font-size:10px;color:#5a7090"> 覆蓋房貸 '+cov+'%</span>';
+      } else { rentEl.style.display='none'; }
+    }
   }
 
   // ── ⑤ 不買的代價 ────────────────────────────────
   var monthlyRise=Math.round(C.pr*growth/12);
   var yearlyRise=Math.round(C.pr*growth);
-  g('waitSubtitle').textContent='以年增值率 '+parseFloat(g('iGrowth').value)+'% 計算，'+nm+' 用自備款 '+fmtW(C.dw)+' 槓桿 '+fmtW(C.pr)+' 資產，每等一個月損失如下。';
+  var growthPct=parseFloat(g('iGrowth').value);
+  var histRef=growthPct>=7?'（桃園歷史年均 7.1%）':growthPct>=5?'（林口/五股歷史年均 5.3%，採保守估算）':'（採保守估算，低於歷史均值）';
+  g('waitSubtitle').textContent='以年增值率 '+growthPct+'% 計算 '+histRef+'，'+nm+' 用自備款 '+fmtW(C.dw)+' 槓桿 '+fmtW(C.pr)+' 資產，每等一個月損失如下。';
   g('waitMonthly').textContent=fmt(monthlyRise);
   g('waitYearly').textContent=fmt(yearlyRise);
 
-  // ── 10年對比計算（正確槓桿邏輯）──────────────────
-  // 現在買：顯示【房屋總市值】，不扣貸款
-  //   → 你用自備款撬動全棟資產，槓桿增值才是核心
-  // 繼續等：自備款複利 + (月結餘 + 省下的月繳) 累積存款
-  //   → 繼續等的人把月繳也存起來，對比才公平
-  var buyArr=[],nobuyArr=[];
-  var rt_mo=parseFloat(g('iRat').value)/100/12; // 月利率
-  var yrs_n=parseInt(g('iYrs').value)*12;       // 總期數
-  var savRate=0.02/12; // 存款月利率（年化2%）
-  var monthlySave=rem>0?rem:0; // 每月結餘（扣掉月繳後）
-  // 繼續等的人：月結餘 + 不用繳的月繳 都存起來
-  var monthlySaveNoBuy=monthlySave+C.mn;
+  // ── 10年對比計算（成屋 vs 預售分開處理）─────────
+  var buyArr=[],nobuyArr=[],chartLabels=[];
+  var monthlySave=rem>0?rem:0;
+  var monthlySaveNoBuy=monthlySave+C.mn; // 繼續等：月結餘 + 省下月繳
+  var totalYears=10;
 
-  for(var i=0;i<=10;i++){
-    // 買房側：房屋總市值（年增值，無槓桿扣除）
-    var propVal=C.pr*Math.pow(1+growth,i);
-    buyArr.push(propVal);
+  if(isPresale){
+    // 預售模式：分兩段
+    // 段1：等屋期（交屋前 delivMo 個月）= 雙方都在存款
+    //   買方：存工程款（每月需存 oppMonthlySave）
+    //   等待方：存自備款複利 + 更多月結餘
+    // 段2：交屋後至第10年：買方持有資產增值，等待方繼續存款
+    var delivMo=parseInt((g('iDelivery')||{}).value)||36;
+    var delivYr=delivMo/12; // 等屋年數
+    var chartTotalYr=Math.ceil(delivYr)+totalYears; // 圖表總年數
 
-    // 繼續等側：自備款年化2%複利 + 每月存款複利
-    var savingsAcc=C.dw*10000*Math.pow(1+0.02,i);
-    var monthlyAcc=monthlySaveNoBuy>0?(monthlySaveNoBuy*Math.pow(1+savRate*12,i)-monthlySaveNoBuy)/0.02*12:0;
-    // 更精確的月複利公式
-    var moAcc=monthlySaveNoBuy>0?monthlySaveNoBuy*12*((Math.pow(1.02,i)-1)/0.02):0;
-    nobuyArr.push(savingsAcc+moAcc);
+    // 工程款自備部分（不含銀行貸款）
+    var bankPctP=parseInt((g('iLtvPct')||{}).value)||75;
+    var selfAmtP=C.pr?(1-bankPctP/100)*C.pr:0; // 元
+
+    // 每月要存的工程款
+    var mnSavePre=delivMo>0?selfAmtP/delivMo:0; // 元/月
+
+    // 繼續等的人：月存更多（不用存工程款）
+    var nobuyMoP=monthlySave+mnSavePre; // 元/月
+
+    for(var i=0;i<=chartTotalYr;i++){
+      chartLabels.push(i===0?'現在':(i<=delivYr?'等屋'+Math.round(i*12)+'月':'交屋後'+(i-Math.ceil(delivYr))+'年'));
+      if(i<=delivYr){
+        // 等屋期：買方資產=已付工程款（視為鎖定資產）
+        buyArr.push(selfAmtP*(i/delivYr)); // 線性累積工程款
+        // 等待方：自備款複利 + 每月存更多
+        nobuyArr.push(C.dw*Math.pow(1.02,i) + nobuyMoP*12*((Math.pow(1.02,i)-1)/0.02));
+      } else {
+        // 交屋後：買方持有房屋，開始增值
+        var yrAfter=i-delivYr;
+        buyArr.push(C.pr*Math.pow(1+growth,yrAfter));
+        nobuyArr.push(C.dw*Math.pow(1.02,i) + nobuyMoP*12*((Math.pow(1.02,i)-1)/0.02));
+      }
+    }
+    // 取交屋後5年、10年
+    var yr5idx=Math.ceil(delivYr)+5, yr10idx=Math.ceil(delivYr)+10;
+    var buy5v =buyArr[yr5idx]?Math.round(buyArr[yr5idx]/10000)*10000:0;
+    var buy10v=buyArr[yr10idx]?Math.round(buyArr[yr10idx]/10000)*10000:0;
+    var nobuy5v =nobuyArr[yr5idx]?Math.round(nobuyArr[yr5idx]/10000)*10000:0;
+    var nobuy10v=nobuyArr[yr10idx]?Math.round(nobuyArr[yr10idx]/10000)*10000:0;
+    totalYears=chartTotalYr;
+  } else {
+    // 成屋模式：一般10年計算
+    for(var i=0;i<=10;i++){
+      chartLabels.push(i+'年');
+      buyArr.push(C.pr*Math.pow(1+growth,i));
+      var moAcc=monthlySaveNoBuy>0?monthlySaveNoBuy*12*((Math.pow(1.02,i)-1)/0.02):0;
+      nobuyArr.push(C.dw*Math.pow(1+0.02,i)+moAcc);
+    }
+    var buy5v =Math.round(buyArr[5]/10000)*10000;
+    var buy10v=Math.round(buyArr[10]/10000)*10000;
+    var nobuy5v =Math.round(nobuyArr[5]/10000)*10000;
+    var nobuy10v=Math.round(nobuyArr[10]/10000)*10000;
   }
 
-  var buy5v =Math.round(buyArr[5]/10000)*10000;
-  var buy10v=Math.round(buyArr[10]/10000)*10000;
-  var nobuy5v =Math.round(nobuyArr[5]/10000)*10000;
-  var nobuy10v=Math.round(nobuyArr[10]/10000)*10000;
   var diff=buy10v-nobuy10v;
 
-  // 年化報酬率（自備款角度）
-  // 年化報酬率：(10年後房價/自備款)^(1/10) - 1，單位一致（元）
-  var buy10_yuan=C.pr*Math.pow(1+growth,10); // 萬
+  // 年化報酬率（自備款角度，交屋後10年）
+  var buy10_yuan=C.pr*Math.pow(1+growth,10);
   var annRet=C.dw>0?((Math.pow(buy10_yuan/C.dw,0.1)-1)*100):0;
 
   g('buy5').textContent=fmtW(buy5v);
@@ -1132,10 +1314,12 @@ function doGen(){
   }
 
   // ── ⑦ 折線圖 ────────────────────────────────────
-  var labels=[],buyData=[],nobuyData=[];
-  for(var i=0;i<=10;i++){labels.push(i+'年');buyData.push(Math.round(buyArr[i]));nobuyData.push(Math.round(nobuyArr[i]));}
+  var buyData=buyArr.map(function(v){return Math.round(v);});
+  var nobuyData=nobuyArr.map(function(v){return Math.round(v);});
+  var labels=chartLabels;
   g('chartName').textContent=nm+' 的資產成長曲線（房屋市值 vs 存款）';
-  g('chartSub').textContent='年增值率 '+parseFloat(g('iGrowth').value)+'%，'+nm+' 以自備款 '+fmtW(C.dw)+' 進場，年化報酬率約 '+annRet.toFixed(1)+'%';
+  var delivText=isPresale?' （含'+parseInt((g('iDelivery')||{}).value||36)+'個月等屋期）':'';
+  g('chartSub').textContent='年增值率 '+parseFloat(g('iGrowth').value)+'%'+delivText+'，'+nm+' 自備款年化報酬約 '+annRet.toFixed(1)+'%（歷史數據：桃園+74%、新北+40~52%，2016-2024）';
   if(chartInst){chartInst.destroy();}
   var ctx=g('myChart').getContext('2d');
   chartInst=new Chart(ctx,{type:'line',data:{labels:labels,datasets:[
@@ -1331,8 +1515,34 @@ function toggleGuarantor() {
   icon.textContent  = open ? '▶ 展開' : '▼ 收合';
 }
 
+function setGrowth(v){
+  var el=g('iGrowth');
+  if(el){ el.value=v; ca(); }
+}
+
+function closeSplash(){
+  var s=document.getElementById('vSplash');
+  if(!s) return;
+  s.style.opacity='0';
+  s.style.transition='opacity .6s ease';
+  setTimeout(function(){ s.style.display='none'; },600);
+}
+
+// 點任意處也能關閉
+document.addEventListener('DOMContentLoaded',function(){
+  var s=document.getElementById('vSplash');
+  if(s){
+    s.addEventListener('click',function(e){
+      if(e.target===s) closeSplash();
+    });
+    // 3秒後自動淡出
+    // setTimeout(closeSplash, 8000);
+  }
+});
+
 function clr(){
   if(!confirm('確定清除？'))return;
+  lsClear(); // 清除記憶
   // 清空不動產列
   var list = g('propertyList');
   if(list){ list.innerHTML=''; propertyCount=0; }
@@ -1355,6 +1565,72 @@ s2.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
 document.head.appendChild(s2);
 
 ca();
+
+// ══ localStorage 自動記憶 ══════════════════════
+var LS_KEY='futime_planner_v4';
+var LS_FIELDS=['iName','iAdv','iProp',
+  'iSal','iBon','iSpo','iInv','iRen','iOtI',
+  'iRnt','iCar','iOLn','iIns','iMel','iTrn','iEnt','iPar','iKid','iSub','iOtE',
+  'iPrc','iDwn','iRat','iGrowth','iRentIncome','iDelivery','sv2i','sv3i'];
+var LS_SELECTS=['iYrs','iLtvPct'];
+var LS_CHECKS=['sk0','sk1','sk2','sk3','sk4','sk5'];
+var LS_SEG='futime_seg_v4';
+var LS_MODE='futime_mode_v4';
+
+function lsSave(){
+  try{
+    var data={};
+    LS_FIELDS.forEach(function(id){var el=g(id);if(el)data[id]=el.value;});
+    LS_SELECTS.forEach(function(id){var el=g(id);if(el)data[id]=el.value;});
+    LS_CHECKS.forEach(function(id,i){data['sk'+i]=SK[i];});
+    data._seg=SEG;
+    data._mode=MORTGAGE_MODE;
+    localStorage.setItem(LS_KEY,JSON.stringify(data));
+  }catch(e){}
+}
+
+function lsLoad(){
+  try{
+    var raw=localStorage.getItem(LS_KEY);
+    if(!raw)return;
+    var data=JSON.parse(raw);
+    LS_FIELDS.forEach(function(id){if(data[id]!==undefined){var el=g(id);if(el)el.value=data[id];}});
+    LS_SELECTS.forEach(function(id){if(data[id]!==undefined){var el=g(id);if(el)el.value=data[id];}});
+    LS_CHECKS.forEach(function(id,i){if(data['sk'+i]!==undefined)SK[i]=data['sk'+i];});
+    // 恢復族群選擇
+    if(data._seg!==undefined&&data._seg>=0) setSeg(data._seg);
+    // 恢復模式
+    if(data._mode) setMortgageMode(data._mode);
+    ca();
+    console.log('記憶載入完成');
+  }catch(e){}
+}
+
+function lsClear(){
+  try{localStorage.removeItem(LS_KEY);}catch(e){}
+}
+
+// 頁面載入時自動恢復
+window.addEventListener('DOMContentLoaded',function(){
+  lsLoad();
+});
+
+// ══ printPDF 函數 ═══════════════════════════════
+function printPDF(){
+  // 更新列印 header
+  var nm=g('iName').value||'尊貴客戶';
+  var adv=g('iAdv').value||'富時代顧問';
+  var d=new Date();
+  var dateStr=d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日';
+  var ph=g('printHeader');
+  if(ph){
+    var sub=g('printHeaderSub');
+    if(sub) sub.textContent='顧問：'+adv+'　｜　報告日期：'+dateStr+'　｜　客戶：'+nm;
+  }
+  // 確保在報告頁
+  if(g('vR').style.display==='none') sw('R');
+  setTimeout(function(){ window.print(); }, 300);
+}
 </script>
 </body>
 </html>
