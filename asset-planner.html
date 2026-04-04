@@ -288,8 +288,109 @@ canvas{border-radius:6px}
     </div>
   </div>
 
+    <div class="card">
+    <div class="ch"><span class="cn">04</span><span class="ct">客戶資產總覽</span></div>
+    <div class="cb">
+
+      <!-- 核心資產 -->
+      <div style="font-size:10px;color:#c9922b;letter-spacing:1px;font-weight:bold;margin-bottom:8px">💎 核心資產</div>
+      <div class="g2">
+        <div class="fl"><label>基金（萬）</label><input type="number" id="a_fund" placeholder="0" oninput="calcAssets()"></div>
+        <div class="fl"><label>股票（萬）</label><input type="number" id="a_stock" placeholder="0" oninput="calcAssets()"></div>
+      </div>
+      <div class="g2">
+        <div class="fl"><label>定存（萬）</label><input type="number" id="a_deposit" placeholder="0" oninput="calcAssets()"></div>
+        <div class="fl"><label>存簿平均餘額（萬）</label><input type="number" id="a_bankbal" placeholder="0" oninput="calcAssets()"></div>
+      </div>
+
+      <!-- 不動產明細 -->
+      <div style="margin-top:10px;margin-bottom:6px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <span style="font-size:10px;color:#c9922b;letter-spacing:1px;font-weight:bold">🏠 不動產明細</span>
+          <button onclick="addProperty()" style="font-size:11px;background:rgba(201,146,43,.2);border:1px solid rgba(201,146,43,.4);color:#c8a870;border-radius:6px;padding:3px 10px;cursor:pointer">＋ 新增</button>
+        </div>
+        <div id="propertyList"></div>
+        <div id="propertyEmpty" style="font-size:11px;color:#5a7090;text-align:center;padding:8px 0">尚未填寫不動產（點＋新增）</div>
+      </div>
+
+      <!-- 資產小計 -->
+      <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(201,146,43,.08);border:1px solid rgba(201,146,43,.2);border-radius:8px;padding:10px 12px;margin-top:4px">
+        <span style="font-size:11px;color:#c8a870;font-weight:bold">資產總計</span>
+        <span style="font-size:15px;color:#f5d87a;font-weight:bold" id="a_totalAsset">0 萬</span>
+      </div>
+
+      <!-- 優良負債 -->
+      <div style="font-size:10px;color:#e07a5a;letter-spacing:1px;font-weight:bold;margin-top:14px;margin-bottom:8px">📋 優良負債</div>
+      <div class="g2">
+        <div class="fl"><label>學貸（萬）</label><input type="number" id="d_student" placeholder="0" oninput="calcAssets()"></div>
+        <div class="fl"><label>信貸（萬）</label><input type="number" id="d_personal" placeholder="0" oninput="calcAssets()"></div>
+      </div>
+      <div class="g2">
+        <div class="fl"><label>車貸（萬）</label><input type="number" id="d_car" placeholder="0" oninput="calcAssets()"></div>
+        <div class="fl"><label>房貸（萬）</label><input type="number" id="d_home" placeholder="0" oninput="calcAssets()"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(224,122,90,.08);border:1px solid rgba(224,122,90,.2);border-radius:8px;padding:10px 12px;margin-top:4px">
+        <span style="font-size:11px;color:#e07a5a;font-weight:bold">負債總計</span>
+        <span style="font-size:15px;color:#ffaa90;font-weight:bold" id="a_totalDebt">0 萬</span>
+      </div>
+
+      <!-- 淨資產 -->
+      <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(93,173,226,.08);border:1px solid rgba(93,173,226,.2);border-radius:8px;padding:10px 12px;margin-top:8px">
+        <span style="font-size:11px;color:#5dade2;font-weight:bold">淨資產（資產－負債）</span>
+        <span style="font-size:15px;font-weight:bold" id="a_netAsset">0 萬</span>
+      </div>
+
+      <!-- 保證人（折疊） -->
+      <div style="margin-top:14px">
+        <div onclick="toggleGuarantor()" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:8px 12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:8px;user-select:none">
+          <span style="font-size:10px;color:#c9922b;letter-spacing:1px;font-weight:bold">👤 保證人資料</span>
+          <span id="guarantorToggleIcon" style="font-size:12px;color:#5a7090">▶ 展開</span>
+        </div>
+        <div id="guarantorSection" style="display:none;margin-top:10px;padding:12px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);border-radius:8px">
+          <div class="g2">
+            <div class="fl"><label>保證人姓名</label><input type="text" id="g_name" placeholder="姓名"></div>
+            <div class="fl"><label>職位</label><input type="text" id="g_position" placeholder="例：工程師"></div>
+          </div>
+          <div class="g2">
+            <div class="fl"><label>公司名稱</label><input type="text" id="g_company" placeholder="公司"></div>
+            <div class="fl"><label>年資</label><input type="text" id="g_seniority" placeholder="例：5年"></div>
+          </div>
+          <div class="g2">
+            <div class="fl"><label>扣繳憑單（萬）</label><input type="number" id="g_taxcert" placeholder="0"></div>
+            <div class="fl"><label>新資轉帳</label>
+              <select id="g_salary_transfer"><option value="">請選擇</option><option>有</option><option>無</option></select>
+            </div>
+          </div>
+          <div style="font-size:10px;color:#c9922b;letter-spacing:1px;font-weight:bold;margin-top:10px;margin-bottom:8px">保證人資產（萬）</div>
+          <div class="g2">
+            <div class="fl"><label>基金</label><input type="number" id="g_fund" placeholder="0"></div>
+            <div class="fl"><label>股票</label><input type="number" id="g_stock" placeholder="0"></div>
+          </div>
+          <div class="g2">
+            <div class="fl"><label>不動產</label><input type="number" id="g_realestate" placeholder="0"></div>
+            <div class="fl"><label>定存</label><input type="number" id="g_deposit" placeholder="0"></div>
+          </div>
+          <div class="g2">
+            <div class="fl"><label>存簿餘額</label><input type="number" id="g_bankbal" placeholder="0"></div>
+            <div class="fl"><label>月收入</label><input type="number" id="g_income" placeholder="0"></div>
+          </div>
+          <div style="font-size:10px;color:#e07a5a;letter-spacing:1px;font-weight:bold;margin-top:10px;margin-bottom:8px">保證人負債（萬）</div>
+          <div class="g2">
+            <div class="fl"><label>學貸</label><input type="number" id="g_studentloan" placeholder="0"></div>
+            <div class="fl"><label>信貸</label><input type="number" id="g_personalloan" placeholder="0"></div>
+          </div>
+          <div class="g2">
+            <div class="fl"><label>車貸</label><input type="number" id="g_carloan" placeholder="0"></div>
+            <div class="fl"><label>房貸</label><input type="number" id="g_homeloan" placeholder="0"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
   <div class="card">
-    <div class="ch"><span class="cn">04</span><span class="ct">購屋貸款試算</span></div>
+    <div class="ch"><span class="cn">05</span><span class="ct">購屋貸款試算</span></div>
     <div class="cb">
       <!-- 成屋/預售屋 切換 -->
       <div style="display:flex;gap:8px;margin-bottom:4px">
@@ -330,9 +431,8 @@ canvas{border-radius:6px}
           <div class="g2" style="margin-bottom:10px">
             <div class="fl"><label>貸款成數（%）</label>
               <select id="iLtvPct" onchange="calcPresale()">
-                <option value="70">7成（套房/車位）</option>
+                <option value="70">7成（套房）</option>
                 <option value="75" selected>7.5成（一般）</option>
-                <option value="80">8成（2房+）</option>
               </select>
             </div>
             <div class="fl"><label>交屋預計（月後）</label>
@@ -351,7 +451,7 @@ canvas{border-radius:6px}
   </div>
 
   <div class="card">
-    <div class="ch"><span class="cn">05</span><span class="ct">開源節流建議</span></div>
+    <div class="ch"><span class="cn">06</span><span class="ct">開源節流建議</span></div>
     <div class="cb" style="padding-top:10px;padding-bottom:10px">
       <div class="svr" onclick="ts(0)"><div class="sck" id="sk0">✓</div><span class="svd">解儲蓄型保單（保費×40%釋放）</span><span class="sva">+<span id="sv0">0</span>/月</span></div>
       <div class="svr" onclick="ts(1)"><div class="sck" id="sk1">✓</div><span class="svd">娛樂消費砍半</span><span class="sva">+<span id="sv1">0</span>/月</span></div>
@@ -612,59 +712,70 @@ function calcPresale(){
   if(!pr){g('presaleTable').innerHTML='<div style="color:#5a7090;font-size:12px;text-align:center;padding:10px">請先輸入總價</div>';return;}
   var ltvPct=parseInt(g('iLtvPct').value)||75;
   var delivery=parseInt(g('iDelivery').value)||36;
-  var isB=ltvPct<=70;
-  var depositPct=isB?3:2;
-  var contractPct=isB?3:2;
-  var worklPct=isB?3:2;
-  var b1fPct=isB?3:2;
-  var f5Pct=isB?3:2;
-  var f10Pct=isB?3:2;
-  var f15Pct=isB?3:2;
-  var demolPct=2;
-  var usePct=2;
-  var bankPct=ltvPct;
-  var delivPct=5;
+  var isB=(ltvPct<=70); // 7成=套房
   var d=delivery;
+
+  // 所有金額四捨五入取整萬，確保加總一致
+  var pct=function(p){return Math.round(pr*p/100);};
+
+  // 訂金固定10萬，含在簽約金6%裡
+  var depositAmt=10;
+  var contractAmt=pct(6)-depositAmt; // 簽約金 = 總價×6% - 10萬
+
+  // 工程款%：套房(7成) B1F~15F為3%，其餘均2%
+  var wPct=2, bPct=isB?3:2, f5p=isB?3:2, f10p=isB?3:2, f15p=isB?3:2;
+  var bankAmt=pct(ltvPct);
+  var delivAmt=pct(5);
+  var wAmt=pct(wPct), b1Amt=pct(bPct), f5Amt=pct(f5p), f10Amt=pct(f10p), f15Amt=pct(f15p);
+  var demolAmt=pct(2), useAmt=pct(2);
+
+  // 總計 = 各項整萬加總（與表格完全一致）
+  var totalAmt=depositAmt+contractAmt+wAmt+b1Amt+f5Amt+f10Amt+f15Amt+demolAmt+useAmt+bankAmt+delivAmt;
+
+  var whn=function(r){return Math.round(d*r)+'個月後';};
+
   var stages=[
-    {name:'訂金（7天內）',pct:depositPct,when:'現在'},
-    {name:'簽約金',pct:contractPct,when:'訂後7天內'},
-    {name:'放樣勘驗',pct:worklPct,when:Math.round(d*0.08)+'個月後'},
-    {name:'B1F板完成',pct:b1fPct,when:Math.round(d*0.20)+'個月後'},
-    {name:'5F板完成',pct:f5Pct,when:Math.round(d*0.35)+'個月後'},
-    {name:'10F板完成',pct:f10Pct,when:Math.round(d*0.50)+'個月後'},
-    {name:'15F板完成',pct:f15Pct,when:Math.round(d*0.65)+'個月後'},
-    {name:'拆架完成',pct:demolPct,when:Math.round(d*0.78)+'個月後'},
-    {name:'使照取得',pct:usePct,when:Math.round(d*0.90)+'個月後'},
-    {name:'🏦 銀行貸款（交屋撥付）',pct:bankPct,when:d+'個月後（交屋）'},
-    {name:'🔑 交屋尾款',pct:delivPct,when:d+'個月後（交屋）'}
+    {name:'訂金',              pctStr:'含6%',    amt:depositAmt, when:'付訂後7天內簽約', note:'（固定10萬）'},
+    {name:'簽約金',            pctStr:'6%',      amt:contractAmt,when:'付訂後7天內簽約', note:'（含訂金）'},
+    {name:'放樣勘驗',          pctStr:wPct+'%',  amt:wAmt,       when:whn(0.08)},
+    {name:'B1F底板完成',       pctStr:bPct+'%',  amt:b1Amt,      when:whn(0.20)},
+    {name:'5F底板完成',        pctStr:f5p+'%',   amt:f5Amt,      when:whn(0.35)},
+    {name:'10F底板完成',       pctStr:f10p+'%',  amt:f10Amt,     when:whn(0.50)},
+    {name:'15F底板完成',       pctStr:f15p+'%',  amt:f15Amt,     when:whn(0.65)},
+    {name:'鷹架拆除完成',      pctStr:'2%',      amt:demolAmt,   when:whn(0.78)},
+    {name:'使照取得',          pctStr:'2%',      amt:useAmt,     when:whn(0.90)},
+    {name:'🏦 銀行貸款（交屋撥付）',pctStr:ltvPct+'%',amt:bankAmt,when:d+'個月後（交屋）'},
+    {name:'🔑 交屋尾款',       pctStr:'5%',      amt:delivAmt,   when:d+'個月後（交屋）'}
   ];
-  var total=stages.reduce(function(a,s){return a+s.pct;},0);
+  var totalPct_unused=0; // 保留變數相容性
   var rows='<table style="width:100%;border-collapse:collapse;font-size:12px">';
   rows+='<tr style="background:rgba(201,146,43,.15)"><th style="padding:7px 8px;text-align:left;color:#c8a870;font-size:10px">款項</th><th style="padding:7px 8px;text-align:center;color:#c8a870;font-size:10px">%</th><th style="padding:7px 8px;text-align:right;color:#c8a870;font-size:10px">金額（萬）</th><th style="padding:7px 8px;text-align:right;color:#c8a870;font-size:10px">時間點</th></tr>';
   var selfTotal=0;
   stages.forEach(function(s,i){
-    var amt=Math.round(pr*s.pct/100*10)/10;
+    // 直接用預算好的整萬金額
     var isBank=s.name.indexOf('銀行')>=0;
     var isDeliv=s.name.indexOf('交屋尾款')>=0;
     var rowBg=isBank?'rgba(37,118,183,.12)':isDeliv?'rgba(201,146,43,.1)':i%2===0?'rgba(255,255,255,.025)':'transparent';
     var nc=isBank?'#5dade2':isDeliv?'#e8b84b':'#d4c9b8';
     var ac=isBank?'#5dade2':isDeliv?'#f5d87a':'#e8e0d0';
+    var nameDisp=s.name+(s.note?'<span style="color:#5a7090;font-size:10px"> '+s.note+'</span>':'');
     rows+='<tr style="background:'+rowBg+';border-bottom:1px solid rgba(255,255,255,.04)">';
-    rows+='<td style="padding:7px 8px;color:'+nc+'">'+s.name+'</td>';
-    rows+='<td style="padding:7px 8px;text-align:center;color:#7a9ab8;font-size:11px">'+s.pct+'%</td>';
-    rows+='<td style="padding:7px 8px;text-align:right;color:'+ac+';font-weight:bold">'+amt+'</td>';
+    rows+='<td style="padding:7px 8px;color:'+nc+'">'+nameDisp+'</td>';
+    rows+='<td style="padding:7px 8px;text-align:center;color:#7a9ab8;font-size:11px">'+s.pctStr+'</td>';
+    rows+='<td style="padding:7px 8px;text-align:right;color:'+ac+';font-weight:bold">'+s.amt+'</td>';
     rows+='<td style="padding:7px 8px;text-align:right;color:#5a7090;font-size:11px">'+s.when+'</td>';
     rows+='</tr>';
-    if(!isBank&&!isDeliv) selfTotal+=amt;
+    if(!isBank&&!isDeliv) selfTotal+=s.amt;
   });
-  rows+='<tr style="background:rgba(201,146,43,.12);border-top:1px solid rgba(201,146,43,.3)"><td colspan="2" style="padding:8px;color:#c8a870;font-weight:bold;font-size:11px">總計</td><td style="padding:8px;text-align:right;color:#f5d87a;font-weight:bold;font-size:13px">'+Math.round(pr*total/100*10)/10+'萬</td><td style="padding:8px;text-align:right;color:#5a7090;font-size:10px">100%</td></tr>';
+  rows+='<tr style="background:rgba(201,146,43,.12);border-top:1px solid rgba(201,146,43,.3)"><td colspan="2" style="padding:8px;color:#c8a870;font-weight:bold;font-size:11px">總計</td><td style="padding:8px;text-align:right;color:#f5d87a;font-weight:bold;font-size:13px">'+totalAmt+'萬</td><td style="padding:8px;text-align:right;color:#5a7090;font-size:10px">100%</td></tr>';
   rows+='</table>';
   g('presaleTable').innerHTML=rows;
-  var payNow=pr*(depositPct+contractPct)/100;
+  // 訂金+簽約金=6%（整萬），depositAmt已是10萬，contractAmt已算好
+  var payNow=depositAmt+contractAmt;
   var remainToSave=selfTotal-payNow;
   var monthlyNeed=d>2?Math.round(remainToSave*10000/d):0;
   g('monthlySaveNeeded').textContent=monthlyNeed>0?fmt(monthlyNeed)+' /月':'—';
-  g('presaleSummary').textContent=(isB?'B戶（套房）':'A戶（2房+）')+' · 自備 '+Math.round(selfTotal*10)/10+'萬（含訂約金 '+Math.round(payNow*10)/10+'萬）＋銀行貸款 '+Math.round(pr*bankPct/100*10)/10+'萬交屋撥付';
+  g('presaleSummary').textContent=(isB?'套房（7成）':'一般（7.5成）')+' · 自備款合計 '+selfTotal+'萬（含訂約金 '+payNow+'萬）＋銀行貸款 '+bankAmt+'萬交屋撥付';
 }
 
 function sw(m){
@@ -1045,8 +1156,94 @@ function fallbackSave(nm){
   alert('提示：\n\niPhone：按側鍵＋音量上鍵截圖\nAndroid：按電源＋音量下截圖\n\n或長按報告截長圖後傳給 '+name+'。');
 }
 
+
+// ===== 客戶資產總覽功能 =====
+var propertyCount = 0;
+
+function addProperty() {
+  var idx = propertyCount++;
+  var list = g('propertyList');
+  var empty = g('propertyEmpty');
+  if(empty) empty.style.display = 'none';
+
+  var row = document.createElement('div');
+  row.id = 'prop_row_' + idx;
+  row.style.cssText = 'display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:8px;align-items:end;margin-bottom:8px;padding:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:8px';
+  row.innerHTML =
+    '<div class="fl"><label>物件說明</label><input type="text" id="p_name_'+idx+'" placeholder="例：台中西屯自住" oninput="calcAssets()"></div>' +
+    '<div class="fl"><label>市值（萬）</label><input type="number" id="p_val_'+idx+'" placeholder="0" oninput="calcAssets()"></div>' +
+    '<div class="fl"><label>貸款餘額（萬）</label><input type="number" id="p_loan_'+idx+'" placeholder="0" oninput="calcAssets()"></div>' +
+    '<div style="padding-bottom:2px"><button onclick="removeProperty('+idx+')" style="background:rgba(224,90,90,.2);border:1px solid rgba(224,90,90,.4);color:#f08080;border-radius:6px;padding:6px 10px;cursor:pointer;font-size:13px">✕</button></div>';
+  list.appendChild(row);
+  calcAssets();
+}
+
+function removeProperty(idx) {
+  var row = g('prop_row_' + idx);
+  if(row) row.remove();
+  // 若清空則顯示提示
+  var list = g('propertyList');
+  if(list.children.length === 0) {
+    var empty = g('propertyEmpty');
+    if(empty) empty.style.display = 'block';
+  }
+  calcAssets();
+}
+
+function calcAssets() {
+  // 核心資產加總
+  var fund   = parseFloat((g('a_fund')||{}).value)||0;
+  var stock  = parseFloat((g('a_stock')||{}).value)||0;
+  var dep    = parseFloat((g('a_deposit')||{}).value)||0;
+  var bank   = parseFloat((g('a_bankbal')||{}).value)||0;
+
+  // 不動產市值加總
+  var propVal = 0;
+  var list = g('propertyList');
+  if(list) {
+    Array.from(list.children).forEach(function(row) {
+      var id = row.id.replace('prop_row_','');
+      propVal += parseFloat((g('p_val_'+id)||{}).value)||0;
+    });
+  }
+
+  var totalAsset = fund + stock + dep + bank + propVal;
+
+  // 負債加總
+  var dStu  = parseFloat((g('d_student')||{}).value)||0;
+  var dPer  = parseFloat((g('d_personal')||{}).value)||0;
+  var dCar  = parseFloat((g('d_car')||{}).value)||0;
+  var dHome = parseFloat((g('d_home')||{}).value)||0;
+  var totalDebt = dStu + dPer + dCar + dHome;
+
+  var net = totalAsset - totalDebt;
+
+  if(g('a_totalAsset')) g('a_totalAsset').textContent = totalAsset + ' 萬';
+  if(g('a_totalDebt'))  g('a_totalDebt').textContent  = totalDebt  + ' 萬';
+  var netEl = g('a_netAsset');
+  if(netEl) {
+    netEl.textContent = net + ' 萬';
+    netEl.style.color = net >= 0 ? '#5dade2' : '#ffaa90';
+  }
+}
+
+function toggleGuarantor() {
+  var sec  = g('guarantorSection');
+  var icon = g('guarantorToggleIcon');
+  if(!sec) return;
+  var open = sec.style.display !== 'none';
+  sec.style.display = open ? 'none' : 'block';
+  icon.textContent  = open ? '▶ 展開' : '▼ 收合';
+}
+
 function clr(){
   if(!confirm('確定清除？'))return;
+  // 清空不動產列
+  var list = g('propertyList');
+  if(list){ list.innerHTML=''; propertyCount=0; }
+  var empty = g('propertyEmpty');
+  if(empty) empty.style.display='block';
+  calcAssets();
   document.querySelectorAll('input').forEach(function(el){el.value=''});
   SK=[false,false,false,false,false,false];SEG=-1;
   for(var i=0;i<6;i++){var sk=g('sk'+i);if(sk)sk.className='sck';}
