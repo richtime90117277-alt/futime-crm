@@ -1657,5 +1657,162 @@ function printPDF(){
   setTimeout(function(){ window.print(); }, 300);
 }
 </script>
-</body>
+<!-- 這部分是插入到你原本 HTML 中的報告內容 -->
+<style>
+    /* 報告專用樣式 (如果尚未定義) */
+    .report-card {
+        background: linear-gradient(160deg, #0f1e30, #0c1824);
+        border: 1px solid rgba(201, 146, 43, .2);
+        border-radius: 12px;
+        margin-bottom: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, .4);
+    }
+    .card-header {
+        padding: 16px;
+        background: linear-gradient(90deg, rgba(201, 146, 43, .1), transparent);
+        border-bottom: 1px solid rgba(201, 146, 43, .15);
+    }
+    .card-title {
+        font-size: 16px;
+        font-weight: bold;
+        color: #f5d87a;
+        letter-spacing: .5px;
+    }
+    .card-body {
+        padding: 16px;
+    }
+    .metric-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+    .metric-box {
+        background: rgba(255, 255, 255, .04);
+        border: 1px solid rgba(255, 255, 255, .08);
+        border-radius: 8px;
+        padding: 12px;
+        text-align: center;
+    }
+    .metric-label {
+        font-size: 11px;
+        color: #5a7090;
+        margin-bottom: 4px;
+    }
+    .metric-value {
+        font-size: 18px;
+        font-weight: bold;
+        color: #e8e0d0;
+    }
+    .mentor-box {
+        background: linear-gradient(135deg, rgba(201, 146, 43, .1), rgba(201, 146, 43, .04));
+        border: 1px solid rgba(201, 146, 43, .2);
+        border-radius: 8px;
+        padding: 12px;
+        margin-top: 12px;
+    }
+    .mentor-title {
+        font-size: 12px;
+        font-weight: bold;
+        color: #c9922b;
+        margin-bottom: 6px;
+    }
+    .mentor-text {
+        font-size: 12px;
+        color: #c0b8a8;
+        line-height: 1.6;
+    }
+</style>
+
+<div id="vR" style="display: block;">
+    <!-- 頁首 -->
+    <div class="rh">
+        <div class="rl">富時代資產報告</div>
+        <div class="rn">頂級投資策略報告</div>
+        <div class="rp">客戶姓名：[客戶姓名]</div>
+        <div class="rd">生成日期：2024年4月5日</div>
+    </div>
+
+    <!-- 1. 市場現狀與機會 -->
+    <div class="report-card">
+        <div class="card-header">
+            <div class="card-title">📊 市場現狀與套利空間</div>
+        </div>
+        <div class="card-body">
+            <div class="metric-grid">
+                <div class="metric-box">
+                    <div class="metric-label">📉 當前市場指數</div>
+                    <div class="metric-value">#c9922b 指數</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">📈 預測報酬率</div>
+                    <div class="metric-value positive">+15.3%</div>
+                </div>
+            </div>
+            <div class="mentor-box">
+                <div class="mentor-title">💡 專家分析</div>
+                <div class="mentor-text">
+                    目前市場處於 <strong>「深蹲期」</strong>。數據顯示，核心資產的價格已低於其重置成本。
+                    <br>這代表現在是 <strong>「撿便宜」</strong> 的最佳時機。我們建議立即部署資金，鎖定未來 3 年的成長紅利。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. 風險控制 -->
+    <div class="report-card">
+        <div class="card-header">
+            <div class="card-title">🛡️ 極端壓力測試</div>
+        </div>
+        <div class="card-body">
+            <div class="metric-grid">
+                <div class="metric-box">
+                    <div class="metric-label">📉 極端下跌情境</div>
+                    <div class="metric-value negative">-30%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">✅ 資金安全邊際</div>
+                    <div class="metric-value positive">安全</div>
+                </div>
+            </div>
+            <div class="mentor-box">
+                <div class="mentor-title">💡 風險提示</div>
+                <div class="mentor-text">
+                    我們進行了黑天鵝情境模擬。即使市場暴跌 <strong>30%</strong>，您的資產結構依然穩固。
+                    <br>因為我們採用了 <strong>「高股息覆蓋」</strong> 策略，現金流足以支撐最壞的情況。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. 執行策略 -->
+    <div class="report-card">
+        <div class="card-header">
+            <div class="card-title">🚀 執行與退出策略</div>
+        </div>
+        <div class="card-body">
+            <div class="metric-grid">
+                <div class="metric-box">
+                    <div class="metric-label">💰 目標獲利</div>
+                    <div class="metric-value">+25% ~ +40%</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-label">⏳ 預計持有週期</div>
+                    <div class="metric-value">18 個月</div>
+                </div>
+            </div>
+            <div class="mentor-box">
+                <div class="mentor-title">💡 退出機制</div>
+                <div class="mentor-text">
+                    當市場回到 <strong>「泡沫區」</strong> 時，我們將啟動止盈。
+                    <br>目前的流動性極佳，我們預計在 <strong>7 個工作日內</strong> 完成退出，確保利潤落袋為安。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 列印按鈕 -->
+    <button class="cta-btn" onclick="window.print()">📄 列印報告</button>
+</div></body>
 </html>
