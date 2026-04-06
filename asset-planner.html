@@ -2,19 +2,22 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>富時代｜資產規劃報告</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#08111e;color:#d4c9b8;font-family:sans-serif;font-size:14px}
+body{background:#08111e;color:#d4c9b8;font-family:'Noto Serif TC',serif;font-size:14px;-webkit-font-smoothing:antialiased}
 .tb{background:linear-gradient(135deg,#0a1828,#0d1f35);border-bottom:1px solid rgba(201,146,43,.4);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:99;box-shadow:0 2px 20px rgba(0,0,0,.5)}
 .logo{display:flex;align-items:center;gap:10px}
 .lm{width:34px;height:34px;border:1.5px solid #c9922b;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#c9922b;font-weight:bold;font-size:14px;box-shadow:0 0 12px rgba(201,146,43,.3)}
 .ln{color:#e8b84b;font-weight:bold;font-size:13px;letter-spacing:1.5px}
 .ls{color:#5a7090;font-size:10px}
 .tabs{display:flex;gap:6px}
-.tab{padding:6px 16px;border-radius:20px;border:1px solid rgba(201,146,43,.3);background:transparent;color:#5a7090;font-size:11px;cursor:pointer;font-family:sans-serif;transition:all .2s}
-.tab.on{background:linear-gradient(135deg,#c9922b,#e8b84b);color:#08111e;font-weight:bold;border-color:transparent;box-shadow:0 2px 12px rgba(201,146,43,.4)}
+.tab{padding:6px 18px;border-radius:20px;border:1px solid rgba(201,146,43,.25);background:transparent;color:#7a9ab8;font-size:12px;cursor:pointer;font-family:'DM Mono','Noto Serif TC',sans-serif;letter-spacing:.5px;transition:all .25s ease}
+.tab.on{background:rgba(201,146,43,.15);border-color:rgba(201,146,43,.6);color:#e8b84b;font-weight:700}
 .main{max-width:580px;margin:0 auto;padding:16px 14px 110px}
 .card{background:linear-gradient(160deg,#0f1e30,#0c1824);border:1px solid rgba(201,146,43,.18);border-radius:12px;margin-bottom:14px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.3)}
 .ch{background:linear-gradient(90deg,rgba(201,146,43,.12),rgba(201,146,43,.04));padding:11px 16px;border-bottom:1px solid rgba(201,146,43,.12);display:flex;align-items:center;gap:10px}
@@ -195,6 +198,77 @@ canvas{border-radius:6px}
 .print-header-info { flex: 1; }
 .print-header-title { font-size: 13px; font-weight: bold; color: #c8a870; }
 .print-header-sub { font-size: 11px; color: #5a7090; margin-top: 2px; }
+
+/* ── 字體強化 ── */
+.ncv, .spv, .ratn, .proj-diff-val,
+#waitMonthly, #waitYearly, #buy10, #nobuy10, #projDiff,
+#lost6m, #lost1y, #lost2y, #snapNetAsset, #snapTotalAsset,
+#a_totalAsset, #a_totalDebt, #a_netAsset {
+  font-family: 'DM Mono', 'Noto Serif TC', monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── 報告標題層次 ── */
+.rn { font-size: 20px; font-weight: 900; letter-spacing: .5px; margin-bottom: 4px; }
+.rl { font-size: 9px; letter-spacing: 4px; color: #c9922b; margin-bottom: 8px; font-family: 'DM Mono', monospace; }
+
+/* ── section label 統一升級 ── */
+.vdh { font-size: 15px; font-weight: 800; display: block; margin-bottom: 8px; letter-spacing: .3px; }
+
+/* ── 收尾話術更貴氣 ── */
+.shl { font-size: 9px; letter-spacing: 3px; color: #c9922b; font-family: 'DM Mono', monospace; margin-bottom: 10px; }
+.sht { font-size: 14px; line-height: 2; color: #e8e0d0; font-style: italic; }
+
+/* ── 數字卡數字更大 ── */
+.ncv { font-size: 22px !important; font-weight: 700; }
+.ncu { font-size: 10px; color: #5a7090; margin-top: 4px; letter-spacing: 1px; }
+.ncl { font-size: 8px; letter-spacing: 2.5px; color: #3a5878; margin-bottom: 6px; font-family: 'DM Mono', monospace; }
+
+/* ── spotlight 數字更震撼 ── */
+.spv { font-size: 42px !important; font-weight: 900; letter-spacing: -1px; }
+.spl { font-size: 8px; letter-spacing: 3px; color: #3a5878; font-family: 'DM Mono', monospace; margin-bottom: 8px; }
+.sps { font-size: 12px; color: #7a9ab8; margin-top: 6px; }
+
+/* ── 等待代價數字 ── */
+#waitMonthly, #waitYearly { font-size: 28px !important; }
+#projDiff { font-size: 32px !important; font-weight: 900; }
+
+/* ── 底部小字最小 12px ── */
+.chart-sub, .proj-diff-sub, .rats, #waitSubtitle { font-size: 12px !important; line-height: 1.7; }
+
+/* ── 拍板區塊字體 ── */
+#finalLine { font-family: 'Noto Serif TC', serif; font-size: 18px !important; line-height: 1.9; }
+
+/* ── 族群卡強化 ── */
+.seg-pain { font-size: 14px; line-height: 1.9; color: #c8c0b0; font-style: italic; }
+.seg-name { font-size: 16px; font-weight: 800; }
+
+/* ── card header 升級 ── */
+.cn { font-size: 9px; letter-spacing: 1px; font-family: 'DM Mono', monospace; }
+.ct { font-size: 14px; font-weight: 700; letter-spacing: .5px; }
+
+/* ── 輸入 label ── */
+.fl label { font-size: 10px; letter-spacing: 1.2px; font-family: 'DM Mono', monospace; }
+
+/* ── 歷史房價卡 ── */
+.fl label { color: #6a8aaa; }
+
+/* ── Splash 動畫 ── */
+@keyframes splashIn { from { opacity:0; } to { opacity:1; } }
+@keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+#vSplash > div > div { animation: fadeUp .8s ease both; }
+#vSplash > div > div:nth-child(1) { animation-delay:.1s; }
+#vSplash > div > div:nth-child(2) { animation-delay:.3s; }
+#vSplash > div > div:nth-child(3) { animation-delay:.5s; }
+#vSplash > div > div:nth-child(4) { animation-delay:.7s; }
+#vSplash > div > div:nth-child(5) { animation-delay:.9s; }
+#vSplash > div > div:nth-child(6) { animation-delay:1.1s; }
+
+/* ── verdict 更貴氣 ── */
+.vd { font-size: 14px !important; line-height: 2 !important; }
+.vd.gs { background: linear-gradient(160deg,#0a1e10,#081508); border-color: rgba(46,204,113,.4) !important; }
+.vd.gw { background: linear-gradient(160deg,#1a1608,#120f05); border-color: rgba(201,146,43,.4) !important; }
+.vd.gr { background: linear-gradient(160deg,#1a0808,#120505); border-color: rgba(224,92,74,.4) !important; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
@@ -203,30 +277,32 @@ canvas{border-radius:6px}
 <!-- SPLASH SCREEN -->
 <div id="vSplash" style="
   position:fixed;top:0;left:0;right:0;bottom:0;
-  background:#08111e;
+  background:radial-gradient(ellipse at 50% 60%, #0d1f30 0%, #08111e 70%);
   display:flex;flex-direction:column;
   align-items:center;justify-content:center;
   z-index:9999;
   padding:40px 32px;
   cursor:pointer;
+  animation:splashIn .8s ease both;
 ">
   <div style="max-width:360px;width:100%;text-align:center">
 
     <!-- Logo 小字 -->
-    <div style="font-size:9px;letter-spacing:4px;color:#3a5060;margin-bottom:48px;font-weight:500">
+    <div style="font-size:9px;letter-spacing:5px;color:#4a6070;margin-bottom:32px;font-weight:500;font-family:'DM Mono',monospace">
       FUTIME REAL ESTATE
     </div>
+    <div style="width:1px;height:32px;background:linear-gradient(to bottom,transparent,rgba(201,146,43,.5),transparent);margin:0 auto 32px"></div>
 
     <!-- 主文案 -->
     <div style="margin-bottom:48px">
-      <p style="font-size:22px;font-weight:700;color:#e8e0d0;line-height:1.6;margin:0 0 12px">
+      <p style="font-size:26px;font-weight:900;color:#f0e8d8;line-height:1.5;margin:0 0 8px;font-family:'Noto Serif TC',serif;letter-spacing:.5px">
         數字不會說謊。
       </p>
-      <p style="font-size:22px;font-weight:700;color:#e8e0d0;line-height:1.6;margin:0 0 12px">
+      <p style="font-size:20px;font-weight:500;color:#c8c0b0;line-height:1.8;margin:0 0 0;font-family:'Noto Serif TC',serif">
         但大多數人<br>從來沒看過<br>自己的數字。
       </p>
-      <p style="font-size:16px;color:#c9922b;font-weight:600;line-height:1.8;margin:24px 0 0">
-        這份報告，<br>是你看清楚的開始。
+      <p style="font-size:15px;color:#c9922b;font-weight:600;line-height:2;margin:24px 0 0;letter-spacing:.5px">
+        這份報告，是你看清楚的開始。
       </p>
     </div>
 
@@ -593,6 +669,7 @@ canvas{border-radius:6px}
 
     <!-- ① 封面感 Header -->
     <div class="rh">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(201,146,43,.8),transparent)"></div>
       <div class="rl">EXCLUSIVE WEALTH PLANNING REPORT</div>
       <div class="rn" id="rN">—</div>
       <div class="rp" id="rP">—</div>
@@ -711,6 +788,26 @@ canvas{border-radius:6px}
           <div style="font-size:10px;color:#5a7090;margin-top:2px">頭期款缺口擴大</div>
         </div>
       </div>
+      <!-- 已損失時間軸 -->
+      <div id="alreadyLostBox" style="background:rgba(224,92,74,.06);border:1px solid rgba(224,92,74,.15);border-radius:10px;padding:12px 14px;margin-bottom:14px">
+        <div style="font-size:9px;color:#e05c4a;letter-spacing:2px;font-weight:bold;margin-bottom:8px">⏱ 你已經等了多久？</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center">
+          <div>
+            <div style="font-size:9px;color:#5a7090;margin-bottom:2px">等了 6 個月</div>
+            <div style="font-size:15px;font-weight:bold;color:#e05c4a" id="lost6m">—</div>
+          </div>
+          <div style="border-left:1px solid rgba(255,255,255,.08);border-right:1px solid rgba(255,255,255,.08)">
+            <div style="font-size:9px;color:#5a7090;margin-bottom:2px">等了 1 年</div>
+            <div style="font-size:15px;font-weight:bold;color:#e05c4a" id="lost1y">—</div>
+          </div>
+          <div>
+            <div style="font-size:9px;color:#5a7090;margin-bottom:2px">等了 2 年</div>
+            <div style="font-size:15px;font-weight:bold;color:#e05c4a" id="lost2y">—</div>
+          </div>
+        </div>
+        <div style="font-size:10px;color:#7a6060;margin-top:8px;text-align:center" id="lostNote">以上為物件市值增幅，非你口袋損失，而是你頭期款缺口的擴大</div>
+      </div>
+
       <!-- 10年對比大數字 -->
       <div style="background:rgba(224,92,74,.08);border:1px solid rgba(224,92,74,.2);border-radius:10px;padding:14px">
         <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center">
@@ -792,6 +889,14 @@ canvas{border-radius:6px}
 
       <!-- Verdict -->
       <div class="vd" id="vdB" style="margin-top:12px"></div>
+
+      <!-- 拍板區塊（緊跟 Verdict）-->
+      <div style="background:linear-gradient(160deg,#0c1a10,#081208);border:1.5px solid rgba(46,204,113,.25);border-radius:12px;padding:18px;margin-top:12px;text-align:center">
+        <div style="font-size:8px;letter-spacing:3px;color:#2ecc71;margin-bottom:12px;font-weight:bold;font-family:'DM Mono',monospace;opacity:.8">THE MOMENT OF CLARITY</div>
+        <div id="finalLine" style="font-size:17px;font-weight:700;color:#e8e0d0;line-height:1.9;margin-bottom:14px">—</div>
+        <div style="width:30px;height:1px;background:rgba(46,204,113,.35);margin:0 auto 12px"></div>
+        <div style="font-size:11px;color:#3a5a3a;line-height:1.8;letter-spacing:.5px">數字已經說話了。剩下的，是你的決定。</div>
+      </div>
     </div>
 
     <!-- ⑦ 資產成長曲線（精簡版） -->
@@ -843,12 +948,12 @@ function fmtW(v){var w=Math.round(v/10000);return w>=10000?(w/10000).toFixed(1)+
 
 var SEGS=[
   {icon:'🟡',name:'新鮮人／首購族',tag:'首次置產',
-   pain:'你每個月薪水進來，感覺過得去，但說不出錢去哪裡。五年後你想在哪裡？這是你第一次有機會讓錢替你工作的起點。',
+   pain:'你每個月薪水進來，扣掉生活費、偶爾出去吃個飯，剩的不多。但你有沒有算過——你現在「省下來」的那些錢，五年後還是那個數字。而你沒買的那間房，五年後已經漲了幾百萬。',
    q1:'如果五年後回頭看，你會希望現在的自己做了什麼決定？',
    q2:'你現在付的租金，如果變成繳給自己的房貸，你覺得差別在哪裡？',
    q3:'我們今天算出的這個數字，你覺得是可以開始的第一步嗎？'},
   {icon:'👫',name:'雙薪無殼族',tag:'收入不低卻存不到',
-   pain:'你們兩個都在賺，收入不差，但每個月租金出去，就是買不到頭期款。你有沒有算過，付給房東的錢五年加起來是多少？那筆錢本來可以是你們自己的。',
+   pain:'你們兩個都有收入，卻還在租房。不是賺得不夠，是每個月那筆租金，正在幫別人繳房貸。你們已經有能力買了，只是還沒看到那個數字。今天我們來看看。',
    q1:'你們現在每個月租金加起來是多少？五年後那筆錢會在哪裡？',
    q2:'如果其中一個人的收入可以cover房貸，另一個人的錢就能存下來，這個模式你們想過嗎？',
    q3:'我們今天看的這個物件，你們覺得適合當第一個共同資產嗎？'},
@@ -863,7 +968,7 @@ var SEGS=[
    q2:'你現在的資產，有沒有在幫你創造每個月的現金流？',
    q3:'這個物件如果未來可以出租，每個月的租金收入加上其他收入，夠不夠你的退休生活？'},
   {icon:'🟠',name:'租屋族',tag:'長期租房',
-   pain:'你每個月的租金，就是在幫房東繳房貸。十年後他的房子增值了，你的存摺沒動。現在同樣的錢，你能不能替自己買一個會增值的地方住。',
+   pain:'你每個月的租金，大概是 $2 萬到 $3 萬。十年，就是 $240 到 $360 萬。這些錢你付出去了，換到的是「繼續住的權利」。房東換你付的，是一間會增值的房子。',
    q1:'你現在每個月租金多少？繳了幾年了？總共繳了多少給房東？',
    q2:'如果這筆租金變成繳給自己的房貸，十年後你會擁有什麼？',
    q3:'我們今天算出的這個方案，月繳金額跟你現在租金差多少？你能接受嗎？'},
@@ -1210,10 +1315,17 @@ function doGen(){
   var monthlyRise=Math.round(C.pr*growth/12);
   var yearlyRise=Math.round(C.pr*growth);
   var growthPct=parseFloat(g('iGrowth').value);
-  var histRef=growthPct>=7?'（桃園歷史年均 7.1%）':growthPct>=5?'（林口/五股歷史年均 5.3%，採保守估算）':'（採保守估算，低於歷史均值）';
-  g('waitSubtitle').textContent='以年增值率 '+growthPct+'% 計算 '+histRef+'，'+nm+' 用自備款 '+fmtW(C.dw)+' 槓桿 '+fmtW(C.pr)+' 資產，每等一個月損失如下。';
+  var histRef=growthPct>=7?'桃園歷史年均漲幅 7.1%':growthPct>=5?'林口/五股歷史年均 5.3%':'採保守估算';
+  g('waitSubtitle').textContent='這不是預測，是歷史事實（'+histRef+'）。每一個「再等等」，都有一個真實的代價。';
   g('waitMonthly').textContent=fmt(monthlyRise);
   g('waitYearly').textContent=fmt(yearlyRise);
+  // 已損失時間軸
+  var l6m=Math.round(C.pr*growth*0.5); // 6個月
+  var l1y=Math.round(C.pr*growth);     // 1年
+  var l2y=Math.round(C.pr*growth*2);   // 2年
+  g('lost6m').textContent=fmtW(l6m);
+  g('lost1y').textContent=fmtW(l1y);
+  g('lost2y').textContent=fmtW(l2y);
 
   // ── 10年對比計算（成屋 vs 預售分開處理）─────────
   var buyArr=[],nobuyArr=[],chartLabels=[];
@@ -1289,8 +1401,8 @@ function doGen(){
   g('projDiff').textContent=(diff>0?'+':'')+fmtW(Math.abs(diff));
   g('projDiff').style.color=diff>0?'#e05c4a':'#7a9ab8';
   g('projDiffSub').textContent=diff>0?
-    nm+' 現在買，10年後房屋市值多出這個數字（自備款年化報酬 '+annRet.toFixed(1)+'%）':
-    nm+' 在此條件下存款成長較快，建議重新評估頭期款比例';
+    '這是 '+nm+' 現在買 vs 繼續等的差距。不是預測，是數學。（自備款年化報酬 '+annRet.toFixed(1)+'%）':
+    '在此條件下存款略優，建議重新評估頭期款比例或增值率假設';
 
   // ── ⑥ 你能做到 ──────────────────────────────────
   g('nI').textContent=fmt(C.inc); g('nE').textContent=fmt(C.exp);
@@ -1331,12 +1443,12 @@ function doGen(){
   var vb=g('vdB'),sh=g('shT');
   if(r<30&&rem>0){
     vb.className='vd gs';
-    vb.innerHTML='<span class="vdh">✅ '+nm+'，你完全負擔得起。</span>房貸負擔比只有 <b>'+r.toFixed(1)+'%</b>，遠低於安全警戒線。扣掉所有開銷，'+nm+' 每月還有 <b>'+fmt(rem)+'</b> 自由運用。';
-    sh.textContent='「'+nm+'，你看這個數字——每月還剩 '+fmt(rem)+'，這不是壓力，這是你在幫自己存錢。你現在唯一要決定的，是讓這筆錢繼續放著，還是讓它幫你工作？」';
+    vb.innerHTML='<span class="vdh">✅ '+nm+'，這個數字說明你可以。</span>房貸只佔你月收入 <b>'+r.toFixed(1)+'%</b>。扣掉所有生活費，每個月你還有 <b>'+fmt(rem)+'</b>。<br><br>換個角度想：你現在每個月付出 '+fmt(C.mn)+'，不是在「還債」，是在幫自己買資產。租房的人同樣每月花出去，但什麼都沒留下。';
+    sh.textContent='「'+nm+'，我問你一個問題——如果今天這套房不是你在買，而是你的錢在替你買，你還會猶豫嗎？」（等對方回答）「其實，這就是房貸的本質。」';
   } else if(r<50&&rem>0){
     vb.className='vd gw';
-    vb.innerHTML='<span class="vdh">✅ '+nm+'，在合理範圍，你能做到。</span>房貸負擔比 <b>'+r.toFixed(1)+'%</b>，屬於正常範圍。每月剩餘 <b>'+fmt(rem)+'</b>。這是最保守的數字，實際生活比這輕鬆。';
-    sh.textContent='「我們用的是最保守的數字，實際你的負擔比這更輕。'+nm+'，你看這個剩餘 '+fmt(rem)+'，你覺得這樣的生活你可以接受嗎？」';
+    vb.innerHTML='<span class="vdh">✅ '+nm+'，數字顯示你能做到。</span>房貸佔月收入 <b>'+r.toFixed(1)+'%</b>，每月還剩 <b>'+fmt(rem)+'</b>。<br><br>⚠️ 這是我們用<b>最保守</b>的數字算出來的結果。實際上，你的年終、偶爾的獎金、任何額外收入都沒有算進去。真實的你，比這個數字更從容。';
+    sh.textContent='「'+nm+'，這個數字是最壞情況。我故意算保守，是因為我要確保你在最壞的月份也能安心睡覺。你看，連最壞的情況都還剩 '+fmt(rem)+'，你還有什麼好擔心的？」';
   } else if(rem>0){
     vb.className='vd gw';
     vb.innerHTML='<span class="vdh">⚠️ 負擔比偏高，但每月仍有盈餘。</span>'+nm+' 的房貸佔月收入 <b>'+r.toFixed(1)+'%</b>。建議增加頭期款，或搭配節流方案。每月剩餘 <b>'+fmt(rem)+'</b>。';
@@ -1354,8 +1466,9 @@ function doGen(){
   g('chartName').textContent=nm+' 的資產成長曲線（房屋市值 vs 存款）';
   var delivText=isPresale?' （含'+parseInt((g('iDelivery')||{}).value||36)+'個月等屋期）':'';
   g('chartSub').textContent='年增值率 '+parseFloat(g('iGrowth').value)+'%'+delivText+'，'+nm+' 自備款年化報酬約 '+annRet.toFixed(1)+'%（歷史數據：桃園+74%、新北+40~52%，2016-2024）';
-  if(chartInst){chartInst.destroy();}
-  var ctx=g('myChart').getContext('2d');
+  var _mc=g('myChart');if(!_mc){sw('R');return;}
+  if(chartInst){try{chartInst.destroy();}catch(e){}}
+  var ctx=_mc.getContext('2d');
   chartInst=new Chart(ctx,{type:'line',data:{labels:labels,datasets:[
     {label:'現在買',data:buyData,borderColor:'#e8b84b',backgroundColor:'rgba(232,184,75,.15)',tension:.4,fill:true,pointRadius:3},
     {label:'繼續等',data:nobuyData,borderColor:'#5a7090',backgroundColor:'rgba(90,112,144,.1)',tension:.4,fill:true,pointRadius:3}
@@ -1395,6 +1508,21 @@ function doGen(){
     g('dynQ2').textContent='Q2 ｜ '+(seg.q2||'');
     g('dynQ3').textContent='Q3 ｜ '+(seg.q3||'');
   } else { qBox.style.display='none'; }
+
+  // ── 拍板：finalLine 動態文案 ─────────────────────
+  var _fl=g('finalLine');
+  if(_fl){
+    var _diffW=diff>0?fmtW(Math.abs(diff)):'';
+    if(r<30&&rem>0&&diff>0){
+      _fl.innerHTML=nm+'，你現在有能力買。<br>10年後，你的資產比繼續等多 <span style="color:#2ecc71;font-size:22px;font-weight:900">'+_diffW+'</span>。<br><span style="font-size:13px;color:#7ab87a">這不是衝動，這是算術。</span>';
+    } else if(rem>0&&diff>0){
+      _fl.innerHTML=nm+'，數字站在你這邊。<br>買房後每月還剩 <span style="color:#2ecc71">'+fmt(rem)+'</span>，<br>10年後資產多出 <span style="color:#2ecc71;font-size:20px;font-weight:900">'+_diffW+'</span>。<br><span style="font-size:13px;color:#7ab87a">這不是衝動，這是算術。</span>';
+    } else if(rem>0){
+      _fl.innerHTML=nm+'，這條路走得通。<br>每月剩餘 <span style="color:#2ecc71">'+fmt(rem)+'</span>。<br><span style="font-size:13px;color:#7ab87a">現在要問的只剩：你想在哪裡安家？</span>';
+    } else {
+      _fl.innerHTML=nm+'，方向是對的。<br><span style="font-size:13px;color:#e8b84b">讓我們調整一下數字，找到讓你安心的方案。</span>';
+    }
+  }
 
   // ── 顯示報告 ─────────────────────────────────────
   sw('R');
