@@ -1384,7 +1384,10 @@ function doGen(){
     if(v>0){ propVal+=v; propItems.push({name:nm2,val:v,loan:l}); }
   });}
 
-  var totalAsset=fund+stock+dep+bankb+bonus+propVal-earnest; // 含年終，扣暫收款
+  // 年終和暫收款（doGen 裡重新讀取，不依賴 calcAssets 的作用域）
+  var bonus  =parseFloat((g('a_bonus')  ||{value:'0'}).value)||0;
+  var earnest=parseFloat((g('a_earnest')||{value:'0'}).value)||0;
+  var totalAsset=fund+stock+dep+bankb+bonus+propVal-earnest;
   var totalDebt=dStu+dPer+dCar+dHome;
   var netAsset=totalAsset-totalDebt;
   var hasAsset=(totalAsset>0||totalDebt>0);
