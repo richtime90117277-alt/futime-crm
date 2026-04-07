@@ -686,6 +686,11 @@ canvas{border-radius:6px}
       <div class="seg-pain" id="segPain">—</div>
     </div>
 
+    <!-- 橋接過渡 -->
+    <div id="bridgeText" style="text-align:center;padding:6px 8px 14px;font-size:12px;color:#5a7090;line-height:1.8;display:none">
+      <span id="bridgeMsg"></span>
+    </div>
+
     <!-- ③ 財務快照：資產負債一張表 -->
     <div id="assetSnapshotBox" style="display:none;background:linear-gradient(160deg,#0f1e30,#0c1824);border:1px solid rgba(201,146,43,.25);border-radius:14px;padding:18px;margin-bottom:14px">
       <div style="font-size:9px;letter-spacing:3px;color:#c9922b;margin-bottom:14px;font-weight:bold">FINANCIAL SNAPSHOT — 財務快照</div>
@@ -854,6 +859,11 @@ canvas{border-radius:6px}
         <div class="sps" id="spS">—</div>
       </div>
 
+      <!-- 情感橋接句 -->
+      <div id="emotionBridge" style="display:none;text-align:center;padding:10px 4px;font-size:13px;color:#c8b8a8;line-height:1.9;font-style:italic;border-top:1px solid rgba(255,255,255,.06);margin-top:4px;padding-top:14px" id="emotionBridge">
+        <span id="emotionMsg"></span>
+      </div>
+
       <!-- 房貸負擔比 -->
       <div class="rat" style="margin-bottom:12px">
         <div class="ratt">📊 <span id="ratName">房貸負擔比</span></div>
@@ -919,6 +929,12 @@ canvas{border-radius:6px}
     </div>
 
     <!-- ⑨ 顧問區：收尾話術 + 動態問句 -->
+    <!-- 對客戶說的話 -->
+    <div id="clientMsgBox" style="display:none;background:linear-gradient(160deg,#0f1e30,#0a1520);border:1.5px solid rgba(201,146,43,.35);border-radius:14px;padding:20px;margin-bottom:14px">
+      <div style="font-size:8px;letter-spacing:3px;color:#c9922b;margin-bottom:12px;font-family:'DM Mono',monospace">A MESSAGE FOR YOU</div>
+      <div id="clientMsg" style="font-size:15px;color:#e8e0d0;line-height:2;font-style:italic"></div>
+    </div>
+
     <div class="sh"><div class="shl">💬 建議收尾話術（顧問參考）</div><div class="sht" id="shT">—</div></div>
 
     <div id="dynQBox" style="display:none;background:linear-gradient(160deg,#0f1e30,#0c1824);border:1.5px solid rgba(201,146,43,.4);border-radius:14px;padding:20px;margin-bottom:14px">
@@ -1219,6 +1235,32 @@ function doGen(){
     g('segCard').style.display='block';
   } else { g('segCard').style.display='none'; }
 
+  // ── 橋接過渡句（族群→數字）────────────────────
+  var _br=g('bridgeMsg'), _bBox=g('bridgeText');
+  if(_br&&_bBox){
+    var _bMsg='';
+    if(SEG>=0){
+      var _bridgeMap={
+        0:'我們把你的數字都攤開來看。',
+        1:'讓數字說話，看你們真正的財務位置。',
+        2:'你的資產不是問題。問題是它夠不夠積極。',
+        3:'退休前還有時間，但窗口不是一直開著的。',
+        4:'你付出去的每一筆租金，都應該為你工作。',
+        5:'股市之外，還有一個報酬率不一樣的世界。',
+        6:'保守不是錯，但錢放錯地方才是真正的風險。',
+        7:'換屋是資產的升級，不是負擔的增加。',
+        8:'你已有資產，現在要做的是讓它發揮最大效益。',
+        9:'你最了解的地方，往往就是你最好的機會。',
+        10:'你的目標是讓房子養房子。我們來算算可不可行。'
+      };
+      _bMsg=_bridgeMap[SEG]||'';
+    } else {
+      _bMsg='讓我們一起看看你現在的財務全貌。';
+    }
+    if(_bMsg){ _bBox.style.display='block'; _br.textContent='— '+_bMsg+' —'; }
+    else { _bBox.style.display='none'; }
+  }
+
   // ── ③ 財務快照：資產負債表 ─────────────────────
   var fund   =(parseFloat((g('a_fund')||{}).value)||0);
   var stock  =(parseFloat((g('a_stock')||{}).value)||0);
@@ -1411,6 +1453,21 @@ function doGen(){
   g('spV').style.color=rem>=0?'#fff':'#ff8870';
   g('spS').textContent=rem>=0?nm+' 每月購屋後仍可自由運用':nm+' 每月缺口，建議調整方案';
 
+  // ── 情感橋接句（每月剩餘後）──────────────────────
+  var _em=g('emotionMsg'), _emBox=g('emotionBridge');
+  if(_em&&_emBox&&rem>0){
+    _emBox.style.display='block';
+    var _emMsg;
+    if(r<30){
+      _emMsg='買房之後，你的生活不需要改變。\n這個數字告訴你：你原本就有這個能力，只是還沒做這個決定。';
+    } else if(r<45){
+      _emMsg='數字比你想像的更從容。\n我們用的是最保守的估算——你的實際生活，只會比這個數字輕鬆。';
+    } else {
+      _emMsg='這個方案需要一點調整，但方向是對的。\n你已經離那個數字很近了。';
+    }
+    _em.innerHTML=_emMsg.replace(/\n/g,'<br>');
+  } else if(_emBox){ _emBox.style.display='none'; }
+
   // 房貸負擔比
   var pct=Math.min(r,100);
   g('bfi').style.width=pct+'%';
@@ -1443,11 +1500,11 @@ function doGen(){
   var vb=g('vdB'),sh=g('shT');
   if(r<30&&rem>0){
     vb.className='vd gs';
-    vb.innerHTML='<span class="vdh">✅ '+nm+'，這個數字說明你可以。</span>房貸只佔你月收入 <b>'+r.toFixed(1)+'%</b>。扣掉所有生活費，每個月你還有 <b>'+fmt(rem)+'</b>。<br><br>換個角度想：你現在每個月付出 '+fmt(C.mn)+'，不是在「還債」，是在幫自己買資產。租房的人同樣每月花出去，但什麼都沒留下。';
+    vb.innerHTML='<span class="vdh">✅ '+nm+'，這個數字說明你可以。</span>房貸只佔你月收入 <b>'+r.toFixed(1)+'%</b>。扣掉所有生活費，每個月你還有 <b>'+fmt(rem)+'</b>。<br><br>換個角度想：你現在每個月付出 '+fmt(C.mn)+'，不是在「還債」，是在幫自己買資產。租房的人同樣每月花出去，但什麼都沒留下。<br><br><span style="font-size:12px;color:#c9922b">▶ 現在問自己一個問題：三年後你想住在哪裡？</span>';
     sh.textContent='「'+nm+'，我問你一個問題——如果今天這套房不是你在買，而是你的錢在替你買，你還會猶豫嗎？」（等對方回答）「其實，這就是房貸的本質。」';
   } else if(r<50&&rem>0){
     vb.className='vd gw';
-    vb.innerHTML='<span class="vdh">✅ '+nm+'，數字顯示你能做到。</span>房貸佔月收入 <b>'+r.toFixed(1)+'%</b>，每月還剩 <b>'+fmt(rem)+'</b>。<br><br>⚠️ 這是我們用<b>最保守</b>的數字算出來的結果。實際上，你的年終、偶爾的獎金、任何額外收入都沒有算進去。真實的你，比這個數字更從容。';
+    vb.innerHTML='<span class="vdh">✅ '+nm+'，數字顯示你能做到。</span>房貸佔月收入 <b>'+r.toFixed(1)+'%</b>，每月還剩 <b>'+fmt(rem)+'</b>。<br><br>⚠️ 這是我們用<b>最保守</b>的數字算出來的結果。實際上，你的年終、偶爾的獎金、任何額外收入都沒有算進去。真實的你，比這個數字更從容。<br><br><span style="font-size:12px;color:#c9922b">▶ 你願意讓這個數字幫你做決定嗎？</span>';
     sh.textContent='「'+nm+'，這個數字是最壞情況。我故意算保守，是因為我要確保你在最壞的月份也能安心睡覺。你看，連最壞的情況都還剩 '+fmt(rem)+'，你還有什麼好擔心的？」';
   } else if(rem>0){
     vb.className='vd gw';
@@ -1508,6 +1565,21 @@ function doGen(){
     g('dynQ2').textContent='Q2 ｜ '+(seg.q2||'');
     g('dynQ3').textContent='Q3 ｜ '+(seg.q3||'');
   } else { qBox.style.display='none'; }
+
+  // ── 對客戶說的話 ─────────────────────────────────
+  var _cm=g('clientMsg'), _cmBox=g('clientMsgBox');
+  if(_cm&&_cmBox){
+    var _cMsg='';
+    if(r<30&&rem>0&&diff>0){
+      _cMsg=nm+'，<br><br>這份報告是你的數字，不是我的說法。<br><br>你有能力，你有自備款，你每個月還有結餘。<br>10年後，這套房子的市值會替你說話。<br><br>我們只是幫你把這些數字放在一起——<br>讓你自己看清楚，你早就準備好了。';
+    } else if(rem>0){
+      _cMsg=nm+'，<br><br>你來這裡，不是因為衝動。<br>你是因為認真想過這件事，才願意坐下來把數字算清楚。<br><br>這份報告的每一個數字，都是你的真實狀況。<br>下一步，只需要你做一個決定。';
+    } else {
+      _cMsg=nm+'，<br><br>現在的數字還有調整空間。<br>但你今天來到這裡，已經比大多數人前進了一步。<br><br>讓我們找到那個適合你的方案，<br>而不是等到準備好了才發現窗口已經關了。';
+    }
+    _cmBox.style.display='block';
+    _cm.innerHTML=_cMsg;
+  }
 
   // ── 拍板：finalLine 動態文案 ─────────────────────
   var _fl=g('finalLine');
