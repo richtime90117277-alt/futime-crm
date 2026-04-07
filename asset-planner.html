@@ -456,7 +456,6 @@ canvas{border-radius:6px}
       </div>
       <div class="g2">
         <div class="fl"><label>年終獎金（萬）</label><input type="number" id="a_bonus" placeholder="0" oninput="calcAssets()"></div>
-        <div class="fl"><label>暫收款（萬）</label><input type="number" id="a_earnest" placeholder="0" oninput="calcAssets()" style="border-color:rgba(224,122,90,.4)"><div style="font-size:9px;color:#5a7090;margin-top:3px">已付訂金/暫收需扣除</div></div>
       </div>
 
       <!-- 不動產明細 -->
@@ -647,6 +646,11 @@ canvas{border-radius:6px}
               <input type="number" id="iDelivery" value="36" min="6" max="120" oninput="calcPresale()">
             </div>
           </div>
+          <div class="fl" style="margin-top:8px">
+            <label>已付暫收款（萬）</label>
+            <input type="number" id="a_earnest" placeholder="0" oninput="calcAssets()" style="border-color:rgba(224,122,90,.35)">
+            <div style="font-size:9px;color:#5a7090;margin-top:3px">訂金/暫收款，計算備用金時扣除</div>
+          </div>
           <div id="presaleTable" style="overflow-x:auto"></div>
         </div>
         <div style="background:rgba(201,146,43,.08);border:1px solid rgba(201,146,43,.2);border-radius:8px;padding:12px;text-align:center">
@@ -740,6 +744,16 @@ canvas{border-radius:6px}
         <span style="font-size:11px;color:#5dade2;font-weight:bold">淨資產</span>
         <span style="font-size:22px;font-weight:bold" id="snapNetAsset">—</span>
       </div>
+      <!-- 購屋後備用金（報告） -->
+      <div id="snapReserveBox" style="display:none;margin-top:10px;background:rgba(46,204,113,.08);border:1px solid rgba(46,204,113,.25);border-radius:10px;padding:12px 16px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-size:10px;color:#2ecc71;font-weight:bold;margin-bottom:2px">購屋後備用金</div>
+            <div style="font-size:10px;color:#3a5060" id="snapReserveNote">—</div>
+          </div>
+          <span style="font-size:20px;font-weight:bold" id="snapReserve">—</span>
+        </div>
+      </div>
     </div>
 
     <!-- ④ 這個物件的數字 -->
@@ -791,9 +805,17 @@ canvas{border-radius:6px}
             <div style="font-size:16px;font-weight:bold;color:#2ecc71;font-family:'DM Mono',monospace" id="p2Rent">—</div>
           </div>
         </div>
+        <!-- 未補貼（原始房貸） -->
+        <div style="display:flex;justify-content:space-between;align-items:center;border-radius:8px;padding:10px 14px;border:1px solid rgba(255,255,255,.08);margin-bottom:8px">
+          <div>
+            <div style="font-size:10px;color:#7a9ab8">自住月結餘（未含租金）</div>
+          </div>
+          <div style="font-size:18px;font-weight:bold;font-family:'DM Mono',monospace" id="p2RemRaw">—</div>
+        </div>
+        <!-- 租金補貼後 -->
         <div style="display:flex;justify-content:space-between;align-items:center;border-radius:8px;padding:12px 14px;border:1.5px solid" id="p2RemBox">
           <div>
-            <div style="font-size:11px;font-weight:bold" id="p2RemLabel">交屋後月結餘</div>
+            <div style="font-size:11px;font-weight:bold" id="p2RemLabel">出租後月結餘</div>
             <div style="font-size:9px;color:#5a7090;margin-top:2px" id="p2RemNote"></div>
           </div>
           <div style="font-size:24px;font-weight:900;font-family:'DM Mono',monospace" id="p2Rem">—</div>
@@ -1492,13 +1514,21 @@ function doGen(){
   } else {
     if(_p2rb) _p2rb.style.display='none';
   }
+  // 未補貼結餘（純收入-生活支出-全額月繳）
+  var remRaw = C.inc - (C.exp - savedRent) - C.mn;
+  var _p2rr = g('p2RemRaw');
+  if(_p2rr){
+    _p2rr.textContent = (remRaw>=0?'+':'')+fmt(Math.abs(remRaw));
+    _p2rr.style.color = remRaw>=0?'#2ecc71':'#e05c4a';
+  }
+  // 租金補貼後結餘
   if(_p2r){
     _p2r.textContent = (rem>=0?'+':'')+fmt(Math.abs(rem));
     _p2r.style.color = rem>=0?'#2ecc71':'#e05c4a';
   }
-  if(_p2rl) _p2rl.textContent = nm+' 交屋後月結餘';
+  if(_p2rl) _p2rl.textContent = rentInc>0?'出租補貼後月結餘':'月結餘';
   if(_p2rn){
-    var _remNote = rentInc>0 ? '含租金 '+fmt(rentInc)+' 抵銷，空租月份負擔 '+fmt(C.mn-C.exp+C.exp) : '';
+    var _remNote = rentInc>0?'租金 '+fmt(rentInc)+' 補貼房貸，空租月份缺口 '+fmt(Math.abs(remRaw)):'';
     if(savedRent>0) _remNote += (_remNote?'　':'')+'含省下房租 '+fmt(savedRent);
     _p2rn.textContent = _remNote;
   }
