@@ -417,7 +417,7 @@ canvas{border-radius:6px}
         <div class="fl"><label>車貸</label><input type="number" id="iCar" placeholder="0" oninput="ca()"></div>
       </div>
       <div class="g2">
-        <div class="fl"><label>信貸／學貸</label><input type="number" id="iOLn" placeholder="0" oninput="ca()"></div>
+        <div class="fl"><label>信貸／學貸（每月還款）</label><input type="number" id="iOLn" placeholder="0" oninput="ca()"></div>
         <div class="fl"><label>保險費</label><input type="number" id="iIns" placeholder="0" oninput="ca()"></div>
       </div>
       <div class="fl">
@@ -453,6 +453,10 @@ canvas{border-radius:6px}
       <div class="g2">
         <div class="fl"><label>定存（萬）</label><input type="number" id="a_deposit" placeholder="0" oninput="calcAssets()"></div>
         <div class="fl"><label>存簿平均餘額（萬）</label><input type="number" id="a_bankbal" placeholder="0" oninput="calcAssets()"></div>
+      </div>
+      <div class="g2">
+        <div class="fl"><label>年終獎金（萬）</label><input type="number" id="a_bonus" placeholder="0" oninput="calcAssets()"></div>
+        <div class="fl"><label>暫收款（萬）</label><input type="number" id="a_earnest" placeholder="0" oninput="calcAssets()" style="border-color:rgba(224,122,90,.4)"><div style="font-size:9px;color:#5a7090;margin-top:3px">已付訂金/暫收需扣除</div></div>
       </div>
 
       <!-- 不動產明細 -->
@@ -490,6 +494,23 @@ canvas{border-radius:6px}
       <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(93,173,226,.08);border:1px solid rgba(93,173,226,.2);border-radius:8px;padding:10px 12px;margin-top:8px">
         <span style="font-size:11px;color:#5dade2;font-weight:bold">淨資產（資產－負債）</span>
         <span style="font-size:15px;font-weight:bold" id="a_netAsset">0 萬</span>
+      </div>
+
+      <!-- 購屋後備用金 -->
+      <div id="a_reserveBox" style="display:none;margin-top:10px">
+        <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(201,146,43,.3),transparent);margin-bottom:10px"></div>
+        <div style="font-size:9px;color:#c9922b;letter-spacing:2px;font-weight:bold;margin-bottom:8px;font-family:'DM Mono',monospace">購屋後備用金試算</div>
+        <div style="background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:10px 12px">
+          <div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0;color:#7a9ab8"><span>可動用現金</span><span id="a_res_cash">—</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0;color:#7a9ab8"><span>－ 自備款</span><span id="a_res_dw">—</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0;color:#7a9ab8"><span>－ 暫收款</span><span id="a_res_earn">—</span></div>
+          <div style="height:1px;background:rgba(255,255,255,.08);margin:6px 0"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:12px;color:#c8a870;font-weight:bold">購屋後備用金</span>
+            <span style="font-size:18px;font-weight:bold" id="a_reserve">—</span>
+          </div>
+          <div style="font-size:10px;color:#3a5060;margin-top:4px" id="a_reserveNote"></div>
+        </div>
       </div>
 
       <!-- 保證人（折疊） -->
@@ -723,7 +744,64 @@ canvas{border-radius:6px}
 
     <!-- ④ 這個物件的數字 -->
     <div style="background:linear-gradient(160deg,#0f1e30,#0c1824);border:1px solid rgba(201,146,43,.18);border-radius:14px;padding:18px;margin-bottom:14px">
-      <div style="font-size:9px;letter-spacing:3px;color:#c9922b;margin-bottom:14px;font-weight:bold">THIS OPPORTUNITY — 這個機會</div>
+      <div style="font-size:9px;letter-spacing:3px;color:#c9922b;margin-bottom:14px;font-weight:bold;font-family:'DM Mono',monospace">THIS OPPORTUNITY — 這個機會</div>
+
+      <!-- PART 1：自備款結餘 -->
+      <div style="background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px;margin-bottom:10px">
+        <div style="font-size:8px;letter-spacing:2px;color:#c9922b;margin-bottom:10px;font-family:'DM Mono',monospace">PART 1 — 自備款夠嗎？（一次性）</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
+          <div style="text-align:center;padding:10px 6px;background:rgba(255,255,255,.03);border-radius:8px">
+            <div style="font-size:9px;color:#5a7090;margin-bottom:3px">可動用現金</div>
+            <div style="font-size:16px;font-weight:bold;color:#e8e0d0;font-family:'DM Mono',monospace" id="p1Cash">—</div>
+          </div>
+          <div style="text-align:center;padding:10px 6px;background:rgba(255,255,255,.03);border-radius:8px">
+            <div style="font-size:9px;color:#5a7090;margin-bottom:3px">自備款</div>
+            <div style="font-size:16px;font-weight:bold;color:#e8b84b;font-family:'DM Mono',monospace" id="p1Dw">—</div>
+          </div>
+          <div style="text-align:center;padding:10px 6px;background:rgba(255,255,255,.03);border-radius:8px">
+            <div style="font-size:9px;color:#5a7090;margin-bottom:3px">暫收款</div>
+            <div style="font-size:16px;font-weight:bold;color:#7a9ab8;font-family:'DM Mono',monospace" id="p1Earn">—</div>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(93,173,226,.08);border:1px solid rgba(93,173,226,.2);border-radius:8px;padding:10px 14px">
+          <span style="font-size:11px;color:#5dade2;font-weight:bold">購屋後剩餘備用金</span>
+          <span style="font-size:20px;font-weight:bold;font-family:'DM Mono',monospace" id="p1Reserve">—</span>
+        </div>
+        <div style="font-size:10px;margin-top:6px;text-align:right" id="p1ReserveNote"></div>
+      </div>
+
+      <!-- PART 2：每月結餘 -->
+      <div style="background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px;margin-bottom:10px">
+        <div style="font-size:8px;letter-spacing:2px;color:#c9922b;margin-bottom:10px;font-family:'DM Mono',monospace">PART 2 — 交屋後每月結餘（持續性）</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+          <div style="padding:10px;background:rgba(255,255,255,.03);border-radius:8px">
+            <div style="font-size:9px;color:#5a7090;margin-bottom:2px">月收入</div>
+            <div style="font-size:16px;font-weight:bold;color:#e8e0d0;font-family:'DM Mono',monospace" id="p2Inc">—</div>
+          </div>
+          <div style="padding:10px;background:rgba(255,255,255,.03);border-radius:8px">
+            <div style="font-size:9px;color:#5a7090;margin-bottom:2px">生活支出</div>
+            <div style="font-size:16px;font-weight:bold;color:#e8e0d0;font-family:'DM Mono',monospace" id="p2Exp">—</div>
+          </div>
+          <div style="padding:10px;background:rgba(93,173,226,.08);border:1px solid rgba(93,173,226,.15);border-radius:8px">
+            <div style="font-size:9px;color:#5a7090;margin-bottom:2px">月繳</div>
+            <div style="font-size:16px;font-weight:bold;color:#5dade2;font-family:'DM Mono',monospace" id="p2Mn">—</div>
+          </div>
+          <div style="padding:10px;background:rgba(46,204,113,.06);border:1px solid rgba(46,204,113,.15);border-radius:8px" id="p2RentBox" style="display:none">
+            <div style="font-size:9px;color:#5a7090;margin-bottom:2px">月租金收入</div>
+            <div style="font-size:16px;font-weight:bold;color:#2ecc71;font-family:'DM Mono',monospace" id="p2Rent">—</div>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;border-radius:8px;padding:12px 14px;border:1.5px solid" id="p2RemBox">
+          <div>
+            <div style="font-size:11px;font-weight:bold" id="p2RemLabel">交屋後月結餘</div>
+            <div style="font-size:9px;color:#5a7090;margin-top:2px" id="p2RemNote"></div>
+          </div>
+          <div style="font-size:24px;font-weight:900;font-family:'DM Mono',monospace" id="p2Rem">—</div>
+        </div>
+      </div>
+
+      <!-- 分隔線 -->
+      <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(201,146,43,.3),transparent);margin:4px 0 14px"></div>
 
       <!-- 成屋模式 -->
       <div id="oppReady">
@@ -1214,7 +1292,9 @@ function doGen(){
   if(!C.inc){alert('請先填寫月收入');return;}
   var nm=g('iName').value||'尊貴客戶',adv=g('iAdv').value||'富時代顧問',prop=g('iProp').value||'目標物件';
   var rentInc=C.rent||0;
-  var rem=C.inc+C.ts-C.exp-C.effMn, r=C.ratio; // 月結餘用租金抵銷後負擔
+  // 買房後省下現有房租（iRnt），從支出中扣除
+  var savedRent=parseFloat((g('iRnt')||{value:'0'}).value)||0;
+  var rem=C.inc+C.ts-(C.exp-savedRent)-C.effMn, r=C.ratio; // 月結餘：扣除現有房租（買後不再支付）
   var growth=parseFloat(g('iGrowth').value)/100;
   var d=new Date();
   var isPresale=(MORTGAGE_MODE==='presale');
@@ -1282,7 +1362,7 @@ function doGen(){
     if(v>0){ propVal+=v; propItems.push({name:nm2,val:v,loan:l}); }
   });}
 
-  var totalAsset=fund+stock+dep+bankb+propVal;
+  var totalAsset=fund+stock+dep+bankb+bonus+propVal-earnest; // 含年終，扣暫收款
   var totalDebt=dStu+dPer+dCar+dHome;
   var netAsset=totalAsset-totalDebt;
   var hasAsset=(totalAsset>0||totalDebt>0);
@@ -1310,6 +1390,26 @@ function doGen(){
     var netEl=g('snapNetAsset');
     netEl.textContent=(netAsset>=0?'+':'')+netAsset+'萬';
     netEl.style.color=netAsset>=0?'#5dade2':'#ffaa90';
+
+    // 備用金顯示在報告快照裡
+    var _bonus2=(parseFloat((g('a_bonus')||{value:'0'}).value)||0);
+    var _earn2 =(parseFloat((g('a_earnest')||{value:'0'}).value)||0);
+    var _dwW2  =(parseFloat((g('iDwn')||{value:'0'}).value)||0);
+    var _cash2 =fund+stock+dep+bankb+_bonus2;
+    var _res2  =_cash2-_dwW2-_earn2;
+    var _resBox=g('snapReserveBox');
+    if(_resBox&&_dwW2>0&&_cash2>0){
+      _resBox.style.display='block';
+      var _resEl=g('snapReserve');
+      if(_resEl){
+        _resEl.textContent=((_res2>=0?'+':'')+_res2+'萬');
+        _resEl.style.color=_res2>=20?'#2ecc71':_res2>=0?'#e8b84b':'#e05c4a';
+      }
+      var _resNote=g('snapReserveNote');
+      if(_resNote){
+        _resNote.textContent=_res2>=30?'✅ 備用金充足':_res2>=15?'🟡 備用金尚可':_res2>=0?'⚠️ 備用金偏低':'🔴 現金不足';
+      }
+    }
   } else {
     g('assetSnapshotBox').style.display='none';
   }
@@ -1351,6 +1451,60 @@ function doGen(){
         rentEl.innerHTML='<span style="color:#c8a870;font-size:10px">月租金抵銷</span><br><span style="font-size:18px;font-weight:bold;color:#2ecc71">'+fmt(rentInc)+'</span><span style="font-size:10px;color:#5a7090"> 覆蓋房貸 '+cov+'%</span>';
       } else { rentEl.style.display='none'; }
     }
+  }
+
+  // ── Part 1：自備款結餘 ─────────────────────────
+  var _bonus3 = parseFloat((g('a_bonus')||{value:'0'}).value)||0;
+  var _earn3  = parseFloat((g('a_earnest')||{value:'0'}).value)||0;
+  var _fund3  = parseFloat((g('a_fund')||{value:'0'}).value)||0;
+  var _stk3   = parseFloat((g('a_stock')||{value:'0'}).value)||0;
+  var _dep3   = parseFloat((g('a_deposit')||{value:'0'}).value)||0;
+  var _bank3  = parseFloat((g('a_bankbal')||{value:'0'}).value)||0;
+  var _cash3  = _fund3 + _stk3 + _dep3 + _bank3 + _bonus3; // 可動用現金（萬）
+  var _dwW3   = C.dw ? Math.round(C.dw/10000) : 0;          // 自備款（萬）
+  var _res3   = _cash3 - _dwW3 - _earn3;                    // 備用金（萬）
+
+  var _p1c=g('p1Cash'),_p1d=g('p1Dw'),_p1e=g('p1Earn'),_p1r=g('p1Reserve'),_p1n=g('p1ReserveNote');
+  if(_p1c) _p1c.textContent = _cash3 > 0 ? _cash3+'萬' : '—';
+  if(_p1d) _p1d.textContent = _dwW3 > 0  ? _dwW3+'萬'  : '—';
+  if(_p1e) _p1e.textContent = _earn3 > 0 ? _earn3+'萬' : '—';
+  if(_p1r){
+    _p1r.textContent = (_res3>=0?'+':'')+_res3+'萬';
+    _p1r.style.color = _res3>=20?'#2ecc71':_res3>=0?'#e8b84b':'#e05c4a';
+  }
+  if(_p1n){
+    _p1n.textContent = _res3>=30?'✅ 備用金充足，財務穩健':_res3>=15?'🟡 備用金尚可，建議保留至少20萬':_res3>=0?'⚠️ 備用金偏低，注意現金流':'🔴 現金不足，建議補充資金';
+    _p1n.style.color = _res3>=20?'#2ecc71':_res3>=0?'#e8b84b':'#e05c4a';
+  }
+
+  // ── Part 2：交屋後月結餘 ────────────────────────
+  // rem 已在前面計算（含省租、含租金抵銷）
+  var _p2i=g('p2Inc'),_p2e=g('p2Exp'),_p2m=g('p2Mn');
+  var _p2rt=g('p2Rent'),_p2rb=g('p2RentBox');
+  var _p2r=g('p2Rem'),_p2rl=g('p2RemLabel'),_p2rn=g('p2RemNote'),_p2box=g('p2RemBox');
+
+  if(_p2i) _p2i.textContent = fmt(C.inc);
+  if(_p2e) _p2e.textContent = fmt(C.exp - savedRent); // 扣省下的現有房租
+  if(_p2m) _p2m.textContent = fmt(C.mn);
+  if(rentInc>0){
+    if(_p2rb) _p2rb.style.display='block';
+    if(_p2rt) _p2rt.textContent = '+'+fmt(rentInc);
+  } else {
+    if(_p2rb) _p2rb.style.display='none';
+  }
+  if(_p2r){
+    _p2r.textContent = (rem>=0?'+':'')+fmt(Math.abs(rem));
+    _p2r.style.color = rem>=0?'#2ecc71':'#e05c4a';
+  }
+  if(_p2rl) _p2rl.textContent = nm+' 交屋後月結餘';
+  if(_p2rn){
+    var _remNote = rentInc>0 ? '含租金 '+fmt(rentInc)+' 抵銷，空租月份負擔 '+fmt(C.mn-C.exp+C.exp) : '';
+    if(savedRent>0) _remNote += (_remNote?'　':'')+'含省下房租 '+fmt(savedRent);
+    _p2rn.textContent = _remNote;
+  }
+  if(_p2box){
+    _p2box.style.borderColor = rem>=0?'rgba(46,204,113,.3)':'rgba(224,92,74,.3)';
+    _p2box.style.background  = rem>=0?'rgba(46,204,113,.06)':'rgba(224,92,74,.06)';
   }
 
   // ── ⑤ 不買的代價 ────────────────────────────────
@@ -1451,7 +1605,8 @@ function doGen(){
   g('nL').textContent=fmt(C.mn);  g('nS').textContent=C.ts>0?'+'+fmt(C.ts):'—';
   g('spV').textContent=fmt(Math.abs(rem));
   g('spV').style.color=rem>=0?'#fff':'#ff8870';
-  g('spS').textContent=rem>=0?nm+' 每月購屋後仍可自由運用':nm+' 每月缺口，建議調整方案';
+  var _savedNote=savedRent>0?' （含省下租金 '+fmt(savedRent)+'）':'';
+  g('spS').textContent=rem>=0?nm+' 每月購屋後仍可自由運用'+_savedNote:nm+' 每月缺口，建議調整方案';
 
   // ── 情感橋接句（每月剩餘後）──────────────────────
   var _em=g('emotionMsg'), _emBox=g('emotionBridge');
@@ -1728,6 +1883,33 @@ function calcAssets() {
   if(netEl) {
     netEl.textContent = net + ' 萬';
     netEl.style.color = net >= 0 ? '#5dade2' : '#ffaa90';
+  }
+
+  // ── 購屋後備用金試算 ──────────────────────────
+  var dwW = parseFloat((g('iDwn')||{value:'0'}).value)||0; // 自備款（萬）
+  var rBox = g('a_reserveBox');
+  if(rBox && dwW > 0 && totalAsset > 0){
+    rBox.style.display = 'block';
+    var cashTotal = fund + stock + dep + bankb + bonus; // 可動用現金（不含房產）
+    var reserve = cashTotal - dwW - earnest;
+    var resCash = g('a_res_cash'), resDw = g('a_res_dw');
+    var resEarn = g('a_res_earn'), resEl = g('a_reserve');
+    var resNote = g('a_reserveNote');
+    if(resCash) resCash.textContent = cashTotal + ' 萬';
+    if(resDw)   resDw.textContent   = '－ ' + dwW + ' 萬';
+    if(resEarn) resEarn.textContent = earnest > 0 ? '－ ' + earnest + ' 萬' : '—';
+    if(resEl){
+      resEl.textContent = reserve + ' 萬';
+      resEl.style.color = reserve >= 20 ? '#2ecc71' : reserve >= 0 ? '#e8b84b' : '#e05c4a';
+    }
+    if(resNote){
+      if(reserve >= 30)      resNote.textContent = '✅ 備用金充足，購屋後財務穩健';
+      else if(reserve >= 15) resNote.textContent = '🟡 備用金尚可，建議保留至少20萬緩衝';
+      else if(reserve >= 0)  resNote.textContent = '⚠️ 備用金偏低，建議增加自備款來源';
+      else                   resNote.textContent = '🔴 現金不足，需補充資金再行購屋';
+    }
+  } else if(rBox) {
+    rBox.style.display = 'none';
   }
 }
 
