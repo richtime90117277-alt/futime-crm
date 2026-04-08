@@ -1051,8 +1051,37 @@ canvas{border-radius:6px}
   <div class="save-bar" style="display:flex;gap:8px;flex-wrap:wrap">
     <button class="btn-save" onclick="saveImg()" style="flex:1">📥 儲存圖片</button>
     <button class="btn-save" onclick="printPDF()" style="flex:1;background:linear-gradient(135deg,#1e5799,#2980b9)">🖨️ 匯出 PDF</button>
+    <!-- ★ 同步至 CRM 按鈕 -->
+    <button class="btn-save" onclick="showSyncModal()" style="flex:1;background:linear-gradient(135deg,#1a6b3a,#27ae60)">🔗 同步至 CRM</button>
     <button class="bbk" style="width:100%" onclick="sw('I')">← 修改</button>
   </div>
+
+<!-- ══ CRM 同步 Modal ══════════════════════════════ -->
+<div id="syncModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:999;align-items:center;justify-content:center">
+  <div style="background:#0d1e2e;border:1px solid #c9922b;border-radius:16px;padding:24px;max-width:400px;width:92%;margin:0 auto">
+    <div style="font-size:15px;font-weight:bold;color:#e8b84b;margin-bottom:16px">🔗 同步至 CRM</div>
+    <div style="font-size:12px;color:#7a9ab8;margin-bottom:14px">以下資料將同步到 CRM 新客戶記錄：</div>
+    <div id="syncPreview" style="background:rgba(201,146,43,.06);border:1px solid rgba(201,146,43,.2);border-radius:8px;padding:12px;margin-bottom:16px;font-size:12px;color:#d4c9b8;line-height:1.9"></div>
+    <!-- 業務選擇 -->
+    <div style="margin-bottom:12px">
+      <label style="font-size:12px;color:#7a9ab8;display:block;margin-bottom:6px">負責業務</label>
+      <select id="syncSalesPerson" style="width:100%;background:#0d1e2e;border:1px solid rgba(201,146,43,.3);border-radius:8px;padding:8px;color:#d4c9b8;font-size:13px">
+        <option value="">請選擇業務</option>
+        <option>阮智偉</option><option>廖一龍</option><option>鄭采崴</option><option>張書菡</option>
+        <option>王鈞志</option><option>吳玉如</option><option>商國泰</option><option>郭淑真</option>
+        <option>高亞琦</option><option>陳淑美</option><option>侯明智</option><option>許亞茵</option>
+        <option>曾素蘭</option><option>林紫君</option><option>黃中興</option><option>黃彥程</option>
+        <option>孫運迪</option><option>陳丰彥</option><option>劉常裕</option><option>施向宇</option>
+        <option>莊環蔭</option><option>廉海桃</option><option>劉晁綱</option><option>游馥宇</option>
+      </select>
+    </div>
+    <div id="syncMsg" style="font-size:12px;color:#e05c4a;margin-bottom:10px;min-height:18px"></div>
+    <div style="display:flex;gap:8px">
+      <button onclick="closeSyncModal()" style="flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:10px;color:#7a9ab8;font-size:13px;cursor:pointer">取消</button>
+      <button onclick="doSyncCRM()" id="syncConfirmBtn" style="flex:2;background:linear-gradient(135deg,#1a6b3a,#27ae60);border:none;border-radius:8px;padding:10px;color:#fff;font-size:13px;font-weight:bold;cursor:pointer">✅ 確認同步</button>
+    </div>
+  </div>
+</div>
 </div>
 
 <!-- ══ 資金安心 PANEL ══════════════════════════════ -->
@@ -2466,6 +2495,141 @@ function lsClear(){
 window.addEventListener('DOMContentLoaded',function(){
   lsLoad();
 });
+
+
+
+// ══ Asset Planner → CRM 同步功能 ══════════════════
+// 顯示同步確認 modal，並預覽要同步的資料
+function showSyncModal() {
+  var C = window._C || {};
+  var nm = g('iName').value || '';
+  var adv = g('iAdv').value || '';
+  var prop = g('iProp').value || '';
+
+  if (!nm) { alert('請先填寫客戶姓名'); return; }
+  if (!C.inc) { alert('請先填寫收入並產生報告'); return; }
+
+  // 計算月結餘
+  var savedRent = parseFloat((g('iRnt') || {value:'0'}).value) || 0;
+  var rem = C.inc + C.ts - (C.exp - savedRent) - C.effMn;
+
+  // 族群名稱
+  var segName = (SEG >= 0 && SEGS[SEG]) ? SEGS[SEG].name : '未選擇';
+
+  // 財務差距（10年）
+  var diff = 0;
+  try {
+    var growEl = g('iGrowth');
+    var growth = growEl ? parseFloat(growEl.value) / 100 : 0.05;
+    var yrs = 10;
+    var priceNow = C.totalPrice || 0;
+    var buyNow   = priceNow * Math.pow(1 + growth, yrs);
+    var waitSave = (rem > 0 ? rem : 0) * 12 * yrs;
+    var waitPrice = priceNow * Math.pow(1 + growth, yrs);
+    diff = buyNow - waitSave - waitPrice;
+  } catch(e) {}
+
+  // 預覽內容
+  var prevLines = [
+    '客戶：' + nm,
+    '族群：' + segName,
+    '目標物件：' + (prop || '—'),
+    '顧問：' + (adv || '—'),
+    '月結餘：' + (rem >= 0 ? '+' : '') + Math.round(rem).toLocaleString() + ' 元',
+    '10年財務差距：' + (diff > 0 ? '+' : '') + Math.round(diff).toLocaleString() + ' 萬',
+    '名單來源：顧問諮詢'
+  ];
+  g('syncPreview').style.whiteSpace = 'pre-line';
+  g('syncPreview').textContent = prevLines.join('\n');
+  g('syncMsg').textContent = '';
+
+  // 顧問名稱預設選業務
+  if (adv) {
+    var sel = g('syncSalesPerson');
+    for (var i = 0; i < sel.options.length; i++) {
+      if (sel.options[i].value === adv) { sel.selectedIndex = i; break; }
+    }
+  }
+
+  g('syncModal').style.display = 'flex';
+}
+
+function closeSyncModal() {
+  g('syncModal').style.display = 'none';
+}
+
+// 執行同步：組 customer payload，呼叫 CRM API
+function doSyncCRM() {
+  var sp = g('syncSalesPerson').value;
+  if (!sp) { g('syncMsg').textContent = '⚠️ 請選擇負責業務'; return; }
+
+  var C = window._C || {};
+  var nm = g('iName').value || '未命名客戶';
+  var adv = g('iAdv').value || '';
+  var prop = g('iProp').value || '';
+  var savedRent = parseFloat((g('iRnt') || {value:'0'}).value) || 0;
+  var rem = Math.round(C.inc + C.ts - (C.exp - savedRent) - C.effMn);
+  var segName = (SEG >= 0 && SEGS[SEG]) ? SEGS[SEG].name : '';
+  var today = new Date();
+  var todayStr = today.getFullYear() + '-'
+    + String(today.getMonth()+1).padStart(2,'0') + '-'
+    + String(today.getDate()).padStart(2,'0');
+
+  var noteLines = [
+    '【Asset Planner 同步】',
+    '族群：' + segName,
+    '目標物件：' + prop,
+    '月收入：' + Math.round(C.inc||0).toLocaleString(),
+    '月支出：' + Math.round(C.exp||0).toLocaleString(),
+    '月貸款：' + Math.round(C.effMn||0).toLocaleString(),
+    '月結餘：' + rem.toLocaleString(),
+    '顧問：' + adv + '｜同步日：' + todayStr
+  ];
+
+  var customer = {
+    salesPerson: sp,
+    customerName: nm,
+    contactInfo: '',
+    creationDate: todayStr,
+    leadSource: '顧問諮詢',
+    leadSourceDetail: 'Asset Planner 財富規劃諮詢',
+    clientSegment: segName,
+    matchedProperty: prop,
+    notes: noteLines.join('\n'),
+    customerActive: '進行中'
+  };
+
+  var btn = g('syncConfirmBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ 同步中...';
+  g('syncMsg').textContent = '';
+
+  var apiUrl = 'https://script.google.com/macros/s/AKfycbyt8tcy6pORzZ1nc0HP4YVLV-AY1tOuahJWjhmWQ2VBTSZPLZe2qgBzZgczbDQTVsPI/exec';
+  fetch(apiUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'save', customer: customer })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(res){
+    btn.disabled = false;
+    btn.textContent = '✅ 確認同步';
+    if (res && res.success) {
+      g('syncMsg').style.color = '#27ae60';
+      g('syncMsg').textContent = '✅ 已成功同步至 CRM！';
+      setTimeout(closeSyncModal, 1800);
+    } else {
+      g('syncMsg').style.color = '#e05c4a';
+      g('syncMsg').textContent = '❌ 同步失敗：' + (res && res.error ? res.error : '請稍後再試');
+    }
+  })
+  .catch(function(e){
+    btn.disabled = false;
+    btn.textContent = '✅ 確認同步';
+    g('syncMsg').style.color = '#e05c4a';
+    g('syncMsg').textContent = '❌ 網路錯誤：' + e.message;
+  });
+}
 
 // ══ printPDF 函數 ═══════════════════════════════
 function printPDF(){
