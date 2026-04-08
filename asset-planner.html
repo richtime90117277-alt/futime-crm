@@ -456,7 +456,11 @@ canvas{border-radius:6px}
         <div class="fl"><label>存簿平均餘額（萬）</label><input type="number" id="a_bankbal" placeholder="0" oninput="calcAssets()"></div>
       </div>
       <div class="g2">
-        <div class="fl"><label>年終獎金（萬）</label><input type="number" id="a_bonus" placeholder="0" oninput="calcAssets()"></div>
+        <div class="fl">
+          <label>其他一次性可用資金（萬）<span style="font-size:9px;color:#5a7090;font-weight:normal"> 年終／獎金／贈與／賣車等</span></label>
+          <input type="number" id="a_bonus" placeholder="0" oninput="calcAssets()">
+          <div style="font-size:9px;color:#5a7090;margin-top:3px">來源不限，可一次投入購屋的額外資金</div>
+        </div>
       </div>
 
       <!-- 不動產明細 -->
@@ -652,6 +656,7 @@ canvas{border-radius:6px}
             <input type="number" id="a_earnest" placeholder="0" oninput="calcAssets()" style="border-color:rgba(224,122,90,.35)">
             <div style="font-size:9px;color:#5a7090;margin-top:3px">訂金/暫收款，計算備用金時扣除</div>
           </div>
+
           <div id="presaleTable" style="overflow-x:auto"></div>
         </div>
         <div style="background:rgba(201,146,43,.08);border:1px solid rgba(201,146,43,.2);border-radius:8px;padding:12px;text-align:center">
@@ -1547,8 +1552,9 @@ function doGen(){
     var _bonus2=(parseFloat((g('a_bonus')||{value:'0'}).value)||0);
     var _earn2 =(parseFloat((g('a_earnest')||{value:'0'}).value)||0);
     var _dwW2  =(parseFloat((g('iDwn')||{value:'0'}).value)||0);
+    var _credit2=parseFloat((g('fCredit')||{value:'0'}).value)||0; // 信貸補位納入快照
     var _cash2 =fund+stock+dep+bankb+_bonus2;
-    var _res2  =_cash2-_dwW2-_earn2;
+    var _res2  =_cash2+_credit2-_dwW2-_earn2;
     var _resBox=g('snapReserveBox');
     if(_resBox&&_dwW2>0&&_cash2>0){
       _resBox.style.display='block';
@@ -1612,7 +1618,8 @@ function doGen(){
   var _stk3   = parseFloat((g('a_stock')||{value:'0'}).value)||0;
   var _dep3   = parseFloat((g('a_deposit')||{value:'0'}).value)||0;
   var _bank3  = parseFloat((g('a_bankbal')||{value:'0'}).value)||0;
-  var _cash3  = _fund3+_stk3+_dep3+_bank3+_bonus3; // 可動用現金（萬）
+  var _credit3= parseFloat((g('fCredit')||{value:'0'}).value)||0; // 信貸補位（Section B 輸入值）
+  var _cash3  = _fund3+_stk3+_dep3+_bank3+_bonus3+_credit3; // 可動用現金含信貸（萬）
   var _dwW3   = C.dw?Math.round(C.dw/10000):0;      // 自備款（萬）
 
   // 預售：PART1 是工程款自備部分，PART2 分兩段
@@ -1623,10 +1630,12 @@ function doGen(){
     var _delivMo3=parseInt((g('iDelivery')||{value:'36'}).value)||36;
     var _bankPct3=parseInt((g('iLtvPct')||{value:'75'}).value)||75;
     var _prW3=C.pr?Math.round(C.pr/10000):0;
-    var _selfW3=_prW3?Math.ceil(_prW3*(100-_bankPct3)/100):0; // 工程款自備（萬）
+    var _selfW3=_prW3?Math.ceil(_prW3*(100-_bankPct3)/100):0; // 工程款自備合計（萬）
     var _res3=_cash3-_selfW3-_earn3;
 
-    if(_p1c) _p1c.textContent=_cash3>0?_cash3+'萬':'—';
+    // 可動用現金：若含信貸，標示來源
+    var _p1cLabel = _cash3>0 ? _cash3+'萬'+(_credit3>0?' （含信貸'+_credit3+'萬）':'') : '—';
+    if(_p1c) _p1c.textContent=_p1cLabel;
     if(_p1d) _p1d.textContent=_selfW3>0?_selfW3+'萬（工程款自備）':'—';
     if(_p1e) _p1e.textContent=_earn3>0?_earn3+'萬':'—';
     if(_p1r){
@@ -1645,13 +1654,20 @@ function doGen(){
     var _p2rl=g('p2RemLabel'),_p2rn=g('p2RemNote'),_p2box=g('p2RemBox');
 
     var _mnSave3=_delivMo3>0?Math.ceil(_selfW3*10000/_delivMo3):0; // 等屋期月存（元）
-    var _remDuring=C.inc-(C.exp-savedRent)-_mnSave3; // 等屋期月結餘
-    var _remAfter=C.inc-(C.exp-savedRent)-C.mn;       // 交屋後自住月結餘
-    var _remAfterRent=rentInc>0?C.inc-(C.exp-savedRent)-(C.mn-rentInc):_remAfter;
+    // 預售 PART2：信貸月付（若有補位，交屋後開始扣）
+    var _cMoP3   = parseFloat((g('fCreditMo')||{value:'60'}).value)||60;
+    var _cRateP3 = parseFloat((g('fCreditRate')||{value:'6'}).value)||6;
+    var _cMoRateP3=_cRateP3/12/100;
+    var _creditMnP3=(_credit3>0&&_cMoRateP3>0)
+      ? Math.round(_credit3*10000*_cMoRateP3/(1-Math.pow(1+_cMoRateP3,-_cMoP3)))
+      : (_credit3>0 ? Math.round(_credit3*10000/_cMoP3) : 0);
+    var _remDuring=C.inc-(C.exp-savedRent)-_mnSave3; // 等屋期：不扣信貸月付（信貸資金已先用於補自備）
+    var _remAfter=C.inc-(C.exp-savedRent)-C.mn-_creditMnP3;       // 交屋後自住月結餘（含信貸月付）
+    var _remAfterRent=rentInc>0?C.inc-(C.exp-savedRent)-(C.mn-rentInc)-_creditMnP3:_remAfter;
 
     if(_p2i) _p2i.textContent=fmt(C.inc);
     if(_p2e) _p2e.textContent=fmt(C.exp-savedRent);
-    if(_p2m) _p2m.textContent=fmt(_mnSave3)+'/月（等屋期需存）';
+    if(_p2m) _p2m.textContent=fmt(_mnSave3)+'/月（等屋期需存）'+(_creditMnP3>0?' ＋信貸月付 '+fmt(_creditMnP3):'');
     if(_p2rb) _p2rb.style.display=rentInc>0?'block':'none';
     if(_p2rt) _p2rt.textContent=rentInc>0?'+'+fmt(rentInc):'';
 
@@ -1670,7 +1686,8 @@ function doGen(){
       _p2r.style.color=_showRem>=0?'#2ecc71':'#e05c4a';
     }
     if(_p2rl) _p2rl.textContent='交屋後月結餘'+(rentInc>0?' （含租金）':'');
-    if(_p2rn) _p2rn.textContent='交屋後月繳 '+fmt(C.mn)+(rentInc>0?'，租金補貼 '+fmt(rentInc):'');
+    var _p2rnText='交屋後月繳 '+fmt(C.mn)+(_creditMnP3>0?'＋信貸月付 '+fmt(_creditMnP3):'')+(rentInc>0?'，租金補貼 '+fmt(rentInc):'');
+    if(_p2rn) _p2rn.textContent=_p2rnText;
     if(_p2box){
       var _boxOk=rentInc>0?_remAfterRent>=0:_remAfter>=0;
       _p2box.style.borderColor=_boxOk?'rgba(46,204,113,.3)':'rgba(224,92,74,.3)';
@@ -1680,7 +1697,8 @@ function doGen(){
   } else {
     // 成屋 PART1
     var _res3b=_cash3-_dwW3-_earn3;
-    if(_p1c) _p1c.textContent=_cash3>0?_cash3+'萬':'—';
+    var _p1cLabelB = _cash3>0 ? _cash3+'萬'+(_credit3>0?' （含信貸'+_credit3+'萬）':'') : '—';
+    if(_p1c) _p1c.textContent=_p1cLabelB;
     if(_p1d) _p1d.textContent=_dwW3>0?_dwW3+'萬':'—';
     if(_p1e) _p1e.textContent=_earn3>0?_earn3+'萬':'—';
     if(_p1r){
@@ -1704,7 +1722,14 @@ function doGen(){
     if(rentInc>0){ if(_p2rb) _p2rb.style.display='block'; if(_p2rt) _p2rt.textContent='+'+fmt(rentInc); }
     else { if(_p2rb) _p2rb.style.display='none'; }
 
-    var remRaw=C.inc-(C.exp-savedRent)-C.mn;
+    // 成屋 PART2：若有信貸補位，月繳要加上信貸月付（從Section B 讀取）
+    var _cMo3  = parseFloat((g('fCreditMo')||{value:'60'}).value)||60;
+    var _cRate3= parseFloat((g('fCreditRate')||{value:'6'}).value)||6;
+    var _cMoRate3=_cRate3/12/100;
+    var _creditMn3=(_credit3>0&&_cMoRate3>0)
+      ? Math.round(_credit3*10000*_cMoRate3/(1-Math.pow(1+_cMoRate3,-_cMo3)))
+      : (_credit3>0 ? Math.round(_credit3*10000/_cMo3) : 0); // 信貸月付（元）
+    var remRaw=C.inc-(C.exp-savedRent)-C.mn-_creditMn3;
     if(_p2rr){
       _p2rr.textContent=((remRaw>=0?'+':'')+fmt(Math.abs(remRaw)));
       _p2rr.style.color=remRaw>=0?'#2ecc71':'#e05c4a';
