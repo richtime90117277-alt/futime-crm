@@ -349,6 +349,7 @@ canvas{border-radius:6px}
   <div class="tabs">
     <button class="tab on" id="tI" onclick="sw('I')">輸入</button>
     <button class="tab" id="tR" onclick="doGen()">報告</button>
+    <button class="tab" id="tF" onclick="sw('F')">資金安心</button>
   </div>
 </div>
 
@@ -1054,6 +1055,100 @@ canvas{border-radius:6px}
   </div>
 </div>
 
+<!-- ══ 資金安心 PANEL ══════════════════════════════ -->
+<div id="vF" style="display:none;max-width:580px;margin:0 auto;padding:16px 14px 80px">
+
+  <!-- 頁首說明 -->
+  <div style="background:linear-gradient(160deg,#112030,#0c1824);border:1px solid rgba(201,146,43,.35);border-radius:14px;padding:20px;margin-bottom:14px;position:relative;overflow:hidden">
+    <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(201,146,43,.8),transparent)"></div>
+    <div style="font-size:9px;letter-spacing:4px;color:#c9922b;margin-bottom:8px;font-family:'DM Mono',monospace">FUND CONFIDENCE CALCULATOR</div>
+    <div style="font-size:17px;font-weight:bold;color:#f0e8d8;margin-bottom:6px">資金安心試算</div>
+    <div style="font-size:12px;color:#5a7090;line-height:1.8">用數字陪你確認：錢夠用，而且還有餘裕。</div>
+  </div>
+
+  <!-- ─ BLOCK A：工程款資金流追蹤 ─ -->
+  <div class="card">
+    <div class="ch"><span class="cn" style="border-color:#5dade2;color:#5dade2">A</span><span class="ct">工程款資金流追蹤</span></div>
+    <div class="cb">
+      <div style="font-size:11px;color:#5a7090;margin-bottom:12px;line-height:1.7">輸入總價與可用資金，系統按標準期別逐期計算剩餘，讓客戶看到「每一期繳完都還有錢」。</div>
+
+      <div class="g2">
+        <div class="fl"><label>物件總價（萬）— 自動帶入第05欄</label><input type="number" id="fTotalPrice" placeholder="請先在輸入頁填總價" readonly style="cursor:not-allowed;opacity:.6" oninput="syncFundFromPrice()"></div>
+        <div class="fl"><label>客戶總可用資金（萬）★</label><input type="number" id="fTotalFund" placeholder="如 374" oninput="calcFund()"></div>
+      </div>
+
+      <!-- 標準工程款期別表 -->
+      <div style="margin-top:10px">
+        <div style="font-size:10px;color:#c9922b;letter-spacing:1px;font-weight:bold;margin-bottom:8px">🏗️ 工程款各期明細（金額可手動調整）</div>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:11px" id="fundStageTable">
+            <thead>
+              <tr style="border-bottom:1px solid rgba(201,146,43,.25)">
+                <th style="text-align:left;padding:6px 4px;color:#c9922b;font-weight:bold;letter-spacing:.8px;white-space:nowrap">款項</th>
+                <th style="text-align:center;padding:6px 4px;color:#c9922b;font-weight:bold;width:38px">%</th>
+                <th style="text-align:right;padding:6px 4px;color:#c9922b;font-weight:bold;width:80px">金額（萬）</th>
+                <th style="text-align:right;padding:6px 4px;color:#c9922b;font-weight:bold;white-space:nowrap;width:72px">時間點</th>
+              </tr>
+            </thead>
+            <tbody id="fundStageBody"></tbody>
+            <tfoot>
+              <tr style="border-top:1px solid rgba(201,146,43,.3);background:rgba(201,146,43,.06)">
+                <td colspan="2" style="padding:8px 4px;color:#c8a870;font-weight:bold;font-size:12px">總計</td>
+                <td style="text-align:right;padding:8px 4px;font-size:14px;font-weight:bold;color:#f5d87a;font-family:'DM Mono',monospace" id="fundStageTotal">—</td>
+                <td style="text-align:right;padding:8px 4px;color:#5a7090;font-size:10px">100%</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        <div style="font-size:10px;color:#3a5060;margin-top:6px">※ 銀行貸款與交屋尾款為交屋時撥付，不計入資金流扣款</div>
+      </div>
+
+      <!-- 瀑布結果 -->
+      <div id="fundWaterfall" style="margin-top:12px"></div>
+
+      <!-- 最終結餘大數字 -->
+      <div id="fundFinalBox" style="display:none;background:linear-gradient(135deg,rgba(201,146,43,.15),rgba(201,146,43,.06));border:2px solid rgba(201,146,43,.5);border-radius:12px;padding:16px;text-align:center;margin-top:4px">
+        <div style="font-size:9px;letter-spacing:3px;color:#c9922b;margin-bottom:8px;font-family:'DM Mono',monospace">全部工程款繳完後剩餘</div>
+        <div style="font-size:40px;font-weight:900;font-family:'DM Mono',monospace" id="fundFinalVal">—</div>
+        <div style="font-size:12px;color:#5a7090;margin-top:6px" id="fundFinalNote">—</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─ BLOCK B：自備款 vs 可動用資金拆解 ─ -->
+  <div class="card">
+    <div class="ch"><span class="cn" style="border-color:#52c77c;color:#52c77c">B</span><span class="ct">自備款底氣拆解</span></div>
+    <div class="cb">
+      <div style="font-size:11px;color:#5a7090;margin-bottom:12px;line-height:1.7">區分「帳面自備」和「實際可動用」，加上信貸補位後，讓客戶看清楚真實的資金底氣。</div>
+
+      <div class="g2">
+        <div class="fl"><label>帳面自備款（萬）</label><input type="number" id="fDwnTotal" placeholder="430" oninput="calcBottom()"></div>
+        <div class="fl"><label>近期需支出工程款（萬）</label><input type="number" id="fDwnUsed" placeholder="105" oninput="calcBottom()"></div>
+      </div>
+      <div class="g2">
+        <div class="fl"><label>實際可動用現金（萬）</label><input type="number" id="fLiquid" placeholder="274" oninput="calcBottom()"></div>
+        <div class="fl"><label>信貸額度（萬）</label><input type="number" id="fCredit" placeholder="100" oninput="calcBottom()"></div>
+      </div>
+      <div class="g2">
+        <div class="fl"><label>信貸利率（%）</label><input type="number" id="fCreditRate" value="6" step="0.1" oninput="calcBottom()"></div>
+        <div class="fl"><label>信貸還款期（月）</label><input type="number" id="fCreditMo" value="60" oninput="calcBottom()"></div>
+      </div>
+
+      <!-- 結果呈現 -->
+      <div id="bottomResult" style="margin-top:8px"></div>
+
+    </div>
+  </div>
+
+  <!-- ─ BLOCK C：綜合安心結論 ─ -->
+  <div id="fundConclusion" style="display:none;background:linear-gradient(160deg,#0a1e10,#081508);border:1px solid rgba(46,204,113,.35);border-radius:12px;padding:18px;margin-bottom:14px">
+    <div style="font-size:9px;letter-spacing:3px;color:#2ecc71;margin-bottom:10px;font-family:'DM Mono',monospace">CONCLUSION — 顧問話術參考</div>
+    <div style="font-size:14px;line-height:2;color:#c0e8c8;font-style:italic" id="fundConclusionText">—</div>
+  </div>
+
+  <button class="bbk" style="width:100%;margin-bottom:14px" onclick="sw('I')">← 回輸入頁</button>
+</div>
 
 <script>
 var SK=[false,false,false,false,false,false],SEG=-1,chartInst=null,MORTGAGE_MODE='ready';
@@ -1249,12 +1344,15 @@ function calcPresale(){
 }
 
 function sw(m){
-  var isI=m==='I';
+  var isI=m==='I', isR=m==='R', isF=m==='F';
   g('vI').style.display=isI?'block':'none';
-  g('vR').style.display=isI?'none':'block';
+  g('vR').style.display=isR?'block':'none';
+  if(g('vF')) g('vF').style.display=isF?'block':'none';
   g('gbar').style.display=isI?'flex':'none';
   g('tI').className='tab'+(isI?' on':'');
-  g('tR').className='tab'+(!isI?' on':'');
+  g('tR').className='tab'+(isR?' on':'');
+  if(g('tF')) g('tF').className='tab'+(isF?' on':'');
+  if(isF) initFund();
   window.scrollTo(0,0);
 }
 
@@ -2066,6 +2164,259 @@ s2.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
 document.head.appendChild(s2);
 
 ca();
+
+// ══ 資金安心邏輯 ════════════════════════════════
+// ── 資金安心：從第05欄 calcPresale() 的邏輯完全連動 ──────────────
+// stages 陣列由 buildFundStages() 動態生成，與 calcPresale 公式完全一致
+
+function buildFundStages(pr, ltvPct, delivery) {
+  // 同 calcPresale 公式
+  var isB = (ltvPct <= 70);
+  var d = delivery || 36;
+  var pct = function(p){ return Math.ceil(pr * p / 100); };
+  var depositAmt   = 10;
+  var contractAmt  = pct(6) - depositAmt;
+  var wPct = 2, bPct = isB?3:2, f5p = isB?3:2, f10p = isB?3:2, f15p = isB?3:2;
+  var bankAmt  = pct(ltvPct);
+  var wAmt     = pct(wPct), b1Amt = pct(bPct), f5Amt = pct(f5p);
+  var f10Amt   = pct(f10p), f15Amt = pct(f15p);
+  var demolAmt = pct(2), useAmt = pct(2);
+  var subTotal = depositAmt+contractAmt+wAmt+b1Amt+f5Amt+f10Amt+f15Amt+demolAmt+useAmt+bankAmt;
+  var delivAmt = pr - subTotal;
+  var whn = function(r){ return Math.round(d*r)+'個月後'; };
+
+  return [
+    { key:'s0',  name:'訂金（固定10萬）',        pctStr:'含6%',        amt:depositAmt,  time:'付訂後7天內簽約',   type:'cash' },
+    { key:'s1',  name:'簽約金（含訂金）',          pctStr:'6%',          amt:contractAmt, time:'付訂後7天內簽約',   type:'cash' },
+    { key:'s2',  name:'放樣勘驗',                  pctStr:wPct+'%',      amt:wAmt,        time:whn(0.08),           type:'cash' },
+    { key:'s3',  name:'B1F底板完成',               pctStr:bPct+'%',      amt:b1Amt,       time:whn(0.20),           type:'cash' },
+    { key:'s4',  name:'5F底板完成',                pctStr:f5p+'%',       amt:f5Amt,       time:whn(0.35),           type:'cash' },
+    { key:'s5',  name:'10F底板完成',               pctStr:f10p+'%',      amt:f10Amt,      time:whn(0.50),           type:'cash' },
+    { key:'s6',  name:'15F底板完成',               pctStr:f15p+'%',      amt:f15Amt,      time:whn(0.65),           type:'cash' },
+    { key:'s7',  name:'鷹架拆除完成',              pctStr:'2%',          amt:demolAmt,    time:whn(0.78),           type:'cash' },
+    { key:'s8',  name:'使照取得',                  pctStr:'2%',          amt:useAmt,      time:whn(0.90),           type:'cash' },
+    { key:'s9',  name:'🏦 銀行貸款（交屋撥付）',  pctStr:ltvPct+'%',    amt:bankAmt,     time:d+'個月後（交屋）',  type:'bank' },
+    { key:'s10', name:'🔑 交屋尾款',               pctStr:'5%',          amt:delivAmt,    time:d+'個月後（交屋）',  type:'tail' },
+  ];
+}
+
+var _fundStagesCache = []; // 快取最新 stages
+
+function initFund() {
+  // 從第05欄連動帶入
+  var pr      = parseFloat((g('iPrc')||{}).value)||0;
+  var ltvPct  = parseInt((g('iLtvPct')||{value:'75'}).value)||75;
+  var delivery= parseInt((g('iDelivery')||{value:'36'}).value)||36;
+
+  // 同步總價欄位
+  var fp = g('fTotalPrice');
+  if(fp) fp.value = pr || '';
+
+  // 可動用現金（資產欄加總）
+  var fund  = parseFloat((g('a_fund')||{}).value)||0;
+  var stock = parseFloat((g('a_stock')||{}).value)||0;
+  var dep   = parseFloat((g('a_deposit')||{}).value)||0;
+  var bank  = parseFloat((g('a_bankbal')||{}).value)||0;
+  var bonus = parseFloat((g('a_bonus')||{}).value)||0;
+  var liquid = fund + stock + dep + bank + bonus;
+  var fLiq = g('fLiquid'); if(fLiq && !fLiq.value && liquid > 0) fLiq.value = liquid;
+
+  // 自備款
+  var dwn = parseFloat((g('iDwn')||{}).value)||0;
+  var fDwn = g('fDwnTotal'); if(fDwn && !fDwn.value && dwn) fDwn.value = dwn;
+
+  // 建立期別表（連動公式）
+  if(pr > 0) {
+    _fundStagesCache = buildFundStages(pr, ltvPct, delivery);
+    renderFundStageTable(_fundStagesCache);
+  } else {
+    var tbody = g('fundStageBody');
+    if(tbody && tbody.children.length === 0) {
+      _fundStagesCache = [];
+      var ph = '<tr><td colspan="4" style="padding:16px;text-align:center;color:#5a7090;font-size:12px">請先在「輸入」頁填入物件總價（第05欄）</td></tr>';
+      tbody.innerHTML = ph;
+    }
+  }
+
+  calcFund();
+  calcBottom();
+}
+
+function renderFundStageTable(stages) {
+  var tbody = g('fundStageBody');
+  if(!tbody) return;
+  tbody.innerHTML = '';
+  var total = 0;
+  stages.forEach(function(s) {
+    var isBank = s.type === 'bank';
+    var isTail = s.type === 'tail';
+    var nc = isBank ? '#5dade2' : isTail ? '#e8b84b' : '#d4c9b8';
+    var inputStyle = isBank || isTail
+      ? 'width:72px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05);border-radius:6px;padding:5px 8px;color:'+(isBank?'#3a6888':'#7a5a20')+';font-size:12px;font-family:\'DM Mono\',sans-serif;text-align:right;cursor:not-allowed'
+      : 'width:72px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:5px 8px;color:#e8e0d0;font-size:12px;font-family:\'DM Mono\',sans-serif;text-align:right';
+    var tr = document.createElement('tr');
+    tr.style.borderBottom = '1px solid rgba(255,255,255,.04)';
+    tr.innerHTML =
+      '<td style="padding:7px 4px;color:'+nc+';font-size:11px">'+s.name+'</td>' +
+      '<td style="text-align:center;padding:7px 4px;color:#5a7090;font-size:11px">'+s.pctStr+'</td>' +
+      '<td style="text-align:right;padding:4px"><input type="number" id="fs_'+s.key+'" value="'+s.amt+'" step="1" oninput="calcFund()" style="'+inputStyle+'"'+(isBank||isTail?' disabled':'')+'></td>' +
+      '<td style="text-align:right;padding:7px 4px;color:#3a5070;font-size:10px;white-space:nowrap">'+s.time+'</td>';
+    tbody.appendChild(tr);
+    total += s.amt;
+  });
+  var el = g('fundStageTotal');
+  if(el) el.textContent = total + ' 萬';
+}
+
+function syncFundFromPrice() {
+  // 手動改總價時重新生成（資金安心頁已開啟才執行）
+  var vF = g('vF');
+  if(!vF || vF.style.display === 'none') return;
+  initFund();
+}
+
+function updateStageTotal() {
+  var total = 0;
+  (_fundStagesCache||[]).forEach(function(s) {
+    var inp = g('fs_'+s.key);
+    total += inp ? (parseFloat(inp.value)||0) : 0;
+  });
+  var el = g('fundStageTotal');
+  if(el) el.textContent = total + ' 萬';
+}
+
+function calcFund() {
+  updateStageTotal();
+  var totalFund = parseFloat((g('fTotalFund')||{}).value)||0;
+  if(!totalFund) { g('fundWaterfall').innerHTML=''; g('fundFinalBox').style.display='none'; return; }
+
+  var stages = _fundStagesCache;
+  var steps = [];
+  var cur = totalFund;
+  steps.push({ label:'初始資金', type:'start', val:cur });
+
+  // 訂金先扣，再扣簽約金差額，再逐期扣
+  stages.forEach(function(s) {
+    if(s.type !== 'cash') return;
+    var inp = g('fs_'+s.key);
+    var v = inp ? (parseFloat(inp.value)||0) : 0;
+    if(v <= 0) return;
+    var deduct = v;
+    var label = s.name;
+    // 簽約金：實際付出 = 簽約金金額（已扣除訂金，不重複扣）
+    // 訂金是第一筆，簽約金欄位本身已是「扣掉訂金後的餘額」
+    cur = Math.round((cur - deduct) * 10) / 10;
+    steps.push({ label:label, time:s.time, type:'deduct', deduct:deduct, remain:cur });
+  });
+
+  // 渲染瀑布
+  var html = '<div style="background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:12px">';
+  html += '<div style="font-size:9px;letter-spacing:2px;color:#5a7090;margin-bottom:10px;font-family:\'DM Mono\',monospace">CASH FLOW — 資金流向</div>';
+  steps.forEach(function(s) {
+    if(s.type === 'start') {
+      html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:rgba(93,173,226,.1);border:1px solid rgba(93,173,226,.2);border-radius:8px;margin-bottom:8px">';
+      html += '<span style="font-size:12px;color:#7ab8e8;font-weight:bold">💰 '+s.label+'</span>';
+      html += '<span style="font-size:16px;font-weight:bold;color:#7ab8e8;font-family:\'DM Mono\',monospace">'+s.val+' 萬</span></div>';
+    } else {
+      var rc = s.remain >= 100 ? '#2ecc71' : s.remain >= 30 ? '#e8b84b' : s.remain >= 0 ? '#e05c4a' : '#ff4444';
+      var pct2 = totalFund > 0 ? Math.max(0, Math.min(100, s.remain / totalFund * 100)) : 0;
+      html += '<div style="padding:2px 4px;margin-bottom:7px">';
+      html += '<div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">';
+      html += '<span style="color:#8a9ab0">↓ '+s.label+'　<span style="color:#e05c4a;font-family:\'DM Mono\',monospace">－'+s.deduct+'萬</span></span>';
+      html += '<span style="color:'+rc+';font-weight:bold;font-family:\'DM Mono\',monospace">剩 '+s.remain+' 萬</span></div>';
+      html += '<div style="height:5px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden"><div style="height:100%;width:'+pct2.toFixed(1)+'%;background:'+rc+';border-radius:3px"></div></div>';
+      if(s.time) html += '<div style="font-size:9px;color:#3a5060;margin-top:2px;text-align:right">'+s.time+'</div>';
+      html += '</div>';
+    }
+  });
+  html += '</div>';
+  g('fundWaterfall').innerHTML = html;
+
+  var final = cur;
+  var fc = final >= 50 ? '#2ecc71' : final >= 20 ? '#e8b84b' : final >= 0 ? '#e05c4a' : '#ff4444';
+  var fbox = g('fundFinalBox'); fbox.style.display = 'block';
+  var fval = g('fundFinalVal'); fval.textContent = final + ' 萬'; fval.style.color = fc;
+  var fnote = g('fundFinalNote');
+  if(final >= 50)      fnote.textContent = '✅ 資金充裕——繳完全部工程款後仍保有 '+final+' 萬底氣';
+  else if(final >= 20) fnote.textContent = '🟡 資金足夠——尚有 '+final+' 萬，建議維持此緩衝';
+  else if(final >= 0)  fnote.textContent = '⚠️ 資金偏緊——僅剩 '+final+' 萬，可搭配信貸補位';
+  else                 fnote.textContent = '🔴 資金缺口 '+Math.abs(final)+' 萬——需要補充資金來源';
+
+  updateConclusion();
+}
+
+function calcBottom() {
+  var dwnTotal = parseFloat((g('fDwnTotal')||{}).value)||0;
+  var dwnUsed  = parseFloat((g('fDwnUsed')||{}).value)||0;
+  var liquid   = parseFloat((g('fLiquid')||{}).value)||0;
+  var credit   = parseFloat((g('fCredit')||{}).value)||0;
+  var cRate    = parseFloat((g('fCreditRate')||{}).value)||6;
+  var cMo      = parseFloat((g('fCreditMo')||{}).value)||60;
+
+  if(!dwnTotal && !liquid) { g('bottomResult').innerHTML=''; return; }
+
+  var monthRate = cRate / 100 / 12;
+  var creditMonthly = (credit > 0 && monthRate > 0)
+    ? Math.round(credit * 10000 * monthRate / (1 - Math.pow(1+monthRate, -cMo))) : 0;
+  var dwnRemain  = Math.round((dwnTotal - dwnUsed) * 10) / 10;
+  var totalPower = Math.round((liquid + credit) * 10) / 10;
+
+  var html = '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px">';
+  html += '<div style="background:rgba(93,173,226,.08);border:1px solid rgba(93,173,226,.2);border-radius:10px;padding:12px;text-align:center"><div style="font-size:9px;color:#5a7090;letter-spacing:1px;margin-bottom:6px">帳面自備</div><div style="font-size:20px;font-weight:bold;color:#7ab8e8;font-family:\'DM Mono\',monospace">'+dwnTotal+'<span style="font-size:11px;font-weight:normal"> 萬</span></div><div style="font-size:10px;color:#3a5878;margin-top:4px">含未來工程款</div></div>';
+  html += '<div style="background:rgba(201,146,43,.1);border:1px solid rgba(201,146,43,.3);border-radius:10px;padding:12px;text-align:center"><div style="font-size:9px;color:#c9922b;letter-spacing:1px;margin-bottom:6px">可動用現金</div><div style="font-size:20px;font-weight:bold;color:#f5d87a;font-family:\'DM Mono\',monospace">'+liquid+'<span style="font-size:11px;font-weight:normal"> 萬</span></div><div style="font-size:10px;color:#7a5a20;margin-top:4px">現在實際可調度</div></div>';
+  html += '<div style="background:rgba(46,139,87,.1);border:1px solid rgba(46,204,113,.25);border-radius:10px;padding:12px;text-align:center"><div style="font-size:9px;color:#2ecc71;letter-spacing:1px;margin-bottom:6px">補位後底氣</div><div style="font-size:20px;font-weight:bold;color:#2ecc71;font-family:\'DM Mono\',monospace">'+totalPower+'<span style="font-size:11px;font-weight:normal"> 萬</span></div><div style="font-size:10px;color:#1a6040;margin-top:4px">含信貸 '+credit+' 萬</div></div>';
+  html += '</div>';
+
+  html += '<div style="background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:12px">';
+  html += '<div style="font-size:9px;letter-spacing:2px;color:#5a7090;margin-bottom:10px;font-family:\'DM Mono\',monospace">細項拆解</div>';
+  var rows2 = [
+    { l:'帳面自備款',        v:dwnTotal+'萬',    c:'#7ab8e8' },
+    { l:'－ 近期工程款支出', v:'－'+dwnUsed+'萬', c:'#e05c4a' },
+    { l:'= 繳款後剩餘自備',  v:dwnRemain+'萬',   c:dwnRemain>=0?'#f5d87a':'#ff8870', bold:true },
+  ];
+  if(credit > 0) {
+    rows2.push({ l:'＋ 信貸補位', v:'＋'+credit+'萬', c:'#2ecc71' });
+    rows2.push({ l:'信貸月付（'+cRate+'%，'+cMo+'月）', v:fmt(creditMonthly)+'/月', c:'#e8b84b', note:true });
+  }
+  rows2.push({ l:'總可動用底氣', v:totalPower+'萬', c:'#f5d87a', bold:true, big:true });
+  rows2.forEach(function(r) {
+    html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:'+(r.big?'10px':'6px')+' 0;border-bottom:1px solid rgba(255,255,255,.04)">';
+    html += '<span style="font-size:'+(r.note?'10px':'12px')+';color:'+(r.note?'#5a7090':'#8a9ab0')+'">'+r.l+'</span>';
+    html += '<span style="font-size:'+(r.big?'18px':'13px')+';font-weight:'+(r.bold?'bold':'normal')+';color:'+r.c+';font-family:\'DM Mono\',monospace">'+r.v+'</span></div>';
+  });
+  html += '</div>';
+
+  g('bottomResult').innerHTML = html;
+  updateConclusion();
+}
+
+function updateConclusion() {
+  var totalFund = parseFloat((g('fTotalFund')||{}).value)||0;
+  var liquid    = parseFloat((g('fLiquid')||{}).value)||0;
+  var credit    = parseFloat((g('fCredit')||{}).value)||0;
+  var nm = (g('iName')||{}).value || '您';
+
+  var cur = totalFund;
+  (_fundStagesCache||[]).forEach(function(s) {
+    if(s.type !== 'cash') return;
+    var inp = g('fs_'+s.key);
+    var v = inp ? (parseFloat(inp.value)||0) : 0;
+    cur = Math.round((cur - v) * 10) / 10;
+  });
+
+  if(!totalFund && !liquid) { g('fundConclusion').style.display='none'; return; }
+  g('fundConclusion').style.display = 'block';
+
+  var msg = '';
+  if(cur >= 30 && (liquid + credit) > 0) {
+    msg = '「'+nm+'，你看這個數字——從第一筆到使照取得，每一期工程款繳完，你的帳戶裡還有 <strong style="color:#2ecc71">'+cur+' 萬</strong>。<br><br>這不是勉強，這是餘裕。我們把最壞的情況都算進去了，你的資金還是站得住。<br><br>這就是為什麼我說，你的條件不是在賭——是在算術。」';
+  } else if(cur >= 0) {
+    msg = '「'+nm+'，我幫你把每一期工程款都列出來了。繳到最後，帳戶還剩 <strong style="color:#e8b84b">'+cur+' 萬</strong>。<br><br>'+(credit>0?'搭配信貸 '+credit+' 萬補位，你的可動用底氣是 <strong style="color:#2ecc71">'+(liquid+credit)+' 萬</strong>。<br><br>':'')+'錢在這裡，數字說話——你不是買不起，你是還沒決定。」';
+  } else {
+    msg = '「'+nm+'，我直接告訴你：現在這個結構需要微調，資金缺口是 <strong style="color:#e05c4a">'+Math.abs(cur)+' 萬</strong>。<br><br>但這個問題有解——我們來調整工程款的安排，或是把信貸的時間點往前移。方向是對的，只是細節我們再算一次。」';
+  }
+  g('fundConclusionText').innerHTML = msg;
+}
 
 // ══ localStorage 自動記憶 ══════════════════════
 var LS_KEY='futime_planner_v4';
