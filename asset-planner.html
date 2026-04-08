@@ -1157,11 +1157,11 @@ canvas{border-radius:6px}
       <div style="font-size:11px;color:#5a7090;margin-bottom:12px;line-height:1.7">區分「帳面自備」和「實際可動用」，加上信貸補位後，讓客戶看清楚真實的資金底氣。</div>
 
       <div class="g2">
-        <div class="fl"><label>帳面自備款（萬）</label><input type="number" id="fDwnTotal" placeholder="430" oninput="calcBottom()"></div>
+        <div class="fl"><label>帳面自備款（萬）</label><input type="number" id="fDwnTotal" placeholder="自動帶入" oninput="calcBottom()"></div>
         <div class="fl"><label>近期需支出工程款（萬）</label><input type="number" id="fDwnUsed" placeholder="105" oninput="calcBottom()"></div>
       </div>
       <div class="g2">
-        <div class="fl"><label>實際可動用現金（萬）</label><input type="number" id="fLiquid" placeholder="274" oninput="calcBottom()"></div>
+        <div class="fl"><label>實際可動用現金（萬）</label><input type="number" id="fLiquid" placeholder="自動帶入" oninput="calcBottom()"></div>
         <div class="fl"><label>信貸額度（萬）</label><input type="number" id="fCredit" placeholder="100" oninput="calcBottom()"></div>
       </div>
       <div class="g2">
@@ -1375,6 +1375,8 @@ function calcPresale(){
   var monthlyNeed=d>2?Math.round(remainToSave*10000/d):0;
   g('monthlySaveNeeded').textContent=monthlyNeed>0?fmt(monthlyNeed)+' /月':'—';
   g('presaleSummary').textContent=(isB?'套房（7成）':'一般（7.5成）')+' · 自備款合計 '+selfTotal+'萬（含訂約金 '+payNow+'萬）＋銀行貸款 '+bankAmt+'萬交屋撥付';
+  // Section B：帳面自備款同步更新（每次總價或成數變動時強制覆蓋）
+  var _fDwn=g('fDwnTotal'); if(_fDwn) _fDwn.value=selfTotal;
 }
 
 function sw(m){
@@ -2275,9 +2277,20 @@ function initFund() {
   var liquid = fund + stock + dep + bank + bonus;
   var fLiq = g('fLiquid'); if(fLiq && !fLiq.value && liquid > 0) fLiq.value = liquid;
 
-  // 自備款
-  var dwn = parseFloat((g('iDwn')||{}).value)||0;
-  var fDwn = g('fDwnTotal'); if(fDwn && !fDwn.value && dwn) fDwn.value = dwn;
+  // 自備款：成屋用 iDwn，預售用「總價 × 自備%」動態算出
+  var fDwn = g('fDwnTotal');
+  if(fDwn && !fDwn.value){
+    if(MORTGAGE_MODE==='presale'){
+      // 預售：自備款 = 總價 × (1 - 貸款成數%)，無條件進位到萬
+      var _pr4  = parseFloat((g('iPrc')||{}).value)||0;
+      var _ltv4 = parseInt((g('iLtvPct')||{}).value)||75;
+      var _self4 = _pr4>0 ? Math.ceil(_pr4*(100-_ltv4)/100) : 0;
+      if(_self4>0) fDwn.value = _self4;
+    } else {
+      var dwn = parseFloat((g('iDwn')||{}).value)||0;
+      if(dwn>0) fDwn.value = dwn;
+    }
+  }
 
   // 建立期別表（連動公式）
   if(pr > 0) {
