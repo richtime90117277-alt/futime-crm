@@ -1040,9 +1040,20 @@ function claimSeminarLead() {}
             <div class="form-grid two">
               <div class="form-group field-boost">
                 <label>名單來源</label>
-                <select id="leadSource"><option value="">請先選名單類型</option></select>
+                <select id="leadSource" onchange="toggleReferralByRow()"><option value="">請先選名單類型</option></select>
               </div>
               <div class="form-group field-boost"><label>來源細節</label><input type="text" id="leadSourceDetail" placeholder="例：爬山、FB/IG、咖啡展"></div>
+            </div>
+            <!-- ★ 轉介紹人欄位（leadSource = 客戶轉介紹 時顯示）-->
+            <div class="form-grid two" id="referralByRow" style="display:none">
+              <div class="form-group field-boost">
+                <label>🤝 介紹人（客戶姓名）</label>
+                <input type="text" id="referralBy" placeholder="例：王大明（客戶）">
+              </div>
+              <div class="form-group">
+                <label>介紹人聯絡方式</label>
+                <input type="text" id="referralByContact" placeholder="例：0912-345-678">
+              </div>
             </div>
             <div class="form-grid two">
               <div class="form-group field-required"><label>創建日期</label><input type="date" id="creationDate" required></div>
@@ -2153,21 +2164,24 @@ function saveApiUrl() {
 }
 
 // ── 呼叫 Google Apps Script API ──
+// v17：移除 AbortSignal（不相容 postMessage structured clone），改用 Promise race timeout
 function callAPI(payload, callback) {
   var url = getApiUrl();
   if (!url) { callback({ success: false, error: '尚未設定 API 網址' }); return; }
   setSyncing(true);
-  var controller = new AbortController();
-  // 生成接談劇本需要更長時間（Claude 生成完整報告約 20-30 秒）
   var isLongOp = payload && (payload.action === 'generateFullScript' || payload.action === 'saveToNotion');
-  var timer = setTimeout(function(){ controller.abort(); }, isLongOp ? 90000 : 15000);
-  fetch(url, {
+  var timeoutMs = isLongOp ? 90000 : 15000;
+  // 用 Promise.race 取代 AbortController（避免 DataCloneError）
+  var fetchPromise = fetch(url, {
     method: 'POST',
     body: JSON.stringify(payload),
-    headers: { 'Content-Type': 'text/plain' },
-    signal: controller.signal
-  })
-  .then(function(r) { clearTimeout(timer); return r.text(); })
+    headers: { 'Content-Type': 'text/plain' }
+  });
+  var timeoutPromise = new Promise(function(_, reject){
+    setTimeout(function(){ reject({ name: 'AbortError', toString: function(){ return '連線逾時'; } }); }, timeoutMs);
+  });
+  Promise.race([fetchPromise, timeoutPromise])
+  .then(function(r) { return r.text(); })
   .then(function(text) {
     setSyncing(false);
     try {
@@ -2192,7 +2206,6 @@ function callAPI(payload, callback) {
     }
   })
   .catch(function(err) {
-    clearTimeout(timer);
     setSyncing(false);
     setOffline();
     var msg = err.name === 'AbortError' ? '連線逾時，請檢查網路或 Apps Script' : err.toString();
@@ -2852,9 +2865,18 @@ var LEAD_SOURCES = {
 function updateLeadSourceOptions() {
   var type = document.getElementById('clientType').value;
   var sel = document.getElementById('leadSource');
-  if (!type) { sel.innerHTML = '<option value="">請先選名單類型</option>'; return; }
+  if (!type) { sel.innerHTML = '<option value="">請先選名單類型</option>'; toggleReferralByRow(); return; }
   sel.innerHTML = '<option value="">請選擇來源</option>'
     + (LEAD_SOURCES[type]||[]).map(function(s){ return '<option>'+s+'</option>'; }).join('');
+  // 重設時隱藏轉介紹人欄位
+  toggleReferralByRow();
+}
+
+// ★ 轉介紹人欄位：當來源是「客戶轉介紹」才顯示
+function toggleReferralByRow() {
+  var src = (document.getElementById('leadSource')||{}).value || '';
+  var row = document.getElementById('referralByRow');
+  if (row) row.style.display = src.indexOf('轉介紹') !== -1 ? 'grid' : 'none';
 }
 
 // ── 判斷客戶是否「進行中」（未成交）──
@@ -2923,7 +2945,7 @@ function renderDashboard() {
   var salesMap = {};
   customers.forEach(function(c){
     var sp = c.salesPerson || '未指定';
-    if (!salesMap[sp]) salesMap[sp] = { total:0, active:0, closed:0, closed2026:0, referral:0 };
+    if (!salesMap[sp]) salesMap[sp] = { total:0, active:0, closed:0, closed2026:0, referral:0, referredBy:0 };
     salesMap[sp].total++;
     if (isActive(c)) salesMap[sp].active++;
     else {
@@ -2931,6 +2953,8 @@ function renderDashboard() {
       if (c.contractDate && c.contractDate.toString().trim() && new Date(c.contractDate).getFullYear() === 2026) salesMap[sp].closed2026++;
     }
     if (parseInt(c.referralCount||0) > 0) salesMap[sp].referral += parseInt(c.referralCount);
+    // ★ 被介紹來的客戶數（以介紹人欄位判斷）
+    if (c.referralBy && c.referralBy.toString().trim()) salesMap[sp].referredBy++;
   });
   var salesList = Object.keys(salesMap).map(function(sp){
     return { name:sp, data:salesMap[sp] };
@@ -2938,7 +2962,7 @@ function renderDashboard() {
 
   var spHtml = '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13px">';
   spHtml += '<tr style="background:var(--navy);color:#fff">';
-  ['業務', '總客戶', '跟進中', '2026成交', '累積成交', '轉介紹數', '成交率'].forEach(function(h){
+  ['業務', '總客戶', '跟進中', '2026成交', '累積成交', '轉介紹數', '被介紹來', '成交率'].forEach(function(h){
     var color = h==='2026成交' ? 'color:#f0d080;' : h==='累積成交' ? 'color:#b8d4f8;' : '';
     spHtml += '<th style="padding:.5rem .75rem;text-align:center;font-weight:700;font-size:11px;'+color+'">'+h+'</th>';
   });
@@ -2956,6 +2980,7 @@ function renderDashboard() {
     spHtml += '<td style="padding:.5rem .75rem;text-align:center;color:#b8962e;font-weight:800;font-size:15px">'+d.closed2026+'</td>';
     spHtml += '<td style="padding:.5rem .75rem;text-align:center;color:#2e7d32;font-weight:700">'+d.closed+'</td>';
     spHtml += '<td style="padding:.5rem .75rem;text-align:center;color:var(--gold)">'+d.referral+'</td>';
+    spHtml += '<td style="padding:.5rem .75rem;text-align:center;color:#5dade2">'+d.referredBy+'</td>';
     var rateColor = rate >= 20 ? '#2e7d32' : rate >= 10 ? '#e65100' : '#c62828';
     spHtml += '<td style="padding:.5rem .75rem;text-align:center;font-weight:700;color:'+rateColor+'">'+rate+'%</td>';
     spHtml += '</tr>';
@@ -4881,6 +4906,7 @@ function saveCustomer() {
     referralEvent:v('referralEvent'), keepInTouch:v('keepInTouch'), referralReward:v('referralReward'),
     referralList:v('referralList'), referralCount:v('referralCount'),
     referralEffect:getMsValue('ms_referralEffect'), notes:v('notes'),
+    referralBy:v('referralBy'), referralByContact:v('referralByContact'),
     contactPref:getMsValue('ms_contactPref'), contactTime:getMsValue('ms_contactTime'),
     personalityType:v('personalityType'), decisionBlock:getMsValue('ms_decisionBlock'),
     lastFollowupResult:getMsValue('ms_lastFollowup'), nextFollowupAction:(document.getElementById('ms_nextFollowup')?document.getElementById('ms_nextFollowup').value:''),
@@ -4979,7 +5005,7 @@ function showDetail(id) {
   document.getElementById('modalTitle').textContent = c.customerName+' — '+STAGE_NAMES[s];
   var rows = [
     ['負責業務',c.salesPerson],['聯絡方式',c.contactInfo],['年齡',c.customerAge],['🏷️ 名單類型',c.clientType],['名單來源',c.leadSource],
-    ['獲取來源',c.leadSourceDetail],['🎓 研討會狀態',c.seminarAttended],['📅 研討會時間',c.seminarDate],['創建日期',formatDate(c.creationDate)],
+    ['獲取來源',c.leadSourceDetail],['🤝 介紹人',c.referralBy?(c.referralBy+(c.referralByContact?' ／ '+c.referralByContact:'')):''],['🎓 研討會狀態',c.seminarAttended],['📅 研討會時間',c.seminarDate],['創建日期',formatDate(c.creationDate)],
     ['信任評分',c.trustScore?c.trustScore+'/10':''],['專業評分',c.professionalScore?c.professionalScore+'/10':''],
     ['信任狀態',c.currentStatus],
     ['✅ 信任檢核',c.trustChecks],['✅ 專業形象檢核',c.proChecks],
@@ -5095,6 +5121,13 @@ function showEdit(id) {
   html += sel('名單來源','leadSource',dynamicSrcOpts);
   html += '</div>';
   html += ef('獲取來源細節','leadSourceDetail',c.leadSourceDetail);
+  // ★ 轉介紹人欄位（動態顯示）
+  var refByShow = (c.leadSource||'').indexOf('轉介紹') !== -1 ? 'block' : 'none';
+  html += '<div id="e_referralByRow" style="display:'+refByShow+';grid-column:1/-1">';
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">';
+  html += ef('🤝 介紹人（客戶姓名）','referralBy',c.referralBy||'');
+  html += ef('介紹人聯絡方式','referralByContact',c.referralByContact||'');
+  html += '</div></div>';
   var SEG_LIST = [
     { val:'', label:'請選擇' },
     { val:'新鮮人',   label:'🟡 新鮮人（剛出社會、首購）' },
@@ -5261,6 +5294,7 @@ function saveEdit(c) {
     familyMembers: gv('familyMembers'), keyMan: gv('keyMan'),
     livingStatus: gv('livingStatus'), familySupport: gv('familySupport'),
     leadSourceDetail: gv('leadSourceDetail'), acquisitionMethod: gv('acquisitionMethod'),
+    referralBy: gv('referralBy'), referralByContact: gv('referralByContact'),
     creationDate: gv('creationDate'), trustScore: gv('trustScore'),
     professionalScore: gv('professionalScore'), currentStatus: gv('currentStatus'),
     trustChecks: getMsValue('e_ms_trustCheck'), proChecks: getMsValue('e_ms_proCheck'),
