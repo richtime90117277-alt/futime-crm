@@ -1551,14 +1551,25 @@ function doGen(){
     netEl.style.color=netAsset>=0?'#5dade2':'#ffaa90';
 
     // 備用金顯示在報告快照裡
-    var _bonus2=(parseFloat((g('a_bonus')||{value:'0'}).value)||0);
-    var _earn2 =(parseFloat((g('a_earnest')||{value:'0'}).value)||0);
-    var _dwW2  =(parseFloat((g('iDwn')||{value:'0'}).value)||0);
-    var _credit2=parseFloat((g('fCredit')||{value:'0'}).value)||0; // 信貸補位納入快照
-    var _cash2 =fund+stock+dep+bankb+_bonus2;
-    var _res2  =_cash2+_credit2-_dwW2-_earn2;
+    var _bonus2 =(parseFloat((g('a_bonus')||{value:'0'}).value)||0);
+    var _earn2  =(parseFloat((g('a_earnest')||{value:'0'}).value)||0);
+    var _credit2= parseFloat((g('fCredit')||{value:'0'}).value)||0;
+    // 自備款：預售用總價×自備%；成屋用 iDwn
+    var _dwW2;
+    if(isPresale){
+      var _prSnap=C.pr?Math.round(C.pr/10000):0;
+      var _ltvSnap=parseInt((g('iLtvPct')||{value:'75'}).value)||75;
+      _dwW2=_prSnap?Math.ceil(_prSnap*(100-_ltvSnap)/100):0;
+    } else {
+      _dwW2=(parseFloat((g('iDwn')||{value:'0'}).value)||0);
+    }
+    // 可動用現金：fLiquid 優先（顧問校調值），fallback 資產加總
+    var _fLiq2  = parseFloat((g('fLiquid')||{value:'0'}).value)||0;
+    var _assetSum2 = fund+stock+dep+bankb+_bonus2;
+    var _cash2 = (_fLiq2>0 ? _fLiq2 : _assetSum2);
+    var _res2  = _cash2+_credit2-_dwW2-_earn2;
     var _resBox=g('snapReserveBox');
-    if(_resBox&&_dwW2>0&&_cash2>0){
+    if(_resBox&&_dwW2>0&&(_cash2>0||_credit2>0)){
       _resBox.style.display='block';
       var _resEl=g('snapReserve');
       if(_resEl){
@@ -1614,15 +1625,19 @@ function doGen(){
   }
 
   // ── Part 1：自備款結餘 ─────────────────────────
-  var _bonus3 = parseFloat((g('a_bonus')||{value:'0'}).value)||0;
   var _earn3  = parseFloat((g('a_earnest')||{value:'0'}).value)||0;
+  var _credit3= parseFloat((g('fCredit')||{value:'0'}).value)||0; // 信貸補位（Section B 輸入值）
+  // 可動用現金：優先讀 Section B 的 fLiquid（顧問校調後的數字），fallback 到資產欄加總
+  var _fLiq3  = parseFloat((g('fLiquid')||{value:'0'}).value)||0;
   var _fund3  = parseFloat((g('a_fund')||{value:'0'}).value)||0;
   var _stk3   = parseFloat((g('a_stock')||{value:'0'}).value)||0;
   var _dep3   = parseFloat((g('a_deposit')||{value:'0'}).value)||0;
   var _bank3  = parseFloat((g('a_bankbal')||{value:'0'}).value)||0;
-  var _credit3= parseFloat((g('fCredit')||{value:'0'}).value)||0; // 信貸補位（Section B 輸入值）
-  var _cash3  = _fund3+_stk3+_dep3+_bank3+_bonus3+_credit3; // 可動用現金含信貸（萬）
-  var _dwW3   = C.dw?Math.round(C.dw/10000):0;      // 自備款（萬）
+  var _bonus3 = parseFloat((g('a_bonus')||{value:'0'}).value)||0;
+  var _assetSum3 = _fund3+_stk3+_dep3+_bank3+_bonus3; // 資產欄加總（不含信貸）
+  var _baseCash3 = _fLiq3>0 ? _fLiq3 : _assetSum3;    // fLiquid 優先；空白才用資產加總
+  var _cash3  = _baseCash3+_credit3; // 最終可動用現金（含信貸）
+  var _dwW3   = C.dw?Math.round(C.dw/10000):0;         // 自備款（萬，成屋用）
 
   // 預售：PART1 是工程款自備部分，PART2 分兩段
   var _p1c=g('p1Cash'),_p1d=g('p1Dw'),_p1e=g('p1Earn'),_p1r=g('p1Reserve'),_p1n=g('p1ReserveNote');
@@ -2275,13 +2290,14 @@ function initFund() {
   var bank  = parseFloat((g('a_bankbal')||{}).value)||0;
   var bonus = parseFloat((g('a_bonus')||{}).value)||0;
   var liquid = fund + stock + dep + bank + bonus;
-  var fLiq = g('fLiquid'); if(fLiq && !fLiq.value && liquid > 0) fLiq.value = liquid;
+  // fLiquid：每次進入資金安心頁都強制同步資產加總（不保留舊值）
+  var fLiq = g('fLiquid');
+  if(fLiq && liquid > 0) fLiq.value = liquid;
 
-  // 自備款：成屋用 iDwn，預售用「總價 × 自備%」動態算出
+  // fDwnTotal：強制同步，預售從總價算，成屋從 iDwn 讀
   var fDwn = g('fDwnTotal');
-  if(fDwn && !fDwn.value){
+  if(fDwn){
     if(MORTGAGE_MODE==='presale'){
-      // 預售：自備款 = 總價 × (1 - 貸款成數%)，無條件進位到萬
       var _pr4  = parseFloat((g('iPrc')||{}).value)||0;
       var _ltv4 = parseInt((g('iLtvPct')||{}).value)||75;
       var _self4 = _pr4>0 ? Math.ceil(_pr4*(100-_ltv4)/100) : 0;
