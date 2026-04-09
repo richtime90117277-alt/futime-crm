@@ -269,6 +269,23 @@ canvas{border-radius:6px}
 .vd.gs { background: linear-gradient(160deg,#0a1e10,#081508); border-color: rgba(46,204,113,.4) !important; }
 .vd.gw { background: linear-gradient(160deg,#1a1608,#120f05); border-color: rgba(201,146,43,.4) !important; }
 .vd.gr { background: linear-gradient(160deg,#1a0808,#120505); border-color: rgba(224,92,74,.4) !important; }
+
+/* ── v7.5 視覺升級 ── */
+.hero-box{text-align:center;padding:40px 20px;border:2px solid #c9922b;border-radius:16px;background:linear-gradient(180deg,rgba(201,146,43,.15) 0%,transparent 100%);margin-bottom:20px;position:relative}
+.hero-box::after{content:"ESTIMATED GAP";position:absolute;bottom:10px;right:16px;font-size:9px;color:rgba(201,146,43,.25);font-family:'DM Mono',monospace;letter-spacing:2px}
+.hero-label{color:#c9922b;font-size:11px;font-weight:bold;letter-spacing:3px;margin-bottom:10px}
+.hero-val{font-size:4rem;font-weight:900;color:#fff;margin:12px 0;font-family:'DM Mono',monospace;text-shadow:0 0 30px rgba(201,146,43,.45);line-height:1}
+.hero-val span{font-size:1.3rem;color:#c9922b;margin-left:8px}
+.hero-sub{font-size:12px;color:#c8b8b0;opacity:.7;margin-top:8px}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:16px}
+.stat-item{background:rgba(0,0,0,.3);padding:16px;border-radius:10px;border-top:3px solid #c9922b}
+.stat-item.red{border-top-color:#e05c4a}
+.stat-item.green{border-top-color:#2ecc71}
+.sl{font-size:10px;color:#8e8271;margin-bottom:6px;font-weight:bold;letter-spacing:.5px}
+.sn{font-size:1.4rem;font-weight:bold;font-family:'DM Mono',monospace;color:#eee;line-height:1.2}
+.sn.red{color:#e05c4a}.sn.green{color:#2ecc71}
+.vb-gs{padding:18px 20px;border-radius:10px;border-left:5px solid #c9922b;background:rgba(201,146,43,.08);color:#f5d87a;font-size:13px;line-height:1.8;margin-bottom:16px}
+.vb-gr{padding:18px 20px;border-radius:10px;border-left:5px solid #e05c4a;background:rgba(224,92,74,.08);color:#ffb1a8;font-size:13px;line-height:1.8;margin-bottom:16px}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
@@ -926,66 +943,39 @@ canvas{border-radius:6px}
         <div style="font-size:10px;color:#7a6060;margin-top:8px;text-align:center" id="lostNote">以上為物件市值增幅，非你口袋損失，而是你頭期款缺口的擴大</div>
       </div>
 
-      <!-- 等待年損失（含租金） -->
-      <div style="background:rgba(224,92,74,.06);border:1px solid rgba(224,92,74,.15);border-radius:8px;padding:10px 14px;margin-bottom:10px">
-        <div style="font-size:9px;color:#e05c4a;letter-spacing:1px;font-weight:bold;margin-bottom:6px">💸 你每等一年，實際損失的代價</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center">
-          <div>
-            <div style="font-size:9px;color:#5a7090;margin-bottom:2px">房價漲幅</div>
-            <div style="font-size:14px;font-weight:bold;color:#e05c4a" id="waitYearlyPrice">—</div>
-          </div>
-          <div style="border-left:1px solid rgba(255,255,255,.08);border-right:1px solid rgba(255,255,255,.08)">
-            <div style="font-size:9px;color:#5a7090;margin-bottom:2px">白繳租金</div>
-            <div style="font-size:14px;font-weight:bold;color:#e05c4a" id="waitYearlyRent">—</div>
-          </div>
-          <div>
-            <div style="font-size:9px;color:#5a7090;margin-bottom:2px">合計損失</div>
-            <div style="font-size:14px;font-weight:bold;color:#e05c4a" id="waitYearly">—</div>
-          </div>
-        </div>
-        <div style="font-size:9px;color:#7a6060;margin-top:6px;text-align:center">每天等待代價：<span id="waitDaily" style="color:#e05c4a;font-weight:bold">—</span>　｜　自備款定存利息抵扣後</div>
+      <!-- hero 大字差距 -->
+      <div class="hero-box">
+        <div class="hero-label">10 年後的財富階級差距</div>
+        <div id="projDiff" class="hero-val">—</div>
+        <div class="hero-sub" id="projDiffSub">現在進場 vs 持續觀望，10年後的淨資產落差</div>
       </div>
 
-      <!-- 10年對比：槓桿 vs 定存 -->
-      <div style="background:rgba(224,92,74,.08);border:1px solid rgba(224,92,74,.2);border-radius:10px;padding:14px">
-        <div style="font-size:9px;color:#c8b0a0;letter-spacing:1px;text-align:center;margin-bottom:10px">同樣 <span id="dwLabel" style="color:#f5d87a;font-weight:bold">—</span> 自備款，10年後：</div>
-        <div style="display:grid;grid-template-columns:1fr 16px 1fr;gap:0;align-items:stretch">
-          <div style="background:rgba(46,204,113,.07);border:1px solid rgba(46,204,113,.2);border-radius:10px;padding:12px;text-align:center">
-            <div style="font-size:9px;color:#2ecc71;letter-spacing:1px;margin-bottom:8px;font-weight:bold">✅ 現在買（槓桿）</div>
-            <div style="font-size:9px;color:#5a7090;margin-bottom:2px">5年後資產淨值</div>
-            <div style="font-size:16px;font-weight:bold;color:#f5d87a;margin-bottom:8px" id="buy5">—</div>
-            <div style="border-top:1px solid rgba(255,255,255,.07);padding-top:8px">
-              <div style="font-size:9px;color:#5a7090;margin-bottom:2px">10年後資產淨值</div>
-              <div style="font-size:24px;font-weight:bold;color:#2ecc71" id="buy10">—</div>
-            </div>
-            <div style="margin-top:8px;background:rgba(46,204,113,.12);border-radius:6px;padding:6px">
-              <div style="font-size:9px;color:#5a7090;margin-bottom:1px">自備款成長倍數</div>
-              <div style="font-size:16px;font-weight:bold;color:#2ecc71" id="buyMultiple">—</div>
-            </div>
-          </div>
-          <div style="display:flex;align-items:center;justify-content:center">
-            <div style="font-size:11px;color:#e05c4a;font-weight:bold;writing-mode:vertical-lr;letter-spacing:3px">VS</div>
-          </div>
-          <div style="background:rgba(224,92,74,.06);border:1px solid rgba(224,92,74,.15);border-radius:10px;padding:12px;text-align:center">
-            <div style="font-size:9px;color:#e05c4a;letter-spacing:1px;margin-bottom:8px;font-weight:bold">❌ 繼續等（定存）</div>
-            <div style="font-size:9px;color:#5a7090;margin-bottom:2px">5年後定存累積</div>
-            <div style="font-size:16px;font-weight:bold;color:#7a9ab8;margin-bottom:8px" id="nobuy5">—</div>
-            <div style="border-top:1px solid rgba(255,255,255,.07);padding-top:8px">
-              <div style="font-size:9px;color:#5a7090;margin-bottom:2px">10年後定存累積</div>
-              <div style="font-size:24px;font-weight:bold;color:#7a9ab8" id="nobuy10">—</div>
-            </div>
-            <div style="margin-top:8px;background:rgba(224,92,74,.08);border-radius:6px;padding:6px">
-              <div style="font-size:9px;color:#5a7090;margin-bottom:1px">自備款成長倍數</div>
-              <div style="font-size:16px;font-weight:bold;color:#7a9ab8" id="nobuyMultiple">—</div>
-            </div>
-          </div>
+      <!-- 四格數字卡 -->
+      <div class="stats-row">
+        <div class="stat-item red">
+          <div class="sl">等待代價（年）</div>
+          <div id="waitYearly" class="sn red">—</div>
         </div>
-        <div style="text-align:center;margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.07)">
-          <div style="font-size:10px;color:#5a7090;margin-bottom:4px">10年後資產差距</div>
-          <div style="font-size:32px;font-weight:bold;color:#e05c4a" id="projDiff">—</div>
-          <div style="font-size:11px;color:#c8b8b0;margin-top:4px" id="projDiffSub">—</div>
+        <div class="stat-item red">
+          <div class="sl">每天睜眼損失</div>
+          <div id="waitDaily" class="sn red">—</div>
+        </div>
+        <div class="stat-item green">
+          <div class="sl">10年後 現在買</div>
+          <div id="buy10" class="sn green">—</div>
+        </div>
+        <div class="stat-item">
+          <div class="sl">10年後 繼續等</div>
+          <div id="nobuy10" class="sn">—</div>
         </div>
       </div>
+
+      <!-- verdict 左色條話術 -->
+      <div id="vbBox" class="vb-gs">正在計算...</div>
+
+      <!-- 隱藏欄（供圖表） -->
+      <span id="buy5" style="display:none">—</span>
+      <span id="nobuy5" style="display:none">—</span>
     </div>
 
     <!-- ⑥ 你能做到（收支 + 負擔比 + verdict） -->
@@ -1065,7 +1055,7 @@ canvas{border-radius:6px}
         <canvas id="myChart" height="180"></canvas>
       </div>
       <div class="chart-legend">
-        <div class="cl-item"><div class="cl-dot" style="background:#e8b84b"></div>現在買（槓桿）</div>
+        <div class="cl-item"><div class="cl-dot" style="background:#e8b84b"></div>現在買（資產增值）</div>
         <div class="cl-item"><div class="cl-dot" style="background:#5a7090"></div>繼續等（存款累積）</div>
       </div>
     </div>
@@ -1819,17 +1809,14 @@ function doGen(){
   var histRef=growthPct>=7?'桃園區歷史年均 7.1%（2016-2024）':growthPct>=6?'穩健估算，低於歷史均值':growthPct>=5?'林口/五股歷史年均 5.3%':'採保守估算';
   g('waitSubtitle').textContent='這不是預測，是歷史事實（'+histRef+'）。每一個「再等等」，都有一個真實的代價。';
   g('waitMonthly').textContent=fmt(monthlyRise);
-  // 整合租金損失：等待一年損失 = 房價漲幅 + 白繳租金 - 自備款定存利息
+  // 年等待損失 = 房價漲幅 + 白繳租金 - 自備款定存利息
   var savedRentVal=parseFloat((g('iRnt')||{value:'0'}).value)||0;
-  var yearlyRent=savedRentVal*12; // 一年白繳租金
-  var dwInterest=C.dw>0?Math.round(C.dw*0.01):0; // 自備款定存1%利息
-  var waitYearlyTotal=yearlyRise+yearlyRent-dwInterest;
+  var yearlyRentLoss=savedRentVal*12;
+  var dwInterest=C.dw>0?Math.round(C.dw*0.01):0;
+  var waitYearlyTotal=yearlyRise+yearlyRentLoss-dwInterest;
   var waitDailyLoss=Math.round(waitYearlyTotal/365);
-  // 更新等待損失欄位
-  if(g('waitYearlyPrice')) g('waitYearlyPrice').textContent=fmt(yearlyRise);
-  if(g('waitYearlyRent'))  g('waitYearlyRent').textContent=yearlyRent>0?fmt(yearlyRent):'（無租金）';
-  g('waitYearly').textContent=fmt(waitYearlyTotal);
-  if(g('waitDaily')) g('waitDaily').textContent=fmt(waitDailyLoss)+' 元/天';
+  g('waitYearly').textContent='$'+fmt(waitYearlyTotal);
+  if(g('waitDaily')) g('waitDaily').textContent='$'+fmt(waitDailyLoss)+' /天';
   // 已損失時間軸
   var l6m=Math.round(C.pr*growth*0.5); // 6個月
   var l1y=Math.round(C.pr*growth);     // 1年
@@ -1886,12 +1873,19 @@ function doGen(){
     var nobuy10v=nobuyArr[yr10idx]?Math.round(nobuyArr[yr10idx]/10000)*10000:0;
     totalYears=chartTotalYr;
   } else {
-    // 成屋模式：買方「資產淨值（房屋市值-剩餘貸款）」vs 等待方「自備款純定存2%」
-    // 等待方不加月存款：正確比較是同一筆錢兩種選擇，而非誰每月存更多
+    // 成屋模式 v7.5：
+    // 買方 = 房屋增值淨值（市值-剩餘貸款）+ 剩餘現金（扣自備後）+ 月結餘50%線性存款
+    // 觀望方 = 自備款（視為現有可投資資金）4.5% ETF複利 + 月結餘50%線性存款（扣租金）
     var loanRt=parseFloat(g('iRat').value)/100/12;
     var loanNm=parseInt(g('iYrs').value)*12;
+    var savedRentLp=parseFloat((g('iRnt')||{value:'0'}).value)||0;
+    var monthlyRemBuy=rem>0?rem:0;             // 買方月結餘（已扣貸款）
+    var monthlyRemNoBuy=Math.max(0,C.inc-C.exp-savedRentLp); // 觀望方月結餘（扣租金）
+    var investRate=0.045; // 觀望方 ETF 年化 4.5%
+
     for(var i=0;i<=10;i++){
       chartLabels.push(i+'年');
+      // 買方：房屋淨值 + 月結餘50%累積
       var houseVal=C.pr*Math.pow(1+growth,i);
       var paidMo=i*12;
       var loanBal=0;
@@ -1900,8 +1894,12 @@ function doGen(){
       } else if(C.ln>0&&loanRt===0&&loanNm>paidMo){
         loanBal=C.ln*(1-paidMo/loanNm);
       }
-      buyArr.push(Math.max(0,houseVal-loanBal)); // 買方：資產淨值
-      nobuyArr.push(C.dw*Math.pow(1+0.02,i));   // 等待方：自備款定存2%
+      var houseNetVal=Math.max(0,houseVal-loanBal);
+      var buySavings=monthlyRemBuy*0.5*12*i;
+      buyArr.push(houseNetVal+buySavings);
+      // 觀望方：自備款 4.5% ETF複利 + 月結餘50%線性累積
+      var noBuyVal=C.dw*Math.pow(1+investRate,i)+monthlyRemNoBuy*0.5*12*i;
+      nobuyArr.push(noBuyVal);
     }
     var buy5v =Math.round(buyArr[5]/10000)*10000;
     var buy10v=Math.round(buyArr[10]/10000)*10000;
@@ -1912,31 +1910,44 @@ function doGen(){
   var diff=buy10v-nobuy10v;
 
   // 年化報酬率（自備款角度，交屋後10年）
-  // 年化報酬：自備款 → 10年後資產淨值
+  // 年化報酬（自備款→10年買方資產）
   var annRet=C.dw>0&&buy10v>0?((Math.pow(buy10v/C.dw,0.1)-1)*100):0;
+  var diffAbs=Math.abs(diff);
 
-  g('buy5').textContent=fmtW(buy5v);
+  // hero 大字
+  if(g('buy5')) g('buy5').textContent=fmtW(buy5v);
+  if(g('nobuy5')) g('nobuy5').textContent=fmtW(nobuy5v);
   g('buy10').textContent=fmtW(buy10v);
-  g('nobuy5').textContent=fmtW(nobuy5v);
   g('nobuy10').textContent=fmtW(nobuy10v);
-  g('projDiff').textContent=(diff>0?'+':'')+fmtW(Math.abs(diff));
-  g('projDiff').style.color=diff>0?'#e05c4a':'#7a9ab8';
-  // 衝動感文字：加入每天等待代價
-  var waitDailyForSub=waitDailyLoss||Math.round((C.pr*growth)/365);
-  g('projDiffSub').textContent=diff>0?
-    nm+' 每多等一天，代價 '+fmt(waitDailyForSub)+' 元。10年後差距 '+fmtW(diff)+'。（自備款年化報酬 '+annRet.toFixed(1)+'%）':
-    '請調高增值率或降低貸款成數重新試算';
-  // 自備款標籤
-  if(g('dwLabel')&&C.dw>0) g('dwLabel').textContent=fmtW(C.dw);
-  // 倍數：買方
-  if(g('buyMultiple')&&C.dw>0&&buy10v>0){
-    var bx=buy10v/C.dw;
-    g('buyMultiple').textContent=bx.toFixed(1)+'x（+'+Math.round((bx-1)*100)+'%）';
+
+  if(diff>0){
+    g('projDiff').innerHTML='+'+fmtW(diffAbs)+'<span style="font-size:1.3rem;color:#c9922b;margin-left:8px">萬</span>';
+    g('projDiff').style.color='#fff';
+  } else {
+    g('projDiff').innerHTML=fmtW(diffAbs)+'<span style="font-size:1.3rem;color:#c9922b;margin-left:8px">萬</span>';
+    g('projDiff').style.color='#7a9ab8';
   }
-  // 倍數：等待方定存
-  if(g('nobuyMultiple')&&C.dw>0&&nobuy10v>0){
-    var nx=nobuy10v/C.dw;
-    g('nobuyMultiple').textContent=nx.toFixed(1)+'x（+'+Math.round((nx-1)*100)+'%）';
+
+  var waitDailyRef=waitDailyLoss||Math.round((C.pr*growth)/365);
+  var waitYearRef=waitYearlyTotal||Math.round(C.pr*growth);
+  g('projDiffSub').textContent=diff>0?
+    nm+' 現在進場 vs 持續觀望，10年後的淨資產落差（槓桿年化 '+annRet.toFixed(1)+'%）':
+    '請調高增值率或調整貸款成數重新試算';
+
+  // verdict 左色條
+  var ratio=C.mn>0&&C.inc>0?(C.mn/C.inc*100):0;
+  var vbEl=g('vbBox');
+  if(vbEl){
+    if(ratio>50){
+      vbEl.className='vb-gr';
+      vbEl.innerHTML='<b>⚠️ 負擔比警戒：'+ratio.toFixed(1)+'%</b><br>房貸佔收入偏高，建議拉長年限或調整總價。但每年持續等待損失約 <b>$'+fmt(waitYearRef)+'</b>，代價不小。建議請顧問協助優化配置。';
+    } else if(diff>0){
+      vbEl.className='vb-gs';
+      vbEl.innerHTML='<b>🚀 資產黃金增值期</b><br>'+nm+' 的財務體質適合進場！10年後多出 <b>'+fmtW(diffAbs)+'</b> 淨資產。每多等一天，損失 <b>$'+fmt(waitDailyRef)+'</b>——現在就是佈局的最佳時機。';
+    } else {
+      vbEl.className='vb-gs';
+      vbEl.innerHTML='<b>💡 策略調整建議</b><br>請提高增值率或調整自備款比例，讓數字更符合實際市場行情。';
+    }
   }
 
   // ── ⑥ 你能做到 ──────────────────────────────────
