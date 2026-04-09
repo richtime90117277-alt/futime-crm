@@ -6,10 +6,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
-<title>富時代｜資產規劃報告 v6.4</title>
+<title>富時代｜資產規劃報告</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#08111e;color:#d4c9b8;font-family:'Noto Serif TC',serif;font-size:14px;-webkit-font-smoothing:antialiased}
@@ -2132,7 +2129,8 @@ function calcAssets() {
     });
   }
 
-  var totalAsset = fund + stock + dep + bank + propVal;
+  var bonus  = parseFloat((g('a_bonus')||{}).value)||0;  // 一次性資金
+  var totalAsset = fund + stock + dep + bank + bonus + propVal;
 
   // 負債加總
   var dStu  = parseFloat((g('d_student')||{}).value)||0;
@@ -2156,7 +2154,8 @@ function calcAssets() {
   var rBox = g('a_reserveBox');
   if(rBox && dwW > 0 && totalAsset > 0){
     rBox.style.display = 'block';
-    var cashTotal = fund + stock + dep + bankb + bonus; // 可動用現金（不含房產）
+    var earnest = parseFloat((g('a_earnest')||{value:'0'}).value)||0;  // 暫收款
+    var cashTotal = fund + stock + dep + bank + bonus; // 可動用現金（不含房產）
     var reserve = cashTotal - dwW - earnest;
     var resCash = g('a_res_cash'), resDw = g('a_res_dw');
     var resEarn = g('a_res_earn'), resEl = g('a_reserve');
