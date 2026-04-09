@@ -1789,7 +1789,8 @@ function doGen(){
   // ── 10年對比計算（成屋 vs 預售分開處理）─────────
   var buyArr=[],nobuyArr=[],chartLabels=[];
   var monthlySave=rem>0?rem:0;
-  var monthlySaveNoBuy=monthlySave+C.mn; // 繼續等：月結餘 + 省下月繳
+  // 繼續等：月結餘 + 省下月貸款 - 省下的租金（等待方還在繼續付租）
+  var monthlySaveNoBuy=Math.max(0, monthlySave+C.mn-savedRent);
   var totalYears=10;
 
   if(isPresale){
@@ -1861,7 +1862,7 @@ function doGen(){
   g('projDiff').style.color=diff>0?'#e05c4a':'#7a9ab8';
   g('projDiffSub').textContent=diff>0?
     '這是 '+nm+' 現在買 vs 繼續等的差距。不是預測，是數學。（自備款年化報酬 '+annRet.toFixed(1)+'%）':
-    '在此條件下存款略優，建議重新評估頭期款比例或增值率假設';
+    '在此增值率假設（'+growthPct+'%）下存款累積略優，可調高增值率或檢視自備款比例重新試算';
 
   // ── ⑥ 你能做到 ──────────────────────────────────
   g('nI').textContent=fmt(C.inc); g('nE').textContent=fmt(C.exp);
@@ -2129,8 +2130,7 @@ function calcAssets() {
     });
   }
 
-  var bonus  = parseFloat((g('a_bonus')||{}).value)||0;  // 一次性資金
-  var totalAsset = fund + stock + dep + bank + bonus + propVal;
+  var totalAsset = fund + stock + dep + bank + propVal;
 
   // 負債加總
   var dStu  = parseFloat((g('d_student')||{}).value)||0;
@@ -2154,8 +2154,7 @@ function calcAssets() {
   var rBox = g('a_reserveBox');
   if(rBox && dwW > 0 && totalAsset > 0){
     rBox.style.display = 'block';
-    var earnest = parseFloat((g('a_earnest')||{value:'0'}).value)||0;  // 暫收款
-    var cashTotal = fund + stock + dep + bank + bonus; // 可動用現金（不含房產）
+    var cashTotal = fund + stock + dep + bankb + bonus; // 可動用現金（不含房產）
     var reserve = cashTotal - dwW - earnest;
     var resCash = g('a_res_cash'), resDw = g('a_res_dw');
     var resEarn = g('a_res_earn'), resEl = g('a_reserve');
