@@ -592,30 +592,37 @@ canvas{border-radius:6px}
         </div>
       </div>
       <div class="fl"><label>預估年增值率（%）可自填</label>
-        <input type="number" id="iGrowth" value="5" min="1" max="20" step="0.5" placeholder="5" oninput="ca()">
+        <input type="number" id="iGrowth" value="7" min="1" max="20" step="0.5" placeholder="7" oninput="ca()">
       </div>
       <div style="background:rgba(201,146,43,.06);border:1px solid rgba(201,146,43,.2);border-radius:8px;padding:10px;margin-top:4px">
         <div style="font-size:9px;color:#c9922b;letter-spacing:1px;font-weight:bold;margin-bottom:8px">📊 實際歷史漲幅參考（2016→2024，內政部實價登錄）</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:6px">
+          <div onclick="setGrowth(5)" style="cursor:pointer;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:8px;text-align:center;transition:.2s" onmouseover="this.style.borderColor='#c9922b'" onmouseout="this.style.borderColor='rgba(255,255,255,.1)'">
+            <div style="font-size:9px;color:#5a7090;margin-bottom:3px">保守</div>
+            <div style="font-size:18px;font-weight:bold;color:#b0b8c8">5%</div>
+            <div style="font-size:8px;color:#3a5060;margin-top:2px">低估版，穩健</div>
+          </div>
+          <div onclick="setGrowth(6)" style="cursor:pointer;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:8px;text-align:center;transition:.2s" onmouseover="this.style.borderColor='#c9922b'" onmouseout="this.style.borderColor='rgba(255,255,255,.1)'">
+            <div style="font-size:9px;color:#7a9ab8;margin-bottom:3px">穩健</div>
+            <div style="font-size:18px;font-weight:bold;color:#d4c9b8">6%</div>
+            <div style="font-size:8px;color:#3a5060;margin-top:2px">低於歷史均值</div>
+          </div>
+          <div onclick="setGrowth(7.1)" style="cursor:pointer;background:rgba(201,146,43,.15);border:2px solid rgba(201,146,43,.7);border-radius:6px;padding:8px;text-align:center;transition:.2s" onmouseover="this.style.background='rgba(201,146,43,.25)'" onmouseout="this.style.background='rgba(201,146,43,.15)'">
+            <div style="font-size:9px;color:#c9922b;font-weight:bold;margin-bottom:3px">歷史實績 ★</div>
+            <div style="font-size:20px;font-weight:bold;color:#f5d87a">7.1%</div>
+            <div style="font-size:8px;color:#c9922b;margin-top:2px">桃園 +74%（預設）</div>
+          </div>
+        </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
-          <div onclick="setGrowth(7.1)" style="cursor:pointer;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:8px;transition:.2s" onmouseover="this.style.borderColor='#c9922b'" onmouseout="this.style.borderColor='rgba(255,255,255,.1)'">
-            <div style="font-size:10px;font-weight:bold;color:#e8e0d0">🏙️ 桃園（桃園區）</div>
-            <div style="font-size:16px;font-weight:bold;color:#f5d87a;margin:2px 0">7.1% /年</div>
-            <div style="font-size:9px;color:#5a7090">20→34萬/坪　+74%</div>
+          <div onclick="setGrowth(5.3)" style="cursor:pointer;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:7px;transition:.2s" onmouseover="this.style.borderColor='#c9922b'" onmouseout="this.style.borderColor='rgba(255,255,255,.1)'">
+            <div style="font-size:9px;font-weight:bold;color:#e8e0d0">🏙️ 新北 林口/五股</div>
+            <div style="font-size:14px;font-weight:bold;color:#f5d87a;margin:1px 0">5.3% /年</div>
+            <div style="font-size:8px;color:#5a7090">+51%（2016-2024）</div>
           </div>
-          <div onclick="setGrowth(4.6)" style="cursor:pointer;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:8px;transition:.2s" onmouseover="this.style.borderColor='#c9922b'" onmouseout="this.style.borderColor='rgba(255,255,255,.1)'">
-            <div style="font-size:10px;font-weight:bold;color:#e8e0d0">🏙️ 新北（板橋/新莊等）</div>
-            <div style="font-size:16px;font-weight:bold;color:#f5d87a;margin:2px 0">4.6% /年</div>
-            <div style="font-size:9px;color:#5a7090">平均約 +40%</div>
-          </div>
-          <div onclick="setGrowth(5.3)" style="cursor:pointer;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:8px;transition:.2s" onmouseover="this.style.borderColor='#c9922b'" onmouseout="this.style.borderColor='rgba(255,255,255,.1)'">
-            <div style="font-size:10px;font-weight:bold;color:#e8e0d0">🏙️ 新北（林口/五股）</div>
-            <div style="font-size:16px;font-weight:bold;color:#f5d87a;margin:2px 0">5.3% /年</div>
-            <div style="font-size:9px;color:#5a7090">28→42萬/坪　+51%</div>
-          </div>
-          <div onclick="setGrowth(5)" style="cursor:pointer;background:rgba(201,146,43,.1);border:1px solid rgba(201,146,43,.3);border-radius:6px;padding:8px;transition:.2s">
-            <div style="font-size:10px;font-weight:bold;color:#c8a870">✅ 保守估算（預設）</div>
-            <div style="font-size:16px;font-weight:bold;color:#f5d87a;margin:2px 0">5.0% /年</div>
-            <div style="font-size:9px;color:#5a7090">低於歷史均值，穩健</div>
+          <div onclick="setGrowth(4.6)" style="cursor:pointer;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:7px;transition:.2s" onmouseover="this.style.borderColor='#c9922b'" onmouseout="this.style.borderColor='rgba(255,255,255,.1)'">
+            <div style="font-size:9px;font-weight:bold;color:#e8e0d0">🏙️ 新北 板橋/新莊</div>
+            <div style="font-size:14px;font-weight:bold;color:#f5d87a;margin:1px 0">4.6% /年</div>
+            <div style="font-size:8px;color:#5a7090">+40%（2016-2024）</div>
           </div>
         </div>
         <div style="font-size:9px;color:#3a5060;margin-top:8px">點擊任一格自動帶入　｜　資料來源：內政部實價登錄（LandChart整理）</div>
@@ -1774,7 +1781,7 @@ function doGen(){
   var monthlyRise=Math.round(C.pr*growth/12);
   var yearlyRise=Math.round(C.pr*growth);
   var growthPct=parseFloat(g('iGrowth').value);
-  var histRef=growthPct>=7?'桃園歷史年均漲幅 7.1%':growthPct>=5?'林口/五股歷史年均 5.3%':'採保守估算';
+  var histRef=growthPct>=7?'桃園區歷史年均 7.1%（2016-2024）':growthPct>=6?'穩健估算，低於歷史均值':growthPct>=5?'林口/五股歷史年均 5.3%':'採保守估算';
   g('waitSubtitle').textContent='這不是預測，是歷史事實（'+histRef+'）。每一個「再等等」，都有一個真實的代價。';
   g('waitMonthly').textContent=fmt(monthlyRise);
   g('waitYearly').textContent=fmt(yearlyRise);
@@ -1789,9 +1796,8 @@ function doGen(){
   // ── 10年對比計算（成屋 vs 預售分開處理）─────────
   var buyArr=[],nobuyArr=[],chartLabels=[];
   var monthlySave=rem>0?rem:0;
-  // 繼續等：月結餘 + 省下月貸款 - 省下的租金（等待方還在繼續付租）
   var savedRentVal=parseFloat((g('iRnt')||{value:'0'}).value)||0;
-  var monthlySaveNoBuy=Math.max(0, monthlySave+C.mn-savedRentVal);
+  var monthlySaveNoBuy=Math.max(0, monthlySave+C.mn-savedRentVal); // 繼續等：月結餘+省月貸-仍需付租金
   var totalYears=10;
 
   if(isPresale){
@@ -1836,24 +1842,20 @@ function doGen(){
     var nobuy10v=nobuyArr[yr10idx]?Math.round(nobuyArr[yr10idx]/10000)*10000:0;
     totalYears=chartTotalYr;
   } else {
-    // 成屋模式：比較「買方資產淨值（房屋市值 - 剩餘貸款）」vs「等待方存款累積」
-    // 剩餘貸款餘額計算：貸款本金 × ((1+月利率)^總期數 - (1+月利率)^已還期數) / ((1+月利率)^總期數 - 1)
-    var loanRt = parseFloat(g('iRat').value)/100/12; // 月利率
-    var loanNm = parseInt(g('iYrs').value)*12;        // 總期數（月）
+    // 成屋模式：買方「資產淨值（房屋市值 - 剩餘貸款）」vs 等待方「存款累積」
+    var loanRt = parseFloat(g('iRat').value)/100/12;
+    var loanNm = parseInt(g('iYrs').value)*12;
     for(var i=0;i<=10;i++){
       chartLabels.push(i+'年');
-      var houseVal = C.pr*Math.pow(1+growth,i); // 第i年房屋市值
-      // 第i年剩餘貸款餘額（元）
-      var paidMo = i*12; // 已還月數
+      var houseVal = C.pr*Math.pow(1+growth,i);
+      var paidMo = i*12;
       var loanBal = 0;
       if(C.ln>0 && loanRt>0 && loanNm>paidMo){
-        loanBal = C.ln * (Math.pow(1+loanRt,loanNm) - Math.pow(1+loanRt,paidMo)) / (Math.pow(1+loanRt,loanNm) - 1);
+        loanBal = C.ln*(Math.pow(1+loanRt,loanNm)-Math.pow(1+loanRt,paidMo))/(Math.pow(1+loanRt,loanNm)-1);
       } else if(C.ln>0 && loanRt===0 && loanNm>paidMo){
-        loanBal = C.ln * (1 - paidMo/loanNm);
+        loanBal = C.ln*(1-paidMo/loanNm);
       }
-      // 買方資產淨值 = 房屋市值 - 剩餘貸款
-      buyArr.push(Math.max(0, houseVal - loanBal));
-      // 等待方：自備款 2% 複利 + 每月存款累積
+      buyArr.push(Math.max(0, houseVal-loanBal));
       var moAcc=monthlySaveNoBuy>0?monthlySaveNoBuy*12*((Math.pow(1.02,i)-1)/0.02):0;
       nobuyArr.push(C.dw*Math.pow(1+0.02,i)+moAcc);
     }
@@ -1866,8 +1868,7 @@ function doGen(){
   var diff=buy10v-nobuy10v;
 
   // 年化報酬率（自備款角度，交屋後10年）
-  // 年化報酬：以自備款為本金，10年後資產淨值的年化
-  var annRet=C.dw>0&&buy10v>0?((Math.pow(buy10v/C.dw,0.1)-1)*100):0;
+  var annRet=C.dw>0&&buy10v>0?((Math.pow(buy10v/C.dw,0.1)-1)*100):0; // 自備款→淨值年化
 
   g('buy5').textContent=fmtW(buy5v);
   g('buy10').textContent=fmtW(buy10v);
