@@ -949,7 +949,6 @@ canvas{border-radius:6px}
         <div id="projDiff" class="hero-val">—</div>
         <div class="hero-sub" id="projDiffSub">現在進場 vs 持續觀望，10年後的淨資產落差</div>
       </div>
-
       <!-- 四格數字卡 -->
       <div class="stats-row">
         <div class="stat-item red">
@@ -969,11 +968,9 @@ canvas{border-radius:6px}
           <div id="nobuy10" class="sn">—</div>
         </div>
       </div>
-
-      <!-- verdict 左色條話術 -->
+      <!-- verdict 左色條 -->
       <div id="vbBox" class="vb-gs">正在計算...</div>
-
-      <!-- 隱藏欄（供圖表） -->
+      <!-- 隱藏供圖表 -->
       <span id="buy5" style="display:none">—</span>
       <span id="nobuy5" style="display:none">—</span>
     </div>
@@ -1055,7 +1052,7 @@ canvas{border-radius:6px}
         <canvas id="myChart" height="180"></canvas>
       </div>
       <div class="chart-legend">
-        <div class="cl-item"><div class="cl-dot" style="background:#e8b84b"></div>現在買（資產增值）</div>
+        <div class="cl-item"><div class="cl-dot" style="background:#e8b84b"></div>現在買（槓桿）</div>
         <div class="cl-item"><div class="cl-dot" style="background:#5a7090"></div>繼續等（存款累積）</div>
       </div>
     </div>
@@ -1809,9 +1806,8 @@ function doGen(){
   var histRef=growthPct>=7?'桃園區歷史年均 7.1%（2016-2024）':growthPct>=6?'穩健估算，低於歷史均值':growthPct>=5?'林口/五股歷史年均 5.3%':'採保守估算';
   g('waitSubtitle').textContent='這不是預測，是歷史事實（'+histRef+'）。每一個「再等等」，都有一個真實的代價。';
   g('waitMonthly').textContent=fmt(monthlyRise);
-  // 年等待損失 = 房價漲幅 + 白繳租金 - 自備款定存利息
+  // 年等待損失：房價漲幅 + 白繳租金（未填時自動估算）- 自備款定存利息
   var savedRentVal=parseFloat((g('iRnt')||{value:'0'}).value)||0;
-  // 等待損失的租金：未填時也用估算值，讓數字更真實
   var effectiveRentWait=savedRentVal>0?savedRentVal:Math.max(15000,Math.round(C.pr*0.001));
   var yearlyRentLoss=effectiveRentWait*12;
   var dwInterest=C.dw>0?Math.round(C.dw*0.01):0;
@@ -1875,21 +1871,30 @@ function doGen(){
     var nobuy10v=nobuyArr[yr10idx]?Math.round(nobuyArr[yr10idx]/10000)*10000:0;
     totalYears=chartTotalYr;
   } else {
-    // 成屋模式 v7.5：
-    // 買方 = 房屋增值淨值（市值-剩餘貸款）+ 剩餘現金（扣自備後）+ 月結餘50%線性存款
-    // 觀望方 = 自備款（視為現有可投資資金）4.5% ETF複利 + 月結餘50%線性存款（扣租金）
+    // 成屋模式（整合版）：
+    // 買方 = 房屋增值淨值（市值-剩餘貸款）+ 剩餘現金（currentAsset-自備款）+ 月結餘50%存款
+    // 觀望方 = 現有資產（currentAsset）4.5% ETF複利 + 月結餘50%存款（仍扣租金）
     var loanRt=parseFloat(g('iRat').value)/100/12;
     var loanNm=parseInt(g('iYrs').value)*12;
-    var savedRentLp=parseFloat((g('iRnt')||{value:'0'}).value)||0;
-    // 觀望方一定要付租金；若客戶未填，依物件總價估算合理租金（月租=總價*0.1%為下限）
-    var effectiveRent=savedRentLp>0?savedRentLp:Math.max(15000,Math.round(C.pr*0.001));
-    var monthlyRemBuy=rem>0?rem:0;             // 買方月結餘（已扣貸款）
-    var monthlyRemNoBuy=Math.max(0,C.inc-C.exp-effectiveRent); // 觀望方月結餘（必扣租金）
+    var saveRate=0.5; // 月結餘存下50%（保守假設）
     var investRate=0.045; // 觀望方 ETF 年化 4.5%
+    // 現有資產：從 Section 04 資產欄加總（萬→元）
+    var curAssetWan=(parseFloat((g('a_fund')||{value:'0'}).value)||0)
+                  +(parseFloat((g('a_stock')||{value:'0'}).value)||0)
+                  +(parseFloat((g('a_deposit')||{value:'0'}).value)||0)
+                  +(parseFloat((g('a_bankbal')||{value:'0'}).value)||0)
+                  +(parseFloat((g('a_bonus')||{value:'0'}).value)||0);
+    var curAsset=curAssetWan*10000; // 元
+    var dwWan=C.dw/10000; // 自備款萬
+    // 觀望方租金：未填時自動估算
+    var savedRentLp=parseFloat((g('iRnt')||{value:'0'}).value)||0;
+    var effectiveRent=savedRentLp>0?savedRentLp:Math.max(15000,Math.round(C.pr*0.001));
+    var monthlyRemBuy=rem>0?rem:0;
+    var monthlyRemNoBuy=Math.max(0,C.inc-C.exp-effectiveRent);
 
     for(var i=0;i<=10;i++){
       chartLabels.push(i+'年');
-      // 買方：房屋淨值 + 月結餘50%累積
+      // 買方：房屋淨值 + 剩餘現金2%複利 + 月結餘50%累積
       var houseVal=C.pr*Math.pow(1+growth,i);
       var paidMo=i*12;
       var loanBal=0;
@@ -1898,12 +1903,15 @@ function doGen(){
       } else if(C.ln>0&&loanRt===0&&loanNm>paidMo){
         loanBal=C.ln*(1-paidMo/loanNm);
       }
-      var houseNetVal=Math.max(0,houseVal-loanBal);
-      var buySavings=monthlyRemBuy*0.5*12*i;
-      buyArr.push(houseNetVal+buySavings);
-      // 觀望方：自備款 4.5% ETF複利 + 月結餘50%線性累積
-      var noBuyVal=C.dw*Math.pow(1+investRate,i)+monthlyRemNoBuy*0.5*12*i;
-      nobuyArr.push(noBuyVal);
+      var houseNet=Math.max(0,houseVal-loanBal);
+      var cashAfterDw=Math.max(0,curAsset-C.dw); // 買房後剩餘現金（元）
+      var cashGrow=cashAfterDw*Math.pow(1.02,i);  // 剩餘現金2%複利
+      var buySavings=monthlyRemBuy*saveRate*12*i;  // 月結餘50%線性累積
+      buyArr.push(houseNet+cashGrow+buySavings);
+      // 觀望方：現有資產4.5%複利 + 月結餘50%線性累積（扣租金）
+      var noBuyInvest=curAsset*Math.pow(1+investRate,i);
+      var noBuySavings=monthlyRemNoBuy*saveRate*12*i;
+      nobuyArr.push(noBuyInvest+noBuySavings);
     }
     var buy5v =Math.round(buyArr[5]/10000)*10000;
     var buy10v=Math.round(buyArr[10]/10000)*10000;
@@ -1914,16 +1922,16 @@ function doGen(){
   var diff=buy10v-nobuy10v;
 
   // 年化報酬率（自備款角度，交屋後10年）
-  // 年化報酬（自備款→10年買方資產）
+  // 年化報酬：自備款→10年後買方資產淨值
   var annRet=C.dw>0&&buy10v>0?((Math.pow(buy10v/C.dw,0.1)-1)*100):0;
   var diffAbs=Math.abs(diff);
 
-  // hero 大字
   if(g('buy5')) g('buy5').textContent=fmtW(buy5v);
   if(g('nobuy5')) g('nobuy5').textContent=fmtW(nobuy5v);
   g('buy10').textContent=fmtW(buy10v);
   g('nobuy10').textContent=fmtW(nobuy10v);
 
+  // hero 大字
   if(diff>0){
     g('projDiff').innerHTML='+'+fmtW(diffAbs)+'<span style="font-size:1.3rem;color:#c9922b;margin-left:8px">萬</span>';
     g('projDiff').style.color='#fff';
@@ -1931,26 +1939,55 @@ function doGen(){
     g('projDiff').innerHTML=fmtW(diffAbs)+'<span style="font-size:1.3rem;color:#c9922b;margin-left:8px">萬</span>';
     g('projDiff').style.color='#7a9ab8';
   }
-
   var waitDailyRef=waitDailyLoss||Math.round((C.pr*growth)/365);
   var waitYearRef=waitYearlyTotal||Math.round(C.pr*growth);
   g('projDiffSub').textContent=diff>0?
-    nm+' 現在進場 vs 持續觀望，10年後的淨資產落差（槓桿年化 '+annRet.toFixed(1)+'%）':
-    '負擔比偏高導致買方月現金流受限，10年後差距縮小。建議拉長年限或增加自備款改善現金流。';
+    nm+' 現在進場 vs 持續觀望，10年後淨資產落差（槓桿年化 '+annRet.toFixed(1)+'%）':
+    '負擔比偏高導致現金流受限。建議拉長年限或增加自備款改善。';
 
-  // verdict 左色條
+  // ── 精算 equity10 + realDiff 供 vbBox 使用 ──
+  // equity10：10年後房屋淨值（市值-剩餘貸款），方便話術引用
+  var loanRt2=parseFloat(g('iRat').value)/100/12;
+  var loanNm2=parseInt(g('iYrs').value)*12;
+  var houseVal10=C.pr*Math.pow(1+growth,10);
+  var loanBal10=0;
+  if(C.ln>0&&loanRt2>0&&loanNm2>120){
+    loanBal10=C.ln*(Math.pow(1+loanRt2,loanNm2)-Math.pow(1+loanRt2,120))/(Math.pow(1+loanRt2,loanNm2)-1);
+  } else if(C.ln>0&&loanRt2===0&&loanNm2>120){
+    loanBal10=C.ln*(1-120/loanNm2);
+  }
+  var equity10=Math.max(0,houseVal10-loanBal10); // 10年後房屋淨值
+  var realDiff=diff; // 已在上方算好
+
+  // verdict 左色條（三段式專家診斷）
   var ratio=C.mn>0&&C.inc>0?(C.mn/C.inc*100):0;
   var vbEl=g('vbBox');
   if(vbEl){
     if(ratio>50){
       vbEl.className='vb-gr';
-      vbEl.innerHTML='<b>⚠️ 負擔比警戒：'+ratio.toFixed(1)+'%</b><br>房貸佔收入偏高，建議拉長年限或調整總價。但每年持續等待損失約 <b>'+fmt(waitYearRef)+'元</b>，代價不小。建議請顧問協助優化配置。';
+      vbEl.innerHTML=
+        '<div style="border-bottom:1px solid rgba(224,92,74,.3);padding-bottom:8px;margin-bottom:10px">'+
+        '<span style="background:#e05c4a;color:#fff;padding:2px 8px;border-radius:4px;font-weight:900;font-size:11px">負擔偏高提醒</span></div>'+
+        '<p>房貸佔月收入 <b>'+ratio.toFixed(1)+'%</b>，超過安全線。建議拉長年限或調整總價。</p>'+
+        '<p style="margin-top:8px">⚡ 但每年等待損失仍約 <b>'+fmt(waitYearRef)+'元</b>——代價不小，顧問可協助優化配置。</p>';
     } else if(diff>0){
       vbEl.className='vb-gs';
-      vbEl.innerHTML='<b>🚀 資產黃金增值期</b><br>'+nm+' 的財務體質適合進場！10年後多出 <b>'+fmtW(diffAbs)+'</b> 淨資產。每多等一天，損失 <b>'+fmt(waitDailyRef)+'元</b>——現在就是佈局的最佳時機。';
+      vbEl.innerHTML=
+        '<div style="border-bottom:1px solid rgba(201,146,43,.3);padding-bottom:8px;margin-bottom:10px">'+
+        '<span style="background:#c9922b;color:#08111e;padding:2px 8px;border-radius:4px;font-weight:900;font-size:11px">專家診斷</span></div>'+
+        '<p>根據 <b>'+nm+'</b> 的財務體質，<b>現在進場</b>將使您 10 年後成功跨越資產門檻。</p>'+
+        '<ul style="margin-top:10px;list-style:none;padding-left:5px;line-height:2">'+
+        '<li>📍 <b>房屋淨值增長：</b> 10年後房產淨值預計 <span style="color:#f5d87a">'+fmtW(equity10)+'</span>（市值-剩餘貸款）</li>'+
+        '<li>📍 <b>抗通膨鎖成本：</b> 鎖定房貸，免受未來 10 年租金調漲衝擊</li>'+
+        '<li>📍 <b>階級財富差距：</b> 10年後身價比同條件觀望者高出 <span style="color:#f5d87a;font-size:1.1em;font-weight:bold">'+fmtW(Math.abs(realDiff))+'</span></li>'+
+        '</ul>';
     } else {
       vbEl.className='vb-gs';
-      vbEl.innerHTML='<b>💡 策略調整建議</b><br>請提高增值率或調整自備款比例，讓數字更符合實際市場行情。';
+      vbEl.innerHTML=
+        '<div style="border-bottom:1px solid rgba(201,146,43,.3);padding-bottom:8px;margin-bottom:10px">'+
+        '<span style="background:#c9922b;color:#08111e;padding:2px 8px;border-radius:4px;font-weight:900;font-size:11px">策略調整建議</span></div>'+
+        '<p>目前條件下可考慮提高自備款比例或選擇更高增值潛力的區域，讓數字站在你這邊。</p>'+
+        '<p style="margin-top:8px">📍 每年等待成本仍約 <b>'+fmt(waitYearRef)+'元</b>——方向對了，細節我們一起調整。</p>';
     }
   }
 
