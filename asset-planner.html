@@ -1811,12 +1811,14 @@ function doGen(){
   g('waitMonthly').textContent=fmt(monthlyRise);
   // 年等待損失 = 房價漲幅 + 白繳租金 - 自備款定存利息
   var savedRentVal=parseFloat((g('iRnt')||{value:'0'}).value)||0;
-  var yearlyRentLoss=savedRentVal*12;
+  // 等待損失的租金：未填時也用估算值，讓數字更真實
+  var effectiveRentWait=savedRentVal>0?savedRentVal:Math.max(15000,Math.round(C.pr*0.001));
+  var yearlyRentLoss=effectiveRentWait*12;
   var dwInterest=C.dw>0?Math.round(C.dw*0.01):0;
   var waitYearlyTotal=yearlyRise+yearlyRentLoss-dwInterest;
   var waitDailyLoss=Math.round(waitYearlyTotal/365);
-  g('waitYearly').textContent='$'+fmt(waitYearlyTotal);
-  if(g('waitDaily')) g('waitDaily').textContent='$'+fmt(waitDailyLoss)+' /天';
+  g('waitYearly').textContent=fmt(waitYearlyTotal)+'元';
+  if(g('waitDaily')) g('waitDaily').textContent=fmt(waitDailyLoss)+' 元/天';
   // 已損失時間軸
   var l6m=Math.round(C.pr*growth*0.5); // 6個月
   var l1y=Math.round(C.pr*growth);     // 1年
@@ -1879,8 +1881,10 @@ function doGen(){
     var loanRt=parseFloat(g('iRat').value)/100/12;
     var loanNm=parseInt(g('iYrs').value)*12;
     var savedRentLp=parseFloat((g('iRnt')||{value:'0'}).value)||0;
+    // 觀望方一定要付租金；若客戶未填，依物件總價估算合理租金（月租=總價*0.1%為下限）
+    var effectiveRent=savedRentLp>0?savedRentLp:Math.max(15000,Math.round(C.pr*0.001));
     var monthlyRemBuy=rem>0?rem:0;             // 買方月結餘（已扣貸款）
-    var monthlyRemNoBuy=Math.max(0,C.inc-C.exp-savedRentLp); // 觀望方月結餘（扣租金）
+    var monthlyRemNoBuy=Math.max(0,C.inc-C.exp-effectiveRent); // 觀望方月結餘（必扣租金）
     var investRate=0.045; // 觀望方 ETF 年化 4.5%
 
     for(var i=0;i<=10;i++){
@@ -1932,7 +1936,7 @@ function doGen(){
   var waitYearRef=waitYearlyTotal||Math.round(C.pr*growth);
   g('projDiffSub').textContent=diff>0?
     nm+' 現在進場 vs 持續觀望，10年後的淨資產落差（槓桿年化 '+annRet.toFixed(1)+'%）':
-    '請調高增值率或調整貸款成數重新試算';
+    '負擔比偏高導致買方月現金流受限，10年後差距縮小。建議拉長年限或增加自備款改善現金流。';
 
   // verdict 左色條
   var ratio=C.mn>0&&C.inc>0?(C.mn/C.inc*100):0;
@@ -1940,10 +1944,10 @@ function doGen(){
   if(vbEl){
     if(ratio>50){
       vbEl.className='vb-gr';
-      vbEl.innerHTML='<b>⚠️ 負擔比警戒：'+ratio.toFixed(1)+'%</b><br>房貸佔收入偏高，建議拉長年限或調整總價。但每年持續等待損失約 <b>$'+fmt(waitYearRef)+'</b>，代價不小。建議請顧問協助優化配置。';
+      vbEl.innerHTML='<b>⚠️ 負擔比警戒：'+ratio.toFixed(1)+'%</b><br>房貸佔收入偏高，建議拉長年限或調整總價。但每年持續等待損失約 <b>'+fmt(waitYearRef)+'元</b>，代價不小。建議請顧問協助優化配置。';
     } else if(diff>0){
       vbEl.className='vb-gs';
-      vbEl.innerHTML='<b>🚀 資產黃金增值期</b><br>'+nm+' 的財務體質適合進場！10年後多出 <b>'+fmtW(diffAbs)+'</b> 淨資產。每多等一天，損失 <b>$'+fmt(waitDailyRef)+'</b>——現在就是佈局的最佳時機。';
+      vbEl.innerHTML='<b>🚀 資產黃金增值期</b><br>'+nm+' 的財務體質適合進場！10年後多出 <b>'+fmtW(diffAbs)+'</b> 淨資產。每多等一天，損失 <b>'+fmt(waitDailyRef)+'元</b>——現在就是佈局的最佳時機。';
     } else {
       vbEl.className='vb-gs';
       vbEl.innerHTML='<b>💡 策略調整建議</b><br>請提高增值率或調整自備款比例，讓數字更符合實際市場行情。';
