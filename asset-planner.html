@@ -923,7 +923,7 @@ canvas{border-radius:6px}
       <div style="background:rgba(224,92,74,.08);border:1px solid rgba(224,92,74,.2);border-radius:10px;padding:14px">
         <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center">
           <div style="text-align:center">
-            <div style="font-size:9px;color:#2ecc71;letter-spacing:1px;margin-bottom:4px">✅ 現在買（房屋市值）</div>
+            <div style="font-size:9px;color:#2ecc71;letter-spacing:1px;margin-bottom:4px">✅ 現在買（資產淨值）</div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:4px">
               <div><div style="font-size:9px;color:#5a7090">5年後</div><div style="font-size:15px;font-weight:bold;color:#f5d87a" id="buy5">—</div></div>
               <div><div style="font-size:9px;color:#5a7090">10年後</div><div style="font-size:15px;font-weight:bold;color:#f5d87a" id="buy10">—</div></div>
@@ -1023,7 +1023,7 @@ canvas{border-radius:6px}
         <canvas id="myChart" height="180"></canvas>
       </div>
       <div class="chart-legend">
-        <div class="cl-item"><div class="cl-dot" style="background:#e8b84b"></div>現在買（資產增值）</div>
+        <div class="cl-item"><div class="cl-dot" style="background:#e8b84b"></div>現在買（資產淨值）</div>
         <div class="cl-item"><div class="cl-dot" style="background:#5a7090"></div>繼續等（存款累積）</div>
       </div>
     </div>
@@ -1790,7 +1790,8 @@ function doGen(){
   var buyArr=[],nobuyArr=[],chartLabels=[];
   var monthlySave=rem>0?rem:0;
   // 繼續等：月結餘 + 省下月貸款 - 省下的租金（等待方還在繼續付租）
-  var monthlySaveNoBuy=Math.max(0, monthlySave+C.mn-savedRent);
+  var savedRentVal=parseFloat((g('iRnt')||{value:'0'}).value)||0;
+  var monthlySaveNoBuy=Math.max(0, monthlySave+C.mn-savedRentVal);
   var totalYears=10;
 
   if(isPresale){
@@ -1835,10 +1836,24 @@ function doGen(){
     var nobuy10v=nobuyArr[yr10idx]?Math.round(nobuyArr[yr10idx]/10000)*10000:0;
     totalYears=chartTotalYr;
   } else {
-    // 成屋模式：一般10年計算
+    // 成屋模式：比較「買方資產淨值（房屋市值 - 剩餘貸款）」vs「等待方存款累積」
+    // 剩餘貸款餘額計算：貸款本金 × ((1+月利率)^總期數 - (1+月利率)^已還期數) / ((1+月利率)^總期數 - 1)
+    var loanRt = parseFloat(g('iRat').value)/100/12; // 月利率
+    var loanNm = parseInt(g('iYrs').value)*12;        // 總期數（月）
     for(var i=0;i<=10;i++){
       chartLabels.push(i+'年');
-      buyArr.push(C.pr*Math.pow(1+growth,i));
+      var houseVal = C.pr*Math.pow(1+growth,i); // 第i年房屋市值
+      // 第i年剩餘貸款餘額（元）
+      var paidMo = i*12; // 已還月數
+      var loanBal = 0;
+      if(C.ln>0 && loanRt>0 && loanNm>paidMo){
+        loanBal = C.ln * (Math.pow(1+loanRt,loanNm) - Math.pow(1+loanRt,paidMo)) / (Math.pow(1+loanRt,loanNm) - 1);
+      } else if(C.ln>0 && loanRt===0 && loanNm>paidMo){
+        loanBal = C.ln * (1 - paidMo/loanNm);
+      }
+      // 買方資產淨值 = 房屋市值 - 剩餘貸款
+      buyArr.push(Math.max(0, houseVal - loanBal));
+      // 等待方：自備款 2% 複利 + 每月存款累積
       var moAcc=monthlySaveNoBuy>0?monthlySaveNoBuy*12*((Math.pow(1.02,i)-1)/0.02):0;
       nobuyArr.push(C.dw*Math.pow(1+0.02,i)+moAcc);
     }
@@ -1851,8 +1866,8 @@ function doGen(){
   var diff=buy10v-nobuy10v;
 
   // 年化報酬率（自備款角度，交屋後10年）
-  var buy10_yuan=C.pr*Math.pow(1+growth,10);
-  var annRet=C.dw>0?((Math.pow(buy10_yuan/C.dw,0.1)-1)*100):0;
+  // 年化報酬：以自備款為本金，10年後資產淨值的年化
+  var annRet=C.dw>0&&buy10v>0?((Math.pow(buy10v/C.dw,0.1)-1)*100):0;
 
   g('buy5').textContent=fmtW(buy5v);
   g('buy10').textContent=fmtW(buy10v);
@@ -1862,7 +1877,7 @@ function doGen(){
   g('projDiff').style.color=diff>0?'#e05c4a':'#7a9ab8';
   g('projDiffSub').textContent=diff>0?
     '這是 '+nm+' 現在買 vs 繼續等的差距。不是預測，是數學。（自備款年化報酬 '+annRet.toFixed(1)+'%）':
-    '在此增值率假設（'+growthPct+'%）下存款累積略優，可調高增值率或檢視自備款比例重新試算';
+    '在此條件下存款略優，建議重新評估頭期款比例或增值率假設';
 
   // ── ⑥ 你能做到 ──────────────────────────────────
   g('nI').textContent=fmt(C.inc); g('nE').textContent=fmt(C.exp);
