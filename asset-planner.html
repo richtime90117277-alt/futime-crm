@@ -6,7 +6,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>富時代｜資產規劃報告 v12</title>
+<title>富時代｜資產規劃報告 v14</title>
 <style>
 /* ── 全域重置 ── */
 *{box-sizing:border-box;margin:0;padding:0}
@@ -1501,7 +1501,8 @@ function doGen(){
   var rentInc=C.rent||0;
   // 買房後省下現有房租（iRnt），從支出中扣除
   var savedRent=parseFloat((g('iRnt')||{value:'0'}).value)||0;
-  var rem=C.inc+C.ts-(C.exp-savedRent)-C.effMn, r=C.ratio; // 月結餘：扣除現有房租（買後不再支付）
+  // rem：月收 - 全部生活支出 - 自付房貸（effMn 已含租金抵扣，不再從 exp 扣 savedRent）
+  var rem=C.inc+C.ts-C.exp-C.effMn, r=C.ratio;
   var growth=parseFloat(g('iGrowth').value)/100;
   var d=new Date();
   var isPresale=(MORTGAGE_MODE==='presale');
@@ -1728,9 +1729,9 @@ function doGen(){
     var _creditMnP3=(_credit3>0&&_cMoRateP3>0)
       ? Math.round(_credit3*10000*_cMoRateP3/(1-Math.pow(1+_cMoRateP3,-_cMoP3)))
       : (_credit3>0 ? Math.round(_credit3*10000/_cMoP3) : 0);
-    var _remDuring=C.inc-(C.exp-savedRent)-_mnSave3; // 等屋期：不扣信貸月付（信貸資金已先用於補自備）
-    var _remAfter=C.inc-(C.exp-savedRent)-C.mn-_creditMnP3;       // 交屋後自住月結餘（含信貸月付）
-    var _remAfterRent=rentInc>0?C.inc-(C.exp-savedRent)-(C.mn-rentInc)-_creditMnP3:_remAfter;
+    var _remDuring=C.inc-C.exp-_mnSave3; // 等屋期月結餘
+    var _remAfter=C.inc-C.exp-C.mn-_creditMnP3;       // 交屋後自住（無出租）
+    var _remAfterRent=rentInc>0?C.inc-C.exp-(C.mn-rentInc)-_creditMnP3:_remAfter; // 有出租：貸款已由租金抵扣
 
     if(_p2i) _p2i.textContent=fmt(C.inc);
     // 顯示完整生活支出（不扣房租，避免誤解）
@@ -1798,7 +1799,7 @@ function doGen(){
     var _creditMn3=(_credit3>0&&_cMoRate3>0)
       ? Math.round(_credit3*10000*_cMoRate3/(1-Math.pow(1+_cMoRate3,-_cMo3)))
       : (_credit3>0 ? Math.round(_credit3*10000/_cMo3) : 0); // 信貸月付（元）
-    var remRaw=C.inc-(C.exp-savedRent)-C.mn-_creditMn3;
+    var remRaw=C.inc-C.exp-C.mn-_creditMn3;
     if(_p2rr){
       _p2rr.textContent=((remRaw>=0?'+':'')+fmt(Math.abs(remRaw)));
       _p2rr.style.color=remRaw>=0?'#2ecc71':'#e05c4a';
@@ -1850,7 +1851,7 @@ function doGen(){
   // ── ⑥ 你能做到（YOU CAN DO THIS）────────────────────
   // 四張數字卡
   if(g('nI')) g('nI').textContent = C.inc > 0 ? fmt(C.inc) : '—';
-  if(g('nE')) g('nE').textContent = (C.exp - savedRent) > 0 ? fmt(C.exp - savedRent) : '—';
+  if(g('nE')) g('nE').textContent = C.exp > 0 ? fmt(C.exp) : '—';
   if(g('nL')) g('nL').textContent = C.mn > 0 ? fmt(C.mn) : '—';
   // 節流釋放 = 省下的房租（從租房換自住，原本付租金現在省了）
   var _freed = savedRent > 0 ? savedRent : 0;
@@ -2657,7 +2658,7 @@ function showSyncModal() {
 
   // 計算月結餘
   var savedRent = parseFloat((g('iRnt') || {value:'0'}).value) || 0;
-  var rem = C.inc + C.ts - (C.exp - savedRent) - C.effMn;
+  var rem = C.inc + C.ts - C.exp - C.effMn;
 
   // 族群名稱
   var segName = (SEG >= 0 && SEGS[SEG]) ? SEGS[SEG].name : '未選擇';
@@ -2705,7 +2706,7 @@ function doSyncCRM() {
   var adv = g('iAdv').value || '';
   var prop = g('iProp').value || '';
   var savedRent = parseFloat((g('iRnt') || {value:'0'}).value) || 0;
-  var rem = Math.round(C.inc + C.ts - (C.exp - savedRent) - C.effMn);
+  var rem = Math.round(C.inc + C.ts - C.exp - C.effMn);
   var segName = (SEG >= 0 && SEGS[SEG]) ? SEGS[SEG].name : '';
   var today = new Date();
   var todayStr = today.getFullYear() + '-'
