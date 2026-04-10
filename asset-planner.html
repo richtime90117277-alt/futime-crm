@@ -6,7 +6,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>富時代｜資產規劃報告 v14</title>
+<title>富時代｜資產規劃報告 v15</title>
 <style>
 /* ── 全域重置 ── */
 *{box-sizing:border-box;margin:0;padding:0}
@@ -1188,7 +1188,7 @@ body{
 
       <!-- 最終結餘大數字 -->
       <div id="fundFinalBox" style="display:none;background:linear-gradient(135deg,rgba(160,100,10,.1),rgba(160,100,10,.04));border:2px solid rgba(160,100,10,.35);border-radius:12px;padding:16px;text-align:center;margin-top:4px">
-        <div style="font-size:9px;letter-spacing:3px;color:#a86010;margin-bottom:8px;font-family:'DM Mono',monospace">使照取得後 — 帳戶還有</div>
+        <div style="font-size:9px;letter-spacing:3px;color:#a86010;margin-bottom:8px;font-family:'DM Mono',monospace">交屋後 — 帳戶還有</div>
         <div style="font-size:40px;font-weight:900;font-family:'DM Mono',monospace;color:#2c1a06" id="fundFinalVal">—</div>
         <div style="font-size:12px;color:#6a5040;margin-top:6px" id="fundFinalNote">—</div>
       </div>
@@ -2369,16 +2369,14 @@ function calcFund() {
   var cur = totalFund;
   steps.push({ label:'初始資金', type:'start', val:cur });
 
-  // 訂金先扣，再扣簽約金差額，再逐期扣
+  // 銀行貸款(bank)不扣（銀行出的），交屋尾款(tail)要扣（客戶自備）
   stages.forEach(function(s) {
-    if(s.type !== 'cash') return;
+    if(s.type === 'bank') return;
     var inp = g('fs_'+s.key);
     var v = inp ? (parseFloat(inp.value)||0) : 0;
     if(v <= 0) return;
     var deduct = v;
     var label = s.name;
-    // 簽約金：實際付出 = 簽約金金額（已扣除訂金，不重複扣）
-    // 訂金是第一筆，簽約金欄位本身已是「扣掉訂金後的餘額」
     cur = Math.round((cur - deduct) * 10) / 10;
     steps.push({ label:label, time:s.time, type:'deduct', deduct:deduct, remain:cur });
   });
@@ -2481,7 +2479,7 @@ function updateConclusion() {
   if(totalFund > 0) {
     cur = totalFund;
     (_fundStagesCache||[]).forEach(function(s) {
-      if(s.type !== 'cash') return;
+      if(s.type === 'bank') return; // 銀行貸款不扣，交屋尾款要扣
       var inp = g('fs_'+s.key);
       var v = inp ? (parseFloat(inp.value)||0) : 0;
       cur = Math.round((cur - v) * 10) / 10;
