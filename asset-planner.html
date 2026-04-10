@@ -6,7 +6,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>富時代｜資產規劃報告 v15</title>
+<title>富時代｜資產規劃報告 v12</title>
 <style>
 /* ── 全域重置 ── */
 *{box-sizing:border-box;margin:0;padding:0}
@@ -421,7 +421,11 @@ body{
         <div class="fl"><label>客戶姓名</label><input type="text" id="iName" placeholder="例：王小明"></div>
         <div class="fl"><label>諮詢顧問</label><input type="text" id="iAdv" placeholder="例：玉如副總"></div>
       </div>
-      <div class="fl"><label>目標物件</label><input type="text" id="iProp" placeholder="例：中和XX建案 3房 1,500萬"></div>
+      <div class="fl"><label>建案名稱</label><input type="text" id="iProp" placeholder="例：林口A17、桃園新重劃案"></div>
+      <div class="g2">
+        <div class="fl"><label>坪型 / 幾房</label><input type="text" id="iPropRoom" placeholder="例：3房2廳 32坪"></div>
+        <div class="fl"><label>樓層</label><input type="text" id="iPropFloor" placeholder="例：8F / 共18層"></div>
+      </div>
       <div class="fl">
         <label>客戶族群（可複選，選最符合的）</label>
         <div style="margin-top:8px">
@@ -993,7 +997,7 @@ body{
         <div class="nc i"><div class="ncl">MONTHLY INCOME</div><div class="ncv" id="nI">—</div><div class="ncu">每月總收入</div></div>
         <div class="nc e"><div class="ncl">LIVING EXPENSES</div><div class="ncv" id="nE">—</div><div class="ncu">每月生活支出</div></div>
         <div class="nc l"><div class="ncl">MORTGAGE/MONTH</div><div class="ncv" id="nL">—</div><div class="ncu">購屋每月攤還</div></div>
-        <div class="nc s"><div class="ncl">RENT SAVED</div><div class="ncv" id="nS">—</div><div class="ncu">省下原房租</div></div>
+        <div class="nc s" id="rentSavedCard"><div class="ncl">RENT SAVED</div><div class="ncv" id="nS">—</div><div class="ncu">省下原房租</div></div>
       </div>
 
       <!-- 每月剩餘大數字 -->
@@ -1497,7 +1501,12 @@ function doGen(){
   ca();
   var C=window._C||{};
   if(!C.inc){alert('請先填寫月收入');return;}
-  var nm=g('iName').value||'尊貴客戶',adv=g('iAdv').value||'富時代顧問',prop=g('iProp').value||'目標物件';
+  var nm=g('iName').value||'尊貴客戶',adv=g('iAdv').value||'富時代顧問';
+  var prop=g('iProp').value||'目標物件';
+  var propRoom=(g('iPropRoom')||{value:''}).value||'';
+  var propFloor=(g('iPropFloor')||{value:''}).value||'';
+  // 組合完整物件標籤
+  var propLabel=prop+(propRoom?' ｜ '+propRoom:'')+(propFloor?' ｜ '+propFloor:'');
   var rentInc=C.rent||0;
   // 買房後省下現有房租（iRnt），從支出中扣除
   var savedRent=parseFloat((g('iRnt')||{value:'0'}).value)||0;
@@ -1512,7 +1521,7 @@ function doGen(){
   // 更新列印 header 副標
   var phSub=g('printHeaderSub');
   if(phSub) phSub.textContent='顧問：'+adv+'　｜　'+d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日';
-  g('rP').textContent='目標物件：'+prop;
+  g('rP').textContent='目標物件：'+propLabel;
   g('rD').textContent='分析日期：'+d.getFullYear()+'年'+(d.getMonth()+1)+'月'+d.getDate()+'日　｜　顧問：'+adv;
 
   // ── 族群痛點卡 ──────────────────────────────────
@@ -1855,7 +1864,19 @@ function doGen(){
   if(g('nL')) g('nL').textContent = C.mn > 0 ? fmt(C.mn) : '—';
   // 節流釋放 = 省下的房租（從租房換自住，原本付租金現在省了）
   var _freed = savedRent > 0 ? savedRent : 0;
-  if(g('nS')) g('nS').textContent = _freed > 0 ? fmt(_freed) : '—';
+  // RENT SAVED 卡：有省下租金才顯示
+  var _rentSavedCard = g('rentSavedCard');
+  if(_freed > 0){
+    if(g('nS')) g('nS').textContent = fmt(_freed);
+    if(_rentSavedCard){
+      _rentSavedCard.style.display='';
+      // 動態更新副標：自住族省租金 vs 出租族收租金
+      var _rentLabel = _rentSavedCard.querySelector('.ncu');
+      if(_rentLabel) _rentLabel.textContent = savedRent>0?'省下現有房租':'租金收入抵貸款';
+    }
+  } else {
+    if(_rentSavedCard) _rentSavedCard.style.display='none';
+  }
 
   // MONTHLY SURPLUS 大數字
   if(g('spV')){
@@ -1921,10 +1942,12 @@ function doGen(){
   var _roiSec=g('roiSection');
   var _roiYrs=10; // 固定分析10年
   window._roi={profit:0,principal:0,ann:0}; // 跨區塊共用
-  if(C.pr>0&&C.dw>0){
+  if(C.pr>0&&(C.dw>0||MORTGAGE_MODE==='presale')){
+    // 預售模式若 iDwn 未填，改用自備款 = 總價 × (1-貸款成數)
+    var _dwWan=C.dw>0 ? Math.round(C.dw/10000)
+      : Math.ceil(parseFloat((g('iPrc')||{value:'0'}).value)*(100-(parseInt((g('iLtvPct')||{value:'75'}).value)||75))/100);
     var _houseVal10=C.pr*Math.pow(1+growth,_roiYrs);       // 10年後市值（元）
     var _houseProfit=Math.round((_houseVal10-C.pr)/10000); // 房屋增值獲利（萬）
-    var _dwWan=Math.round(C.dw/10000);                     // 自備款（萬）
     var _roiTotal=Math.round(_houseProfit/_dwWan*100*10)/10;  // 總報酬率%
     var _roiPerYr=Math.round(_roiTotal/_roiYrs*10)/10;        // 年化報酬率%
     window._roi={profit:_houseProfit,principal:_dwWan,ann:_roiPerYr}; // 儲存供後續引用
@@ -2594,7 +2617,7 @@ function calcWaitCost() {
 
 // ══ localStorage 自動記憶 ══════════════════════
 var LS_KEY='futime_planner_v4';
-var LS_FIELDS=['iName','iAdv','iProp',
+var LS_FIELDS=['iName','iAdv','iProp','iPropRoom','iPropFloor',
   'iSal','iBon','iSpo','iInv','iRen','iOtI',
   'iRnt','iCar','iOLn','iIns','iMel','iTrn','iEnt','iPar','iKid','iSub','iOtE',
   'iPrc','iDwn','iRat','iGrowth','iRentIncome','iDelivery','sv2i','sv3i'];
