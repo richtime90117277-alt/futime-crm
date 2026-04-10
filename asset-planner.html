@@ -873,7 +873,7 @@ body{
         <!-- 唯一結論行：交屋後月結餘 -->
         <div style="display:flex;justify-content:space-between;align-items:center;border-radius:10px;padding:14px 16px;border:1.5px solid" id="p2RemBox">
           <div>
-            <div style="font-size:12px;font-weight:bold;color:#2c1a06" id="p2RemLabel">交屋後每月可存</div>
+            <div style="font-size:12px;font-weight:bold;color:#2c1a06" id="p2RemLabel">交屋後每月只需存</div>
             <div style="font-size:10px;color:#6a5040;margin-top:3px" id="p2RemNote">—</div>
           </div>
           <div style="font-size:18px;font-weight:700;font-family:'DM Mono',monospace" id="p2Rem">—</div>
@@ -1746,13 +1746,13 @@ function doGen(){
       _p2r.textContent=((_showRem>=0?'+':'')+fmt(Math.abs(_showRem)));
       _p2r.style.color=_showRem>=0?'#2ecc71':'#e05c4a';
     }
-    // 標籤：有租金則說明「租客幫你繳 X，你自己存 Y」
+    // 標籤：有租金則說明「租客幫你繳，自己只需存 X」
     if(_p2rl){
       if(rentInc>0){
-        _p2rl.textContent='交屋後每月可存';
-        if(_p2rn) _p2rn.textContent='月收 '+fmt(C.inc)+'－生活 '+fmt(C.exp)+'－貸款 '+fmt(C.mn)+'＋租金 '+fmt(rentInc)+'＝ '+fmt(Math.max(0,_remAfterRent));
+        _p2rl.textContent='交屋後每月只需存';
+        if(_p2rn) _p2rn.textContent='月收 '+fmt(C.inc)+'－生活 '+fmt(C.exp)+'－貸款 '+fmt(C.mn-rentInc)+'（租客幫繳 '+fmt(rentInc)+'）＝ '+fmt(Math.max(0,_showRem));
       } else {
-        _p2rl.textContent='交屋後每月可存';
+        _p2rl.textContent='交屋後每月只需存';
         if(_p2rn) _p2rn.textContent='月收 '+fmt(C.inc)+'－生活 '+fmt(C.exp)+'－月貸 '+fmt(C.mn)+(savedRent>0?'+省下租金 '+fmt(savedRent):'');
       }
     }
@@ -1808,10 +1808,11 @@ function doGen(){
       _p2r.textContent=((rem>=0?'+':'')+fmt(Math.abs(rem)));
       _p2r.style.color=rem>=0?'#2ecc71':'#e05c4a';
     }
-    if(_p2rl) _p2rl.textContent='交屋後每月可存';
+    if(_p2rl) _p2rl.textContent= rentInc>0 ? '交屋後每月只需存' : '交屋後每月只需存';
     if(_p2rn){
       var _note2='';
-      if(rentInc>0) _note2='月收 '+fmt(C.inc)+'－生活 '+fmt(C.exp)+'－貸款 '+fmt(C.mn)+'＋租金 '+fmt(rentInc)+'＝ '+fmt(Math.max(0,rem));
+      // note 統一顯示實際自付額（effMn 已含租金抵扣）
+      if(rentInc>0) _note2='月收 '+fmt(C.inc)+'－生活 '+fmt(C.exp)+'－貸款 '+fmt(C.mn-rentInc)+'（租客幫繳 '+fmt(rentInc)+'）＝ '+fmt(Math.max(0,rem));
       else if(savedRent>0) _note2='月收 '+fmt(C.inc)+'－生活 '+fmt(C.exp)+'－月貸 '+fmt(C.mn)+'＋省房租 '+fmt(savedRent);
       else _note2='月收 '+fmt(C.inc)+'－生活 '+fmt(C.exp)+'－月貸 '+fmt(C.mn);
       _p2rn.textContent=_note2;
@@ -1862,7 +1863,7 @@ function doGen(){
   }
   if(g('spS')){
     var _spDesc = '';
-    if(rentInc > 0) _spDesc = '租客幫你繳 '+fmt(rentInc)+'，你自己每月還剩 '+fmt(Math.max(0,rem));
+    if(rentInc > 0) _spDesc = '租客幫你繳 '+fmt(rentInc)+'，每個月只需存 '+fmt(Math.max(0,rem));
     else if(savedRent > 0) _spDesc = '含省下房租 '+fmt(savedRent)+'，扣所有支出後月結餘';
     else _spDesc = '扣除月繳 '+fmt(C.mn)+' 及所有生活支出後每月結餘';
     g('spS').textContent = _spDesc;
