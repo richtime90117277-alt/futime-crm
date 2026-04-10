@@ -1746,7 +1746,7 @@ function doGen(){
       _p2r.textContent=((_showRem>=0?'+':'')+fmt(Math.abs(_showRem)));
       _p2r.style.color=_showRem>=0?'#2ecc71':'#e05c4a';
     }
-    // 標籤：有租金則說明「租客幫你繳，自己只需存 X」
+    // 標籤：有租金則說明「租客幫你繳 X，你自己存 Y」
     if(_p2rl){
       if(rentInc>0){
         _p2rl.textContent='交屋後每月只需存';
@@ -1808,10 +1808,10 @@ function doGen(){
       _p2r.textContent=((rem>=0?'+':'')+fmt(Math.abs(rem)));
       _p2r.style.color=rem>=0?'#2ecc71':'#e05c4a';
     }
-    if(_p2rl) _p2rl.textContent= rentInc>0 ? '交屋後每月只需存' : '交屋後每月只需存';
+    if(_p2rl) _p2rl.textContent='交屋後每月只需存';
     if(_p2rn){
       var _note2='';
-      // note 統一顯示實際自付額（effMn 已含租金抵扣）
+      // note 用實際自付額（mn-rentInc），讓客戶清楚看到自己只需出這些
       if(rentInc>0) _note2='月收 '+fmt(C.inc)+'－生活 '+fmt(C.exp)+'－貸款 '+fmt(C.mn-rentInc)+'（租客幫繳 '+fmt(rentInc)+'）＝ '+fmt(Math.max(0,rem));
       else if(savedRent>0) _note2='月收 '+fmt(C.inc)+'－生活 '+fmt(C.exp)+'－月貸 '+fmt(C.mn)+'＋省房租 '+fmt(savedRent);
       else _note2='月收 '+fmt(C.inc)+'－生活 '+fmt(C.exp)+'－月貸 '+fmt(C.mn);
