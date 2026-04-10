@@ -1733,7 +1733,8 @@ function doGen(){
     var _remAfterRent=rentInc>0?C.inc-(C.exp-savedRent)-(C.mn-rentInc)-_creditMnP3:_remAfter;
 
     if(_p2i) _p2i.textContent=fmt(C.inc);
-    if(_p2e) _p2e.textContent=fmt(C.exp-savedRent);
+    // 顯示完整生活支出（不扣房租，避免誤解）
+    if(_p2e) _p2e.textContent=fmt(C.exp);
     // 等屋期「月繳」欄改為顯示月存金額
     if(_p2m) _p2m.textContent=fmt(_mnSave3)+'/月（交屋前需存）';
     // 等屋期不顯示租金（租客等交屋後才進來）
@@ -1749,10 +1750,10 @@ function doGen(){
     if(_p2rl){
       if(rentInc>0){
         _p2rl.textContent='交屋後每月可存';
-        if(_p2rn) _p2rn.textContent='租客幫你繳 '+fmt(rentInc)+'，你自己存 '+fmt(Math.max(0,_remAfterRent));
+        if(_p2rn) _p2rn.textContent='月收 '+fmt(C.inc)+'－生活 '+fmt(C.exp)+'－貸款 '+fmt(C.mn)+'＋租金 '+fmt(rentInc)+'＝ '+fmt(Math.max(0,_remAfterRent));
       } else {
         _p2rl.textContent='交屋後每月可存';
-        if(_p2rn) _p2rn.textContent='月繳 '+fmt(C.mn)+'，扣除所有支出後結餘';
+        if(_p2rn) _p2rn.textContent='月收 '+fmt(C.inc)+'－生活 '+fmt(C.exp)+'－月貸 '+fmt(C.mn)+(savedRent>0?'+省下租金 '+fmt(savedRent):'');
       }
     }
     if(_p2box){
@@ -1784,7 +1785,8 @@ function doGen(){
     var _p2rl=g('p2RemLabel'),_p2rn=g('p2RemNote'),_p2box=g('p2RemBox');
 
     if(_p2i) _p2i.textContent=fmt(C.inc);
-    if(_p2e) _p2e.textContent=fmt(C.exp-savedRent);
+    // 顯示完整生活支出（不扣房租，避免誤解）
+    if(_p2e) _p2e.textContent=fmt(C.exp);
     if(_p2m) _p2m.textContent=fmt(C.mn);
     if(rentInc>0){ if(_p2rb) _p2rb.style.display='block'; if(_p2rt) _p2rt.textContent='+'+fmt(rentInc); }
     else { if(_p2rb) _p2rb.style.display='none'; }
@@ -1809,9 +1811,9 @@ function doGen(){
     if(_p2rl) _p2rl.textContent='交屋後每月可存';
     if(_p2rn){
       var _note2='';
-      if(rentInc>0) _note2='租客幫你繳 '+fmt(rentInc)+'，你自己存 '+fmt(Math.max(0,rem));
-      else if(savedRent>0) _note2='含省下原本房租 '+fmt(savedRent);
-      else _note2='扣除月繳 '+fmt(C.mn)+' 及所有支出後結餘';
+      if(rentInc>0) _note2='月收 '+fmt(C.inc)+'－生活 '+fmt(C.exp)+'－貸款 '+fmt(C.mn)+'＋租金 '+fmt(rentInc)+'＝ '+fmt(Math.max(0,rem));
+      else if(savedRent>0) _note2='月收 '+fmt(C.inc)+'－生活 '+fmt(C.exp)+'－月貸 '+fmt(C.mn)+'＋省房租 '+fmt(savedRent);
+      else _note2='月收 '+fmt(C.inc)+'－生活 '+fmt(C.exp)+'－月貸 '+fmt(C.mn);
       _p2rn.textContent=_note2;
     }
     if(_p2box){
