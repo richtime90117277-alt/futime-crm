@@ -1970,8 +1970,7 @@ function doGen(){
   if(vb && sh){
     // 投報率數字已在 window._roi，但這裡先算 r (負擔比)
     var _roiV=window._roi||{};
-    // 用淨獲利（已扣利息）顯示在 verdict 中
-    var _roiStr=_roiV.netProfit>0?' 年化投報 '+_roiV.ann+'%，10年淨賺 '+_roiV.netProfit+'萬（已扣利息）。':'';
+    var _roiStr=_roiV.profit>0?' 年化投報 '+_roiV.ann+'%，10年賺 '+_roiV.profit+'萬。':'';
     if(r<30&&rem>0){
       vb.className='vd gs';
       vb.innerHTML='<span class="vdh">✅ '+nm+'，這個數字說明你可以。</span>房貸只佔月收入 <b>'+r.toFixed(1)+'%</b>，扣掉所有支出，每個月你還有 <b style="color:#1a7a3a">'+fmt(rem)+'</b>。'+_roiStr+'<br><br><span style="font-size:12px;color:#c9922b">▶ 現在問自己一個問題：三年後你想住在哪裡？</span>';
@@ -2002,57 +2001,38 @@ function doGen(){
     var _dwWan=C.dw>0 ? Math.round(C.dw/10000)
       : Math.ceil(parseFloat((g('iPrc')||{value:'0'}).value)*(100-(parseInt((g('iLtvPct')||{value:'75'}).value)||75))/100);
 
-    // 房屋增值毛利
-    var _houseVal10=C.pr*Math.pow(1+growth,_roiYrs);       // 10年後市值（元）
-    var _houseProfit=Math.round((_houseVal10-C.pr)/10000);  // 增值獲利（萬）
+    // ── 富時代算法：毛獲利÷自備款（鼎藏青境邏輯）──────────────
+    // 公式：(賣價-買價) ÷ 自備款 × 100% ÷ 持有年數 = 年化投報率
+    // 月均獲利：(賣價-買價) ÷ 持有年數 ÷ 12
+    var _houseVal10=C.pr*Math.pow(1+growth,_roiYrs);       // N年後市值（元）
+    var _houseProfit=Math.round((_houseVal10-C.pr)/10000);  // 毛獲利（萬）= 賣-買
 
-    // 估算10年貸款總利息（月繳等額，取前10年實際利息）
-    // C.mn = 月繳金額（元），C.loan = 貸款金額（元），iRat = 年利率%
-    var _loanAmt=C.pr-C.dw;  // 貸款金額（元）
-    var _annRate=parseFloat((g('iRat')||{value:'2.5'}).value)/100;
-    var _mnRate=_annRate/12;
-    var _totalMo=parseInt((g('iYrs')||{value:'30'}).value)*12;
-    // 等額攤還：前N期累積利息
-    var _totalInterestWan=0;
-    if(_loanAmt>0&&_mnRate>0){
-      var _mnPay=_loanAmt*_mnRate/(1-Math.pow(1+_mnRate,-_totalMo)); // 月繳
-      var _bal=_loanAmt;
-      var _intSum=0;
-      var _calcMo=Math.min(_roiYrs*12,_totalMo);
-      for(var _m=0;_m<_calcMo;_m++){
-        var _intPart=_bal*_mnRate;
-        _intSum+=_intPart;
-        _bal-=(_mnPay-_intPart);
-      }
-      _totalInterestWan=Math.round(_intSum/10000); // 10年利息（萬）
-    }
+    // 年化投報率（不扣利息，富時代習慣算法）
+    var _roiTotal=Math.round(_houseProfit/_dwWan*100*10)/10;  // 總報酬率%
+    var _roiPerYr=Math.round(_roiTotal/_roiYrs*10)/10;        // 年化報酬率%
 
-    // 淨獲利 = 增值 - 利息
-    var _netProfit=_houseProfit-_totalInterestWan;
-    var _roiTotal=Math.round(_netProfit/_dwWan*100*10)/10;   // 淨總報酬率%
-    var _roiPerYr=Math.round(_roiTotal/_roiYrs*10)/10;       // 年化報酬率%
+    // 月均獲利（萬）
+    var _mnProfit=Math.round(_houseProfit/_roiYrs/12*10)/10;
 
-    window._roi={profit:_houseProfit,netProfit:_netProfit,interest:_totalInterestWan,principal:_dwWan,ann:_roiPerYr};
+    // 跨區塊共用（含 profit=毛獲利，netProfit 同值，interest=0）
+    window._roi={profit:_houseProfit,netProfit:_houseProfit,interest:0,principal:_dwWan,ann:_roiPerYr};
     if(_roiSec) _roiSec.style.display='block';
     if(g('roiPrincipal')) g('roiPrincipal').textContent=_dwWan+'萬';
-    // 主顯示：淨獲利（已扣利息）
-    if(g('roiProfit')) g('roiProfit').textContent='+'+_netProfit+'萬';
-    if(g('roiYrsLabel')) g('roiYrsLabel').textContent=_roiYrs+'年淨獲利';
-    if(g('roiAnn')) g('roiAnn').textContent=_roiPerYr.toFixed(1)+'%/年';
+    if(g('roiProfit'))    g('roiProfit').textContent='+'+_houseProfit+'萬';
+    if(g('roiYrsLabel'))  g('roiYrsLabel').textContent=_roiYrs+'年增值獲利';
+    if(g('roiAnn'))       g('roiAnn').textContent=_roiPerYr.toFixed(1)+'%/年';
     if(g('roiFormula')){
       g('roiFormula').innerHTML=
         '<div style="margin-bottom:8px;font-size:11px;color:#5a4020">📐 數字怎麼來的？</div>'+
-        '<div style="background:rgba(160,100,10,.07);border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:12px;color:#3a2010;line-height:2">'+
+        '<div style="background:rgba(160,100,10,.07);border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:12px;color:#3a2010;line-height:2.1">'+
         '現在房屋市值：<strong>'+Math.round(C.pr/10000)+'萬</strong><br>'+
-        '10年後市值（年增 '+Math.round(parseFloat(g('iGrowth').value)*10)/10+'%）：<strong style="color:#1a6b3a">'+Math.round(_houseVal10/10000)+'萬</strong><br>'+
+        Math.round(_roiYrs)+'年後市值（年增 '+Math.round(parseFloat(g('iGrowth').value)*10)/10+'%）：<strong style="color:#1a6b3a">'+Math.round(_houseVal10/10000)+'萬</strong><br>'+
         '房屋增值：'+Math.round(_houseVal10/10000)+' － '+Math.round(C.pr/10000)+' ＝ <strong style="color:#1a6b3a">+'+_houseProfit+'萬</strong><br>'+
-        '扣除10年貸款利息：<strong style="color:#b03010">－'+_totalInterestWan+'萬</strong><br>'+
-        '實際淨獲利：<strong style="color:#1a6b3a;font-size:13px">+'+_netProfit+'萬</strong>'+
+        '<span style="font-size:11px;color:#7a5a30">月均獲利：'+_houseProfit+'萬 ÷ '+_roiYrs+'年 ÷ 12月 ＝ <strong style="color:#c9922b">'+_mnProfit+'萬／月</strong></span>'+
         '</div>'+
-        '<div style="font-size:12px;color:#5a4020;line-height:1.9">'+
+        '<div style="font-size:12px;color:#5a4020;line-height:2">'+
         '你只付 <strong style="color:#a86010">'+_dwWan+'萬</strong> 自備款，卻控制了 <strong style="color:#a86010">'+Math.round(C.pr/10000)+'萬</strong> 的資產——槓桿倍數 <strong>'+Math.round(C.pr/10000/_dwWan*10)/10+'倍</strong>。<br>'+
-        '年化投報率 = '+_netProfit+'萬（淨獲利）÷ '+_dwWan+'萬 ÷ '+_roiYrs+'年 = <strong style="color:#1a6b3a;font-size:14px">'+_roiPerYr.toFixed(1)+'% /年</strong><br>'+
-        '<span style="font-size:10px;color:#8a7060">✓ 已扣除貸款利息成本，比定存高 '+Math.round((_roiPerYr-1.6)*10)/10+'%、比大盤長期（7%）高 '+Math.round((_roiPerYr-7)*10)/10+'%</span>'+
+        '年化投報率 ＝ '+_houseProfit+'萬（增值）÷ '+_dwWan+'萬（自備）÷ '+_roiYrs+'年 ＝ <strong style="color:#1a6b3a;font-size:14px">'+_roiPerYr.toFixed(1)+'% /年</strong>'+
         '</div>';
     }
   } else {
@@ -2079,9 +2059,8 @@ function doGen(){
   if(_cm&&_cmBox){
     var _roi=window._roi||{};
     var _cMsg='';
-    if(r<30&&rem>0&&_roi.netProfit>0){
-      // 用淨獲利（已扣利息），數字更誠實、站得住腳
-      _cMsg=nm+'，<br><br>這份報告是你的數字，不是我的說法。<br><br>你用 <b>'+_roi.principal+'萬</b> 本金，10年讓房子幫你賺了 <b style="color:#2ecc71">'+_roi.netProfit+'萬</b>（扣除貸款利息後）。<br>年化投報率 <b style="color:#2ecc71">'+_roi.ann+'%</b>——這不是預測，這是算術。<br><br>你已經準備好了，剩下的只是一個決定。';
+    if(r<30&&rem>0&&_roi.profit>0){
+      _cMsg=nm+'，<br><br>這份報告是你的數字，不是我的說法。<br><br>你用 <b>'+_roi.principal+'萬</b> 本金，10年讓房子幫你賺了 <b style="color:#2ecc71">'+_roi.profit+'萬</b>。<br>年化投報率 <b style="color:#2ecc71">'+_roi.ann+'%</b>——這不是預測，這是算術。<br><br>你已經準備好了，剩下的只是一個決定。';
     } else if(rem>0){
       _cMsg=nm+'，<br><br>你來這裡，不是因為衝動。<br>你是因為認真想過這件事，才願意坐下來把數字算清楚。<br><br>這份報告的每一個數字，都是你的真實狀況。<br>下一步，只需要你做一個決定。';
     } else {
@@ -2095,11 +2074,10 @@ function doGen(){
   var _fl=g('finalLine');
   if(_fl){
     var _roi2=window._roi||{};
-    if(r<30&&rem>0&&_roi2.netProfit>0){
-      // 拍板區：主數字用淨獲利，副標說明已扣利息
-      _fl.innerHTML='<span style="font-size:14px;color:#1a6b3a;letter-spacing:.5px">'+nm+'，數字說你可以。</span><br>用 <strong style="color:#a86010;font-size:20px">'+_roi2.principal+'萬</strong> 啟動，10年讓房子幫你賺<br><span style="color:#1a6b3a;font-size:28px;font-weight:900;font-family:&quot;DM Mono&quot;,monospace">+'+_roi2.netProfit+'萬</span><br><span style="font-size:12px;color:#2a5a2a">年化 '+_roi2.ann+'%（已扣貸款利息）——這不是預測，這是算術。</span>';
-    } else if(rem>0&&_roi2.netProfit>0){
-      _fl.innerHTML=nm+'，數字站在你這邊。<br>每月還剩 <span style="color:#2ecc71">'+fmt(rem)+'</span>，<br>10年後淨獲利 <span style="color:#2ecc71;font-size:20px;font-weight:900">+'+_roi2.netProfit+'萬</span>。<br><span style="font-size:13px;color:#7ab87a">年化 '+_roi2.ann+'%（已扣利息），這不是衝動，這是算術。</span>';
+    if(r<30&&rem>0&&_roi2.profit>0){
+      _fl.innerHTML='<span style="font-size:14px;color:#1a6b3a;letter-spacing:.5px">'+nm+'，數字說你可以。</span><br>用 <strong style="color:#a86010;font-size:20px">'+_roi2.principal+'萬</strong> 啟動，10年讓房子幫你賺<br><span style="color:#1a6b3a;font-size:28px;font-weight:900;font-family:&quot;DM Mono&quot;,monospace">+'+_roi2.profit+'萬</span><br><span style="font-size:12px;color:#2a5a2a">年化 '+_roi2.ann+'%——這不是預測，這是算術。</span>';
+    } else if(rem>0&&_roi2.profit>0){
+      _fl.innerHTML=nm+'，數字站在你這邊。<br>每月還剩 <span style="color:#2ecc71">'+fmt(rem)+'</span>，<br>10年後獲利 <span style="color:#2ecc71;font-size:20px;font-weight:900">+'+_roi2.profit+'萬</span>。<br><span style="font-size:13px;color:#7ab87a">年化 '+_roi2.ann+'%，這不是衝動，這是算術。</span>';
     } else if(rem>0){
       _fl.innerHTML=nm+'，這條路走得通。<br>每月結餘 <span style="color:#2ecc71">'+fmt(rem)+'</span>。<br><span style="font-size:13px;color:#7ab87a">現在要問的只剩：你想在哪裡安家？</span>';
     } else {
@@ -2775,7 +2753,7 @@ function showSyncModal() {
 
   // 投報率（從 window._roi 取得）
   var _roi = window._roi || {};
-  var roiStr = _roi.netProfit > 0 ? '+' + _roi.netProfit + '萬淨獲利（年化 ' + _roi.ann + '%，已扣利息）' : '—';
+  var roiStr = _roi.profit > 0 ? '+' + _roi.profit + '萬（年化 ' + _roi.ann + '%）' : '—';
 
   // 預覽內容
   var prevLines = [
