@@ -1493,7 +1493,7 @@ function calcPresale(){
   // 若有暫收款，視為已提前存好，從最大單筆中扣除後再除間隔
   var workStages=[wAmt,b1Amt,f5Amt,f10Amt,f15Amt,demolAmt,useAmt];
   var maxStageAmt=Math.max.apply(null,workStages); // 最大單筆工程款
-  var numIntervals=workStages.length+1;            // 8個區間（訂約→放樣→...→使照）
+  var numIntervals=6;                              // 固定6個月間隔（每期繳款間距）
   var avgInterval=d/numIntervals;                  // 平均每段月數
   // 扣掉暫收款後的實際需存（暫收款視為預存金）
   var netMaxStage=Math.max(0, maxStageAmt-earnestEst);
@@ -1695,7 +1695,7 @@ function doGen(){
     // 此處用保守估算：selfAmt的28%為最大單筆（约35/125比例），除以交屋月÷8
     var workAmtEst=Math.ceil(prW*0.02);     // 2%單筆估算（與calcPresale一致）
     var netWorkAmt=Math.max(0,workAmtEst-earnestEst2);
-    var avgIntvl=deliv/8;
+    var avgIntvl=deliv/6;                   // 固定6個月間隔（每期繳款間距）
     var mnSave=avgIntvl>0?Math.ceil(netWorkAmt*10000/avgIntvl):0;
 
     var _oppSaveEl=g('oppMonthlySave');
