@@ -2399,7 +2399,7 @@ function renderFundStageTable(stages) {
   stages.forEach(function(s) {
     var isBank = s.type === 'bank';
     var isTail = s.type === 'tail';
-    var nc = isBank ? '#5dade2' : isTail ? '#e8b84b' : '#d4c9b8';
+    var nc = isBank ? '#5dade2' : isTail ? '#e8b84b' : '#3a2010'; // cash款項改深棕，提升可讀性
     var inputStyle = isBank || isTail
       ? 'width:72px;background:rgba(160,100,10,.04);border:1px solid rgba(255,255,255,.05);border-radius:6px;padding:5px 8px;color:'+(isBank?'#3a6888':'#7a5a20')+';font-size:12px;font-family:\'DM Mono\',sans-serif;text-align:right;cursor:not-allowed'
       : 'width:72px;background:rgba(160,100,10,.06);border:1px solid rgba(160,100,10,.2);border-radius:6px;padding:5px 8px;color:#2c1a06;font-size:12px;font-family:\'DM Mono\',sans-serif;text-align:right';
