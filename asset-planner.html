@@ -721,18 +721,26 @@ body{
               <input type="number" id="iDelivery" value="36" min="6" max="120" oninput="calcPresale()">
             </div>
           </div>
-          <div class="fl" style="margin-top:8px">
-            <label>已付暫收款（萬）</label>
-            <input type="number" id="a_earnest" placeholder="0" oninput="calcAssets()" style="border-color:rgba(224,122,90,.35)">
-            <div style="font-size:9px;color:#6a5040;margin-top:3px">訂金/暫收款，計算備用金時扣除</div>
+          <div class="g2" style="margin-top:8px">
+            <div class="fl">
+              <label>已付暫收款（萬）</label>
+              <input type="number" id="a_earnest" placeholder="0" oninput="calcAssets()" style="border-color:rgba(224,122,90,.35)">
+              <div style="font-size:9px;color:#6a5040;margin-top:3px">已繳訂金/暫收款，計算備用金時扣除</div>
+            </div>
+            <div class="fl">
+              <label>本案預估暫收款（萬）<span style="font-size:9px;color:#9a6030;font-weight:normal"> ★每戶不同</span></label>
+              <input type="number" id="a_earnestEst" placeholder="例：49" oninput="calcPresale()" style="border-color:rgba(201,146,43,.35)">
+              <div style="font-size:9px;color:#6a5040;margin-top:3px">含在自備款裡，月存可扣除此部分</div>
+            </div>
           </div>
 
           <div id="presaleTable" style="overflow-x:auto"></div>
         </div>
-        <div style="background:rgba(201,146,43,.08);border:1px solid rgba(201,146,43,.2);border-radius:8px;padding:12px;text-align:center">
-          <div style="font-size:10px;color:#6a5040;margin-bottom:4px;letter-spacing:1px">每月需存金額（工程款期間）</div>
-          <div style="font-size:22px;font-weight:bold;color:#8a5800" id="monthlySaveNeeded">—</div>
-          <div style="font-size:11px;color:#6a5040;margin-top:4px" id="presaleSummary">—</div>
+        <div style="background:rgba(201,146,43,.05);border:1px dashed rgba(201,146,43,.3);border-radius:8px;padding:10px;margin-top:4px">
+          <div style="font-size:9px;color:#9a7040;margin-bottom:3px;letter-spacing:1px">📋 每月備款參考（最大單期÷平均間隔月數）</div>
+          <div style="font-size:18px;font-weight:bold;color:#7a5800" id="monthlySaveNeeded">—</div>
+          <div style="font-size:10px;color:#7a5040;margin-top:3px" id="presaleSummary">—</div>
+          <div style="font-size:9px;color:#9a7040;margin-top:4px">⬆ 詳細數字將顯示於報告中</div>
         </div>
       </div>
     </div>
@@ -938,7 +946,12 @@ body{
           <div style="font-size:10px;color:#c8a870;font-weight:bold;margin-bottom:8px">🏗️ 工程款付款摘要</div>
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px" id="presaleSummaryCards"></div>
         </div>
-        <span id="oppMonthlySave" style="display:none">—</span>
+        <!-- 每月需存大卡：交屋前關鍵數字 -->
+        <div style="background:linear-gradient(135deg,rgba(201,146,43,.15),rgba(201,146,43,.05));border:2px solid rgba(201,146,43,.5);border-radius:12px;padding:16px;text-align:center;margin-bottom:4px">
+          <div style="font-size:9px;letter-spacing:2px;color:#c8a870;font-weight:bold;margin-bottom:8px;font-family:'DM Mono',monospace">MONTHLY SAVINGS TARGET — 交屋前每月需存</div>
+          <div style="font-size:36px;font-weight:900;color:#8a5800;font-family:'DM Mono',monospace;letter-spacing:-1px" id="oppMonthlySave">—</div>
+          <div style="font-size:11px;color:#5a3a10;margin-top:8px;line-height:1.7" id="oppMonthlySaveNote">元／月</div>
+        </div>
       </div>
     </div>
 
@@ -963,15 +976,15 @@ body{
         <div style="font-size:9px;letter-spacing:2px;color:#b03010;margin-bottom:10px;font-weight:bold">你已經等了多久？</div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center">
           <div>
-            <div style="font-size:9px;color:#8a6040;margin-bottom:4px">再等半年</div>
+            <div style="font-size:9px;color:#7a2a10;margin-bottom:4px">再等半年</div>
             <div style="font-size:18px;font-weight:bold;color:#c03010;font-family:'DM Mono',monospace" id="lost6m">—</div>
           </div>
           <div style="border-left:1px solid rgba(0,0,0,.08);border-right:1px solid rgba(0,0,0,.08)">
-            <div style="font-size:9px;color:#8a6040;margin-bottom:4px">再等一年</div>
+            <div style="font-size:9px;color:#7a2a10;margin-bottom:4px">再等一年</div>
             <div style="font-size:22px;font-weight:900;color:#b03010;font-family:'DM Mono',monospace" id="lost1y">—</div>
           </div>
           <div>
-            <div style="font-size:9px;color:#8a6040;margin-bottom:4px">再等兩年</div>
+            <div style="font-size:9px;color:#7a2a10;margin-bottom:4px">再等兩年</div>
             <div style="font-size:18px;font-weight:bold;color:#c03010;font-family:'DM Mono',monospace" id="lost2y">—</div>
           </div>
         </div>
@@ -1457,27 +1470,44 @@ function calcPresale(){
     var isBank=s.name.indexOf('銀行')>=0;
     var isDeliv=s.name.indexOf('交屋尾款')>=0;
     var rowBg=isBank?'rgba(37,118,183,.12)':isDeliv?'rgba(201,146,43,.1)':i%2===0?'rgba(255,255,255,.025)':'transparent';
-    var nc=isBank?'#5dade2':isDeliv?'#e8b84b':'#d4c9b8';
-    var ac=isBank?'#5dade2':isDeliv?'#f5d87a':'#e8e0d0';
+    var nc=isBank?'#5dade2':isDeliv?'#e8b84b':'#2c1a06';   // 款項名稱：一般用深色
+    var ac=isBank?'#5dade2':isDeliv?'#f5d87a':'#7a3800';   // 金額：一般用深金棕
     var nameDisp=s.name+(s.note?'<span style="color:#6a5040;font-size:10px"> '+s.note+'</span>':'');
     rows+='<tr style="background:'+rowBg+';border-bottom:1px solid rgba(255,255,255,.04)">';
     rows+='<td style="padding:7px 8px;color:'+nc+'">'+nameDisp+'</td>';
     rows+='<td style="padding:7px 8px;text-align:center;color:#4a6080;font-size:11px">'+s.pctStr+'</td>';
     rows+='<td style="padding:7px 8px;text-align:right;color:'+ac+';font-weight:bold">'+s.amt+'</td>';
-    rows+='<td style="padding:7px 8px;text-align:right;color:#6a5040;font-size:11px">'+s.when+'</td>';
+    rows+='<td style="padding:7px 8px;text-align:right;color:#3a2010;font-size:11px">'+s.when+'</td>';
     rows+='</tr>';
     if(!isBank&&!isDeliv) selfTotal+=s.amt;
   });
   rows+='<tr style="background:rgba(201,146,43,.12);border-top:1px solid rgba(201,146,43,.3)"><td colspan="2" style="padding:8px;color:#c8a870;font-weight:bold;font-size:11px">總計</td><td style="padding:8px;text-align:right;color:#8a5800;font-weight:bold;font-size:13px">'+totalAmt+'萬</td><td style="padding:8px;text-align:right;color:#6a5040;font-size:10px">100%</td></tr>';
   rows+='</table>';
   g('presaleTable').innerHTML=rows;
-  // 訂金+簽約金=6%（整萬），depositAmt已是10萬，contractAmt已算好
   var payNow=depositAmt+contractAmt;
-  var remainToSave=selfTotal-payNow;
-  var monthlyNeed=d>2?Math.round(remainToSave*10000/d):0;
+
+  // 讀取本案預估暫收款（每戶不同，顧問手動輸入）
+  var earnestEst=parseFloat((g('a_earnestEst')||{value:'0'}).value)||0;
+
+  // 月存計算：最大單筆工程款 / 每期平均間隔月數（35萬/6個月概念）
+  // 若有暫收款，視為已提前存好，從最大單筆中扣除後再除間隔
+  var workStages=[wAmt,b1Amt,f5Amt,f10Amt,f15Amt,demolAmt,useAmt];
+  var maxStageAmt=Math.max.apply(null,workStages); // 最大單筆工程款
+  var numIntervals=workStages.length+1;            // 8個區間（訂約→放樣→...→使照）
+  var avgInterval=d/numIntervals;                  // 平均每段月數
+  // 扣掉暫收款後的實際需存（暫收款視為預存金）
+  var netMaxStage=Math.max(0, maxStageAmt-earnestEst);
+  var monthlyNeed=avgInterval>0?Math.ceil(netMaxStage*10000/avgInterval):0;
+
+  // 更新輸入頁月存框（參考用）
   g('monthlySaveNeeded').textContent=monthlyNeed>0?fmt(monthlyNeed)+' /月':'—';
-  g('presaleSummary').textContent=(isB?'套房（7成）':'一般（7.5成）')+' · 自備款合計 '+selfTotal+'萬（含訂約金 '+payNow+'萬）＋銀行貸款 '+bankAmt+'萬交屋撥付';
-  // Section B：帳面自備款同步更新（每次總價或成數變動時強制覆蓋）
+  var summaryText=(isB?'套房（7成）':'一般（7.5成）')
+    +' · 自備款合計 '+selfTotal+'萬（含訂約金 '+payNow+'萬）'
+    +(earnestEst>0?' · 暫收款 '+earnestEst+'萬':'')
+    +'＋銀行貸款 '+bankAmt+'萬交屋撥付';
+  g('presaleSummary').textContent=summaryText;
+
+  // Section B：帳面自備款同步更新
   var _fDwn=g('fDwnTotal'); if(_fDwn) _fDwn.value=selfTotal;
 }
 
@@ -1653,18 +1683,40 @@ function doGen(){
     g('oppPriceP').textContent=C.pr?fmtW(C.pr):'—';
     var deliv=parseInt((g('iDelivery')||{}).value)||36;
     g('oppDelivery').textContent=deliv+'個月後';
-    // 先算 prW/bankAmt/selfAmt，再計算月存金額（修正變數宣告順序）
+    // 先算 prW/bankAmt/selfAmt，再計算月存金額
     var bankPct=parseInt((g('iLtvPct')||{}).value)||75;
     var prW=C.pr?Math.round(C.pr/10000):0;
     var bankAmt=prW?Math.ceil(prW*bankPct/100):0;
     var selfAmt=prW?prW-bankAmt:0;          // 自備工程款（萬）
-    var _oppSelfAmt=selfAmt*10000;           // 自備工程款（元）
-    var mnSave=deliv>0?Math.ceil(_oppSelfAmt/deliv):0; // 每月需存（元）
-    g('oppMonthlySave').textContent=mnSave>0?fmt(mnSave):'—';
+
+    // 暫收款扣除（與calcPresale邏輯一致）
+    var earnestEst2=parseFloat((g('a_earnestEst')||{value:'0'}).value)||0;
+    // 月存 = max單筆工程款（約35萬）/ 平均間隔月數（約6月）
+    // 此處用保守估算：selfAmt的28%為最大單筆（约35/125比例），除以交屋月÷8
+    var workAmtEst=Math.ceil(prW*0.02);     // 2%單筆估算（與calcPresale一致）
+    var netWorkAmt=Math.max(0,workAmtEst-earnestEst2);
+    var avgIntvl=deliv/8;
+    var mnSave=avgIntvl>0?Math.ceil(netWorkAmt*10000/avgIntvl):0;
+
+    var _oppSaveEl=g('oppMonthlySave');
+    var _oppSaveNote=g('oppMonthlySaveNote');
+    if(_oppSaveEl) _oppSaveEl.textContent=mnSave>0?'$'+fmt(mnSave):'—';
+    if(_oppSaveNote){
+      var _note='每月存 $'+fmt(mnSave)+'，約'+deliv+'個月後交屋';
+      if(earnestEst2>0) _note+='｜暫收款 '+earnestEst2+'萬已計入';
+      _note+='｜自備工程款共 '+selfAmt+'萬，銀行 '+bankAmt+'萬交屋撥付';
+      _oppSaveNote.textContent=_note;
+    }
+
+    // 摘要卡（含暫收款資訊）
+    var earnestCard=earnestEst2>0
+      ?'<div style="text-align:center;background:rgba(224,122,90,.08);border:1px solid rgba(224,122,90,.25);border-radius:8px;padding:10px;margin-top:8px;grid-column:1/-1"><div style="font-size:9px;color:#e07a5a;margin-bottom:2px">本案暫收款（預估）</div><div style="font-size:14px;font-weight:bold;color:#c06040">'+earnestEst2+'萬</div><div style="font-size:9px;color:#6a5040;margin-top:2px">已計入月存試算</div></div>'
+      :'';
     g('presaleSummaryCards').innerHTML=
       '<div style="text-align:center;background:rgba(160,100,10,.06);border-radius:8px;padding:10px"><div style="font-size:9px;color:#6a5040;margin-bottom:4px">自備工程款</div><div style="font-size:16px;font-weight:bold;color:#e8b84b">'+selfAmt+'萬</div></div>'+
       '<div style="text-align:center;background:rgba(160,100,10,.06);border-radius:8px;padding:10px"><div style="font-size:9px;color:#6a5040;margin-bottom:4px">銀行貸款</div><div style="font-size:16px;font-weight:bold;color:#5dade2">'+bankAmt+'萬</div></div>'+
-      '<div style="text-align:center;background:rgba(160,100,10,.06);border-radius:8px;padding:10px"><div style="font-size:9px;color:#6a5040;margin-bottom:4px">交屋月數</div><div style="font-size:16px;font-weight:bold;color:#4a3020">'+deliv+'月</div></div>';
+      '<div style="text-align:center;background:rgba(160,100,10,.06);border-radius:8px;padding:10px"><div style="font-size:9px;color:#6a5040;margin-bottom:4px">交屋月數</div><div style="font-size:16px;font-weight:bold;color:#4a3020">'+deliv+'月</div></div>'+
+      earnestCard;
   } else {
     g('oppReady').style.display='block';
     g('oppPresale').style.display='none';
@@ -2620,7 +2672,8 @@ var LS_KEY='futime_planner_v4';
 var LS_FIELDS=['iName','iAdv','iProp','iPropRoom','iPropFloor',
   'iSal','iBon','iSpo','iInv','iRen','iOtI',
   'iRnt','iCar','iOLn','iIns','iMel','iTrn','iEnt','iPar','iKid','iSub','iOtE',
-  'iPrc','iDwn','iRat','iGrowth','iRentIncome','iDelivery','sv2i','sv3i'];
+  'iPrc','iDwn','iRat','iGrowth','iRentIncome','iDelivery','sv2i','sv3i',
+  'a_earnest','a_earnestEst'];
 var LS_SELECTS=['iYrs','iLtvPct'];
 var LS_CHECKS=['sk0','sk1','sk2','sk3','sk4','sk5'];
 var LS_SEG='futime_seg_v4';
