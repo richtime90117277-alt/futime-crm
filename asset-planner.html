@@ -655,25 +655,25 @@ body{
         </div>
       </div>
       <div class="fl"><label>預估年增值率（%）可自填</label>
-        <input type="number" id="iGrowth" value="7" min="1" max="20" step="0.5" placeholder="7" oninput="ca()">
+        <input type="number" id="iGrowth" value="4" min="1" max="20" step="0.5" placeholder="4" oninput="ca()">
       </div>
       <div style="background:rgba(201,146,43,.06);border:1px solid rgba(201,146,43,.2);border-radius:8px;padding:10px;margin-top:4px">
         <div style="font-size:9px;color:#c9922b;letter-spacing:1px;font-weight:bold;margin-bottom:8px">📊 實際歷史漲幅參考（2016→2024，內政部實價登錄）</div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:6px">
-          <div onclick="setGrowth(5)" style="cursor:pointer;background:rgba(160,100,10,.06);border:1px solid rgba(160,100,10,.2);border-radius:6px;padding:8px;text-align:center;transition:.2s" onmouseover="this.style.borderColor='#c9922b'" onmouseout="this.style.borderColor='rgba(255,255,255,.1)'">
+          <div onclick="setGrowth(3)" style="cursor:pointer;background:rgba(160,100,10,.06);border:1px solid rgba(160,100,10,.2);border-radius:6px;padding:8px;text-align:center;transition:.2s" onmouseover="this.style.borderColor='#c9922b'" onmouseout="this.style.borderColor='rgba(160,100,10,.2)'">
             <div style="font-size:9px;color:#6a5040;margin-bottom:3px">保守</div>
-            <div style="font-size:18px;font-weight:bold;color:#b0b8c8">5%</div>
+            <div style="font-size:18px;font-weight:bold;color:#b0b8c8">3%</div>
             <div style="font-size:8px;color:#5a4020;margin-top:2px">低估版</div>
           </div>
-          <div onclick="setGrowth(6)" style="cursor:pointer;background:rgba(160,100,10,.06);border:1px solid rgba(160,100,10,.2);border-radius:6px;padding:8px;text-align:center;transition:.2s" onmouseover="this.style.borderColor='#c9922b'" onmouseout="this.style.borderColor='rgba(255,255,255,.1)'">
-            <div style="font-size:9px;color:#4a6080;margin-bottom:3px">穩健</div>
-            <div style="font-size:18px;font-weight:bold;color:#4a3020">6%</div>
-            <div style="font-size:8px;color:#5a4020;margin-top:2px">低於歷史均值</div>
+          <div onclick="setGrowth(4)" style="cursor:pointer;background:rgba(201,146,43,.15);border:2px solid rgba(201,146,43,.7);border-radius:6px;padding:8px;text-align:center;transition:.2s" onmouseover="this.style.background='rgba(201,146,43,.25)'" onmouseout="this.style.background='rgba(201,146,43,.15)'">
+            <div style="font-size:9px;color:#c9922b;font-weight:bold;margin-bottom:3px">建議預設 ★</div>
+            <div style="font-size:20px;font-weight:bold;color:#8a5800">4%</div>
+            <div style="font-size:8px;color:#c9922b;margin-top:2px">穩健估算</div>
           </div>
-          <div onclick="setGrowth(7.1)" style="cursor:pointer;background:rgba(201,146,43,.15);border:2px solid rgba(201,146,43,.7);border-radius:6px;padding:8px;text-align:center;transition:.2s" onmouseover="this.style.background='rgba(201,146,43,.25)'" onmouseout="this.style.background='rgba(201,146,43,.15)'">
-            <div style="font-size:9px;color:#c9922b;font-weight:bold;margin-bottom:3px">歷史實績 ★</div>
-            <div style="font-size:20px;font-weight:bold;color:#8a5800">7.1%</div>
-            <div style="font-size:8px;color:#c9922b;margin-top:2px">桃園 +74%</div>
+          <div onclick="setGrowth(6)" style="cursor:pointer;background:rgba(160,100,10,.06);border:1px solid rgba(160,100,10,.2);border-radius:6px;padding:8px;text-align:center;transition:.2s" onmouseover="this.style.borderColor='#c9922b'" onmouseout="this.style.borderColor='rgba(160,100,10,.2)'">
+            <div style="font-size:9px;color:#4a6080;margin-bottom:3px">歷史均值</div>
+            <div style="font-size:18px;font-weight:bold;color:#4a3020">6%</div>
+            <div style="font-size:8px;color:#5a4020;margin-top:2px">桃園近8年</div>
           </div>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
@@ -1889,7 +1889,7 @@ function doGen(){
   var monthlyRise=Math.round(C.pr*growth/12);
   var yearlyRise=Math.round(C.pr*growth);
   var growthPct=parseFloat(g('iGrowth').value);
-  var histRef=growthPct>=7?'桃園區歷史年均 7.1%（2016-2024）':growthPct>=6?'穩健估算，低於歷史均值':growthPct>=5?'林口/五股歷史年均 5.3%':'採保守估算';
+  var histRef=growthPct>=7?'桃園區歷史年均 7.1%（2016-2024）':growthPct>=6?'穩健估算，低於歷史均值':growthPct>=4?'建議預設，已扣利息後年化約 14-16%':growthPct>=3?'保守估算版本':'採極保守估算';
   g('waitSubtitle').textContent='這不是預測，是歷史事實（'+histRef+'）。每多等一年，差距就擴大一年——看看下面的數字，你就知道等待的代價。';
   g('waitMonthly').textContent=fmt(monthlyRise);
   // 年等待損失：房價漲幅 + 白繳租金（未填時自動估算）- 自備款定存利息
@@ -1989,24 +1989,54 @@ function doGen(){
       sh.textContent='「'+nm+'，這個數字告訴我們現在方案還不到位。但這不代表買不了——代表我們要找一個更適合你的方式。我們來重新設計。」';
     }
   }
-  // 算法：（房屋增值獲利 ÷ 自備款本金）× 100% ÷ 持有年數
-  // 例：(480萬 ÷ 165萬) × 100% ÷ 5年 = 58.18%/年
+  // 算法（富時代算法 v2）：
+  // 分子 = 房屋增值獲利 - 貸款總利息（扣除真實成本後的淨獲利）
+  // 分母 = 自備款（槓桿本金）
+  // 年化 = 淨獲利 ÷ 自備款 ÷ 持有年數
   var _roiSec=g('roiSection');
   var _roiYrs=10; // 固定分析10年
-  window._roi={profit:0,principal:0,ann:0}; // 跨區塊共用
+  window._roi={profit:0,netProfit:0,interest:0,principal:0,ann:0}; // 跨區塊共用
   if(C.pr>0&&(C.dw>0||MORTGAGE_MODE==='presale')){
     // 預售模式若 iDwn 未填，改用自備款 = 總價 × (1-貸款成數)
     var _dwWan=C.dw>0 ? Math.round(C.dw/10000)
       : Math.ceil(parseFloat((g('iPrc')||{value:'0'}).value)*(100-(parseInt((g('iLtvPct')||{value:'75'}).value)||75))/100);
+
+    // 房屋增值毛利
     var _houseVal10=C.pr*Math.pow(1+growth,_roiYrs);       // 10年後市值（元）
-    var _houseProfit=Math.round((_houseVal10-C.pr)/10000); // 房屋增值獲利（萬）
-    var _roiTotal=Math.round(_houseProfit/_dwWan*100*10)/10;  // 總報酬率%
-    var _roiPerYr=Math.round(_roiTotal/_roiYrs*10)/10;        // 年化報酬率%
-    window._roi={profit:_houseProfit,principal:_dwWan,ann:_roiPerYr}; // 儲存供後續引用
+    var _houseProfit=Math.round((_houseVal10-C.pr)/10000);  // 增值獲利（萬）
+
+    // 估算10年貸款總利息（月繳等額，取前10年實際利息）
+    // C.mn = 月繳金額（元），C.loan = 貸款金額（元），iRat = 年利率%
+    var _loanAmt=C.pr-C.dw;  // 貸款金額（元）
+    var _annRate=parseFloat((g('iRat')||{value:'2.5'}).value)/100;
+    var _mnRate=_annRate/12;
+    var _totalMo=parseInt((g('iYrs')||{value:'30'}).value)*12;
+    // 等額攤還：前N期累積利息
+    var _totalInterestWan=0;
+    if(_loanAmt>0&&_mnRate>0){
+      var _mnPay=_loanAmt*_mnRate/(1-Math.pow(1+_mnRate,-_totalMo)); // 月繳
+      var _bal=_loanAmt;
+      var _intSum=0;
+      var _calcMo=Math.min(_roiYrs*12,_totalMo);
+      for(var _m=0;_m<_calcMo;_m++){
+        var _intPart=_bal*_mnRate;
+        _intSum+=_intPart;
+        _bal-=(_mnPay-_intPart);
+      }
+      _totalInterestWan=Math.round(_intSum/10000); // 10年利息（萬）
+    }
+
+    // 淨獲利 = 增值 - 利息
+    var _netProfit=_houseProfit-_totalInterestWan;
+    var _roiTotal=Math.round(_netProfit/_dwWan*100*10)/10;   // 淨總報酬率%
+    var _roiPerYr=Math.round(_roiTotal/_roiYrs*10)/10;       // 年化報酬率%
+
+    window._roi={profit:_houseProfit,netProfit:_netProfit,interest:_totalInterestWan,principal:_dwWan,ann:_roiPerYr};
     if(_roiSec) _roiSec.style.display='block';
     if(g('roiPrincipal')) g('roiPrincipal').textContent=_dwWan+'萬';
-    if(g('roiProfit')) g('roiProfit').textContent='+'+_houseProfit+'萬';
-    if(g('roiYrsLabel')) g('roiYrsLabel').textContent=_roiYrs+'年增值';
+    // 主顯示：淨獲利（已扣利息）
+    if(g('roiProfit')) g('roiProfit').textContent='+'+_netProfit+'萬';
+    if(g('roiYrsLabel')) g('roiYrsLabel').textContent=_roiYrs+'年淨獲利';
     if(g('roiAnn')) g('roiAnn').textContent=_roiPerYr.toFixed(1)+'%/年';
     if(g('roiFormula')){
       g('roiFormula').innerHTML=
@@ -2014,11 +2044,14 @@ function doGen(){
         '<div style="background:rgba(160,100,10,.07);border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:12px;color:#3a2010;line-height:2">'+
         '現在房屋市值：<strong>'+Math.round(C.pr/10000)+'萬</strong><br>'+
         '10年後市值（年增 '+Math.round(parseFloat(g('iGrowth').value)*10)/10+'%）：<strong style="color:#1a6b3a">'+Math.round(_houseVal10/10000)+'萬</strong><br>'+
-        '增值差額：'+Math.round(_houseVal10/10000)+' － '+Math.round(C.pr/10000)+' ＝ <strong style="color:#1a6b3a">+'+_houseProfit+'萬</strong>'+
+        '房屋增值：'+Math.round(_houseVal10/10000)+' － '+Math.round(C.pr/10000)+' ＝ <strong style="color:#1a6b3a">+'+_houseProfit+'萬</strong><br>'+
+        '扣除10年貸款利息：<strong style="color:#b03010">－'+_totalInterestWan+'萬</strong><br>'+
+        '實際淨獲利：<strong style="color:#1a6b3a;font-size:13px">+'+_netProfit+'萬</strong>'+
         '</div>'+
         '<div style="font-size:12px;color:#5a4020;line-height:1.9">'+
         '你只付 <strong style="color:#a86010">'+_dwWan+'萬</strong> 自備款，卻控制了 <strong style="color:#a86010">'+Math.round(C.pr/10000)+'萬</strong> 的資產——槓桿倍數 <strong>'+Math.round(C.pr/10000/_dwWan*10)/10+'倍</strong>。<br>'+
-        '年化投報率 = '+_houseProfit+'萬 ÷ '+_dwWan+'萬 ÷ '+_roiYrs+'年 = <strong style="color:#1a6b3a;font-size:14px">'+_roiPerYr.toFixed(1)+'% /年</strong>'+
+        '年化投報率 = '+_netProfit+'萬（淨獲利）÷ '+_dwWan+'萬 ÷ '+_roiYrs+'年 = <strong style="color:#1a6b3a;font-size:14px">'+_roiPerYr.toFixed(1)+'% /年</strong><br>'+
+        '<span style="font-size:10px;color:#8a7060">✓ 已扣除貸款利息成本，比定存高 '+Math.round((_roiPerYr-1.6)*10)/10+'%、比大盤長期（7%）高 '+Math.round((_roiPerYr-7)*10)/10+'%</span>'+
         '</div>';
     }
   } else {
