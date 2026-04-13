@@ -751,6 +751,7 @@ select:focus,input:focus,textarea:focus {
 /* 狀態徽章 */
 .status-badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700}
 .status-待確認{background:#FDF0E8;color:#E8692A}
+.status-待聯繫{background:#FDF0E8;color:#E8692A}
 .status-已確認{background:#E8F5E9;color:#2E7D32}
 .status-已完成{background:#E3F2FD;color:#1565C0}
 .status-取消{background:#FFEBEE;color:#C62828}
@@ -1005,7 +1006,7 @@ function claimSeminarLead() {}
         </select>
         <select id="filterStatus" onchange="renderBookingTable()">
           <option value="">全部狀態</option>
-          <option value="待確認">待確認</option>
+          <option value="待聯繫">待聯繫</option>
           <option value="已確認">已確認</option>
           <option value="已完成">已完成</option>
           <option value="取消">取消</option>
@@ -5545,7 +5546,7 @@ function renderBookingTable() {
 function renderBookingStats() {
   var statsEl = document.getElementById('bookingStats');
   if (!statsEl) return;
-  var pending   = allBookings.filter(function(b){ return b['狀態']==='待確認'; }).length;
+  var pending   = allBookings.filter(function(b){ return b['狀態']==='待聯繫' || b['狀態']==='待確認'; }).length;
   var confirmed = allBookings.filter(function(b){ return b['狀態']==='已確認'; }).length;
   var done      = allBookings.filter(function(b){ return b['狀態']==='已完成'; }).length;
   statsEl.innerHTML =
@@ -5567,7 +5568,7 @@ function buildConsultantFilter() {
 
 // 儀表板摘要區塊
 function renderDashboardBookingSummary() {
-  var pending = allBookings.filter(function(b){ return b['狀態']==='待確認'; });
+  var pending = allBookings.filter(function(b){ return b['狀態']==='待聯繫' || b['狀態']==='待確認'; });
   var countEl = document.getElementById('bscCount');
   var listEl  = document.getElementById('bscList');
   if (!countEl || !listEl) return;
