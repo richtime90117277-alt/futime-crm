@@ -920,7 +920,7 @@ body{
 
       <!-- PART 1：自備款結餘 -->
       <div style="background:rgba(160,100,10,.04);border:1px solid rgba(160,100,10,.15);border-radius:10px;padding:14px;margin-bottom:10px">
-        <div style="font-size:8px;letter-spacing:2px;color:#c9922b;margin-bottom:10px;font-family:'DM Mono',monospace">PART 1 — 自備款夠嗎？（一次性）</div>
+        <div style="font-size:8px;letter-spacing:2px;color:#c9922b;margin-bottom:10px;font-family:'DM Mono',monospace" id="part1Header">PART 1 — 自備款夠嗎？（一次性）</div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
           <div style="text-align:center;padding:10px 6px;background:rgba(160,100,10,.04);border-radius:8px">
             <div style="font-size:9px;color:#6a5040;margin-bottom:3px">可動用現金</div>
@@ -935,7 +935,7 @@ body{
             <div style="font-size:16px;font-weight:bold;color:#4a6080;font-family:'DM Mono',monospace" id="p1Earn">—</div>
           </div>
         </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(93,173,226,.08);border:1px solid rgba(93,173,226,.2);border-radius:8px;padding:10px 14px">
+        <div id="p1ReserveRow" style="display:flex;justify-content:space-between;align-items:center;background:rgba(93,173,226,.08);border:1px solid rgba(93,173,226,.2);border-radius:8px;padding:10px 14px">
           <span style="font-size:11px;color:#5dade2;font-weight:bold">購屋後剩餘備用金</span>
           <span style="font-size:20px;font-weight:bold;font-family:'DM Mono',monospace" id="p1Reserve">—</span>
         </div>
@@ -950,7 +950,7 @@ body{
       </div>
 
       <!-- PART 2：交屋後月結餘（簡化版，只顯示結論） -->
-      <div style="background:rgba(160,100,10,.04);border:1px solid rgba(160,100,10,.15);border-radius:10px;padding:14px;margin-bottom:10px">
+      <div id="part2Section" style="background:rgba(160,100,10,.04);border:1px solid rgba(160,100,10,.15);border-radius:10px;padding:14px;margin-bottom:10px">
         <div style="font-size:8px;letter-spacing:2px;color:#a86010;margin-bottom:10px;font-family:'DM Mono',monospace">PART 2 — 交屋後每月現金流（細項）</div>
         <!-- 月收入 / 生活支出 兩格（參考資訊） -->
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
@@ -1082,7 +1082,7 @@ body{
     </div>
 
         <!-- ⑤ 等待代價 -->
-    <div style="background:linear-gradient(160deg,#fff5f3,#ffe8e4);border:2px solid rgba(176,48,16,.2);border-radius:14px;padding:18px;margin-bottom:14px">
+    <div id="waitCostSection" style="background:linear-gradient(160deg,#fff5f3,#ffe8e4);border:2px solid rgba(176,48,16,.2);border-radius:14px;padding:18px;margin-bottom:14px">
       <div style="font-size:9px;letter-spacing:3px;color:#b03010;margin-bottom:6px;font-weight:bold;font-family:'DM Mono',monospace">THE COST OF WAITING — 等待的代價</div>
       <div style="font-size:12px;color:#5a2010;line-height:1.8;margin-bottom:14px" id="waitSubtitle">—</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
@@ -2009,6 +2009,10 @@ function doGen(){
   var _p1c=g('p1Cash'),_p1d=g('p1Dw'),_p1e=g('p1Earn'),_p1r=g('p1Reserve'),_p1n=g('p1ReserveNote');
 
   if(isPresale){
+    // 預售 PART1：標題改寫
+    var _part1H=g('part1Header');
+    if(_part1H) _part1H.textContent='PART 1 — 資金結構（頭期款來源）';
+
     // 預售 PART1：可動用現金 vs 工程款自備
     var _delivMo3=parseInt((g('iDelivery')||{value:'36'}).value)||36;
     var _bankPct3=parseInt((g('iLtvPct')||{value:'75'}).value)||75;
@@ -2030,31 +2034,18 @@ function doGen(){
     if(_p1c) _p1c.textContent=_p1cLabel;
     if(_p1d) _p1d.textContent=_selfW3>0?_selfW3+'萬（工程款自備）':'—';
     if(_p1e) _p1e.textContent=_earn3>0?_earn3+'萬':'—';
-    // 預售模式：p1Reserve 欄不顯示「備用金」概念（工程款是分期的，不是一次性）
-    // 改為顯示「目前已有」vs「還需存」
-    var _alreadyHave=Math.min(_cash3, _selfW3); // 現有可用於工程款的金額
-    var _stillNeed=Math.max(0, _selfW3-_cash3);  // 還需透過每月儲蓄補足的金額
-    if(_p1r){
-      if(_stillNeed>0){
-        _p1r.textContent='每月儲蓄補足';
-        _p1r.style.color='#c9922b';
-        _p1r.style.fontSize='14px';
-      } else {
-        _p1r.textContent='+'+(_cash3-_selfW3)+'萬';
-        _p1r.style.color='#2ecc71';
-        _p1r.style.fontSize='20px';
-      }
-    }
-    if(_p1n){
-      if(_stillNeed>0){
-        var _mnSaveShow2=_delivMo3>0?Math.ceil(_selfW3*10000/_delivMo3):0;
-        _p1n.innerHTML='每月固定存 <strong>'+fmt(_mnSaveShow2)+'</strong>，'+_delivMo3+'個月自然到位，不需一次拿出全額';
-        _p1n.style.color='#8a6040';
-      } else {
-        _p1n.textContent='✅ 現有資金已可覆蓋自備款';
-        _p1n.style.color='#2ecc71';
-      }
-    }
+    // 預售模式：隱藏「購屋後剩餘備用金」這列（數字沒意義，已有時間軸）
+    var _p1rRow=g('p1ReserveRow'); if(_p1rRow) _p1rRow.style.display='none';
+    var _p1nEl=g('p1ReserveNote'); if(_p1nEl) _p1nEl.style.display='none';
+
+    // ★ 預售模式：隱藏 PART2（月收/支出兩格）、分隔線
+    var _part2Sec=g('part2Section'); if(_part2Sec) _part2Sec.style.display='none';
+
+    // ★ 預售模式：familySupportBox 隱藏（內容已整合進 csSolvedBox，不重複）
+    var _famBox=g('familySupportBox'); if(_famBox) _famBox.style.display='none';
+
+    // 顯示：自有現金 vs 自備款，讓客戶看到差距由每月存款補足
+    // p1Reserve / p1ReserveNote 保留 id 相容，但已隱藏
 
     // ── ★ 成交信號卡①：頭期款已解決 ─────────────────
     var _csSolved=g('csSolvedBox');
@@ -2205,24 +2196,65 @@ function doGen(){
   var yearlyRise=Math.round(C.pr*growth);
   var growthPct=parseFloat(g('iGrowth').value);
   var histRef=growthPct>=7?'桃園區歷史年均 7.1%（2016-2024）':growthPct>=6?'穩健估算，低於歷史均值':growthPct>=4?'建議預設，已扣利息後年化約 14-16%':growthPct>=3?'保守估算版本':'採極保守估算';
-  g('waitSubtitle').textContent='這不是預測，是歷史事實（'+histRef+'）。每多等一年，差距就擴大一年——看看下面的數字，你就知道等待的代價。';
-  g('waitMonthly').textContent=fmt(monthlyRise);
-  // 年等待損失：房價漲幅 + 白繳租金（未填時自動估算）- 自備款定存利息
-  var savedRentVal=parseFloat((g('iRnt')||{value:'0'}).value)||0;
-  var effectiveRentWait=savedRentVal>0?savedRentVal:Math.max(15000,Math.round(C.pr*0.001));
-  var yearlyRentLoss=effectiveRentWait*12;
-  var dwInterest=C.dw>0?Math.round(C.dw*0.01):0;
-  var waitYearlyTotal=yearlyRise+yearlyRentLoss-dwInterest;
-  var waitDailyLoss=Math.round(waitYearlyTotal/365);
-  g('waitYearly').textContent=fmt(waitYearlyTotal)+'元';
-  if(g('waitDaily')) g('waitDaily').textContent=fmt(waitDailyLoss)+' 元/天';
-  // 已損失時間軸
-  var l6m=Math.round(C.pr*growth*0.5); // 6個月
-  var l1y=Math.round(C.pr*growth);     // 1年
-  var l2y=Math.round(C.pr*growth*2);   // 2年
-  g('lost6m').textContent=fmtW(l6m);
-  g('lost1y').textContent=fmtW(l1y);
-  g('lost2y').textContent=fmtW(l2y);
+  // ── ⑤ 等待代價 ────────────────────────────────────
+  var _waitSec=g('waitCostSection');
+  if(isPresale && _waitSec){
+    // 預售邏輯：「你今天用 X 萬鎖定，若等半年才買要多付 Y 萬」
+    var prW_w=C.pr?Math.round(C.pr/10000):0;
+    var rise6m=Math.round(C.pr*growth*0.5/10000);   // 半年漲幅（萬）
+    var rise1y=Math.round(C.pr*growth/10000);        // 一年漲幅（萬）
+    var rise2y=Math.round(C.pr*growth*2/10000);      // 兩年漲幅（萬）
+    var risePerMo=Math.round(C.pr*growth/12);        // 每月漲幅（元）
+    // 重寫標題說法
+    g('waitSubtitle').textContent='你今天簽約，是用現在的價格鎖定這間房。若等半年才決定，同一間房你要多付——';
+    g('waitMonthly').textContent=fmt(risePerMo);
+    if(g('waitDaily')) g('waitDaily').textContent=fmt(Math.round(risePerMo/30))+' 元/天';
+    g('lost6m').textContent='+'+rise6m+'萬';
+    g('lost1y').textContent='+'+rise1y+'萬';
+    g('lost2y').textContent='+'+rise2y+'萬';
+    // 改寫區塊標題和 label
+    var _waitTitle=_waitSec.querySelector('[style*="letter-spacing:3px"]');
+    if(_waitTitle) _waitTitle.textContent='THE COST OF WAITING — 等愈久，多付愈多';
+    // 改寫子標題文字
+    var _wlabel6=_waitSec.querySelector('[id="lost6m"]');
+    var _wlabel6p=_wlabel6?_wlabel6.previousElementSibling:null;
+    if(_wlabel6p) _wlabel6p.textContent='等半年多付';
+    var _wlabel1=_waitSec.querySelector('[id="lost1y"]');
+    var _wlabel1p=_wlabel1?_wlabel1.previousElementSibling:null;
+    if(_wlabel1p) _wlabel1p.textContent='等一年多付';
+    var _wlabel2=_waitSec.querySelector('[id="lost2y"]');
+    var _wlabel2p=_wlabel2?_wlabel2.previousElementSibling:null;
+    if(_wlabel2p) _wlabel2p.textContent='等兩年多付';
+    // 改寫底部小字
+    var _wFooter=_waitSec.querySelector('.\\#wFooter, [style*="這些錢"]');
+    var _allItalic=_waitSec.querySelectorAll('[style*="italic"]');
+    _allItalic.forEach(function(el){ el.textContent='你今天簽約鎖定的，就是這段差價。'; });
+    // 改寫上方兩格的 label
+    var _mlabels=_waitSec.querySelectorAll('[style*="letter-spacing:1px"][style*="font-weight:bold"]');
+    if(_mlabels[0]) _mlabels[0].textContent='每月多付（市值增幅）';
+    if(_mlabels[1]) _mlabels[1].textContent='每天睜眼多付';
+    // 橫排標題
+    var _waitRowTitle=_waitSec.querySelector('[style*="letter-spacing:2px"]');
+    if(_waitRowTitle) _waitRowTitle.textContent='你打算再等幾年？';
+  } else {
+    // 成屋邏輯維持原有
+    g('waitSubtitle').textContent='這不是預測，是歷史事實（'+histRef+'）。每多等一年，差距就擴大一年——看看下面的數字，你就知道等待的代價。';
+    g('waitMonthly').textContent=fmt(monthlyRise);
+    var savedRentVal=parseFloat((g('iRnt')||{value:'0'}).value)||0;
+    var effectiveRentWait=savedRentVal>0?savedRentVal:Math.max(15000,Math.round(C.pr*0.001));
+    var yearlyRentLoss=effectiveRentWait*12;
+    var dwInterest=C.dw>0?Math.round(C.dw*0.01):0;
+    var waitYearlyTotal=yearlyRise+yearlyRentLoss-dwInterest;
+    var waitDailyLoss=Math.round(waitYearlyTotal/365);
+    g('waitYearly').textContent=fmt(waitYearlyTotal)+'元';
+    if(g('waitDaily')) g('waitDaily').textContent=fmt(waitDailyLoss)+' 元/天';
+    var l6m=Math.round(C.pr*growth*0.5);
+    var l1y=Math.round(C.pr*growth);
+    var l2y=Math.round(C.pr*growth*2);
+    g('lost6m').textContent=fmtW(l6m);
+    g('lost1y').textContent=fmtW(l1y);
+    g('lost2y').textContent=fmtW(l2y);
+  }
 
   // ── ⑥ 你能做到（YOU CAN DO THIS）────────────────────
   // 預售模式：四張收支卡隱藏（已由卡②完整呈現）
@@ -2451,8 +2483,8 @@ function doGen(){
     }
   }
 
-  // ── ★ 家族財力支援摘要（有保證人資料時才渲染）──────────
-  renderFamilySupport(nm);
+  // ── ★ 家族財力支援摘要（成屋模式才渲染；預售已整合進 csSolvedBox）
+  if(!isPresale) renderFamilySupport(nm);
 
   // ── 顯示報告 ─────────────────────────────────────
   sw('R');
