@@ -182,6 +182,29 @@ body{
 .bbg{height:16px;background:rgba(0,0,0,.08);border-radius:8px;overflow:hidden}
 .bfi{height:100%;border-radius:8px;transition:width .6s cubic-bezier(.4,0,.2,1)}
 
+/* ── 成交信號卡（頭期款已解決 / 月存對比） ── */
+.cs-solved{background:linear-gradient(135deg,rgba(26,107,58,.12),rgba(26,107,58,.04));border:2px solid rgba(46,204,113,.5);border-radius:14px;padding:20px;margin-bottom:14px;position:relative;overflow:hidden}
+.cs-solved::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,#2ecc71,transparent)}
+.cs-solved-label{font-size:9px;letter-spacing:3px;color:#1a6b3a;font-weight:bold;font-family:'DM Mono',monospace;margin-bottom:10px}
+.cs-solved-title{font-size:18px;font-weight:900;color:#0a3a1a;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.cs-solved-body{font-size:13px;color:#1a3a1a;line-height:1.9}
+.cs-compare{background:linear-gradient(160deg,#fff,#f5fff8);border:2px solid rgba(46,204,113,.45);border-radius:14px;padding:18px;margin-bottom:14px;position:relative;overflow:hidden}
+.cs-compare::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,rgba(46,204,113,.8),transparent)}
+.cs-compare-label{font-size:9px;letter-spacing:3px;color:#1a6b3a;font-weight:bold;font-family:'DM Mono',monospace;margin-bottom:12px}
+.cs-compare-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin-bottom:12px}
+.cs-col{text-align:center;padding:14px 8px;border-radius:10px}
+.cs-col-need{background:rgba(160,100,10,.07);border:1px solid rgba(160,100,10,.2)}
+.cs-col-surplus{background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.3)}
+.cs-col-label{font-size:9px;letter-spacing:1px;margin-bottom:6px;font-weight:bold}
+.cs-col-val{font-size:24px;font-weight:900;font-family:'DM Mono',monospace;letter-spacing:-1px}
+.cs-col-sub{font-size:10px;margin-top:4px}
+.cs-arrow{font-size:22px;color:#c8a870;text-align:center}
+.cs-result{display:flex;justify-content:space-between;align-items:center;background:rgba(46,204,113,.12);border:1.5px solid rgba(46,204,113,.4);border-radius:10px;padding:14px 16px}
+.cs-result-left{font-size:13px;font-weight:bold;color:#0a3a1a}
+.cs-result-left-sub{font-size:10px;color:#2a5a2a;margin-top:3px}
+.cs-result-val{font-size:26px;font-weight:900;font-family:'DM Mono',monospace;color:#1a6b3a}
+.cs-verdict{margin-top:10px;font-size:12px;color:#2a5a2a;line-height:1.8;padding:10px 14px;background:rgba(46,204,113,.06);border-radius:8px;border-left:3px solid rgba(46,204,113,.5)}
+
 /* ── 結論 verdict ── */
 .vd{font-size:13px;line-height:1.8;padding:14px 16px;border-radius:10px;border-left:4px solid;margin-bottom:14px}
 .vd.gs{background:rgba(26,122,58,.07);border-color:#1a7a3a;color:#0a3a1a}
@@ -888,6 +911,13 @@ body{
         <div style="font-size:10px;margin-top:6px;text-align:right" id="p1ReserveNote"></div>
       </div>
 
+      <!-- ★ 成交信號卡①：頭期款已解決（有家人出資時才顯示） -->
+      <div id="csSolvedBox" style="display:none" class="cs-solved">
+        <div class="cs-solved-label">DOWN PAYMENT SECURED — 頭期款狀況</div>
+        <div class="cs-solved-title">✅ <span id="csSolvedTitle">頭期款問題，解決了</span></div>
+        <div class="cs-solved-body" id="csSolvedBody">—</div>
+      </div>
+
       <!-- PART 2：交屋後月結餘（簡化版，只顯示結論） -->
       <div style="background:rgba(160,100,10,.04);border:1px solid rgba(160,100,10,.15);border-radius:10px;padding:14px;margin-bottom:10px">
         <div style="font-size:8px;letter-spacing:2px;color:#a86010;margin-bottom:10px;font-family:'DM Mono',monospace">PART 2 — 交屋後每月現金流（細項）</div>
@@ -967,10 +997,36 @@ body{
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px" id="presaleSummaryCards"></div>
         </div>
         <!-- 每月需存大卡：交屋前關鍵數字 -->
-        <div style="background:linear-gradient(135deg,rgba(201,146,43,.15),rgba(201,146,43,.05));border:2px solid rgba(201,146,43,.5);border-radius:12px;padding:16px;text-align:center;margin-bottom:4px">
+        <div style="background:linear-gradient(135deg,rgba(201,146,43,.15),rgba(201,146,43,.05));border:2px solid rgba(201,146,43,.5);border-radius:12px;padding:16px;text-align:center;margin-bottom:10px">
           <div style="font-size:9px;letter-spacing:2px;color:#c8a870;font-weight:bold;margin-bottom:8px;font-family:'DM Mono',monospace">MONTHLY SAVINGS TARGET — 交屋前每月需存</div>
           <div style="font-size:36px;font-weight:900;color:#8a5800;font-family:'DM Mono',monospace;letter-spacing:-1px" id="oppMonthlySave">—</div>
           <div style="font-size:11px;color:#5a3a10;margin-top:8px;line-height:1.7" id="oppMonthlySaveNote">元／月</div>
+        </div>
+
+        <!-- ★ 成交信號卡②：月存 vs 月結餘對比（預售關鍵） -->
+        <div id="csCompareBox" style="display:none" class="cs-compare">
+          <div class="cs-compare-label">CAN YOU AFFORD IT? — 每月存得到嗎？</div>
+          <div class="cs-compare-grid">
+            <div class="cs-col cs-col-need">
+              <div class="cs-col-label" style="color:#a86010">每月需存工程款</div>
+              <div class="cs-col-val" style="color:#8a5800" id="csNeedVal">—</div>
+              <div class="cs-col-sub" style="color:#6a4020">元／月</div>
+            </div>
+            <div class="cs-arrow">→</div>
+            <div class="cs-col cs-col-surplus">
+              <div class="cs-col-label" style="color:#1a6b3a">現有月結餘</div>
+              <div class="cs-col-val" style="color:#1a6b3a" id="csSurplusVal">—</div>
+              <div class="cs-col-sub" style="color:#2a5a2a">元／月</div>
+            </div>
+          </div>
+          <div class="cs-result">
+            <div>
+              <div class="cs-result-left" id="csResultLabel">存完每月還剩</div>
+              <div class="cs-result-left-sub" id="csResultSub">—</div>
+            </div>
+            <div class="cs-result-val" id="csResultVal">—</div>
+          </div>
+          <div class="cs-verdict" id="csVerdict">—</div>
         </div>
       </div>
     </div>
@@ -1749,6 +1805,32 @@ function doGen(){
       '<div style="text-align:center;background:rgba(160,100,10,.06);border-radius:8px;padding:10px"><div style="font-size:9px;color:#6a5040;margin-bottom:4px">銀行貸款</div><div style="font-size:16px;font-weight:bold;color:#5dade2">'+bankAmt+'萬</div></div>'+
       '<div style="text-align:center;background:rgba(160,100,10,.06);border-radius:8px;padding:10px"><div style="font-size:9px;color:#6a5040;margin-bottom:4px">交屋月數</div><div style="font-size:16px;font-weight:bold;color:#4a3020">'+deliv+'月</div></div>'+
       earnestCard;
+
+    // ── ★ 成交信號卡②：月存 vs 月結餘對比 ─────────────────
+    var _csCompare=g('csCompareBox');
+    if(_csCompare&&mnSave>0){
+      // 月結餘 = 月收 - 生活支出（不含月貸，因為交屋前沒有貸款）
+      var _csSurplus=Math.round(C.inc-C.exp);
+      var _csAfterSave=_csSurplus-mnSave;
+      _csCompare.style.display='block';
+      if(g('csNeedVal'))    g('csNeedVal').textContent='$'+Math.round(mnSave/1000)*1000>0?'$'+Math.round(mnSave).toLocaleString('zh-TW'):'—';
+      if(g('csSurplusVal')) g('csSurplusVal').textContent='$'+_csSurplus.toLocaleString('zh-TW');
+      var _csResEl=g('csResultVal');
+      if(_csResEl){
+        _csResEl.textContent=(_csAfterSave>=0?'+':'')+'$'+Math.abs(_csAfterSave).toLocaleString('zh-TW');
+        _csResEl.style.color=_csAfterSave>=10000?'#1a6b3a':_csAfterSave>=0?'#e8b84b':'#e05c4a';
+      }
+      if(g('csResultLabel')) g('csResultLabel').textContent='存完工程款後每月還剩';
+      if(g('csResultSub'))   g('csResultSub').textContent='月收 $'+Math.round(C.inc).toLocaleString('zh-TW')+' 扣生活支出 $'+Math.round(C.exp).toLocaleString('zh-TW')+' 再扣月存';
+      var _verd='';
+      if(_csAfterSave>=15000) _verd='✅ 每月存工程款後仍剩 <strong>$'+Math.abs(_csAfterSave).toLocaleString('zh-TW')+'</strong>，完全輕鬆負擔。這間房是你靠自己的薪水買到的。';
+      else if(_csAfterSave>=5000) _verd='🟡 每月存工程款後剩 $'+Math.abs(_csAfterSave).toLocaleString('zh-TW')+'，略有壓力但可行。交屋後房貸由租金或省下房租補貼，現金流持續改善。';
+      else if(_csAfterSave>=0) _verd='⚠️ 每月存款後緩衝較小，建議確認年終獎金補存策略，或討論暫收款分期安排。';
+      else _verd='🔴 月存需求超過現有結餘 $'+Math.abs(_csAfterSave).toLocaleString('zh-TW')+'，建議調整存款計畫或確認年終補存可行性。';
+      if(g('csVerdict')) g('csVerdict').innerHTML=_verd;
+    } else if(_csCompare){
+      _csCompare.style.display='none';
+    }
   } else {
     g('oppReady').style.display='block';
     g('oppPresale').style.display='none';
@@ -1811,7 +1893,42 @@ function doGen(){
       _p1n.style.color=_res3>=20?'#2ecc71':_res3>=0?'#e8b84b':'#e05c4a';
     }
 
-    // 預售 PART2：等屋期每月需存 + 交屋後月繳
+    // ── ★ 成交信號卡①：頭期款已解決 ─────────────────
+    var _csSolved=g('csSolvedBox');
+    if(_csSolved){
+      if(_gCont3>0){
+        _csSolved.style.display='block';
+        var _gNm3=(g('g_name')||{}).value||'家人';
+        var _gNote3=(g('g_contribution_note')||{}).value||'支援頭期款';
+        var _p1dText=_selfW3>0?_selfW3+'萬':'—';
+        var _contribPct=_selfW3>0?Math.round(_gCont3/_selfW3*100):0;
+        var _solvedTitle=_gNm3+'出資 '+_gCont3+'萬，頭期款問題解決了';
+        g('csSolvedTitle').textContent=_solvedTitle;
+        var _bodyHtml='';
+        _bodyHtml+='<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px">';
+        _bodyHtml+='<div style="text-align:center;background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.3);border-radius:8px;padding:10px">';
+        _bodyHtml+='<div style="font-size:9px;color:#1a6b3a;margin-bottom:3px">'+_gNm3+'出資</div>';
+        _bodyHtml+='<div style="font-size:18px;font-weight:900;color:#0a4a1a;font-family:\'DM Mono\',monospace">'+_gCont3+'萬</div>';
+        _bodyHtml+='</div>';
+        _bodyHtml+='<div style="text-align:center;background:rgba(160,100,10,.06);border:1px solid rgba(160,100,10,.2);border-radius:8px;padding:10px">';
+        _bodyHtml+='<div style="font-size:9px;color:#6a4820;margin-bottom:3px">工程款自備</div>';
+        _bodyHtml+='<div style="font-size:18px;font-weight:900;color:#5a2e00;font-family:\'DM Mono\',monospace">'+_p1dText+'</div>';
+        _bodyHtml+='</div>';
+        _bodyHtml+='<div style="text-align:center;background:rgba(93,173,226,.08);border:1px solid rgba(93,173,226,.2);border-radius:8px;padding:10px">';
+        _bodyHtml+='<div style="font-size:9px;color:#2a5a80;margin-bottom:3px">承擔比例</div>';
+        _bodyHtml+='<div style="font-size:18px;font-weight:900;color:#1a3a5a;font-family:\'DM Mono\',monospace">'+_contribPct+'%</div>';
+        _bodyHtml+='</div>';
+        _bodyHtml+='</div>';
+        _bodyHtml+='<div style="font-size:13px;color:#0a3a1a;line-height:2;padding:12px 14px;background:rgba(46,204,113,.06);border-radius:8px;border-left:3px solid rgba(46,204,113,.5)">';
+        _bodyHtml+='頭期款由'+_gNm3+'支援 <strong>'+_gCont3+'萬</strong>（'+_gNote3+'）。<br>';
+        _bodyHtml+='這表示你不需要在短期內把資金全部拿出來——<br>';
+        _bodyHtml+='<strong>接下來你只需要專心做一件事：每個月固定存工程款。</strong>';
+        _bodyHtml+='</div>';
+        g('csSolvedBody').innerHTML=_bodyHtml;
+      } else {
+        _csSolved.style.display='none';
+      }
+    }
     var _p2i=g('p2Inc'),_p2e=g('p2Exp'),_p2m=g('p2Mn');
     var _p2rb=g('p2RentBox'),_p2rt=g('p2Rent');
     var _p2rr=g('p2RemRaw'),_p2r=g('p2Rem');
@@ -1860,6 +1977,10 @@ function doGen(){
     }
 
   } else {
+    // 成屋模式：隱藏預售專用成交信號卡
+    var _csSolvedR=g('csSolvedBox'); if(_csSolvedR) _csSolvedR.style.display='none';
+    var _csCompareR=g('csCompareBox'); if(_csCompareR) _csCompareR.style.display='none';
+
     // 成屋 PART1
     var _res3b=_cash3-_dwW3-_earn3;
     var _p1cLabelB = _cash3>0 ? _cash3+'萬'+_contribLabel3+_creditLabel3 : '—';
