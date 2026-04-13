@@ -182,6 +182,37 @@ body{
 .bbg{height:16px;background:rgba(0,0,0,.08);border-radius:8px;overflow:hidden}
 .bfi{height:100%;border-radius:8px;transition:width .6s cubic-bezier(.4,0,.2,1)}
 
+/* ── 預售時間軸 ── */
+.tl-wrap{margin-bottom:14px;padding:16px 0 8px}
+.tl-label{font-size:9px;letter-spacing:3px;color:#c9922b;font-weight:bold;font-family:'DM Mono',monospace;margin-bottom:16px;text-align:center}
+.tl-track{position:relative;padding:0 8px}
+.tl-line{position:absolute;top:22px;left:28px;right:28px;height:3px;background:linear-gradient(90deg,#a86010,rgba(201,146,43,.3));border-radius:2px;z-index:0}
+.tl-dots{display:flex;justify-content:space-between;position:relative;z-index:1}
+.tl-dot-wrap{display:flex;flex-direction:column;align-items:center;flex:1}
+.tl-dot{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:bold;margin-bottom:8px;box-shadow:0 2px 8px rgba(0,0,0,.12);flex-shrink:0}
+.tl-dot.now{background:linear-gradient(135deg,#a86010,#c9802a);color:#fff;font-size:13px}
+.tl-dot.mid{background:#fff;border:2px solid rgba(201,146,43,.5);color:#8a5800}
+.tl-dot.key{background:rgba(201,146,43,.15);border:2px solid #c9922b;color:#7a4800}
+.tl-dot.end{background:linear-gradient(135deg,#1a6b3a,#27ae60);color:#fff;font-size:13px}
+.tl-dot-month{font-size:9px;color:#8a6040;margin-bottom:3px;letter-spacing:.5px;text-align:center;white-space:nowrap}
+.tl-dot-event{font-size:10px;font-weight:bold;color:#2c1a06;text-align:center;margin-bottom:2px;line-height:1.3}
+.tl-dot-amt{font-size:11px;font-weight:bold;font-family:'DM Mono',monospace;color:#a86010;text-align:center}
+.tl-dot.end + .tl-dot-month{color:#1a6b3a}
+.tl-dot-wrap.final .tl-dot-event{color:#1a3a10}
+.tl-dot-wrap.final .tl-dot-amt{color:#1a6b3a;font-size:13px}
+.tl-savings-bar{margin-top:14px;background:rgba(201,146,43,.06);border:1px solid rgba(201,146,43,.2);border-radius:10px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center}
+.tl-savings-label{font-size:11px;color:#7a4800}
+.tl-savings-val{font-size:18px;font-weight:900;color:#8a5800;font-family:'DM Mono',monospace}
+.tl-savings-sub{font-size:10px;color:#9a7040;margin-top:2px}
+/* RWD：手機螢幕限寬，文字縮小 */
+@media(max-width:420px){
+  .tl-dot{width:36px;height:36px;font-size:10px}
+  .tl-dot-event{font-size:9px}
+  .tl-dot-amt{font-size:10px}
+  .tl-dot-month{font-size:8px}
+  .tl-dot.now,.tl-dot.end{font-size:12px}
+}
+
 /* ── 成交信號卡（頭期款已解決 / 月存對比） ── */
 .cs-solved{background:linear-gradient(135deg,rgba(26,107,58,.12),rgba(26,107,58,.04));border:2px solid rgba(46,204,113,.5);border-radius:14px;padding:20px;margin-bottom:14px;position:relative;overflow:hidden}
 .cs-solved::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,#2ecc71,transparent)}
@@ -991,6 +1022,25 @@ body{
             <div style="font-size:22px;font-weight:bold;color:#2c1a06" id="oppDelivery">—</div>
           </div>
         </div>
+        <!-- ★ 預售時間軸：讓客戶「看見」36個月的節奏 -->
+        <div class="tl-wrap" id="presaleTimeline" style="display:none">
+          <div class="tl-label">PAYMENT TIMELINE — 你的購屋時間軸</div>
+          <div class="tl-track">
+            <div class="tl-line" id="tlLine"></div>
+            <div class="tl-dots" id="tlDots">
+              <!-- 由 JS 動態生成 -->
+            </div>
+          </div>
+          <!-- 等屋期每月存款提示 -->
+          <div class="tl-savings-bar">
+            <div>
+              <div class="tl-savings-label">📅 等屋期間每月只需存</div>
+              <div class="tl-savings-sub" id="tlSavingsSub">—</div>
+            </div>
+            <div class="tl-savings-val" id="tlSavingsVal">—</div>
+          </div>
+        </div>
+
         <!-- 預售工程款摘要 -->
         <div style="background:rgba(201,146,43,.06);border:1px solid rgba(201,146,43,.2);border-radius:10px;padding:12px;margin-bottom:10px">
           <div style="font-size:10px;color:#c8a870;font-weight:bold;margin-bottom:8px">🏗️ 工程款付款摘要</div>
@@ -1797,7 +1847,7 @@ function doGen(){
 
     var _oppSaveEl=g('oppMonthlySave');
     var _oppSaveNote=g('oppMonthlySaveNote');
-    if(_oppSaveEl) _oppSaveEl.textContent=mnSave>0?'$'+fmt(mnSave):'—';
+    if(_oppSaveEl) _oppSaveEl.textContent=mnSave>0?fmt(mnSave):'—';
     if(_oppSaveNote){
       var _note='每月存 $'+fmt(mnSave)+'，約'+deliv+'個月後交屋';
       if(earnestEst2>0) _note+='｜暫收款 '+earnestEst2+'萬已計入';
@@ -1814,6 +1864,52 @@ function doGen(){
       '<div style="text-align:center;background:rgba(160,100,10,.06);border-radius:8px;padding:10px"><div style="font-size:9px;color:#6a5040;margin-bottom:4px">銀行貸款</div><div style="font-size:16px;font-weight:bold;color:#5dade2">'+bankAmt+'萬</div></div>'+
       '<div style="text-align:center;background:rgba(160,100,10,.06);border-radius:8px;padding:10px"><div style="font-size:9px;color:#6a5040;margin-bottom:4px">交屋月數</div><div style="font-size:16px;font-weight:bold;color:#4a3020">'+deliv+'月</div></div>'+
       earnestCard;
+
+    // ── ★ 時間軸渲染 ────────────────────────────────
+    (function renderTimeline(){
+      var tlBox=g('presaleTimeline');
+      if(!tlBox||!prW) return;
+      tlBox.style.display='block';
+
+      // 計算各期金額（與 calcPresale 邏輯一致）
+      var pct=function(p){return Math.ceil(prW*p/100);};
+      var depAmt=10, conAmt=pct(6)-depAmt;
+      var wAmt=pct(2), b1=pct(2), f5=pct(2), f15=pct(2), demol=pct(2), use=pct(2);
+      var whn=function(r){return Math.round(deliv*r);};
+
+      // 5個關鍵節點（簡化，不全列）
+      var nodes=[
+        {month:0,       label:'現在',      event:'簽約',        amt:(depAmt+conAmt)+'萬',  type:'now'},
+        {month:whn(.08),label:whn(.08)+'月',event:'放樣勘驗',   amt:wAmt+'萬',             type:'mid'},
+        {month:whn(.35),label:whn(.35)+'月',event:'5F完成',     amt:f5+'萬',               type:'key'},
+        {month:whn(.78),label:whn(.78)+'月',event:'鷹架拆除',   amt:demol+'萬',            type:'key'},
+        {month:deliv,   label:deliv+'月',   event:'🔑 交屋',     amt:'銀貸撥付',            type:'end'}
+      ];
+
+      // 生成 dot HTML
+      var dotsHtml='';
+      nodes.forEach(function(n,i){
+        var isLast=(i===nodes.length-1);
+        dotsHtml+='<div class="tl-dot-wrap'+(isLast?' final':'')+'">';
+        dotsHtml+='<div class="tl-dot-month">'+n.label+'</div>';
+        dotsHtml+='<div class="tl-dot '+n.type+'">'+(n.type==='now'?'📝':n.type==='end'?'🏠':i+1)+'</div>';
+        dotsHtml+='<div class="tl-dot-event">'+n.event+'</div>';
+        dotsHtml+='<div class="tl-dot-amt">'+n.amt+'</div>';
+        dotsHtml+='</div>';
+      });
+      g('tlDots').innerHTML=dotsHtml;
+
+      // 等屋期月存提示
+      var tlSaveEl=g('tlSavingsVal'), tlSubEl=g('tlSavingsSub');
+      if(tlSaveEl) tlSaveEl.textContent=mnSave>0?fmt(mnSave):'—';
+      if(tlSubEl){
+        var _gNmTl=(g('g_name')||{}).value||'';
+        var _gCtTl=parseFloat((g('g_contribution')||{value:'0'}).value)||0;
+        var subTxt='不需繳房貸，每月固定存工程款，'+deliv+'個月後交屋才開始月繳';
+        if(_gCtTl>0) subTxt='頭期款由'+(_gNmTl||'家人')+'支援，你只需每月固定存這個金額';
+        tlSubEl.textContent=subTxt;
+      }
+    })();
 
     // ── ★ 成交信號卡②：月存 vs 月結餘對比 ─────────────────
     // 精準邏輯：
@@ -1839,25 +1935,42 @@ function doGen(){
       if(g('csSurplusVal')) g('csSurplusVal').textContent='$'+_csSurplus.toLocaleString('zh-TW');
       var _csResEl=g('csResultVal');
       if(_csResEl){
-        _csResEl.textContent=(_csAfterSave>=0?'+':'')+'$'+Math.abs(_csAfterSave).toLocaleString('zh-TW');
-        _csResEl.style.color=_csAfterSave>=15000?'#1a6b3a':_csAfterSave>=5000?'#27ae60':_csAfterSave>=0?'#e8b84b':'#e05c4a';
+        _csResEl.textContent=(_csAfterSave>=0?'+':'-')+fmt(Math.abs(_csAfterSave));
+        _csResEl.style.color=_csAfterSave>=15000?'#1a6b3a':_csAfterSave>=5000?'#27ae60':_csAfterSave>=0?'#e8b84b':'#c9922b';
       }
       // 標籤說明：有租金收入時特別標注
       var _needDesc=_rentIncNow>0
         ?'月貸 $'+Math.round(C.mn).toLocaleString('zh-TW')+'－租客幫繳 $'+Math.round(_rentIncNow).toLocaleString('zh-TW')+'＝你自己只需存'
         :'交屋後每月實際需繳（房貸全額）';
-      if(g('csResultLabel')) g('csResultLabel').textContent='存完房貸後每月還剩';
-      if(g('csResultSub'))   g('csResultSub').textContent='月收 $'+Math.round(C.inc).toLocaleString('zh-TW')+'－生活 $'+_csExpNoRent.toLocaleString('zh-TW')+'（不含現有房租）－月繳 $'+_csNeed.toLocaleString('zh-TW');
+      if(g('csResultLabel')) g('csResultLabel').textContent=_csAfterSave>=0?'繳完房貸後每月還剩':'每月還差';
+      if(g('csResultSub'))   g('csResultSub').textContent='月收 '+fmt(C.inc)+'－生活 '+fmt(_csExpNoRent)+'（不含現有房租）－月繳 '+fmt(_csNeed);
       // 卡頂部補充說明
       var _needLabelEl=g('csNeedLabel');
       if(_needLabelEl) _needLabelEl.textContent=_rentIncNow>0?'每月淨負擔（扣租金）':'每月房貸';
       var _surplusLabelEl=g('csSurplusLabel');
-      if(_surplusLabelEl) _surplusLabelEl.textContent='現有月結餘（不含房租支出）';
+      if(_surplusLabelEl) _surplusLabelEl.textContent='現有月結餘（不含房租）';
       var _verd='';
-      if(_csAfterSave>=20000) _verd='✅ 交屋後每月繳完房貸還剩 <strong>$'+Math.abs(_csAfterSave).toLocaleString('zh-TW')+'</strong>，輕鬆有餘。這間房是你靠自己薪水買的。';
-      else if(_csAfterSave>=8000) _verd='✅ 繳完房貸每月還剩 <strong>$'+Math.abs(_csAfterSave).toLocaleString('zh-TW')+'</strong>，完全可以負擔。'+((_rentIncNow>0)?'有租客幫你繳，實際壓力更小。':'年終獎金是額外緩衝。');
-      else if(_csAfterSave>=0) _verd='🟡 每月繳完房貸剩 $'+Math.abs(_csAfterSave).toLocaleString('zh-TW')+'，建議搭配年終補存，整體可行。';
-      else _verd='⚠️ 月收扣生活後，繳完房貸還差 $'+Math.abs(_csAfterSave).toLocaleString('zh-TW')+'。建議確認是否有租金收入或年終補足。';
+      if(_csAfterSave>=20000){
+        _verd='✅ 繳完房貸每月還剩 <strong>'+fmt(_csAfterSave)+'</strong>，輕鬆有餘。這間房是你靠自己薪水買的。';
+      } else if(_csAfterSave>=8000){
+        _verd='✅ 繳完房貸每月還剩 <strong>'+fmt(_csAfterSave)+'</strong>，完全可以負擔。'+((_rentIncNow>0)?'有租客幫你繳，實際壓力更小。':'年終獎金是額外緩衝。');
+      } else if(_csAfterSave>=0){
+        _verd='🟡 繳完房貸每月剩 <strong>'+fmt(_csAfterSave)+'</strong>，搭配年終補存，整體可行。';
+      } else {
+        // ★ 不夠時：清楚顯示缺口 + 解法
+        var _gap=Math.abs(_csAfterSave);
+        var _gapW=Math.ceil(_gap/10000*10)/10; // 萬，一位小數
+        _verd='<div style="margin-bottom:8px">⚠️ 月收扣生活後，目前每月還差 <strong style="color:#c03010;font-size:15px">'+fmt(_gap)+'</strong> 才能全額繳房貸。</div>';
+        _verd+='<div style="font-size:12px;color:#3a1a08;line-height:2">';
+        _verd+='<strong>怎麼補這個缺口？</strong><br>';
+        if(_rentIncNow>0){
+          _verd+='✓ 已有租客幫繳 '+fmt(_rentIncNow)+'——缺口已大幅縮小<br>';
+        }
+        _verd+='✓ 年終獎金、季獎金可補存（每年一次即可）<br>';
+        _verd+='✓ 交屋後薪資成長填補（'+deliv+'個月後的你，不是今天的你）<br>';
+        _verd+='✓ 或討論頭期款提高、延長貸款年期降低月繳';
+        _verd+='</div>';
+      }
       if(g('csVerdict')) g('csVerdict').innerHTML=_verd;
 
       // 更新卡頂部月存大卡的 note（說明這個數字的來源）
@@ -2012,11 +2125,12 @@ function doGen(){
 
     // 交屋後月結餘（唯一顯示的結論行）
     var _showRem=rentInc>0?_remAfterRent:_remAfter;
-    if(_p2r){
-      _p2r.textContent=((_showRem>=0?'+':'')+fmt(Math.abs(_showRem)));
-      _p2r.style.color=_showRem>=0?'#2ecc71':'#e05c4a';
-    }
-    // 標籤：有租金則說明「租客幫你繳 X，你自己存 Y」
+    // ★ 預售模式：PART2 大結論行隱藏（已由卡②取代，避免重疊）
+    var _p2remBoxEl=g('p2RemBox');
+    if(_p2remBoxEl) _p2remBoxEl.style.display='none';
+    // PART2 上方收支兩格也整個 section 隱藏
+    var _part2Section=document.querySelector('#reportContent .part2-section');
+    // 標籤/note 還是寫入，只是不顯示（供 JS 相容）
     if(_p2rl){
       if(rentInc>0){
         _p2rl.textContent='交屋後每月只需存';
@@ -2025,11 +2139,6 @@ function doGen(){
         _p2rl.textContent='交屋後每月只需存';
         if(_p2rn) _p2rn.textContent='月收 '+fmt(C.inc)+'－生活 '+fmt(C.exp)+'－月貸 '+fmt(C.mn)+(savedRent>0?'+省下租金 '+fmt(savedRent):'');
       }
-    }
-    if(_p2box){
-      var _boxOk=_showRem>=0;
-      _p2box.style.borderColor=_boxOk?'rgba(46,204,113,.4)':'rgba(224,92,74,.4)';
-      _p2box.style.background =_boxOk?'rgba(46,204,113,.07)':'rgba(224,92,74,.07)';
     }
 
   } else {
@@ -2143,26 +2252,29 @@ function doGen(){
   }
 
   // MONTHLY SURPLUS 大數字
-  if(g('spV')){
-    g('spV').textContent = (rem >= 0 ? '+' : '') + fmt(Math.abs(rem));
-    g('spV').style.color = rem >= 0 ? '#2ecc71' : '#e05c4a';
-  }
-  if(g('spS')){
-    var _spDesc = '';
-    if(rentInc > 0) _spDesc = '租客幫你繳 '+fmt(rentInc)+'，每個月只需存 '+fmt(Math.max(0,rem));
-    else if(savedRent > 0) _spDesc = '含省下房租 '+fmt(savedRent)+'，扣所有支出後月結餘';
-    else _spDesc = '扣除月繳 '+fmt(C.mn)+' 及所有生活支出後每月結餘';
-    g('spS').textContent = _spDesc;
-  }
-
-  // 情感橋接（月結餘正值才顯示）
-  var _eb = g('emotionBridge'), _em = g('emotionMsg');
-  if(_eb && _em){
-    if(rem > 0){
-      _em.textContent = '這不是在算買不買得起——這是在確認你早就準備好了。';
-      _eb.style.display='block';
-    } else {
-      _eb.style.display='none';
+  // ★ 預售模式：隱藏這張（已由卡②完整呈現，避免重疊）
+  var _spBox = g('spV') ? g('spV').closest('.sp') : null;
+  if(isPresale){
+    if(_spBox) _spBox.style.display='none';
+    var _ebPresale=g('emotionBridge'); if(_ebPresale) _ebPresale.style.display='none';
+  } else {
+    if(_spBox) _spBox.style.display='';
+    if(g('spV')){
+      g('spV').textContent = (rem >= 0 ? '+' : '') + fmt(Math.abs(rem));
+      g('spV').style.color = rem >= 0 ? '#2ecc71' : '#e05c4a';
+    }
+    if(g('spS')){
+      var _spDesc = '';
+      if(rentInc > 0) _spDesc = '租客幫你繳 '+fmt(rentInc)+'，每個月只需存 '+fmt(Math.max(0,rem));
+      else if(savedRent > 0) _spDesc = '含省下房租 '+fmt(savedRent)+'，扣所有支出後月結餘';
+      else _spDesc = '扣除月繳 '+fmt(C.mn)+' 及所有生活支出後每月結餘';
+      g('spS').textContent = _spDesc;
+    }
+    // 情感橋接（月結餘正值才顯示）
+    var _eb = g('emotionBridge'), _em = g('emotionMsg');
+    if(_eb && _em){
+      if(rem > 0){ _em.textContent = '這不是在算買不買得起——這是在確認你早就準備好了。'; _eb.style.display='block'; }
+      else { _eb.style.display='none'; }
     }
   }
 
