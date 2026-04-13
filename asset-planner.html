@@ -6,7 +6,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>富時代｜資產規劃報告 v12</title>
+<title>富時代｜資產規劃報告 v20</title>
 <style>
 /* ── 全域重置 ── */
 *{box-sizing:border-box;margin:0;padding:0}
@@ -623,6 +623,26 @@ body{
             <div class="fl"><label>車貸</label><input type="number" id="g_carloan" placeholder="0"></div>
             <div class="fl"><label>房貸</label><input type="number" id="g_homeloan" placeholder="0"></div>
           </div>
+
+          <!-- ★ 出資協助（計入資金計算） -->
+          <div style="margin-top:14px;padding:12px;background:rgba(46,204,113,.06);border:1px solid rgba(46,204,113,.25);border-radius:10px">
+            <div style="font-size:10px;color:#1a6b3a;letter-spacing:1px;font-weight:bold;margin-bottom:8px">💰 出資協助（計入可動用資金）</div>
+            <div class="fl">
+              <label>出資金額（萬）</label>
+              <input type="number" id="g_contribution" placeholder="0" oninput="calcAssets()" style="border-color:rgba(46,204,113,.4)">
+              <div style="font-size:9px;color:#2a6040;margin-top:4px">此金額將加入「可動用現金」計算備用金，反映家人實際出資</div>
+            </div>
+            <div class="fl" style="margin-top:10px">
+              <label>出資用途說明（選填）</label>
+              <input type="text" id="g_contribution_note" placeholder="例：支援簽約款、工程款前期" style="border-color:rgba(46,204,113,.3)">
+            </div>
+          </div>
+
+          <!-- ★ 保證人優勢摘要（即時預覽） -->
+          <div id="gStrengthPreview" style="display:none;margin-top:12px;padding:12px;background:rgba(93,173,226,.06);border:1px solid rgba(93,173,226,.2);border-radius:10px">
+            <div style="font-size:9px;color:#2a4a6a;letter-spacing:1px;font-weight:bold;margin-bottom:8px">🛡️ 保證人優勢摘要</div>
+            <div id="gStrengthText" style="font-size:12px;color:#2c3e50;line-height:1.9"></div>
+          </div>
         </div>
       </div>
 
@@ -1096,6 +1116,17 @@ body{
     </div>
 
     <!-- 房貸風控摘要已移除 --><div id="mortgageSection" style="display:none"></div>
+
+    <!-- ⑨-0 家族財力支援摘要（有保證人且有資料時才顯示） -->
+    <div id="familySupportBox" style="display:none;background:linear-gradient(160deg,#f0f8ff,#e8f4fd);border:1.5px solid rgba(93,173,226,.35);border-radius:14px;padding:20px;margin-bottom:14px;box-shadow:0 3px 16px rgba(93,173,226,.1)">
+      <div style="font-size:8px;letter-spacing:3px;color:#2a6a9a;margin-bottom:14px;font-weight:bold;font-family:'DM Mono',monospace">FAMILY SUPPORT — 家族財力支援</div>
+      <!-- 三欄摘要 -->
+      <div id="familySupportGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px"></div>
+      <!-- 核心說法 -->
+      <div id="familySupportMsg" style="font-size:14px;color:#1a2a3a;line-height:2;padding:14px;background:rgba(93,173,226,.08);border-left:3px solid rgba(93,173,226,.6);border-radius:0 10px 10px 0"></div>
+      <!-- 保證人優勢條 -->
+      <div id="familySupportAdvantage" style="margin-top:12px;padding:10px 14px;background:rgba(46,204,113,.08);border:1px solid rgba(46,204,113,.25);border-radius:8px;font-size:12px;color:#1a5a2a;line-height:1.9"></div>
+    </div>
 
     <!-- ⑨ 顧問區：收尾話術 + 動態問句 -->
     <!-- 對客戶說的話 -->
@@ -1655,9 +1686,10 @@ function doGen(){
       _dwW2=(parseFloat((g('iDwn')||{value:'0'}).value)||0);
     }
     // 可動用現金：fLiquid 優先（顧問校調值），fallback 資產加總
-    var _fLiq2  = parseFloat((g('fLiquid')||{value:'0'}).value)||0;
-    var _assetSum2 = fund+stock+dep+bankb+_bonus2;
-    var _cash2 = (_fLiq2>0 ? _fLiq2 : _assetSum2);
+    var _fLiq2   = parseFloat((g('fLiquid')||{value:'0'}).value)||0;
+    var _gCont2  = parseFloat((g('g_contribution')||{value:'0'}).value)||0; // ★ 保證人出資
+    var _assetSum2 = fund+stock+dep+bankb+_bonus2+_gCont2;
+    var _cash2 = (_fLiq2>0 ? _fLiq2+_gCont2 : _assetSum2);
     var _res2  = _cash2+_credit2-_dwW2-_earn2;
     var _resBox=g('snapReserveBox');
     if(_resBox&&_dwW2>0&&(_cash2>0||_credit2>0)){
@@ -1747,8 +1779,9 @@ function doGen(){
   var _bank3  = parseFloat((g('a_bankbal')||{value:'0'}).value)||0;
   var _bonus3 = parseFloat((g('a_bonus')||{value:'0'}).value)||0;
   var _assetSum3 = _fund3+_stk3+_dep3+_bank3+_bonus3; // 資產欄加總（不含信貸）
-  var _baseCash3 = _fLiq3>0 ? _fLiq3 : _assetSum3;    // fLiquid 優先；空白才用資產加總
-  var _cash3  = _baseCash3+_credit3; // 最終可動用現金（含信貸）
+  var _gCont3  = parseFloat((g('g_contribution')||{value:'0'}).value)||0; // ★ 保證人出資
+  var _baseCash3 = _fLiq3>0 ? _fLiq3+_gCont3 : _assetSum3+_gCont3;    // fLiquid 優先；空白才用資產加總
+  var _cash3  = _baseCash3+_credit3; // 最終可動用現金（含信貸＋保證人出資）
   var _dwW3   = C.dw?Math.round(C.dw/10000):0;         // 自備款（萬，成屋用）
 
   // 預售：PART1 是工程款自備部分，PART2 分兩段
@@ -1763,7 +1796,9 @@ function doGen(){
     var _res3=_cash3-_selfW3-_earn3;
 
     // 可動用現金：若含信貸，標示來源
-    var _p1cLabel = _cash3>0 ? _cash3+'萬'+(_credit3>0?' （含信貸'+_credit3+'萬）':'') : '—';
+    var _contribLabel3 = _gCont3>0?' ＋家人出資'+_gCont3+'萬':'';
+    var _creditLabel3  = _credit3>0?' ＋信貸'+_credit3+'萬':'';
+    var _p1cLabel = _cash3>0 ? _cash3+'萬'+_contribLabel3+_creditLabel3 : '—';
     if(_p1c) _p1c.textContent=_p1cLabel;
     if(_p1d) _p1d.textContent=_selfW3>0?_selfW3+'萬（工程款自備）':'—';
     if(_p1e) _p1e.textContent=_earn3>0?_earn3+'萬':'—';
@@ -1827,7 +1862,7 @@ function doGen(){
   } else {
     // 成屋 PART1
     var _res3b=_cash3-_dwW3-_earn3;
-    var _p1cLabelB = _cash3>0 ? _cash3+'萬'+(_credit3>0?' （含信貸'+_credit3+'萬）':'') : '—';
+    var _p1cLabelB = _cash3>0 ? _cash3+'萬'+_contribLabel3+_creditLabel3 : '—';
     if(_p1c) _p1c.textContent=_p1cLabelB;
     if(_p1d) _p1d.textContent=_dwW3>0?_dwW3+'萬':'—';
     if(_p1e) _p1e.textContent=_earn3>0?_earn3+'萬':'—';
@@ -2085,8 +2120,91 @@ function doGen(){
     }
   }
 
+  // ── ★ 家族財力支援摘要（有保證人資料時才渲染）──────────
+  renderFamilySupport(nm);
+
   // ── 顯示報告 ─────────────────────────────────────
   sw('R');
+}
+
+// ★ 渲染報告頁的家族財力支援摘要
+function renderFamilySupport(nm) {
+  var box = g('familySupportBox');
+  if(!box) return;
+
+  var gName    = (g('g_name')||{}).value || '';
+  var gRe      = parseFloat((g('g_realestate')||{}).value)||0;
+  var gBank    = parseFloat((g('g_bankbal')||{}).value)||0;
+  var gDep     = parseFloat((g('g_deposit')||{}).value)||0;
+  var gFund    = parseFloat((g('g_fund')||{}).value)||0;
+  var gStock   = parseFloat((g('g_stock')||{}).value)||0;
+  var gIncome  = parseFloat((g('g_income')||{}).value)||0;
+  var gContrib = parseFloat((g('g_contribution')||{}).value)||0;
+  var gNote    = (g('g_contribution_note')||{}).value || '';
+
+  var totalGAsset = gRe + gBank + gDep + gFund + gStock;
+
+  // 沒有任何保證人資料 → 隱藏
+  if(!gName && totalGAsset === 0 && gContrib === 0) {
+    box.style.display = 'none';
+    return;
+  }
+
+  box.style.display = 'block';
+  var gLabel = gName || '保證人';
+
+  // ── 數字格子（Grid）──
+  var gridEl = g('familySupportGrid');
+  if(gridEl) {
+    var cards = '';
+    if(totalGAsset > 0) {
+      cards += '<div style="background:rgba(93,173,226,.1);border:1px solid rgba(93,173,226,.25);border-radius:10px;padding:12px;text-align:center">' +
+        '<div style="font-size:9px;color:#2a6a9a;margin-bottom:4px;letter-spacing:1px">名下資產</div>' +
+        '<div style="font-size:20px;font-weight:bold;color:#1a3a5a;font-family:&quot;DM Mono&quot;,monospace">'+totalGAsset+'<span style="font-size:11px;font-weight:normal">萬</span></div>' +
+        (gRe>0?'<div style="font-size:10px;color:#4a7090;margin-top:4px">不動產 '+gRe+'萬</div>':'') +
+        '</div>';
+    }
+    if(gContrib > 0) {
+      var noteStr = gNote ? gNote : '出資協助';
+      cards += '<div style="background:rgba(46,204,113,.1);border:1px solid rgba(46,204,113,.3);border-radius:10px;padding:12px;text-align:center">' +
+        '<div style="font-size:9px;color:#1a6b3a;margin-bottom:4px;letter-spacing:1px">'+noteStr+'</div>' +
+        '<div style="font-size:20px;font-weight:bold;color:#1a4a2a;font-family:&quot;DM Mono&quot;,monospace">'+gContrib+'<span style="font-size:11px;font-weight:normal">萬</span></div>' +
+        '<div style="font-size:10px;color:#2a5a2a;margin-top:4px">✓ 已計入可動用資金</div>' +
+        '</div>';
+    }
+    if(gIncome > 0) {
+      cards += '<div style="background:rgba(160,100,10,.06);border:1px solid rgba(160,100,10,.2);border-radius:10px;padding:12px;text-align:center">' +
+        '<div style="font-size:9px;color:#6a4820;margin-bottom:4px;letter-spacing:1px">月收入</div>' +
+        '<div style="font-size:18px;font-weight:bold;color:#4a2a06;font-family:&quot;DM Mono&quot;,monospace">'+gIncome.toLocaleString()+'<span style="font-size:10px;font-weight:normal">元</span></div>' +
+        '</div>';
+    }
+    gridEl.innerHTML = cards;
+  }
+
+  // ── 核心說法（心理安全感）──
+  var msgEl = g('familySupportMsg');
+  if(msgEl) {
+    var mainName = nm || '你';
+    var msg = '「'+mainName+'，你不是孤軍奮戰的。';
+    if(gContrib > 0) {
+      msg += '<br><br>'+gLabel+'這次出資 <strong style="color:#1a6b3a">'+gContrib+'萬</strong>，讓你第一步踏得更穩。';
+    }
+    if(totalGAsset > 0) {
+      msg += '<br><br>'+gLabel+'名下資產約 <strong style="color:#2a6a9a">'+totalGAsset+'萬</strong>，是你背後穩定的安全網。';
+    }
+    msg += '<br><br>但最重要的是——<strong>十年後回頭看，是你自己的薪水把這間房還清的。</strong><br>'+gLabel+'的財力是底氣，不是拐杖。」';
+    msgEl.innerHTML = msg;
+  }
+
+  // ── 保證人優勢條 ──
+  var advEl = g('familySupportAdvantage');
+  if(advEl) {
+    var advItems = [];
+    if(totalGAsset > 0) advItems.push('💎 資產雄厚，銀行審貸信心加分');
+    if(gIncome > 0) advItems.push('💰 有固定收入，保證人資格優質');
+    advItems.push('🏦 聯保結構強化，核貸成數有機會提升');
+    advEl.innerHTML = '🛡️ <strong>保證人優勢</strong>　｜　' + advItems.join('　·　');
+  }
 }
 
 
@@ -2188,6 +2306,8 @@ function calcAssets() {
   var dep    = parseFloat((g('a_deposit')||{}).value)||0;
   var bank   = parseFloat((g('a_bankbal')||{}).value)||0;
   var bonus  = parseFloat((g('a_bonus')||{}).value)||0; // 其他一次性資金（已修正連動）
+  // ★ 保證人出資協助（計入可動用現金）
+  var gContrib = parseFloat((g('g_contribution')||{}).value)||0;
 
   // 不動產市值加總
   var propVal = 0;
@@ -2208,6 +2328,9 @@ function calcAssets() {
   var dHome = parseFloat((g('d_home')||{}).value)||0;
   var totalDebt = dStu + dPer + dCar + dHome;
 
+  // ── 即時保證人優勢預覽 ──────────────────────────
+  updateGuarantorPreview();
+
   var net = totalAsset - totalDebt;
 
   if(g('a_totalAsset')) g('a_totalAsset').textContent = totalAsset + ' 萬';
@@ -2223,7 +2346,7 @@ function calcAssets() {
   var rBox = g('a_reserveBox');
   if(rBox && dwW > 0 && totalAsset > 0){
     rBox.style.display = 'block';
-    var cashTotal = fund + stock + dep + bankb + bonus; // 可動用現金（不含房產）
+    var cashTotal = fund + stock + dep + bank + bonus + gContrib; // 可動用現金（不含房產），含保證人出資
     var reserve = cashTotal - dwW - earnest;
     var resCash = g('a_res_cash'), resDw = g('a_res_dw');
     var resEarn = g('a_res_earn'), resEl = g('a_reserve');
@@ -2253,6 +2376,48 @@ function toggleGuarantor() {
   var open = sec.style.display !== 'none';
   sec.style.display = open ? 'none' : 'block';
   icon.textContent  = open ? '▶ 展開' : '▼ 收合';
+  if(!open) updateGuarantorPreview(); // 展開時刷新預覽
+}
+
+// ★ 即時計算並顯示保證人優勢摘要
+function updateGuarantorPreview() {
+  var gName    = (g('g_name')||{}).value || '';
+  var gRe      = parseFloat((g('g_realestate')||{}).value)||0;
+  var gBank    = parseFloat((g('g_bankbal')||{}).value)||0;
+  var gDep     = parseFloat((g('g_deposit')||{}).value)||0;
+  var gFund    = parseFloat((g('g_fund')||{}).value)||0;
+  var gStock   = parseFloat((g('g_stock')||{}).value)||0;
+  var gIncome  = parseFloat((g('g_income')||{}).value)||0;
+  var gContrib = parseFloat((g('g_contribution')||{}).value)||0;
+  var gNote    = (g('g_contribution_note')||{}).value || '';
+
+  var previewEl = g('gStrengthPreview');
+  var textEl    = g('gStrengthText');
+  if(!previewEl || !textEl) return;
+
+  // 有填任何保證人資料才顯示
+  var totalGAsset = gRe + gBank + gDep + gFund + gStock;
+  if(!gName && totalGAsset === 0 && gContrib === 0) {
+    previewEl.style.display = 'none';
+    return;
+  }
+
+  // 組合優勢摘要文字
+  var lines = [];
+  if(gName) lines.push('👤 保證人：' + gName);
+  if(totalGAsset > 0) lines.push('💎 名下資產：約 ' + totalGAsset + ' 萬');
+  if(gRe > 0)  lines.push('　├ 不動產：' + gRe + ' 萬');
+  if(gBank > 0) lines.push('　├ 存簿：' + gBank + ' 萬');
+  if(gDep > 0)  lines.push('　└ 定存：' + gDep + ' 萬');
+  if(gIncome > 0) lines.push('💰 月收入：' + (gIncome).toLocaleString() + ' 元');
+  if(gContrib > 0) {
+    var noteStr = gNote ? '（' + gNote + '）' : '';
+    lines.push('✅ 出資協助：' + gContrib + ' 萬' + noteStr + '　← 已計入可動用資金');
+  }
+  lines.push('🛡️ 已具備保證人資格，有助提升核貸成數');
+
+  textEl.innerHTML = lines.join('<br>');
+  previewEl.style.display = 'block';
 }
 
 function setGrowth(v){
