@@ -720,6 +720,43 @@ select:focus,input:focus,textarea:focus {
   font-size:13px; font-weight:600; font-family:inherit;
   cursor:pointer; transition:all .2s; margin-top:0;
 }
+
+/* ── 預約系統 CSS ── */
+/* 儀表板摘要卡片 */
+.booking-summary-card{background:#fff;border:1px solid var(--cream2);border-radius:var(--radius);overflow:hidden;margin-bottom:1rem;box-shadow:var(--shadow)}
+.bsc-header{display:flex;justify-content:space-between;align-items:center;padding:.875rem 1.25rem;background:linear-gradient(135deg,var(--navy),var(--navy-light))}
+.bsc-title{font-size:13px;font-weight:700;color:#fff}
+.bsc-count{background:var(--gold);color:var(--navy);font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px}
+.bsc-list{max-height:200px;overflow-y:auto}
+.bsc-item{display:flex;align-items:center;padding:.75rem 1.25rem;border-bottom:1px solid var(--cream2);gap:.75rem;font-size:13px}
+.bsc-item:last-child{border-bottom:none}
+.bsc-item-name{font-weight:700;color:var(--navy);min-width:60px}
+.bsc-item-consultant{color:var(--gold);font-size:11px;font-weight:700}
+.bsc-item-time{color:var(--text-muted);font-size:11px;margin-left:auto}
+.bsc-footer{padding:.625rem 1.25rem;border-top:1px solid var(--cream2);text-align:right}
+.bsc-footer button{background:none;border:none;color:var(--gold);font-size:13px;font-weight:700;cursor:pointer}
+/* 預約頁籤 */
+.booking-tab-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+.booking-tab-header h2{font-size:18px;font-weight:800;color:var(--navy)}
+.booking-stats{display:flex;gap:.5rem;flex-wrap:wrap}
+.b-stat{background:var(--cream2);border:1px solid var(--gold);border-radius:8px;padding:4px 12px;font-size:11px;color:var(--navy);font-weight:700}
+.booking-filters{display:flex;gap:.625rem;margin-bottom:1rem;flex-wrap:wrap}
+.booking-filters select,.booking-filters button{padding:.5rem .875rem;border:1.5px solid #dde3ea;border-radius:var(--radius-sm);font-size:13px;background:var(--cream);font-family:inherit;cursor:pointer}
+.booking-filters button{background:var(--navy);color:#fff;border-color:var(--navy)}
+.booking-table{width:100%;border-collapse:collapse;font-size:13px;background:#fff;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.booking-table th{background:linear-gradient(135deg,var(--navy),var(--navy-light));color:#fff;padding:.75rem 1rem;text-align:left;font-weight:700;font-size:12px}
+.booking-table td{padding:.75rem 1rem;border-bottom:1px solid var(--cream2);vertical-align:middle}
+.booking-table tr:last-child td{border-bottom:none}
+.booking-table tr:hover td{background:var(--cream)}
+/* 狀態徽章 */
+.status-badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700}
+.status-待確認{background:#FDF0E8;color:#E8692A}
+.status-已確認{background:#E8F5E9;color:#2E7D32}
+.status-已完成{background:#E3F2FD;color:#1565C0}
+.status-取消{background:#FFEBEE;color:#C62828}
+/* 操作按鈕 */
+.b-action-btn{padding:3px 8px;border-radius:6px;border:1px solid #dde3ea;background:#fff;font-size:11px;cursor:pointer;margin-right:3px;font-family:inherit}
+.b-action-btn:hover{background:var(--cream2)}
 </style>
 <script>
 window.addEventListener('error', function(e) {
@@ -830,6 +867,7 @@ function claimSeminarLead() {}
     <button onclick="showPage('staffMgmt',this)" id="staffTab">👥 業務</button>
     <button onclick="showPage('followupJournal',this)" id="journalTab">📝 日誌</button>
     <button onclick="showPage('bossDashboard',this)" id="bossTab" style="display:none">🧠 決策</button>
+    <button onclick="showPage('booking',this)" id="bookingTab">📅 預約</button>
   </nav>
 
   <!-- 浮動按鈕（已停用） -->
@@ -913,6 +951,18 @@ function claimSeminarLead() {}
         <div class="card-body" id="seminarGrid"></div>
       </div>
 
+      <!-- 預約摘要卡片（來自研討會/QRCode） -->
+      <div class="booking-summary-card" id="dashboardBookingSummary">
+        <div class="bsc-header">
+          <span class="bsc-title">📅 待確認預約</span>
+          <span class="bsc-count" id="bscCount">載入中...</span>
+        </div>
+        <div id="bscList" class="bsc-list"></div>
+        <div class="bsc-footer">
+          <button onclick="showPage('booking',document.getElementById('bookingTab'))">查看全部預約 →</button>
+        </div>
+      </div>
+
       <!-- 最新動態 -->
       <div class="card" id="recentCard">
         <div class="card-header"><div class="card-icon">🕐</div><h3>最新客戶動態</h3></div>
@@ -937,6 +987,35 @@ function claimSeminarLead() {}
         <span id="companyLeadCount"></span>
         <span id="selfLeadCount"></span>
         <span id="leadSourceBreakdown"></span>
+      </div>
+    </div>
+
+
+    <!-- 預約管理頁籤 -->
+    <div id="booking" class="page">
+      <div class="booking-tab-header">
+        <h2>📅 預約管理</h2>
+        <div class="booking-stats" id="bookingStats"></div>
+      </div>
+
+      <!-- 篩選列 -->
+      <div class="booking-filters">
+        <select id="filterConsultant" onchange="renderBookingTable()">
+          <option value="">全部顧問</option>
+        </select>
+        <select id="filterStatus" onchange="renderBookingTable()">
+          <option value="">全部狀態</option>
+          <option value="待確認">待確認</option>
+          <option value="已確認">已確認</option>
+          <option value="已完成">已完成</option>
+          <option value="取消">取消</option>
+        </select>
+        <button onclick="loadBookings()">🔄 重新載入</button>
+      </div>
+
+      <!-- 預約表格 -->
+      <div id="bookingTableWrap">
+        <div class="empty-state"><div class="empty-icon">📅</div>載入中...</div>
       </div>
     </div>
 
@@ -2262,6 +2341,7 @@ function enterApp() {
   document.getElementById('userName').textContent = currentUser;
   initApp();
   fetchCustomers();
+  loadBookings(); // 登入後預載入預約資料（供 dashboard 摘要卡片使用）
 }
 
 function logout() {
@@ -5392,6 +5472,131 @@ function showPage(name, btn) {
   if (name === 'bossDashboard') renderBossDashboard();
   if (name === 'leaderboard') renderAllLeaderboards();
   if (name === 'followupJournal') initJournalPage();
+  if (name === 'booking') loadBookings(); // 每次切換頁籤都重新載入
+}
+
+// ══════════════════════════════════════════════
+// 預約系統模組（前端）
+// ══════════════════════════════════════════════
+var allBookings = [];
+
+// 透過 GAS callAPI 載入預約資料
+function loadBookings() {
+  callAPI({ action: 'getBookings' }, function(res) {
+    if (res && res.success) {
+      allBookings = res.data || [];
+      renderBookingTable();
+      renderDashboardBookingSummary();
+    } else {
+      console.error('載入預約失敗', res);
+    }
+  });
+}
+
+// 渲染篩選後的預約表格
+function renderBookingTable() {
+  var filterC = (document.getElementById('filterConsultant') || {}).value || '';
+  var filterS = (document.getElementById('filterStatus') || {}).value || '';
+
+  // 動態建立顧問篩選選項（去重）
+  buildConsultantFilter();
+
+  var filtered = allBookings.filter(function(b) {
+    if (filterC && b['顧問'] !== filterC) return false;
+    if (filterS && b['狀態'] !== filterS) return false;
+    return true;
+  });
+
+  // 統計數字
+  renderBookingStats();
+
+  var wrap = document.getElementById('bookingTableWrap');
+  if (!wrap) return;
+
+  if (!filtered.length) {
+    wrap.innerHTML = '<div class="empty-state"><div class="empty-icon">📅</div>目前沒有預約資料</div>';
+    return;
+  }
+
+  var rows = filtered.map(function(b, i) {
+    var statusClass = 'status-' + (b['狀態'] || '');
+    return '<tr>'
+      + '<td>' + (b['編號'] || i+1) + '</td>'
+      + '<td>' + (b['預約時間'] || '') + '</td>'
+      + '<td style="font-weight:700">' + (b['姓名'] || '') + '</td>'
+      + '<td>' + (b['手機'] || '') + '</td>'
+      + '<td style="color:var(--gold);font-weight:700">' + (b['顧問'] || '') + '</td>'
+      + '<td>' + (b['時段'] || '') + '</td>'
+      + '<td><span class="status-badge ' + statusClass + '">' + (b['狀態'] || '—') + '</span></td>'
+      + '<td>'
+      + '<button class="b-action-btn" onclick="updateBookingStatus(\'' + b['編號'] + '\',\'已確認\')">✓ 確認</button>'
+      + '<button class="b-action-btn" onclick="updateBookingStatus(\'' + b['編號'] + '\',\'已完成\')">完成</button>'
+      + '<button class="b-action-btn" onclick="updateBookingStatus(\'' + b['編號'] + '\',\'取消\')">取消</button>'
+      + '</td></tr>';
+  }).join('');
+
+  wrap.innerHTML = '<table class="booking-table">'
+    + '<thead><tr><th>#</th><th>預約時間</th><th>姓名</th><th>手機</th>'
+    + '<th>顧問</th><th>時段</th><th>狀態</th><th>操作</th></tr></thead>'
+    + '<tbody>' + rows + '</tbody></table>';
+}
+
+// 渲染統計徽章
+function renderBookingStats() {
+  var statsEl = document.getElementById('bookingStats');
+  if (!statsEl) return;
+  var pending   = allBookings.filter(function(b){ return b['狀態']==='待確認'; }).length;
+  var confirmed = allBookings.filter(function(b){ return b['狀態']==='已確認'; }).length;
+  var done      = allBookings.filter(function(b){ return b['狀態']==='已完成'; }).length;
+  statsEl.innerHTML =
+    '<div class="b-stat">待確認 ' + pending + '</div>'
+    + '<div class="b-stat">已確認 ' + confirmed + '</div>'
+    + '<div class="b-stat">已完成 ' + done + '</div>';
+}
+
+// 動態填充顧問篩選下拉（去重）
+function buildConsultantFilter() {
+  var sel = document.getElementById('filterConsultant');
+  if (!sel) return;
+  var current = sel.value;
+  var consultants = [...new Set(allBookings.map(function(b){ return b['顧問']; }).filter(Boolean))];
+  sel.innerHTML = '<option value="">全部顧問</option>'
+    + consultants.map(function(c){ return '<option value="' + c + '">' + c + '</option>'; }).join('');
+  sel.value = current; // 保留選取狀態
+}
+
+// 儀表板摘要區塊
+function renderDashboardBookingSummary() {
+  var pending = allBookings.filter(function(b){ return b['狀態']==='待確認'; });
+  var countEl = document.getElementById('bscCount');
+  var listEl  = document.getElementById('bscList');
+  if (!countEl || !listEl) return;
+
+  countEl.textContent = pending.length + ' 筆待確認';
+
+  if (!pending.length) {
+    listEl.innerHTML = '<div class="bsc-item" style="color:var(--text-muted)">✅ 目前無待確認預約</div>';
+    return;
+  }
+  listEl.innerHTML = pending.slice(0, 5).map(function(b) {
+    return '<div class="bsc-item">'
+      + '<span class="bsc-item-name">' + b['姓名'] + '</span>'
+      + '<span class="bsc-item-consultant">' + b['顧問'] + '</span>'
+      + '<span class="bsc-item-time">' + b['時段'] + ' · ' + b['手機'] + '</span>'
+      + '</div>';
+  }).join('');
+}
+
+// 更新預約狀態（CRM 操作按鈕）
+function updateBookingStatus(bookingId, newStatus) {
+  if (!confirm('確認將此預約狀態改為「' + newStatus + '」？')) return;
+  callAPI({ action: 'updateBookingStatus', bookingId: bookingId, newStatus: newStatus }, function(res) {
+    if (res && res.success) {
+      loadBookings(); // 重新載入以同步 Sheets
+    } else {
+      alert('更新失敗：' + (res && res.error ? res.error : '未知錯誤'));
+    }
+  });
 }
 
 // ── Claude 匯出 ──
