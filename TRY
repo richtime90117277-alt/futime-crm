@@ -1,0 +1,60 @@
+// ══════════════════════════════════════════════
+// 一次性修復腳本：重建「預約紀錄」工作表欄位結構
+// 執行方式：貼到 GAS 編輯器 → 選 fixBookingSheet → 執行
+// 執行完畢後可刪除此函數
+// ══════════════════════════════════════════════
+function fixBookingSheet() {
+  var ss    = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName('預約紀錄');
+  if (!sheet) { Logger.log('找不到「預約紀錄」工作表'); return; }
+
+  // 讀取所有現有資料（含標題列）
+  var allData = sheet.getDataRange().getValues();
+  var oldHeaders = allData[0]; // 舊標題：[提交時間, 姓名, 手機, 備註, 來源, 狀態, 顧問備注]
+  var dataRows   = allData.slice(1); // 實際資料列
+
+  // 新標題定義
+  var newHeaders = ['編號', '提交時間', '姓名', '手機', '顧問', '時段', '備註', '來源', '狀態', '顧問備注'];
+
+  // 舊欄位對應索引（依舊標題名稱查找）
+  function oldIdx(name) { return oldHeaders.indexOf(name); }
+
+  // 將舊資料列轉換成新格式
+  var newRows = dataRows.map(function(row, i) {
+    return [
+      i + 1,                              // 編號（從1開始）
+      row[oldIdx('提交時間')] || '',       // 提交時間
+      row[oldIdx('姓名')]     || '',       // 姓名
+      row[oldIdx('手機')]     || '',       // 手機
+      '待安排',                            // 顧問（新欄，預設待安排）
+      '待確認',                            // 時段（新欄，預設待確認）
+      row[oldIdx('備註')]     || '—',     // 備註
+      row[oldIdx('來源')]     || '',       // 來源
+      row[oldIdx('狀態')]     || '待聯繫', // 狀態
+      row[oldIdx('顧問備注')] || '',       // 顧問備注
+    ];
+  });
+
+  // 清除工作表並重寫
+  sheet.clearContents();
+  sheet.getRange(1, 1, 1, newHeaders.length).setValues([newHeaders]);
+
+  if (newRows.length > 0) {
+    sheet.getRange(2, 1, newRows.length, newHeaders.length).setValues(newRows);
+  }
+
+  // 重新套用樣式
+  var hRange = sheet.getRange(1, 1, 1, newHeaders.length);
+  hRange.setBackground('#1A1A1A').setFontColor('#FFFFFF').setFontWeight('bold');
+  sheet.setFrozenRows(1);
+
+  // 狀態欄（第9欄）套用橘色
+  for (var r = 2; r <= newRows.length + 1; r++) {
+    var status = sheet.getRange(r, 9).getValue();
+    if (status === '待聯繫') {
+      sheet.getRange(r, 9).setBackground('#FDF0E8').setFontColor('#E8692A');
+    }
+  }
+
+  Logger.log('✅ 修復完成！共處理 ' + newRows.length + ' 筆資料');
+}
