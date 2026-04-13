@@ -1005,23 +1005,23 @@ body{
 
         <!-- ★ 成交信號卡②：月存 vs 月結餘對比（預售關鍵） -->
         <div id="csCompareBox" style="display:none" class="cs-compare">
-          <div class="cs-compare-label">CAN YOU AFFORD IT? — 每月存得到嗎？</div>
+          <div class="cs-compare-label">CAN YOU AFFORD IT? — 交屋後每月負擔得起嗎？</div>
           <div class="cs-compare-grid">
             <div class="cs-col cs-col-need">
-              <div class="cs-col-label" style="color:#a86010">每月需存工程款</div>
+              <div class="cs-col-label" style="color:#a86010" id="csNeedLabel">每月房貸</div>
               <div class="cs-col-val" style="color:#8a5800" id="csNeedVal">—</div>
               <div class="cs-col-sub" style="color:#6a4020">元／月</div>
             </div>
             <div class="cs-arrow">→</div>
             <div class="cs-col cs-col-surplus">
-              <div class="cs-col-label" style="color:#1a6b3a">現有月結餘</div>
+              <div class="cs-col-label" style="color:#1a6b3a" id="csSurplusLabel">現有月結餘（不含房租）</div>
               <div class="cs-col-val" style="color:#1a6b3a" id="csSurplusVal">—</div>
               <div class="cs-col-sub" style="color:#2a5a2a">元／月</div>
             </div>
           </div>
           <div class="cs-result">
             <div>
-              <div class="cs-result-left" id="csResultLabel">存完每月還剩</div>
+              <div class="cs-result-left" id="csResultLabel">繳完房貸後每月還剩</div>
               <div class="cs-result-left-sub" id="csResultSub">—</div>
             </div>
             <div class="cs-result-val" id="csResultVal">—</div>
@@ -1757,7 +1757,16 @@ function doGen(){
       }
       var _resNote=g('snapReserveNote');
       if(_resNote){
-        _resNote.textContent=_res2>=30?'✅ 備用金充足':_res2>=15?'🟡 備用金尚可':_res2>=0?'⚠️ 備用金偏低':'🔴 現金不足';
+        if(_res2>=30) _resNote.textContent='✅ 備用金充足';
+        else if(_res2>=15) _resNote.textContent='🟡 備用金尚可';
+        else if(_res2>=0) _resNote.textContent='⚠️ 備用金偏低';
+        else if(isPresale) _resNote.textContent='📅 工程款分期繳付，非一次性支出';
+        else _resNote.textContent='🔴 現金不足';
+      }
+      // 預售模式且為負數：備用金欄改顯示分期說明
+      if(isPresale&&_res2<0){
+        var _resEl2=g('snapReserve');
+        if(_resEl2){ _resEl2.textContent='分期繳付'; _resEl2.style.color='#c9922b'; _resEl2.style.fontSize='16px'; }
       }
     }
   } else {
@@ -1807,27 +1816,55 @@ function doGen(){
       earnestCard;
 
     // ── ★ 成交信號卡②：月存 vs 月結餘對比 ─────────────────
+    // 精準邏輯：
+    // 「每月需存工程款」= 房貸月付（交屋後）- 現有房租（若有）
+    //   → 交屋前等屋期，客戶需存的是「未來月貸 - 租金收入」，即自己要負擔的淨月繳
+    //   → 若無租金收入，就是全額月貸
+    //   → 這才是「每個月需要存多少」的正確定義
+    // 「現有月結餘」= 月收 - 生活支出（不含現有房租，因為買後省掉）
+    //   → C.exp 含現有iRnt，要還原
     var _csCompare=g('csCompareBox');
-    if(_csCompare&&mnSave>0){
-      // 月結餘 = 月收 - 生活支出（不含月貸，因為交屋前沒有貸款）
-      var _csSurplus=Math.round(C.inc-C.exp);
-      var _csAfterSave=_csSurplus-mnSave;
+    if(_csCompare&&C.mn>0){
+      var _savedRentNow=parseFloat((g('iRnt')||{value:'0'}).value)||0; // 現在繳的租金
+      var _rentIncNow=nv('iRentIncome');                               // 未來出租租金收入
+      // 月需存 = 未來月貸 - 未來租金收入（若有出租）
+      var _csNeed=Math.max(0,Math.round(C.mn-_rentIncNow));
+      // 月可存基礎 = 月收 - 生活支出（不含現有房租，因為交屋後省掉）
+      var _csExpNoRent=Math.round(C.exp-_savedRentNow);
+      var _csSurplus=Math.round(C.inc-_csExpNoRent);
+      var _csAfterSave=_csSurplus-_csNeed;
       _csCompare.style.display='block';
-      if(g('csNeedVal'))    g('csNeedVal').textContent='$'+Math.round(mnSave/1000)*1000>0?'$'+Math.round(mnSave).toLocaleString('zh-TW'):'—';
+      // Fix：直接賦值，不要用三元嵌在字串拼接裡
+      if(g('csNeedVal'))    g('csNeedVal').textContent='$'+_csNeed.toLocaleString('zh-TW');
       if(g('csSurplusVal')) g('csSurplusVal').textContent='$'+_csSurplus.toLocaleString('zh-TW');
       var _csResEl=g('csResultVal');
       if(_csResEl){
         _csResEl.textContent=(_csAfterSave>=0?'+':'')+'$'+Math.abs(_csAfterSave).toLocaleString('zh-TW');
-        _csResEl.style.color=_csAfterSave>=10000?'#1a6b3a':_csAfterSave>=0?'#e8b84b':'#e05c4a';
+        _csResEl.style.color=_csAfterSave>=15000?'#1a6b3a':_csAfterSave>=5000?'#27ae60':_csAfterSave>=0?'#e8b84b':'#e05c4a';
       }
-      if(g('csResultLabel')) g('csResultLabel').textContent='存完工程款後每月還剩';
-      if(g('csResultSub'))   g('csResultSub').textContent='月收 $'+Math.round(C.inc).toLocaleString('zh-TW')+' 扣生活支出 $'+Math.round(C.exp).toLocaleString('zh-TW')+' 再扣月存';
+      // 標籤說明：有租金收入時特別標注
+      var _needDesc=_rentIncNow>0
+        ?'月貸 $'+Math.round(C.mn).toLocaleString('zh-TW')+'－租客幫繳 $'+Math.round(_rentIncNow).toLocaleString('zh-TW')+'＝你自己只需存'
+        :'交屋後每月實際需繳（房貸全額）';
+      if(g('csResultLabel')) g('csResultLabel').textContent='存完房貸後每月還剩';
+      if(g('csResultSub'))   g('csResultSub').textContent='月收 $'+Math.round(C.inc).toLocaleString('zh-TW')+'－生活 $'+_csExpNoRent.toLocaleString('zh-TW')+'（不含現有房租）－月繳 $'+_csNeed.toLocaleString('zh-TW');
+      // 卡頂部補充說明
+      var _needLabelEl=g('csNeedLabel');
+      if(_needLabelEl) _needLabelEl.textContent=_rentIncNow>0?'每月淨負擔（扣租金）':'每月房貸';
+      var _surplusLabelEl=g('csSurplusLabel');
+      if(_surplusLabelEl) _surplusLabelEl.textContent='現有月結餘（不含房租支出）';
       var _verd='';
-      if(_csAfterSave>=15000) _verd='✅ 每月存工程款後仍剩 <strong>$'+Math.abs(_csAfterSave).toLocaleString('zh-TW')+'</strong>，完全輕鬆負擔。這間房是你靠自己的薪水買到的。';
-      else if(_csAfterSave>=5000) _verd='🟡 每月存工程款後剩 $'+Math.abs(_csAfterSave).toLocaleString('zh-TW')+'，略有壓力但可行。交屋後房貸由租金或省下房租補貼，現金流持續改善。';
-      else if(_csAfterSave>=0) _verd='⚠️ 每月存款後緩衝較小，建議確認年終獎金補存策略，或討論暫收款分期安排。';
-      else _verd='🔴 月存需求超過現有結餘 $'+Math.abs(_csAfterSave).toLocaleString('zh-TW')+'，建議調整存款計畫或確認年終補存可行性。';
+      if(_csAfterSave>=20000) _verd='✅ 交屋後每月繳完房貸還剩 <strong>$'+Math.abs(_csAfterSave).toLocaleString('zh-TW')+'</strong>，輕鬆有餘。這間房是你靠自己薪水買的。';
+      else if(_csAfterSave>=8000) _verd='✅ 繳完房貸每月還剩 <strong>$'+Math.abs(_csAfterSave).toLocaleString('zh-TW')+'</strong>，完全可以負擔。'+((_rentIncNow>0)?'有租客幫你繳，實際壓力更小。':'年終獎金是額外緩衝。');
+      else if(_csAfterSave>=0) _verd='🟡 每月繳完房貸剩 $'+Math.abs(_csAfterSave).toLocaleString('zh-TW')+'，建議搭配年終補存，整體可行。';
+      else _verd='⚠️ 月收扣生活後，繳完房貸還差 $'+Math.abs(_csAfterSave).toLocaleString('zh-TW')+'。建議確認是否有租金收入或年終補足。';
       if(g('csVerdict')) g('csVerdict').innerHTML=_verd;
+
+      // 更新卡頂部月存大卡的 note（說明這個數字的來源）
+      var _saveNoteEl=g('oppMonthlySaveNote');
+      if(_saveNoteEl&&_rentIncNow>0){
+        _saveNoteEl.textContent='月貸 $'+Math.round(C.mn).toLocaleString('zh-TW')+'－租客幫繳 $'+Math.round(_rentIncNow).toLocaleString('zh-TW')+'＝每月你自己只需存 $'+_csNeed.toLocaleString('zh-TW');
+      }
     } else if(_csCompare){
       _csCompare.style.display='none';
     }
@@ -1889,8 +1926,27 @@ function doGen(){
       _p1r.style.color=_res3>=20?'#2ecc71':_res3>=0?'#e8b84b':'#e05c4a';
     }
     if(_p1n){
-      _p1n.textContent=_res3>=30?'✅ 備用金充足':_res3>=15?'🟡 備用金尚可，建議保留緩衝':_res3>=0?'⚠️ 備用金偏低，留意現金流':'🔴 現金不足，需補充資金';
-      _p1n.style.color=_res3>=20?'#2ecc71':_res3>=0?'#e8b84b':'#e05c4a';
+      if(_res3>=30){
+        _p1n.textContent='✅ 備用金充足，首付完全沒問題';
+        _p1n.style.color='#2ecc71';
+      } else if(_res3>=0){
+        _p1n.textContent='🟡 備用金尚可，建議保留緩衝';
+        _p1n.style.color='#e8b84b';
+      } else {
+        // 預售模式：不足部分由每月固定存工程款補足，不是一次性缺口
+        // 改變框架：顯示「每月需存 X，約 Y 個月可補足」
+        var _shortfall=Math.abs(_res3); // 萬
+        var _mnSaveShow=_delivMo3>0?Math.ceil(_selfW3*10000/_delivMo3):0;
+        var _moToFill=_mnSaveShow>0?Math.ceil(_shortfall*10000/_mnSaveShow):0;
+        _p1n.innerHTML='📅 工程款採<strong>分期繳付</strong>，不需一次拿出全額。每月固定存工程款，按期繳納即可。';
+        _p1n.style.color='#8a6040';
+        // 同時改變 p1Reserve 的顯示方式——不顯示可怕的負數，改為顯示分期說明
+        if(_p1r){
+          _p1r.textContent='分期繳付';
+          _p1r.style.color='#c9922b';
+          _p1r.style.fontSize='14px';
+        }
+      }
     }
 
     // ── ★ 成交信號卡①：頭期款已解決 ─────────────────
