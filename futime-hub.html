@@ -295,10 +295,10 @@ body {
 
 .hero-desc {
   font-size: 13.5px;
-  font-weight: 300;
+  font-weight: 400;
   color: var(--ink-mid);
   line-height: 1.65;
-  opacity: 0.72;
+  opacity: 0.80;
 }
 
 .chips {
@@ -434,8 +434,8 @@ body {
 
 .card-desc {
   font-size: 12.5px;
-  font-weight: 300;
-  color: var(--ink-light);
+  font-weight: 400;          /* 從 300 調重 */
+  color: var(--ink-mid);     /* #4a3c2c，明顯深一階 */
   line-height: 1.78;
   flex: 1;
 }
@@ -454,7 +454,7 @@ body {
   font-size: 10px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--ink-faint);
+  color: var(--ink-light);   /* #9c8570，從 ink-faint 調深 */
   transition: color 0.18s ease;
 }
 .card:hover .card-cta { color: var(--gold); }
