@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>富時代作戰中心</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Noto+Serif+TC:wght@300;400;500&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+
+:root {
+  --bg:          #faf8f3;
+  --white:       #ffffff;
+  --ink:         #18120c;
+  --ink-mid:     #4a3c2c;
+  --ink-light:   #9c8570;
+  --ink-faint:   #c4b09a;
+  --gold:        #a06c08;
+  --gold-v:      #c48a10;
+  --gold-bright: #e0a820;
+  --gold-pale:   #f5e4b8;
+  --gold-pale2:  #fdf6e3;
+  --gold-line:   rgba(160,108,8,0.18);
+  --gold-line-v: rgba(196,138,16,0.28);
+  --border:      rgba(24,18,12,0.07);
+  --shadow-xs:   0 1px 4px  rgba(24,18,12,0.05);
+  --shadow-sm:   0 2px 14px rgba(24,18,12,0.07);
+  --shadow-md:   0 6px 30px rgba(24,18,12,0.09);
+  --shadow-gold: 0 8px 40px rgba(196,138,16,0.18);
+  --r:           20px;
+  --r-sm:        12px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Noto Serif TC', serif;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  /* 全頁底紋 */
+  background-image:
+    radial-gradient(ellipse 90% 35% at 50% 0%, rgba(196,138,16,0.06) 0%, transparent 55%),
+    url("data:image/svg+xml,%3Csvg width='52' height='52' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='1' cy='1' r='0.7' fill='%23a06c08' fill-opacity='0.04'/%3E%3C/svg%3E");
+}
+
+/* ════════════════════════════
+   Header — 亮色大橫幅
+════════════════════════════ */
+.header {
+  /* 亮金漸層橫幅，與 Hero 卡同色系 */
+  background: linear-gradient(
+    135deg,
+    #fffdf5 0%,
+    #fdf5d8 35%,
+    #f8eab8 70%,
+    #f2de98 100%
+  );
+  border-bottom: 1px solid rgba(196,138,16,0.20);
+  box-shadow: 0 2px 20px rgba(196,138,16,0.10);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Header 右側光暈裝飾 */
+.header::before {
+  content: '';
+  position: absolute;
+  top: -80px; right: -80px;
+  width: 320px; height: 320px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.65) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+/* Header 底部細金線 */
+.header::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 52px; right: 52px;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(196,138,16,0.35) 20%,
+    rgba(196,138,16,0.35) 80%,
+    transparent);
+}
+
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 44px 52px 40px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 32px;
+  position: relative;
+  z-index: 1;
+}
+
+/* 左側文字 */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.eyebrow-line {
+  width: 26px; height: 1px;
+  background: linear-gradient(90deg, var(--gold-v), transparent);
+}
+.eyebrow-text {
+  font-family: 'DM Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0.85;
+}
+
+.site-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(38px, 4.8vw, 58px);
+  font-weight: 700;
+  line-height: 1.0;
+  letter-spacing: -0.025em;
+}
+
+/* 「富時代」深墨金，清晰有力 */
+.site-title .brand {
+  color: var(--gold);
+  text-shadow:
+    0 1px 0 rgba(255,255,255,0.8),
+    0 0 40px rgba(160,108,8,0.20);
+}
+
+/* 「作戰中心」用深墨，在亮底上清晰 */
+.site-title .label {
+  color: var(--ink);
+}
+
+/* 右側裝飾數字 */
+.header-right { text-align: right; padding-bottom: 6px; flex-shrink: 0; }
+
+.deco-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 64px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  -webkit-text-stroke: 1px rgba(160,108,8,0.25);
+  color: transparent;
+}
+.deco-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.20em;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0.55;
+  margin-top: 4px;
+}
+
+/* ════════════════════════════
+   分隔線
+════════════════════════════ */
+.divider {
+  max-width: 1200px;
+  margin: 28px auto 0;
+  padding: 0 52px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.div-line {
+  flex: 1; height: 1px;
+  background: linear-gradient(90deg,
+    transparent,
+    var(--gold-line) 25%,
+    var(--gold-line) 75%,
+    transparent);
+}
+.div-dot {
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--gold-line-v);
+}
+.div-text {
+  font-family: 'DM Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+
+/* ════════════════════════════
+   工具區
+════════════════════════════ */
+.tools {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 26px 52px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ── Hero 卡（CRM）—— 暖金漸層亮卡 ── */
+.hero {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  background: linear-gradient(
+    118deg,
+    #fdf8e8 0%,
+    #faeec8 42%,
+    #f5e3a8 75%,
+    #f0d888 100%
+  );
+  border: 1px solid rgba(196,138,16,0.22);
+  border-radius: var(--r);
+  padding: 40px 48px;
+  text-decoration: none;
+  color: var(--ink);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm), var(--shadow-gold);
+  transition: transform 0.25s cubic-bezier(0.25,0.46,0.45,0.94),
+              box-shadow 0.25s ease;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 280px; height: 280px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.55) 0%, transparent 65%);
+  pointer-events: none;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0; right: 0;
+  width: 180px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-v));
+  opacity: 0.55;
+}
+
+.hero:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md), var(--shadow-gold);
+}
+
+.hero-icon {
+  width: 76px; height: 76px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.72);
+  border: 1px solid rgba(196,138,16,0.20);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 12px rgba(196,138,16,0.14);
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+.hero:hover .hero-icon {
+  transform: scale(1.07) rotate(-2deg);
+  box-shadow: 0 6px 24px rgba(196,138,16,0.22);
+}
+
+.hero-body { flex: 1; min-width: 0; }
+
+.hero-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0.82;
+  margin-bottom: 8px;
+}
+
+.hero-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+  line-height: 1.1;
+  margin-bottom: 10px;
+}
+
+.hero-desc {
+  font-size: 13.5px;
+  font-weight: 300;
+  color: var(--ink-mid);
+  line-height: 1.65;
+  opacity: 0.72;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 18px;
+}
+.chip {
+  font-family: 'DM Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.10em;
+  padding: 4px 13px;
+  border-radius: 100px;
+  border: 1px solid rgba(160,108,8,0.28);
+  color: var(--gold);
+  background: rgba(255,255,255,0.55);
+  transition: background 0.18s ease;
+}
+.hero:hover .chip { background: rgba(255,255,255,0.80); }
+
+.hero-arrow {
+  font-size: 20px;
+  color: var(--gold-v);
+  opacity: 0.55;
+  flex-shrink: 0;
+  transition: transform 0.22s ease, opacity 0.22s ease;
+}
+.hero:hover .hero-arrow { transform: translate(5px,-5px); opacity: 1; }
+
+/* ── 小卡 4 欄橫排 ── */
+.row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+}
+
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 30px 28px 26px;
+  text-decoration: none;
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-xs);
+  transition: transform 0.25s cubic-bezier(0.25,0.46,0.45,0.94),
+              box-shadow 0.25s ease,
+              border-color 0.25s ease;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg,
+    var(--gold-v) 0%, var(--gold-bright) 45%, transparent 80%);
+  opacity: 0;
+  transition: opacity 0.22s ease;
+}
+.card::after {
+  content: '';
+  position: absolute;
+  bottom: -50px; right: -50px;
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(196,138,16,0.05) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--gold-line-v);
+}
+.card:hover::before { opacity: 1; }
+
+.card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+
+.card-icon {
+  width: 54px; height: 54px;
+  border-radius: var(--r-sm);
+  background: var(--gold-pale2);
+  border: 1px solid rgba(160,108,8,0.10);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+.card:hover .card-icon {
+  transform: scale(1.08) rotate(-2deg);
+  box-shadow: 0 4px 16px rgba(160,108,8,0.13);
+}
+
+.card-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 14px;
+  font-weight: 500;
+  -webkit-text-stroke: 0.8px rgba(160,108,8,0.22);
+  color: transparent;
+  letter-spacing: 0.04em;
+}
+
+.card-body { flex: 1; display: flex; flex-direction: column; }
+
+.card-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0.82;
+  margin-bottom: 6px;
+}
+
+.card-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+
+.card-desc {
+  font-size: 12.5px;
+  font-weight: 300;
+  color: var(--ink-light);
+  line-height: 1.78;
+  flex: 1;
+}
+
+.card-footer {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-cta {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  transition: color 0.18s ease;
+}
+.card:hover .card-cta { color: var(--gold); }
+
+.card-arrow {
+  font-size: 15px;
+  color: var(--gold-line-v);
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+.card:hover .card-arrow { transform: translate(4px,-4px); color: var(--gold-v); }
+
+/* ════════════════════════════
+   Footer
+════════════════════════════ */
+.footer-wrap {
+  max-width: 1200px;
+  margin: 28px auto 0;
+  padding: 22px 52px 44px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.footer-l {
+  font-family: 'DM Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  color: var(--ink-faint);
+}
+.footer-r {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold-line-v);
+}
+
+/* ════════════════════════════
+   入場動畫
+════════════════════════════ */
+@keyframes riseIn {
+  from { opacity: 0; transform: translateY(18px); filter: blur(3px); }
+  to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
+}
+
+.header      { animation: riseIn 0.65s cubic-bezier(0.22,1,0.36,1) both; }
+.divider     { animation: riseIn 0.60s 0.10s cubic-bezier(0.22,1,0.36,1) both; }
+.hero        { animation: riseIn 0.65s 0.16s cubic-bezier(0.22,1,0.36,1) both; }
+.card        { animation: riseIn 0.55s cubic-bezier(0.22,1,0.36,1) both; opacity: 0; }
+.card:nth-child(1) { animation-delay: 0.24s; }
+.card:nth-child(2) { animation-delay: 0.30s; }
+.card:nth-child(3) { animation-delay: 0.36s; }
+.card:nth-child(4) { animation-delay: 0.42s; }
+.footer-wrap { animation: riseIn 0.50s 0.48s cubic-bezier(0.22,1,0.36,1) both; }
+
+/* ════════════════════════════
+   RWD
+════════════════════════════ */
+@media (max-width: 960px) {
+  .row { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .header-inner { padding: 32px 20px 28px; flex-direction: column; align-items: flex-start; }
+  .header-right { display: none; }
+  .divider      { padding: 0 20px; }
+  .tools        { padding: 18px 20px 0; gap: 14px; }
+  .hero         { flex-direction: column; align-items: flex-start; padding: 28px 22px; gap: 20px; }
+  .hero-arrow   { align-self: flex-end; }
+  .row          { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .card         { padding: 22px 18px 18px; }
+  .footer-wrap  { padding: 18px 20px 36px; flex-direction: column; align-items: flex-start; gap: 6px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ Header —— 亮色橫幅 ══ -->
+<header class="header">
+  <div class="header-inner">
+    <div class="header-left">
+      <div class="eyebrow">
+        <div class="eyebrow-line"></div>
+        <span class="eyebrow-text">Futime Internal Portal</span>
+      </div>
+      <h1 class="site-title">
+        <span class="brand">富時代</span><span class="label">作戰中心</span>
+      </h1>
+    </div>
+    <div class="header-right">
+      <div class="deco-num">05</div>
+      <div class="deco-label">核心工具</div>
+    </div>
+  </div>
+</header>
+
+<!-- 分隔線 -->
+<div class="divider">
+  <div class="div-line"></div>
+  <div class="div-dot"></div>
+  <div class="div-text">選擇工具入口</div>
+  <div class="div-dot"></div>
+  <div class="div-line"></div>
+</div>
+
+<!-- 工具區 -->
+<div class="tools">
+
+  <!-- CRM Hero -->
+  <a class="hero"
+     href="https://richtime90117277-alt.github.io/futime-crm/crm_cloud_v19.html"
+     target="_blank">
+    <div class="hero-icon">🏆</div>
+    <div class="hero-body">
+      <div class="hero-tag">核心系統 · Core System</div>
+      <div class="hero-title">CRM 業務作戰系統</div>
+      <div class="hero-desc">客戶管理・成交機率預測・業績排行榜・智偉哥 SOS 隨身顧問</div>
+      <div class="chips">
+        <span class="chip">八部曲銷售流程</span>
+        <span class="chip">Line 跟進通知</span>
+        <span class="chip">AI 話術救援</span>
+        <span class="chip">Boss Dashboard</span>
+      </div>
+    </div>
+    <div class="hero-arrow">↗</div>
+  </a>
+
+  <!-- 4 小卡 -->
+  <div class="row">
+
+    <a class="card"
+       href="https://richtime90117277-alt.github.io/futime-crm/asset-planner.html"
+       target="_blank">
+      <div class="card-top">
+        <div class="card-icon">📊</div>
+        <div class="card-num">01</div>
+      </div>
+      <div class="card-body">
+        <div class="card-tag">諮詢工具</div>
+        <div class="card-title">資產規劃報告書</div>
+        <div class="card-desc">財務分析・ROI 試算・等待代價計算機，諮詢現場即時生成個人化報告。</div>
+      </div>
+      <div class="card-footer">
+        <span class="card-cta">開啟工具</span>
+        <span class="card-arrow">↗</span>
+      </div>
+    </a>
+
+    <a class="card"
+       href="https://tinyurl.com/55nfe22y"
+       target="_blank">
+      <div class="card-top">
+        <div class="card-icon">🌐</div>
+        <div class="card-num">02</div>
+      </div>
+      <div class="card-body">
+        <div class="card-tag">行銷入口</div>
+        <div class="card-title">研討會報名頁</div>
+        <div class="card-desc">一頁式活動網站，提供客戶直接報名，精準掌握活動流量與名單。</div>
+      </div>
+      <div class="card-footer">
+        <span class="card-cta">開啟頁面</span>
+        <span class="card-arrow">↗</span>
+      </div>
+    </a>
+
+    <a class="card"
+       href="https://richtimes.tw/"
+       target="_blank">
+      <div class="card-top">
+        <div class="card-icon">🏠</div>
+        <div class="card-num">03</div>
+      </div>
+      <div class="card-body">
+        <div class="card-tag">品牌主站</div>
+        <div class="card-title">富時代官網</div>
+        <div class="card-desc">公司品牌形象、產品介紹，對客戶展示的正式形象窗口。</div>
+      </div>
+      <div class="card-footer">
+        <span class="card-cta">前往官網</span>
+        <span class="card-arrow">↗</span>
+      </div>
+    </a>
+
+    <a class="card"
+       href="https://www.notion.so/059972580dae4a54b07a57fd410b3090"
+       target="_blank">
+      <div class="card-top">
+        <div class="card-icon">📋</div>
+        <div class="card-num">04</div>
+      </div>
+      <div class="card-body">
+        <div class="card-tag">知識中樞</div>
+        <div class="card-title">富時代機構</div>
+        <div class="card-desc">ABC 必修・素材庫・話術案例・幹部訓練・公司公告，團隊知識庫。</div>
+      </div>
+      <div class="card-footer">
+        <span class="card-cta">進入 Notion</span>
+        <span class="card-arrow">↗</span>
+      </div>
+    </a>
+
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer-wrap">
+  <div class="footer-l">Fustai © 2025 ｜ 內部版僅供團隊使用</div>
+  <div class="footer-r">Operations Command Center · v6</div>
+</footer>
+
+</body>
+</html>
