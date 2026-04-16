@@ -5,93 +5,87 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>富時代作戰中心</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Noto+Serif+TC:wght@300;400;500&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Noto+Serif+TC:wght@200;300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
 
+/* ════════════════════════════════════════
+   設計基調：奢華精品 · 黑白金交錯
+   靈感：RIWAY / 高端地產品牌
+   配色：純黑 #0a0a0a · 純白 #fafafa · 金 #c4a96e
+   字型：Cormorant Garamond（主）× DM Mono（標籤）
+════════════════════════════════════════ */
 :root {
-  --bg:          #faf8f3;
-  --white:       #ffffff;
-  --ink:         #18120c;
-  --ink-mid:     #4a3c2c;
-  --ink-light:   #9c8570;
-  --ink-faint:   #c4b09a;
-  --gold:        #a06c08;
-  --gold-v:      #c48a10;
-  --gold-bright: #e0a820;
-  --gold-pale:   #f5e4b8;
-  --gold-pale2:  #fdf6e3;
-  --gold-line:   rgba(160,108,8,0.18);
-  --gold-line-v: rgba(196,138,16,0.28);
-  --border:      rgba(24,18,12,0.07);
-  --shadow-xs:   0 1px 4px  rgba(24,18,12,0.05);
-  --shadow-sm:   0 2px 14px rgba(24,18,12,0.07);
-  --shadow-md:   0 6px 30px rgba(24,18,12,0.09);
-  --shadow-gold: 0 8px 40px rgba(196,138,16,0.18);
-  --r:           20px;
-  --r-sm:        12px;
+  /* 黑白軸 */
+  --black:       #090909;
+  --black-soft:  #111111;
+  --black-card:  #141414;
+  --black-mid:   #1e1e1e;
+  --white:       #fafafa;
+  --white-soft:  #f2f0ec;
+  --white-dim:   rgba(250,250,250,0.65);
+  --white-faint: rgba(250,250,250,0.30);
+  --gray:        #888888;
+  --gray-light:  #c0b8b0;
+
+  /* 金色軸 */
+  --gold:        #c4a96e;
+  --gold-bright: #d4bc82;
+  --gold-dim:    rgba(196,169,110,0.18);
+  --gold-line:   rgba(196,169,110,0.25);
+  --gold-glow:   rgba(196,169,110,0.08);
+
+  /* 白卡（交錯區塊用） */
+  --wcard:       #ffffff;
+  --wcard-bg:    #f7f5f0;
+  --wcard-ink:   #0a0a0a;
+  --wcard-mid:   #3a3530;
+  --wcard-light: #7a6e64;
+  --wcard-faint: #b0a89e;
+  --wcard-border:rgba(10,10,10,0.10);
+
+  --r:    16px;
+  --r-sm: 10px;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 
 body {
-  background: var(--bg);
-  color: var(--ink);
+  background: var(--black);
+  color: var(--white);
   font-family: 'Noto Serif TC', serif;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
-  /* 全頁底紋 */
+  /* 細緻暗底紋 */
   background-image:
-    radial-gradient(ellipse 90% 35% at 50% 0%, rgba(196,138,16,0.06) 0%, transparent 55%),
-    url("data:image/svg+xml,%3Csvg width='52' height='52' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='1' cy='1' r='0.7' fill='%23a06c08' fill-opacity='0.04'/%3E%3C/svg%3E");
+    radial-gradient(ellipse 80% 30% at 50% 0%, rgba(196,169,110,0.05) 0%, transparent 55%),
+    url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='1' cy='1' r='0.6' fill='%23c4a96e' fill-opacity='0.035'/%3E%3C/svg%3E");
 }
 
-/* ════════════════════════════
-   Header — 亮色大橫幅
-════════════════════════════ */
+/* ════════════════════════════════════════
+   頂部 Header — 黑底，金色眉批
+════════════════════════════════════════ */
 .header {
-  /* 亮金漸層橫幅，與 Hero 卡同色系 */
-  background: linear-gradient(
-    135deg,
-    #fffdf5 0%,
-    #fdf5d8 35%,
-    #f8eab8 70%,
-    #f2de98 100%
-  );
-  border-bottom: 1px solid rgba(196,138,16,0.20);
-  box-shadow: 0 2px 20px rgba(196,138,16,0.10);
   position: relative;
   overflow: hidden;
+  border-bottom: 1px solid var(--gold-line);
 }
 
-/* Header 右側光暈裝飾 */
+/* 右上角微光 */
 .header::before {
   content: '';
   position: absolute;
-  top: -80px; right: -80px;
-  width: 320px; height: 320px;
+  top: -120px; right: -80px;
+  width: 400px; height: 400px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,255,255,0.65) 0%, transparent 65%);
+  background: radial-gradient(circle, rgba(196,169,110,0.07) 0%, transparent 65%);
   pointer-events: none;
-}
-
-/* Header 底部細金線 */
-.header::after {
-  content: '';
-  position: absolute;
-  bottom: 0; left: 52px; right: 52px;
-  height: 1px;
-  background: linear-gradient(90deg,
-    transparent,
-    rgba(196,138,16,0.35) 20%,
-    rgba(196,138,16,0.35) 80%,
-    transparent);
 }
 
 .header-inner {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 44px 52px 40px;
+  padding: 52px 52px 44px;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
@@ -100,285 +94,307 @@ body {
   z-index: 1;
 }
 
-/* 左側文字 */
 .eyebrow {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 14px;
+  gap: 14px;
+  margin-bottom: 18px;
 }
 .eyebrow-line {
-  width: 26px; height: 1px;
-  background: linear-gradient(90deg, var(--gold-v), transparent);
+  width: 32px; height: 1px;
+  background: linear-gradient(90deg, var(--gold), transparent);
 }
 .eyebrow-text {
   font-family: 'DM Mono', monospace;
-  font-size: 10.5px;
-  letter-spacing: 0.28em;
+  font-size: 10px;
+  font-weight: 300;
+  letter-spacing: 0.32em;
   text-transform: uppercase;
   color: var(--gold);
-  opacity: 0.85;
 }
 
 .site-title {
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(38px, 4.8vw, 58px);
-  font-weight: 700;
+  font-size: clamp(40px, 5vw, 62px);
+  font-weight: 300;          /* 極細，高端感 */
   line-height: 1.0;
-  letter-spacing: -0.025em;
+  letter-spacing: 0.02em;
 }
 
-/* 「富時代」深墨金，清晰有力 */
 .site-title .brand {
   color: var(--gold);
+  font-weight: 500;
+  /* 金字微光 */
   text-shadow:
-    0 1px 0 rgba(255,255,255,0.8),
-    0 0 40px rgba(160,108,8,0.20);
+    0 0 40px rgba(196,169,110,0.35),
+    0 0 80px rgba(196,169,110,0.15);
 }
 
-/* 「作戰中心」用深墨，在亮底上清晰 */
 .site-title .label {
-  color: var(--ink);
+  color: var(--white);
+  font-weight: 200;
+  margin-left: 4px;
 }
 
-/* 右側裝飾數字 */
-.header-right { text-align: right; padding-bottom: 6px; flex-shrink: 0; }
+/* 右側大輪廓數字 */
+.header-right { text-align: right; padding-bottom: 4px; flex-shrink: 0; }
 
 .deco-num {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 64px;
-  font-weight: 700;
+  font-size: 72px;
+  font-weight: 300;
   line-height: 1;
-  letter-spacing: -0.03em;
-  -webkit-text-stroke: 1px rgba(160,108,8,0.25);
+  letter-spacing: -0.02em;
+  -webkit-text-stroke: 1px var(--gold-line);
   color: transparent;
 }
 .deco-label {
   font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  letter-spacing: 0.20em;
+  font-size: 9.5px;
+  font-weight: 300;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--gold);
-  opacity: 0.55;
-  margin-top: 4px;
+  opacity: 0.45;
+  margin-top: 6px;
 }
 
-/* ════════════════════════════
+/* ════════════════════════════════════════
    分隔線
-════════════════════════════ */
+════════════════════════════════════════ */
 .divider {
   max-width: 1200px;
-  margin: 28px auto 0;
+  margin: 32px auto 0;
   padding: 0 52px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 18px;
 }
 .div-line {
   flex: 1; height: 1px;
   background: linear-gradient(90deg,
     transparent,
-    var(--gold-line) 25%,
-    var(--gold-line) 75%,
+    var(--gold-line) 20%,
+    var(--gold-line) 80%,
     transparent);
 }
-.div-dot {
-  width: 4px; height: 4px;
-  border-radius: 50%;
-  background: var(--gold-line-v);
+.div-diamond {
+  width: 5px; height: 5px;
+  border: 1px solid var(--gold);
+  transform: rotate(45deg);
+  opacity: 0.5;
 }
 .div-text {
   font-family: 'DM Mono', monospace;
-  font-size: 9.5px;
-  letter-spacing: 0.26em;
+  font-size: 9px;
+  font-weight: 300;
+  letter-spacing: 0.30em;
   text-transform: uppercase;
-  color: var(--ink-faint);
+  color: var(--gold);
+  opacity: 0.55;
   white-space: nowrap;
 }
 
-/* ════════════════════════════
+/* ════════════════════════════════════════
    工具區
-════════════════════════════ */
+════════════════════════════════════════ */
 .tools {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 26px 52px 0;
+  padding: 28px 52px 0;
   display: flex;
   flex-direction: column;
   gap: 18px;
 }
 
-/* ── Hero 卡（CRM）—— 暖金漸層亮卡 ── */
+/* ────────────────────────────────────────
+   Hero 卡（CRM）— 黑底金邊，大氣
+──────────────────────────────────────── */
 .hero {
   display: flex;
   align-items: center;
-  gap: 40px;
-  background: linear-gradient(
-    118deg,
-    #fdf8e8 0%,
-    #faeec8 42%,
-    #f5e3a8 75%,
-    #f0d888 100%
-  );
-  border: 1px solid rgba(196,138,16,0.22);
+  gap: 44px;
+  background: var(--black-card);
+  border: 1px solid var(--gold-line);
   border-radius: var(--r);
-  padding: 40px 48px;
+  padding: 42px 52px;
   text-decoration: none;
-  color: var(--ink);
+  color: var(--white);
   position: relative;
   overflow: hidden;
-  box-shadow: var(--shadow-sm), var(--shadow-gold);
-  transition: transform 0.25s cubic-bezier(0.25,0.46,0.45,0.94),
-              box-shadow 0.25s ease;
+  box-shadow: 0 0 0 1px rgba(196,169,110,0.06), 0 8px 48px rgba(0,0,0,0.6);
+  transition: transform 0.28s cubic-bezier(0.22,1,0.36,1),
+              box-shadow 0.28s ease,
+              border-color 0.28s ease;
 }
 
+/* 右上角金色光圈 */
 .hero::before {
   content: '';
   position: absolute;
-  top: -60px; right: -60px;
-  width: 280px; height: 280px;
+  top: -100px; right: -80px;
+  width: 380px; height: 380px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,255,255,0.55) 0%, transparent 65%);
+  background: radial-gradient(circle, rgba(196,169,110,0.10) 0%, transparent 65%);
   pointer-events: none;
 }
+
+/* 頂部細金線 */
 .hero::after {
   content: '';
   position: absolute;
-  bottom: 0; right: 0;
-  width: 180px; height: 1px;
-  background: linear-gradient(90deg, transparent, var(--gold-v));
-  opacity: 0.55;
+  top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--gold) 30%, var(--gold-bright) 50%, var(--gold) 70%, transparent 100%);
+  opacity: 0.6;
 }
 
 .hero:hover {
   transform: translateY(-4px);
-  box-shadow: var(--shadow-md), var(--shadow-gold);
+  border-color: rgba(196,169,110,0.45);
+  box-shadow: 0 0 0 1px rgba(196,169,110,0.12), 0 16px 64px rgba(0,0,0,0.7), 0 0 40px rgba(196,169,110,0.08);
 }
 
 .hero-icon {
-  width: 76px; height: 76px;
-  border-radius: 18px;
-  background: rgba(255,255,255,0.72);
-  border: 1px solid rgba(196,138,16,0.20);
+  width: 80px; height: 80px;
+  border-radius: 16px;
+  background: var(--gold-dim);
+  border: 1px solid var(--gold-line);
   display: flex; align-items: center; justify-content: center;
-  font-size: 32px;
+  font-size: 34px;
   flex-shrink: 0;
-  box-shadow: 0 2px 12px rgba(196,138,16,0.14);
-  transition: transform 0.22s ease, box-shadow 0.22s ease;
+  transition: transform 0.22s ease;
 }
-.hero:hover .hero-icon {
-  transform: scale(1.07) rotate(-2deg);
-  box-shadow: 0 6px 24px rgba(196,138,16,0.22);
-}
+.hero:hover .hero-icon { transform: scale(1.06) rotate(-2deg); }
 
 .hero-body { flex: 1; min-width: 0; }
 
 .hero-tag {
   font-family: 'DM Mono', monospace;
   font-size: 10px;
-  letter-spacing: 0.24em;
+  font-weight: 300;
+  letter-spacing: 0.26em;
   text-transform: uppercase;
   color: var(--gold);
-  opacity: 0.82;
-  margin-bottom: 8px;
+  opacity: 0.80;
+  margin-bottom: 10px;
 }
 
 .hero-title {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 32px;
-  font-weight: 700;
-  letter-spacing: -0.015em;
-  color: var(--ink);
+  font-size: 34px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: var(--white);
   line-height: 1.1;
   margin-bottom: 10px;
 }
 
 .hero-desc {
   font-size: 13.5px;
-  font-weight: 400;
-  color: var(--ink-mid);
-  line-height: 1.65;
-  opacity: 0.80;
+  font-weight: 300;
+  color: var(--white-dim);
+  line-height: 1.70;
 }
 
 .chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 7px;
-  margin-top: 18px;
+  gap: 8px;
+  margin-top: 20px;
 }
 .chip {
   font-family: 'DM Mono', monospace;
   font-size: 9.5px;
-  letter-spacing: 0.10em;
-  padding: 4px 13px;
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  padding: 5px 14px;
   border-radius: 100px;
-  border: 1px solid rgba(160,108,8,0.28);
+  border: 1px solid var(--gold-line);
   color: var(--gold);
-  background: rgba(255,255,255,0.55);
-  transition: background 0.18s ease;
+  background: var(--gold-glow);
+  transition: background 0.18s ease, border-color 0.18s ease;
 }
-.hero:hover .chip { background: rgba(255,255,255,0.80); }
+.hero:hover .chip {
+  background: rgba(196,169,110,0.14);
+  border-color: rgba(196,169,110,0.40);
+}
 
 .hero-arrow {
-  font-size: 20px;
-  color: var(--gold-v);
-  opacity: 0.55;
+  font-size: 22px;
+  color: var(--gold);
+  opacity: 0.45;
   flex-shrink: 0;
   transition: transform 0.22s ease, opacity 0.22s ease;
 }
 .hero:hover .hero-arrow { transform: translate(5px,-5px); opacity: 1; }
 
-/* ── 小卡 4 欄橫排 ── */
+/* ────────────────────────────────────────
+   4 小卡橫排 — 黑白交錯
+   奇數卡：白底（亮） / 偶數卡：黑底（暗）
+──────────────────────────────────────── */
 .row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 18px;
 }
 
+/* 通用卡片基底 */
 .card {
-  background: var(--white);
-  border: 1px solid var(--border);
   border-radius: var(--r);
   padding: 30px 28px 26px;
   text-decoration: none;
-  color: var(--ink);
   display: flex;
   flex-direction: column;
   position: relative;
   overflow: hidden;
-  box-shadow: var(--shadow-xs);
-  transition: transform 0.25s cubic-bezier(0.25,0.46,0.45,0.94),
+  transition: transform 0.25s cubic-bezier(0.22,1,0.36,1),
               box-shadow 0.25s ease,
               border-color 0.25s ease;
 }
 
-.card::before {
+/* ── 白卡（奇數：01、03） ── */
+.card--light {
+  background: var(--wcard);
+  border: 1px solid var(--wcard-border);
+  color: var(--wcard-ink);
+  box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+}
+.card--light::before {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0; height: 2px;
-  background: linear-gradient(90deg,
-    var(--gold-v) 0%, var(--gold-bright) 45%, transparent 80%);
+  background: linear-gradient(90deg, var(--gold) 0%, var(--gold-bright) 50%, transparent 85%);
   opacity: 0;
   transition: opacity 0.22s ease;
 }
-.card::after {
+.card--light:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+  border-color: rgba(196,169,110,0.30);
+}
+.card--light:hover::before { opacity: 1; }
+
+/* ── 黑卡（偶數：02、04） ── */
+.card--dark {
+  background: var(--black-card);
+  border: 1px solid var(--gold-line);
+  color: var(--white);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+}
+.card--dark::before {
   content: '';
   position: absolute;
-  bottom: -50px; right: -50px;
-  width: 120px; height: 120px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(196,138,16,0.05) 0%, transparent 70%);
-  pointer-events: none;
+  top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--gold) 40%, var(--gold-bright) 60%, transparent 100%);
+  opacity: 0.4;
 }
-
-.card:hover {
+.card--dark:hover {
   transform: translateY(-5px);
-  box-shadow: var(--shadow-md);
-  border-color: var(--gold-line-v);
+  border-color: rgba(196,169,110,0.45);
+  box-shadow: 0 16px 56px rgba(0,0,0,0.65), 0 0 30px rgba(196,169,110,0.06);
 }
-.card:hover::before { opacity: 1; }
 
+/* 卡片頂部 */
 .card-top {
   display: flex;
   align-items: flex-start;
@@ -386,156 +402,234 @@ body {
   margin-bottom: 22px;
 }
 
-.card-icon {
+/* 白卡圖示 */
+.card--light .card-icon {
   width: 54px; height: 54px;
   border-radius: var(--r-sm);
-  background: var(--gold-pale2);
-  border: 1px solid rgba(160,108,8,0.10);
+  background: #f5f0e8;
+  border: 1px solid rgba(196,169,110,0.18);
   display: flex; align-items: center; justify-content: center;
   font-size: 24px;
   flex-shrink: 0;
   transition: transform 0.22s ease, box-shadow 0.22s ease;
 }
-.card:hover .card-icon {
+.card--light:hover .card-icon {
   transform: scale(1.08) rotate(-2deg);
-  box-shadow: 0 4px 16px rgba(160,108,8,0.13);
+  box-shadow: 0 4px 16px rgba(196,169,110,0.20);
 }
 
-.card-num {
+/* 黑卡圖示 */
+.card--dark .card-icon {
+  width: 54px; height: 54px;
+  border-radius: var(--r-sm);
+  background: var(--gold-dim);
+  border: 1px solid var(--gold-line);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+  transition: transform 0.22s ease;
+}
+.card--dark:hover .card-icon { transform: scale(1.08) rotate(-2deg); }
+
+/* 輪廓編號 */
+.card--light .card-num {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 14px;
-  font-weight: 500;
-  -webkit-text-stroke: 0.8px rgba(160,108,8,0.22);
+  font-size: 13px;
+  -webkit-text-stroke: 0.8px rgba(196,169,110,0.35);
+  color: transparent;
+  letter-spacing: 0.04em;
+}
+.card--dark .card-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 13px;
+  -webkit-text-stroke: 0.8px var(--gold-line);
   color: transparent;
   letter-spacing: 0.04em;
 }
 
-.card-body { flex: 1; display: flex; flex-direction: column; }
-
-.card-tag {
+/* 標籤 */
+.card--light .card-tag {
   font-family: 'DM Mono', monospace;
   font-size: 9.5px;
+  font-weight: 300;
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--gold);
-  opacity: 0.82;
+  margin-bottom: 6px;
+}
+.card--dark .card-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 9.5px;
+  font-weight: 300;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0.80;
   margin-bottom: 6px;
 }
 
-.card-title {
+/* 標題 */
+.card--light .card-title {
   font-family: 'Cormorant Garamond', serif;
   font-size: 22px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-weight: 500;
+  letter-spacing: 0.01em;
   line-height: 1.15;
-  color: var(--ink);
+  color: var(--wcard-ink);
+  margin-bottom: 10px;
+}
+.card--dark .card-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  line-height: 1.15;
+  color: var(--white);
   margin-bottom: 10px;
 }
 
-.card-desc {
+/* 描述 */
+.card-body { flex: 1; display: flex; flex-direction: column; }
+
+.card--light .card-desc {
   font-size: 12.5px;
-  font-weight: 400;          /* 從 300 調重 */
-  color: var(--ink-mid);     /* #4a3c2c，明顯深一階 */
+  font-weight: 400;
+  color: var(--wcard-mid);
+  line-height: 1.78;
+  flex: 1;
+}
+.card--dark .card-desc {
+  font-size: 12.5px;
+  font-weight: 300;
+  color: var(--white-dim);
   line-height: 1.78;
   flex: 1;
 }
 
+/* 底部 */
 .card-footer {
   margin-top: 20px;
   padding-top: 16px;
-  border-top: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
+.card--light .card-footer { border-top: 1px solid rgba(0,0,0,0.08); }
+.card--dark  .card-footer { border-top: 1px solid var(--gold-line); }
 
-.card-cta {
+.card--light .card-cta {
   font-family: 'DM Mono', monospace;
   font-size: 10px;
-  letter-spacing: 0.14em;
+  font-weight: 400;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--ink-light);   /* #9c8570，從 ink-faint 調深 */
+  color: var(--wcard-light);
   transition: color 0.18s ease;
 }
-.card:hover .card-cta { color: var(--gold); }
+.card--light:hover .card-cta { color: var(--gold); }
 
-.card-arrow {
+.card--dark .card-cta {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  font-weight: 300;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--white-faint);
+  transition: color 0.18s ease;
+}
+.card--dark:hover .card-cta { color: var(--gold); }
+
+.card--light .card-arrow {
   font-size: 15px;
-  color: var(--gold-line-v);
+  color: rgba(196,169,110,0.40);
   transition: transform 0.2s ease, color 0.2s ease;
 }
-.card:hover .card-arrow { transform: translate(4px,-4px); color: var(--gold-v); }
+.card--light:hover .card-arrow {
+  transform: translate(4px,-4px);
+  color: var(--gold);
+}
+.card--dark .card-arrow {
+  font-size: 15px;
+  color: var(--gold-line);
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+.card--dark:hover .card-arrow {
+  transform: translate(4px,-4px);
+  color: var(--gold-bright);
+}
 
-/* ════════════════════════════
+/* ════════════════════════════════════════
    Footer
-════════════════════════════ */
-.footer-wrap {
+════════════════════════════════════════ */
+.footer {
   max-width: 1200px;
   margin: 28px auto 0;
-  padding: 22px 52px 44px;
-  border-top: 1px solid var(--border);
+  padding: 24px 52px 52px;
+  border-top: 1px solid var(--gold-line);
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 .footer-l {
   font-family: 'DM Mono', monospace;
-  font-size: 10.5px;
-  letter-spacing: 0.14em;
-  color: var(--ink-faint);
+  font-size: 10px;
+  font-weight: 300;
+  letter-spacing: 0.16em;
+  color: var(--white-faint);
 }
 .footer-r {
   font-family: 'DM Mono', monospace;
   font-size: 10px;
-  letter-spacing: 0.14em;
+  font-weight: 300;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--gold-line-v);
+  color: var(--gold-line);
 }
 
-/* ════════════════════════════
-   入場動畫
-════════════════════════════ */
+/* ════════════════════════════════════════
+   入場動畫（奢華：慢、帶模糊）
+════════════════════════════════════════ */
 @keyframes riseIn {
-  from { opacity: 0; transform: translateY(18px); filter: blur(3px); }
+  from { opacity: 0; transform: translateY(22px); filter: blur(4px); }
   to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
 }
 
-.header      { animation: riseIn 0.65s cubic-bezier(0.22,1,0.36,1) both; }
-.divider     { animation: riseIn 0.60s 0.10s cubic-bezier(0.22,1,0.36,1) both; }
-.hero        { animation: riseIn 0.65s 0.16s cubic-bezier(0.22,1,0.36,1) both; }
-.card        { animation: riseIn 0.55s cubic-bezier(0.22,1,0.36,1) both; opacity: 0; }
-.card:nth-child(1) { animation-delay: 0.24s; }
-.card:nth-child(2) { animation-delay: 0.30s; }
-.card:nth-child(3) { animation-delay: 0.36s; }
-.card:nth-child(4) { animation-delay: 0.42s; }
-.footer-wrap { animation: riseIn 0.50s 0.48s cubic-bezier(0.22,1,0.36,1) both; }
+.header      { animation: riseIn 0.7s  cubic-bezier(0.22,1,0.36,1) both; }
+.divider     { animation: riseIn 0.65s 0.10s cubic-bezier(0.22,1,0.36,1) both; }
+.hero        { animation: riseIn 0.70s 0.18s cubic-bezier(0.22,1,0.36,1) both; }
+.card        { animation: riseIn 0.60s cubic-bezier(0.22,1,0.36,1) both; opacity: 0; }
+.card:nth-child(1) { animation-delay: 0.26s; }
+.card:nth-child(2) { animation-delay: 0.32s; }
+.card:nth-child(3) { animation-delay: 0.38s; }
+.card:nth-child(4) { animation-delay: 0.44s; }
+.footer      { animation: riseIn 0.55s 0.50s cubic-bezier(0.22,1,0.36,1) both; }
 
-/* ════════════════════════════
+/* ════════════════════════════════════════
    RWD
-════════════════════════════ */
+════════════════════════════════════════ */
 @media (max-width: 960px) {
   .row { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 640px) {
-  .header-inner { padding: 32px 20px 28px; flex-direction: column; align-items: flex-start; }
+  .header-inner { padding: 36px 20px 32px; flex-direction: column; align-items: flex-start; }
   .header-right { display: none; }
   .divider      { padding: 0 20px; }
-  .tools        { padding: 18px 20px 0; gap: 14px; }
-  .hero         { flex-direction: column; align-items: flex-start; padding: 28px 22px; gap: 20px; }
+  .tools        { padding: 20px 20px 0; gap: 14px; }
+  .hero         { flex-direction: column; align-items: flex-start; padding: 28px 24px; gap: 22px; }
   .hero-arrow   { align-self: flex-end; }
   .row          { grid-template-columns: 1fr 1fr; gap: 12px; }
   .card         { padding: 22px 18px 18px; }
-  .footer-wrap  { padding: 18px 20px 36px; flex-direction: column; align-items: flex-start; gap: 6px; }
+  .footer       { padding: 20px 20px 40px; flex-direction: column; align-items: flex-start; gap: 6px; }
 }
 </style>
 </head>
 <body>
 
-<!-- ══ Header —— 亮色橫幅 ══ -->
+<!-- ══ Header（黑底金字） ══ -->
 <header class="header">
   <div class="header-inner">
-    <div class="header-left">
+    <div>
       <div class="eyebrow">
         <div class="eyebrow-line"></div>
         <span class="eyebrow-text">Futime Internal Portal</span>
@@ -554,16 +648,16 @@ body {
 <!-- 分隔線 -->
 <div class="divider">
   <div class="div-line"></div>
-  <div class="div-dot"></div>
+  <div class="div-diamond"></div>
   <div class="div-text">選擇工具入口</div>
-  <div class="div-dot"></div>
+  <div class="div-diamond"></div>
   <div class="div-line"></div>
 </div>
 
 <!-- 工具區 -->
 <div class="tools">
 
-  <!-- CRM Hero -->
+  <!-- CRM Hero — 黑底金邊大卡 -->
   <a class="hero"
      href="https://richtime90117277-alt.github.io/futime-crm/crm_cloud_v19.html"
      target="_blank">
@@ -582,10 +676,11 @@ body {
     <div class="hero-arrow">↗</div>
   </a>
 
-  <!-- 4 小卡 -->
+  <!-- 4 小卡（黑白交錯） -->
   <div class="row">
 
-    <a class="card"
+    <!-- 01 白卡 -->
+    <a class="card card--light"
        href="https://richtime90117277-alt.github.io/futime-crm/asset-planner.html"
        target="_blank">
       <div class="card-top">
@@ -603,7 +698,8 @@ body {
       </div>
     </a>
 
-    <a class="card"
+    <!-- 02 黑卡 -->
+    <a class="card card--dark"
        href="https://tinyurl.com/55nfe22y"
        target="_blank">
       <div class="card-top">
@@ -621,7 +717,8 @@ body {
       </div>
     </a>
 
-    <a class="card"
+    <!-- 03 白卡 -->
+    <a class="card card--light"
        href="https://richtimes.tw/"
        target="_blank">
       <div class="card-top">
@@ -639,7 +736,8 @@ body {
       </div>
     </a>
 
-    <a class="card"
+    <!-- 04 黑卡 -->
+    <a class="card card--dark"
        href="https://www.notion.so/059972580dae4a54b07a57fd410b3090"
        target="_blank">
       <div class="card-top">
@@ -661,9 +759,9 @@ body {
 </div>
 
 <!-- Footer -->
-<footer class="footer-wrap">
+<footer class="footer">
   <div class="footer-l">Fustai © 2025 ｜ 內部版僅供團隊使用</div>
-  <div class="footer-r">Operations Command Center · v6</div>
+  <div class="footer-r">Operations Command Center · v7</div>
 </footer>
 
 </body>
