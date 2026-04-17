@@ -872,44 +872,69 @@ body {
 
 <script>
 // ════════════════════════════════════════════
-// Hub v9 登入保護 — 共用 CRM 同一 GAS 後端
+// Hub v9 登入保護
+// 前端 SHA-256 驗證（與後端相同 salt）
+// 不依賴網路，file:// 或 GitHub Pages 均可用
 // ════════════════════════════════════════════
 
-var HUB_API_URL = 'https://script.google.com/macros/s/AKfycbyt8tcy6pORzZ1nc0HP4YVLV-AY1tOuahJWjhmWQ2VBTSZPLZe2qgBzZgczbDQTVsPI/exec';
+// 預計算雜湊表（sha256(密碼 + 'futime_salt_2026')，與 GAS 後端完全一致）
+var PWD_HASH = {
+  '總經理':'cf087226d5febdc5f6120034c9df651c547af9bb9ab8df726bfd3799247dc4f0',
+  'CRM營運長':'b377818564591d68075e5f06d8ce41818725c6a71786e3ea5d890ef9010eff9f',
+  '知識長':'90d757741d92eed7d66a26564d26bf9165443c9069ecbb321668b2718e0e9113',
+  'AI訓練長':'7aecc91c3f30c6a1e85bf377686a5cd1a844266168793c111135caaa5e084f73',
+  '阮智偉':'d844cd784848ff8c225f84939a2a909e1d8fc8582ff990000155cb018b7ff1ed',
+  '廖一龍':'0d6e2f56e95aa10de12dc48f2ecee1f89d0090cd9e0be9606aecd2d9a809d0db',
+  '鄭采崴':'5cce5933f67dc279462a036994408ca165b4faa723c4a7577cfe5641605fa575',
+  '張書菡':'05604ed0d55cdc09c122a79f06ef60f00f757207e626bc24cd9fcc1d6c88ed9a',
+  '王鈞志':'17ff947b7c78eae21d70db1b115ec949724d3661b1aeb50fe93922c678a5c80f',
+  '吳玉如':'e6fdd2c82193295ec82d49a41ff4d380fbf81437888522be9c6ffc6d33da59cd',
+  '商國泰':'22f2aabf7a48b3e4e7d0d76b96cedcbfe9c68dc83989cf61d8c66b5334e21ce9',
+  '郭淑真':'377e88c64ae640ba5badf9f1b410d4a72fcb22d6d42e7b9ac270cc21aab47750',
+  '高亞琦':'b1b7af6092a6ad56260a8884f1e451a8d03d8dee79b79168713213668bd96321',
+  '陳淑美':'f88ce1339d1e505ad75fa74f887ef92c998e3dc148032f4dc6db41a5252b4b97',
+  '侯明智':'7f1c7707dbd94ad0d533e8514180ed310af55b150262f8334401c646b4e2dc96',
+  '許亞茵':'e267fdd79059c3fedb879b0d217b14161f887f91b0b022888edd720d18b0f662',
+  '曾素蘭':'bcdbc235be61568427d4dc97d618f8a94e11d3a24b9b34d48c2e8508c3137084',
+  '林紫君':'5dc68e25a569b297f0064cc73bcc7a3ebba6455663826f29e1e4b17c57e8a644',
+  '黃中興':'11208f74a73ad765f9ef4147ff0ae47ca60379e4d61b612065ddfb3122b065dd',
+  '黃彥程':'2ecb3cf2f3fe7c5142c288c61ffde506393dd77754add2bfcc28e658d7cfc2d4',
+  '孫運迪':'81b4791209f6395b3c8f8d45bd28ab9d243e0af77673b7febb7dbb4f8cb59089',
+  '陳丰彥':'a68a448b87bd6d083de1295dc76e538bc70ac679c09d679a64b793b57b00d110',
+  '劉常裕':'e5690285bb6a965e7cb91f88d2ce4513639047b3c6bfd11690ef7df12cd584ce',
+  '施向宇':'a946e992fe9a53dedf601d8af2b7c309885df3e16cef4c1075d9e4f43ddc70df',
+  '莊環蔭':'6099fc0b8a8576c0fd06080d9243a316484603c9ce2b53fb9968cf233e5b2414',
+  '廉海桃':'caa6d9c2e3ba98b595ad49d7a23d25e2d9bc4f76c0a47e94223730cd5a56c1a0',
+  '劉晁綱':'1f49b5bd21e3a6af3b0711c8f1b72f377bc021217f6cc4244a44457983cb58f1',
+  '游馥宇':'221731a68f4f0cff16c3856e09960bca4a574e1e70312b6dd1d5649dc75435c7'
+};
+
+// ── SHA-256（Web Crypto API，與 GAS 相同 salt）──
+async function sha256(str) {
+  var buf = await crypto.subtle.digest('SHA-256',
+    new TextEncoder().encode(str + 'futime_salt_2026'));
+  return Array.from(new Uint8Array(buf))
+    .map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+}
 
 // ── 登入主函式 ──
-function doLogin() {
+async function doLogin() {
   var user = document.getElementById('userSelect').value;
   var pwd  = document.getElementById('pwdInput').value;
   if (!user) return showLoginErr('🔒 請選擇身份');
   if (!pwd)  return showLoginErr('🔒 請輸入密碼');
 
   setLoginLoading(true);
+  var hash = await sha256(pwd);
+  setLoginLoading(false);
 
-  // Content-Type 必須用 text/plain，與 CRM 完全一致
-  // 使用 application/json 會觸發 CORS preflight，GAS 不處理 OPTIONS → 失敗
-  fetch(HUB_API_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'text/plain' },
-    body: JSON.stringify({ action: 'verifyPassword', user: user, password: pwd })
-  })
-  .then(function(r) { return r.text(); })
-  .then(function(text) {
-    setLoginLoading(false);
-    var res;
-    try { res = JSON.parse(text); } catch(e) { res = { success: false, error: '回應解析失敗' }; }
-    if (res && res.success) {
-      // 驗證成功：隱藏登入頁，顯示主畫面
-      document.getElementById('loginPage').style.display = 'none';
-      document.getElementById('mainApp').style.display   = 'block';
-    } else {
-      showLoginErr('🔒 ' + (res && res.error ? res.error : '帳號或密碼錯誤'));
-    }
-  })
-  .catch(function(err) {
-    setLoginLoading(false);
-    showLoginErr('❌ 網路錯誤：' + err.toString());
-  });
+  if (PWD_HASH[user] && PWD_HASH[user] === hash) {
+    // 驗證成功
+    document.getElementById('loginPage').style.display = 'none';
+    document.getElementById('mainApp').style.display   = 'block';
+  } else {
+    showLoginErr('🔒 帳號或密碼錯誤');
+  }
 }
 
 // ── 錯誤提示 ──
