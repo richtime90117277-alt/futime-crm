@@ -577,7 +577,7 @@ body {
 
 .login-box {
   width: 100%;
-  max-width: 380px;
+  max-width: 400px;
   background: var(--bg-card);
   border: 1px solid var(--border-v);
   border-radius: var(--r);
@@ -635,11 +635,11 @@ body {
   padding: 10px 14px;
   outline: none;
   transition: border-color .2s;
+  appearance: auto;
 }
 .login-field select:focus,
 .login-field input:focus { border-color: var(--gold); }
-.login-field select option { background: #1a1510; color: var(--text-primary); }
-
+.login-field select option { background: #1a1510; color: #f0ead8; }
 .login-btn {
   width: 100%;
   padding: 13px;
@@ -654,7 +654,6 @@ body {
 }
 .login-btn:hover:not(:disabled) { opacity: .88; transform: translateY(-1px); }
 .login-btn:disabled { opacity: .5; cursor: not-allowed; }
-
 .login-err {
   display: none;
   background: rgba(220,50,50,0.12);
@@ -666,7 +665,6 @@ body {
   text-align: center;
 }
 .login-err.active { display: block; }
-
 </style>
 <!-- LINE 專用 Open Graph 標籤 -->
 <meta property="og:title" content="富時代機構六大系統" />
@@ -686,27 +684,34 @@ body {
     </div>
     <div class="login-body">
       <div class="login-err" id="loginErr"></div>
-
       <div class="login-field">
         <label>選擇身份</label>
         <select id="userSelect">
           <option value="">── 請選擇 ──</option>
-          <!-- 選項由 JS 動態載入（與 CRM 同一後端員工清單） -->
+          <optgroup label="👑 管理層">
+            <option>總經理</option><option>CRM營運長</option><option>知識長</option><option>AI訓練長</option>
+          </optgroup>
+          <optgroup label="👨‍💼 業務團隊">
+            <option>阮智偉</option><option>廖一龍</option><option>鄭采崴</option><option>張書菡</option>
+            <option>王鈞志</option><option>吳玉如</option><option>商國泰</option><option>郭淑真</option>
+            <option>高亞琦</option><option>陳淑美</option><option>侯明智</option><option>許亞茵</option>
+            <option>曾素蘭</option><option>林紫君</option><option>黃中興</option><option>黃彥程</option>
+            <option>孫運迪</option><option>陳丰彥</option><option>劉常裕</option><option>施向宇</option>
+            <option>莊環蔭</option><option>廉海桃</option><option>劉晁綱</option><option>游馥宇</option>
+          </optgroup>
         </select>
       </div>
-
       <div class="login-field">
         <label>密碼</label>
         <input type="password" id="pwdInput" placeholder="請輸入密碼"
-               onkeydown="if(event.key==='Enter') login()">
+               onkeydown="if(event.key==='Enter') doLogin()">
       </div>
-
-      <button class="login-btn" id="loginBtn" onclick="login()">🔐 進入作戰中心</button>
+      <button class="login-btn" id="loginBtn" onclick="doLogin()">🔐 進入作戰中心</button>
     </div>
   </div>
 </div>
 
-<!-- ══ 主畫面（登入後顯示） ══ -->
+<!-- ══ 主畫面 ══ -->
 <div id="mainApp">
 
 <!-- ══ Header ══ -->
@@ -867,120 +872,60 @@ body {
 
 <script>
 // ════════════════════════════════════════════
-// 富時代 Hub v9 — 登入保護
-// 與 CRM 共用同一 Apps Script 後端 verifyPassword
+// Hub v9 登入保護 — 共用 CRM 同一 GAS 後端
 // ════════════════════════════════════════════
 
 var HUB_API_URL = 'https://script.google.com/macros/s/AKfycbyt8tcy6pORzZ1nc0HP4YVLV-AY1tOuahJWjhmWQ2VBTSZPLZe2qgBzZgczbDQTVsPI/exec';
 
-// 預設名單（與 CRM DEFAULT_SALES 完全同步，確保頁面即時顯示）
-var DEFAULT_MANAGERS = ['總經理','CRM營運長','知識長','AI訓練長'];
-var DEFAULT_SALES    = ['阮智偉','廖一龍','鄭采崴','張書菡','王鈞志','吳玉如','商國泰',
-                        '郭淑真','高亞琦','陳淑美','侯明智','許亞茵','曾素蘭','林紫君',
-                        '黃中興','黃彥程','孫運迪','陳丰彥','劉常裕','施向宇',
-                        '莊環蔭','廉海桃','劉晁綱','游馥宇'];
-
-// ── 填入 select（managers + sales 兩個 optgroup）──
-function buildSelect(managers, sales) {
-  var sel = document.getElementById('userSelect');
-  sel.innerHTML = '<option value="">── 請選擇 ──</option>';
-
-  var mg = document.createElement('optgroup');
-  mg.label = '👑 管理層';
-  managers.forEach(function(n) {
-    var o = document.createElement('option');
-    o.value = o.textContent = n;
-    mg.appendChild(o);
-  });
-  sel.appendChild(mg);
-
-  var sg = document.createElement('optgroup');
-  sg.label = '👨‍💼 業務團隊';
-  sales.forEach(function(n) {
-    var o = document.createElement('option');
-    o.value = o.textContent = n;
-    sg.appendChild(o);
-  });
-  sel.appendChild(sg);
-}
-
-// ── 初始化：先用預設名單即時顯示，後端回應後再同步更新 ──
-function initUserSelect() {
-  // Step 1：預設名單先填，頁面秒開就能選
-  buildSelect(DEFAULT_MANAGERS, DEFAULT_SALES);
-
-  // Step 2：背景呼叫後端，若有新增/移除人員則同步更新
-  callApi({ action: 'getStaffList' }, function(res) {
-    if (!res || !res.success) return; // 失敗不影響，保留預設
-    var managers = (res.managers && res.managers.length) ? res.managers : DEFAULT_MANAGERS;
-    var sales    = (res.sales    && res.sales.length)    ? res.sales    : DEFAULT_SALES;
-    buildSelect(managers, sales);
-  });
-}
-
-// ── 登入：呼叫後端 verifyPassword（與 CRM 完全相同邏輯）──
-function login() {
+// ── 登入主函式 ──
+function doLogin() {
   var user = document.getElementById('userSelect').value;
   var pwd  = document.getElementById('pwdInput').value;
-
-  if (!user) return showErr('🔒 請選擇身份');
-  if (!pwd)  return showErr('🔒 請輸入密碼');
+  if (!user) return showLoginErr('🔒 請選擇身份');
+  if (!pwd)  return showLoginErr('🔒 請輸入密碼');
 
   setLoginLoading(true);
 
-  callApi({ action: 'verifyPassword', user: user, password: pwd }, function(res) {
+  // Content-Type 必須用 text/plain，與 CRM 完全一致
+  // 使用 application/json 會觸發 CORS preflight，GAS 不處理 OPTIONS → 失敗
+  fetch(HUB_API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({ action: 'verifyPassword', user: user, password: pwd })
+  })
+  .then(function(r) { return r.text(); })
+  .then(function(text) {
     setLoginLoading(false);
+    var res;
+    try { res = JSON.parse(text); } catch(e) { res = { success: false, error: '回應解析失敗' }; }
     if (res && res.success) {
-      enterHub();
+      // 驗證成功：隱藏登入頁，顯示主畫面
+      document.getElementById('loginPage').style.display = 'none';
+      document.getElementById('mainApp').style.display   = 'block';
     } else {
-      showErr('🔒 ' + (res && res.error ? res.error : '帳號或密碼錯誤'));
+      showLoginErr('🔒 ' + (res && res.error ? res.error : '帳號或密碼錯誤'));
     }
+  })
+  .catch(function(err) {
+    setLoginLoading(false);
+    showLoginErr('❌ 網路錯誤：' + err.toString());
   });
 }
 
-// ── 進入 Hub 主畫面 ──
-function enterHub() {
-  document.getElementById('loginPage').style.display = 'none';
-  document.getElementById('mainApp').style.display   = 'block';
-}
-
-// ── 顯示錯誤訊息 ──
-function showErr(msg) {
+// ── 錯誤提示 ──
+function showLoginErr(msg) {
   var el = document.getElementById('loginErr');
   el.textContent = msg;
   el.classList.add('active');
   setTimeout(function() { el.classList.remove('active'); }, 3000);
 }
 
-// ── 登入按鈕 loading 狀態 ──
-function setLoginLoading(loading) {
+// ── 按鈕 loading 狀態 ──
+function setLoginLoading(on) {
   var btn = document.getElementById('loginBtn');
-  btn.disabled    = loading;
-  btn.textContent = loading ? '⏳ 驗證中...' : '🔐 進入作戰中心';
+  btn.disabled    = on;
+  btn.textContent = on ? '⏳ 驗證中...' : '🔐 進入作戰中心';
 }
-
-// ── 通用 API 呼叫（與 CRM callAPI 架構一致）──
-function callApi(payload, callback) {
-  fetch(HUB_API_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  })
-  .then(function(r) { return r.text(); })
-  .then(function(text) {
-    try {
-      callback(JSON.parse(text));
-    } catch(e) {
-      callback({ success: false, error: '回應解析失敗' });
-    }
-  })
-  .catch(function(err) {
-    callback({ success: false, error: err.toString() });
-  });
-}
-
-// ── 頁面載入：初始化員工清單 ──
-window.addEventListener('DOMContentLoaded', initUserSelect);
 </script>
 
 </body>
