@@ -112,149 +112,119 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 .toast{position:fixed;bottom:24px;right:24px;background:var(--surface2);border:1px solid var(--gold);color:var(--text);padding:10px 18px;border-radius:6px;font-size:13px;transform:translateY(80px);opacity:0;transition:all .3s;z-index:999;pointer-events:none;}
 .toast.show{transform:translateY(0);opacity:1;}
 
-/* ════════════════════════════════════════
-   Mobile RWD — 手機版響應式佈局
-   斷點：768px 以下切換為抽屜式 sidebar
-   ════════════════════════════════════════ */
-@media (max-width: 768px) {
-
-  /* ── Topbar 手機版 ── */
-  .topbar { padding: 0 14px; gap: 10px; height: 50px; }
-  .topbar-sep { display: none; }
-  .topbar-title { display: none; } /* 節省空間，標題已在 sidebar 可見 */
-  .topbar-right { gap: 6px; }
-  .count-badge { display: none; } /* 手機不顯示筆數 */
-  .mode-toggle { border-radius: 16px; }
-  .mode-btn { font-size: 11px; padding: 4px 10px; }
-
-  /* 搜尋列手機版縮短 */
-  .search-wrap { max-width: 160px; }
-  .search-input { width: 120px; font-size: 13px; }
-
-  /* ── Hamburger 按鈕 ── */
-  .hamburger {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px; height: 36px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 16px;
-    flex-shrink: 0;
-    order: -1; /* 擺最左 */
-    color: var(--text-sub);
-    transition: background .15s;
-  }
-  .hamburger:hover { background: var(--surface3); }
-
-  /* ── Sidebar 抽屜模式 ── */
-  .sidebar {
-    position: fixed;
-    top: 0; left: 0; bottom: 0;
-    width: 260px;
-    z-index: 200;
-    transform: translateX(-100%);
-    transition: transform .25s ease;
-    border-right: 1px solid var(--border);
-    padding-top: 60px; /* 留出 close btn 空間 */
-  }
-  .sidebar.open { transform: translateX(0); }
-
-  /* 遮罩層 */
-  .sidebar-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.55);
-    z-index: 199;
-  }
-  .sidebar-overlay.show { display: block; }
-
-  /* Sidebar 內的關閉按鈕 */
-  .sidebar-close {
-    display: flex;
-    position: absolute;
-    top: 12px; right: 12px;
-    width: 30px; height: 30px;
-    align-items: center;
-    justify-content: center;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-    color: var(--text-sub);
-  }
-
-  /* ── Main 內容區：不再預留 sidebar 寬度 ── */
-  .main {
-    margin-left: 0;
-    padding: 16px 14px;
-    margin-top: 50px;
-  }
-
-  /* ── 卡片標題：避免直排 ── */
-  .script-title {
-    font-size: 13px;
-    line-height: 1.4;
-    /* 讓標題自然換行但不直排 */
-    word-break: keep-all;
-    overflow-wrap: break-word;
-  }
-
-  .script-header {
-    padding: 10px 12px;
-    gap: 8px;
-    flex-wrap: nowrap;
-    align-items: flex-start; /* 多行時對齊頂部 */
-  }
-
-  .script-id {
-    font-size: 10px;
-    min-width: 42px;
-    padding: 2px 6px;
-    margin-top: 1px; /* 視覺對齊 */
-  }
-
-  /* 分類標籤手機版不顯示（節省空間，header 已很擠） */
-  .script-cat { display: none; }
-
-  .script-chevron { margin-top: 2px; flex-shrink: 0; }
-
-  /* ── Script body 手機調整 ── */
-  .script-body { padding: 0 12px 14px; }
-  .sf-content { font-size: 12px; line-height: 1.8; }
-  .sf-trigger { font-size: 12px; }
-  .sf-situation { font-size: 11px; }
-
-  .script-actions { gap: 6px; }
-  .action-btn { font-size: 11px; padding: 5px 12px; }
-
-  /* ── Module grid：手機改單欄 ── */
-  .module-grid { grid-template-columns: 1fr; gap: 10px; }
-  .module-card { padding: 14px; }
-  .mc-name { font-size: 14px; }
-
-  /* ── View header ── */
-  .view-title { font-size: 18px; }
-  .view-desc { font-size: 12px; margin-bottom: 16px; }
+/* ════ 登入保護層 ════ */
+#ftLoginOverlay {
+  position:fixed;inset:0;z-index:99999;
+  background:#0a0a0a;
+  display:flex;align-items:center;justify-content:center;padding:24px;
 }
-
-/* 桌面版隱藏手機專屬元素 */
-@media (min-width: 769px) {
-  .hamburger { display: none; }
-  .sidebar-close { display: none; }
-  .sidebar-overlay { display: none !important; }
+.ft-login-box {
+  width:100%;max-width:380px;
+  background:#111111;
+  border:1px solid rgba(201,168,76,0.25);
+  border-radius:16px;overflow:hidden;
+  box-shadow:0 8px 40px rgba(0,0,0,0.5);
 }
+.ft-login-head {
+  background:#0a0a0a;
+  border-bottom:1px solid rgba(201,168,76,0.25);
+  padding:32px 28px 24px;text-align:center;
+}
+.ft-login-logo {
+  width:52px;height:52px;border-radius:50%;
+  background:linear-gradient(135deg,#8a6820,#c9a84c);
+  margin:0 auto 14px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;font-weight:700;color:#0a0a0a;
+  font-family:'Noto Serif TC',serif;
+}
+.ft-login-title {
+  font-family:'Noto Serif TC',serif;
+  font-size:20px;font-weight:700;color:#f0e6d0;letter-spacing:.06em;
+}
+.ft-login-sub {
+  font-size:10px;letter-spacing:.18em;color:#8a6820;
+  margin-top:5px;font-family:monospace;
+}
+.ft-login-body {
+  padding:24px 28px 28px;
+  display:flex;flex-direction:column;gap:14px;
+}
+.ft-login-body label {
+  display:block;font-size:11px;letter-spacing:.12em;
+  color:#8a6820;margin-bottom:6px;
+}
+.ft-login-body select,
+.ft-login-body input {
+  width:100%;padding:10px 13px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(201,168,76,0.25);border-radius:8px;
+  color:#f0e6d0;font-size:14px;
+  font-family:'Noto Serif TC',serif;outline:none;
+  transition:border-color .2s;appearance:auto;
+}
+.ft-login-body select:focus,
+.ft-login-body input:focus { border-color:#c9a84c; }
+.ft-login-body select option { background:#111;color:#eee; }
+.ft-login-btn {
+  width:100%;padding:12px;
+  background:linear-gradient(135deg,#8a6820,#c9a84c);
+  color:#0a0a0a;font-family:'Noto Serif TC',serif;
+  font-size:15px;font-weight:700;letter-spacing:.08em;
+  border:none;border-radius:8px;cursor:pointer;
+  transition:opacity .2s,transform .15s;
+}
+.ft-login-btn:hover:not(:disabled){opacity:.88;transform:translateY(-1px);}
+.ft-login-btn:disabled{opacity:.5;cursor:not-allowed;}
+.ft-login-err {
+  display:none;padding:9px 13px;border-radius:8px;
+  background:rgba(220,50,50,0.12);border:1px solid rgba(220,50,50,.3);
+  color:#f87171;font-size:13px;text-align:center;
+}
+.ft-login-err.show{display:block;}
 </style>
 </head>
 <body>
 
+<!-- ════ 登入保護層 ════ -->
+<div id="ftLoginOverlay">
+  <div class="ft-login-box">
+    <div class="ft-login-head">
+      <div class="ft-login-logo">富</div>
+      <div class="ft-login-title">富時代地產</div>
+      <div class="ft-login-sub">智偉哥話術庫</div>
+    </div>
+    <div class="ft-login-body">
+      <div class="ft-login-err" id="ftLoginErr"></div>
+      <div>
+        <label>選擇身份</label>
+        <select id="ftUserSelect">
+          <option value="">── 請選擇 ──</option>
+          
+          <optgroup label="👑 管理層">
+            <option>總經理</option><option>CRM營運長</option><option>知識長</option><option>AI訓練長</option>
+          </optgroup>
+          <optgroup label="👨‍💼 業務團隊">
+            <option>阮智偉</option><option>廖一龍</option><option>鄭采崴</option><option>張書菡</option>
+            <option>王鈞志</option><option>吳玉如</option><option>商國泰</option><option>郭淑真</option>
+            <option>高亞琦</option><option>陳淑美</option><option>侯明智</option><option>許亞茵</option>
+            <option>曾素蘭</option><option>林紫君</option><option>黃中興</option><option>黃彥程</option>
+            <option>孫運迪</option><option>陳丰彥</option><option>劉常裕</option><option>施向宇</option>
+            <option>莊環蔭</option><option>廉海桃</option><option>劉晁綱</option><option>游馥宇</option>
+          </optgroup>
+        </select>
+      </div>
+      <div>
+        <label>密碼</label>
+        <input type="password" id="ftPwdInput" placeholder="請輸入密碼"
+               onkeydown="if(event.key==='Enter') ftLogin()">
+      </div>
+      <button class="ft-login-btn" id="ftLoginBtn" onclick="ftLogin()">🔐 進入系統</button>
+    </div>
+  </div>
+</div>
+
 <header class="topbar">
-  <!-- 手機版漢堡選單 -->
-  <div class="hamburger" id="hamburgerBtn" onclick="toggleSidebar()">☰</div>
   <div class="topbar-logo">富時代地產</div>
   <div class="topbar-sep">·</div>
   <div class="topbar-title">話術教材庫</div>
@@ -271,15 +241,10 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
   </div>
 </header>
 
-<!-- 遮罩層 -->
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
-
 <div class="layout">
   <nav class="sidebar" id="sidebar">
-    <!-- 手機關閉按鈕 -->
-    <div class="sidebar-close" onclick="closeSidebar()">✕</div>
     <div class="sidebar-label">視圖</div>
-    <div class="sidebar-item active" id="nav-overview" onclick="showOverview();autoCloseSidebar()">
+    <div class="sidebar-item active" id="nav-overview" onclick="showOverview()">
       <span class="s-icon">🏠</span><span class="s-name">總覽</span>
     </div>
     <div class="sidebar-divider"></div>
@@ -317,7 +282,7 @@ function buildNav() {
     el.className = 'sidebar-item';
     el.id = 'nav-mod-' + m.no;
     el.innerHTML = `<span class="s-icon">${m.icon}</span><span class="s-name">M${m.no} ${m.name}</span><span class="s-cnt">${cnt}</span>`;
-    el.onclick = () => { showModule(m.no); autoCloseSidebar(); };
+    el.onclick = () => showModule(m.no);
     modEl.appendChild(el);
   });
 
@@ -329,7 +294,7 @@ function buildNav() {
     el.className = 'sidebar-item';
     el.id = 'nav-cat-' + cat;
     el.innerHTML = `<span class="s-icon">${CAT_ICONS[cat]||'📌'}</span><span class="s-name">${cat}</span><span class="s-cnt">${cnt}</span>`;
-    el.onclick = () => { showCategory(cat); autoCloseSidebar(); };
+    el.onclick = () => showCategory(cat);
     catEl.appendChild(el);
   });
 }
@@ -506,32 +471,70 @@ function hlText(escaped, q) {
 }
 
 init();
+</script>
 
-// ── 手機版 Sidebar 抽屜控制 ──
-function toggleSidebar() {
-  const sb = document.getElementById('sidebar');
-  const ov = document.getElementById('sidebarOverlay');
-  const isOpen = sb.classList.contains('open');
-  isOpen ? closeSidebar() : openSidebar();
-}
+<script>
+// ════ 登入保護 — 前端 SHA-256（salt: futime_salt_2026）════
+(function() {
+  var PWD_HASH = {
+  '總經理':'cf087226d5febdc5f6120034c9df651c547af9bb9ab8df726bfd3799247dc4f0',
+  'CRM營運長':'b377818564591d68075e5f06d8ce41818725c6a71786e3ea5d890ef9010eff9f',
+  '知識長':'90d757741d92eed7d66a26564d26bf9165443c9069ecbb321668b2718e0e9113',
+  'AI訓練長':'7aecc91c3f30c6a1e85bf377686a5cd1a844266168793c111135caaa5e084f73',
+  '阮智偉':'d844cd784848ff8c225f84939a2a909e1d8fc8582ff990000155cb018b7ff1ed',
+  '廖一龍':'0d6e2f56e95aa10de12dc48f2ecee1f89d0090cd9e0be9606aecd2d9a809d0db',
+  '鄭采崴':'5cce5933f67dc279462a036994408ca165b4faa723c4a7577cfe5641605fa575',
+  '張書菡':'05604ed0d55cdc09c122a79f06ef60f00f757207e626bc24cd9fcc1d6c88ed9a',
+  '王鈞志':'17ff947b7c78eae21d70db1b115ec949724d3661b1aeb50fe93922c678a5c80f',
+  '吳玉如':'e6fdd2c82193295ec82d49a41ff4d380fbf81437888522be9c6ffc6d33da59cd',
+  '商國泰':'22f2aabf7a48b3e4e7d0d76b96cedcbfe9c68dc83989cf61d8c66b5334e21ce9',
+  '郭淑真':'377e88c64ae640ba5badf9f1b410d4a72fcb22d6d42e7b9ac270cc21aab47750',
+  '高亞琦':'b1b7af6092a6ad56260a8884f1e451a8d03d8dee79b79168713213668bd96321',
+  '陳淑美':'f88ce1339d1e505ad75fa74f887ef92c998e3dc148032f4dc6db41a5252b4b97',
+  '侯明智':'7f1c7707dbd94ad0d533e8514180ed310af55b150262f8334401c646b4e2dc96',
+  '許亞茵':'e267fdd79059c3fedb879b0d217b14161f887f91b0b022888edd720d18b0f662',
+  '曾素蘭':'bcdbc235be61568427d4dc97d618f8a94e11d3a24b9b34d48c2e8508c3137084',
+  '林紫君':'5dc68e25a569b297f0064cc73bcc7a3ebba6455663826f29e1e4b17c57e8a644',
+  '黃中興':'11208f74a73ad765f9ef4147ff0ae47ca60379e4d61b612065ddfb3122b065dd',
+  '黃彥程':'2ecb3cf2f3fe7c5142c288c61ffde506393dd77754add2bfcc28e658d7cfc2d4',
+  '孫運迪':'81b4791209f6395b3c8f8d45bd28ab9d243e0af77673b7febb7dbb4f8cb59089',
+  '陳丰彥':'a68a448b87bd6d083de1295dc76e538bc70ac679c09d679a64b793b57b00d110',
+  '劉常裕':'e5690285bb6a965e7cb91f88d2ce4513639047b3c6bfd11690ef7df12cd584ce',
+  '施向宇':'a946e992fe9a53dedf601d8af2b7c309885df3e16cef4c1075d9e4f43ddc70df',
+  '莊環蔭':'6099fc0b8a8576c0fd06080d9243a316484603c9ce2b53fb9968cf233e5b2414',
+  '廉海桃':'caa6d9c2e3ba98b595ad49d7a23d25e2d9bc4f76c0a47e94223730cd5a56c1a0',
+  '劉晁綱':'1f49b5bd21e3a6af3b0711c8f1b72f377bc021217f6cc4244a44457983cb58f1',
+  '游馥宇':'221731a68f4f0cff16c3856e09960bca4a574e1e70312b6dd1d5649dc75435c7'
+};
 
-function openSidebar() {
-  document.getElementById('sidebar').classList.add('open');
-  document.getElementById('sidebarOverlay').classList.add('show');
-  document.body.style.overflow = 'hidden'; // 防止背景捲動
-}
+  async function sha256(str) {
+    var buf = await crypto.subtle.digest('SHA-256',
+      new TextEncoder().encode(str + 'futime_salt_2026'));
+    return Array.from(new Uint8Array(buf))
+      .map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+  }
 
-function closeSidebar() {
-  document.getElementById('sidebar').classList.remove('open');
-  document.getElementById('sidebarOverlay').classList.remove('show');
-  document.body.style.overflow = '';
-}
-
-// 點選 sidebar 項目後手機自動關閉抽屜
-function autoCloseSidebar() {
-  if (window.innerWidth <= 768) closeSidebar();
-}
-
+  window.ftLogin = async function() {
+    var user = document.getElementById('ftUserSelect').value;
+    var pwd  = document.getElementById('ftPwdInput').value;
+    var err  = document.getElementById('ftLoginErr');
+    var btn  = document.getElementById('ftLoginBtn');
+    var showErr = function(m) {
+      err.textContent = m; err.classList.add('show');
+      setTimeout(function(){ err.classList.remove('show'); }, 3000);
+    };
+    if (!user) return showErr('🔒 請選擇身份');
+    if (!pwd)  return showErr('🔒 請輸入密碼');
+    btn.disabled = true; btn.textContent = '⏳ 驗證中...';
+    var hash = await sha256(pwd);
+    btn.disabled = false; btn.textContent = '🔐 進入系統';
+    if (PWD_HASH[user] && PWD_HASH[user] === hash) {
+      document.getElementById('ftLoginOverlay').style.display = 'none';
+    } else {
+      showErr('🔒 帳號或密碼錯誤');
+    }
+  };
+})();
 </script>
 </body>
 </html>
