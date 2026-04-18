@@ -534,16 +534,21 @@ body {
   to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
 }
 
-.header      { animation: riseIn 0.70s cubic-bezier(0.22,1,0.36,1) both; }
-.divider     { animation: riseIn 0.60s 0.10s cubic-bezier(0.22,1,0.36,1) both; }
-.hero        { animation: riseIn 0.65s 0.18s cubic-bezier(0.22,1,0.36,1) both; }
-.card        { animation: riseIn 0.55s cubic-bezier(0.22,1,0.36,1) both; opacity: 0; }
+.header      { animation: riseIn 0.70s cubic-bezier(0.22,1,0.36,1) forwards; }
+.divider     { animation: riseIn 0.60s 0.10s cubic-bezier(0.22,1,0.36,1) forwards; }
+.hero        { animation: riseIn 0.65s 0.18s cubic-bezier(0.22,1,0.36,1) forwards; }
+.card        { animation: riseIn 0.55s cubic-bezier(0.22,1,0.36,1) forwards; }
 .card:nth-child(1) { animation-delay: 0.26s; }
 .card:nth-child(2) { animation-delay: 0.32s; }
 .card:nth-child(3) { animation-delay: 0.38s; }
 .card:nth-child(4) { animation-delay: 0.44s; }
 .card:nth-child(5) { animation-delay: 0.50s; }
-.footer-wrap { animation: riseIn 0.50s 0.54s cubic-bezier(0.22,1,0.36,1) both; }
+.footer-wrap { animation: riseIn 0.50s 0.54s cubic-bezier(0.22,1,0.36,1) forwards; }
+
+/* 動畫不支援時直接顯示，避免卡在 opacity:0 */
+@media (prefers-reduced-motion: reduce) {
+  .header, .divider, .hero, .card, .footer-wrap { animation: none; opacity: 1; }
+}
 
 /* ════════════════════════════
    RWD
@@ -572,6 +577,8 @@ body {
 </head>
 <body>
 
+<!-- ══ 主畫面 ══ -->
+<div id="mainApp">
 
 <!-- ══ Header ══ -->
 <header class="header">
@@ -609,7 +616,8 @@ body {
 
   <!-- CRM Hero -->
   <a class="hero"
-     href="#" onclick="goTool('https://richtime90117277-alt.github.io/futime-crm/crm_cloud_v19.html'); return false;">
+     href="https://richtime90117277-alt.github.io/futime-crm/crm_cloud_v19.html"
+     target="_blank">
     <div class="hero-icon">🏆</div>
     <div class="hero-body">
       <div class="hero-tag">核心系統 · Core System</div>
@@ -629,7 +637,8 @@ body {
   <div class="row">
 
     <a class="card"
-       href="#" onclick="goTool('https://richtime90117277-alt.github.io/futime-crm/asset-planner.html'); return false;">
+       href="https://richtime90117277-alt.github.io/futime-crm/asset-planner.html"
+       target="_blank">
       <div class="card-top">
         <div class="card-icon">📊</div>
         <div class="card-num">01</div>
@@ -646,7 +655,8 @@ body {
     </a>
 
     <a class="card"
-       href="#" onclick="goTool('https://tinyurl.com/55nfe22y'); return false;">
+       href="https://tinyurl.com/55nfe22y"
+       target="_blank">
       <div class="card-top">
         <div class="card-icon">🌐</div>
         <div class="card-num">02</div>
@@ -663,7 +673,8 @@ body {
     </a>
 
     <a class="card"
-       href="#" onclick="goTool('https://richtimes.tw/'); return false;">
+       href="https://richtimes.tw/"
+       target="_blank">
       <div class="card-top">
         <div class="card-icon">🏠</div>
         <div class="card-num">03</div>
@@ -680,7 +691,8 @@ body {
     </a>
 
     <a class="card"
-       href="#" onclick="goTool('https://www.notion.so/059972580dae4a54b07a57fd410b3090'); return false;">
+       href="https://www.notion.so/059972580dae4a54b07a57fd410b3090"
+       target="_blank">
       <div class="card-top">
         <div class="card-icon">📋</div>
         <div class="card-num">04</div>
@@ -697,7 +709,8 @@ body {
     </a>
 
     <a class="card"
-       href="#" onclick="goTool('https://richtime90117277-alt.github.io/futime-crm/LIB.html'); return false;">
+       href="https://richtime90117277-alt.github.io/futime-crm/LIB.html"
+       target="_blank">
       <div class="card-top">
         <div class="card-icon">📚</div>
         <div class="card-num">05</div>
@@ -718,10 +731,10 @@ body {
 <!-- Footer -->
 <footer class="footer-wrap">
   <div class="footer-l">Richtime © 2026 ｜ 內部版僅供團隊使用</div>
-  <div class="footer-r">AI Automated Sales System · v9</div>
+  <div class="footer-r">AI Automated Sales System · v11</div>
 </footer>
 
-
+</div><!-- /#mainApp -->
 
 
 </body>
