@@ -563,108 +563,6 @@ body {
   .footer-wrap  { padding: 18px 24px 40px; flex-direction: column; align-items: flex-start; gap: 6px; }
 }
 
-/* ════════════════════════════
-   登入頁面
-════════════════════════════ */
-#loginPage {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  padding: 24px;
-}
-#mainApp { display: none; }
-
-.login-box {
-  width: 100%;
-  max-width: 400px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-v);
-  border-radius: var(--r);
-  box-shadow: var(--shadow-md), var(--shadow-gold);
-  overflow: hidden;
-}
-.login-header {
-  background: linear-gradient(160deg, #16120d 0%, #0e0b07 100%);
-  border-bottom: 1px solid var(--gold-line);
-  padding: 36px 32px 28px;
-  text-align: center;
-}
-.login-logo {
-  width: 56px; height: 56px;
-  background: linear-gradient(135deg, var(--gold-dim), var(--gold));
-  border-radius: 50%;
-  margin: 0 auto 16px;
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 26px; font-weight: 700;
-  color: var(--bg);
-}
-.login-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 22px; font-weight: 600;
-  color: var(--text-primary);
-  letter-spacing: 0.06em;
-}
-.login-sub {
-  font-size: 11px; letter-spacing: 0.18em;
-  color: var(--text-dim);
-  font-family: 'DM Mono', monospace;
-  margin-top: 6px;
-}
-.login-body {
-  padding: 28px 32px 32px;
-  display: flex; flex-direction: column; gap: 16px;
-}
-.login-field label {
-  display: block;
-  font-size: 11px; letter-spacing: 0.14em;
-  color: var(--text-dim);
-  font-family: 'DM Mono', monospace;
-  margin-bottom: 7px;
-}
-.login-field select,
-.login-field input {
-  width: 100%;
-  background: rgba(255,255,255,0.04);
-  border: 1px solid var(--border-v);
-  border-radius: var(--r-sm);
-  color: var(--text-primary);
-  font-family: 'Noto Serif TC', serif;
-  font-size: 14px;
-  padding: 10px 14px;
-  outline: none;
-  transition: border-color .2s;
-  appearance: auto;
-}
-.login-field select:focus,
-.login-field input:focus { border-color: var(--gold); }
-.login-field select option { background: #1a1510; color: #f0ead8; }
-.login-btn {
-  width: 100%;
-  padding: 13px;
-  background: linear-gradient(135deg, var(--gold-dim), var(--gold));
-  color: var(--bg);
-  font-family: 'Noto Serif TC', serif;
-  font-size: 15px; font-weight: 700;
-  letter-spacing: 0.1em;
-  border: none; border-radius: var(--r-sm);
-  cursor: pointer;
-  transition: opacity .2s, transform .15s;
-}
-.login-btn:hover:not(:disabled) { opacity: .88; transform: translateY(-1px); }
-.login-btn:disabled { opacity: .5; cursor: not-allowed; }
-.login-err {
-  display: none;
-  background: rgba(220,50,50,0.12);
-  border: 1px solid rgba(220,50,50,0.30);
-  border-radius: var(--r-sm);
-  color: #f87171;
-  font-size: 13px;
-  padding: 10px 14px;
-  text-align: center;
-}
-.login-err.active { display: block; }
 </style>
 <!-- LINE 專用 Open Graph 標籤 -->
 <meta property="og:title" content="富時代機構六大系統" />
@@ -674,45 +572,6 @@ body {
 </head>
 <body>
 
-<!-- ══ 登入頁 ══ -->
-<div id="loginPage">
-  <div class="login-box">
-    <div class="login-header">
-      <div class="login-logo">富</div>
-      <div class="login-title">富時代地產</div>
-      <div class="login-sub">INTERNAL PORTAL · AI SALES SYSTEM</div>
-    </div>
-    <div class="login-body">
-      <div class="login-err" id="loginErr"></div>
-      <div class="login-field">
-        <label>選擇身份</label>
-        <select id="userSelect">
-          <option value="">── 請選擇 ──</option>
-          <optgroup label="👑 管理層">
-            <option>總經理</option><option>CRM營運長</option><option>知識長</option><option>AI訓練長</option>
-          </optgroup>
-          <optgroup label="👨‍💼 業務團隊">
-            <option>阮智偉</option><option>廖一龍</option><option>鄭采崴</option><option>張書菡</option>
-            <option>王鈞志</option><option>吳玉如</option><option>商國泰</option><option>郭淑真</option>
-            <option>高亞琦</option><option>陳淑美</option><option>侯明智</option><option>許亞茵</option>
-            <option>曾素蘭</option><option>林紫君</option><option>黃中興</option><option>黃彥程</option>
-            <option>孫運迪</option><option>陳丰彥</option><option>劉常裕</option><option>施向宇</option>
-            <option>莊環蔭</option><option>廉海桃</option><option>劉晁綱</option><option>游馥宇</option>
-          </optgroup>
-        </select>
-      </div>
-      <div class="login-field">
-        <label>密碼</label>
-        <input type="password" id="pwdInput" placeholder="請輸入密碼"
-               onkeydown="if(event.key==='Enter') doLogin()">
-      </div>
-      <button class="login-btn" id="loginBtn" onclick="doLogin()">🔐 進入作戰中心</button>
-    </div>
-  </div>
-</div>
-
-<!-- ══ 主畫面 ══ -->
-<div id="mainApp">
 
 <!-- ══ Header ══ -->
 <header class="header">
@@ -750,8 +609,7 @@ body {
 
   <!-- CRM Hero -->
   <a class="hero"
-     href="https://richtime90117277-alt.github.io/futime-crm/crm_cloud_v19.html"
-     target="_blank">
+     href="#" onclick="goTool('https://richtime90117277-alt.github.io/futime-crm/crm_cloud_v19.html'); return false;">
     <div class="hero-icon">🏆</div>
     <div class="hero-body">
       <div class="hero-tag">核心系統 · Core System</div>
@@ -771,8 +629,7 @@ body {
   <div class="row">
 
     <a class="card"
-       href="https://richtime90117277-alt.github.io/futime-crm/asset-planner.html"
-       target="_blank">
+       href="#" onclick="goTool('https://richtime90117277-alt.github.io/futime-crm/asset-planner.html'); return false;">
       <div class="card-top">
         <div class="card-icon">📊</div>
         <div class="card-num">01</div>
@@ -789,8 +646,7 @@ body {
     </a>
 
     <a class="card"
-       href="https://tinyurl.com/55nfe22y"
-       target="_blank">
+       href="#" onclick="goTool('https://tinyurl.com/55nfe22y'); return false;">
       <div class="card-top">
         <div class="card-icon">🌐</div>
         <div class="card-num">02</div>
@@ -807,8 +663,7 @@ body {
     </a>
 
     <a class="card"
-       href="https://richtimes.tw/"
-       target="_blank">
+       href="#" onclick="goTool('https://richtimes.tw/'); return false;">
       <div class="card-top">
         <div class="card-icon">🏠</div>
         <div class="card-num">03</div>
@@ -825,8 +680,7 @@ body {
     </a>
 
     <a class="card"
-       href="https://www.notion.so/059972580dae4a54b07a57fd410b3090"
-       target="_blank">
+       href="#" onclick="goTool('https://www.notion.so/059972580dae4a54b07a57fd410b3090'); return false;">
       <div class="card-top">
         <div class="card-icon">📋</div>
         <div class="card-num">04</div>
@@ -843,8 +697,7 @@ body {
     </a>
 
     <a class="card"
-       href="https://richtime90117277-alt.github.io/futime-crm/LIB.html"
-       target="_blank">
+       href="#" onclick="goTool('https://richtime90117277-alt.github.io/futime-crm/LIB.html'); return false;">
       <div class="card-top">
         <div class="card-icon">📚</div>
         <div class="card-num">05</div>
@@ -868,90 +721,8 @@ body {
   <div class="footer-r">AI Automated Sales System · v9</div>
 </footer>
 
-</div><!-- /#mainApp -->
 
-<script>
-// ════════════════════════════════════════════
-// Hub v9 登入保護
-// 前端 SHA-256 驗證（與後端相同 salt）
-// 不依賴網路，file:// 或 GitHub Pages 均可用
-// ════════════════════════════════════════════
 
-// 預計算雜湊表（sha256(密碼 + 'futime_salt_2026')，與 GAS 後端完全一致）
-var PWD_HASH = {
-  '總經理':'cf087226d5febdc5f6120034c9df651c547af9bb9ab8df726bfd3799247dc4f0',
-  'CRM營運長':'b377818564591d68075e5f06d8ce41818725c6a71786e3ea5d890ef9010eff9f',
-  '知識長':'90d757741d92eed7d66a26564d26bf9165443c9069ecbb321668b2718e0e9113',
-  'AI訓練長':'7aecc91c3f30c6a1e85bf377686a5cd1a844266168793c111135caaa5e084f73',
-  '阮智偉':'d844cd784848ff8c225f84939a2a909e1d8fc8582ff990000155cb018b7ff1ed',
-  '廖一龍':'0d6e2f56e95aa10de12dc48f2ecee1f89d0090cd9e0be9606aecd2d9a809d0db',
-  '鄭采崴':'5cce5933f67dc279462a036994408ca165b4faa723c4a7577cfe5641605fa575',
-  '張書菡':'05604ed0d55cdc09c122a79f06ef60f00f757207e626bc24cd9fcc1d6c88ed9a',
-  '王鈞志':'17ff947b7c78eae21d70db1b115ec949724d3661b1aeb50fe93922c678a5c80f',
-  '吳玉如':'e6fdd2c82193295ec82d49a41ff4d380fbf81437888522be9c6ffc6d33da59cd',
-  '商國泰':'22f2aabf7a48b3e4e7d0d76b96cedcbfe9c68dc83989cf61d8c66b5334e21ce9',
-  '郭淑真':'377e88c64ae640ba5badf9f1b410d4a72fcb22d6d42e7b9ac270cc21aab47750',
-  '高亞琦':'b1b7af6092a6ad56260a8884f1e451a8d03d8dee79b79168713213668bd96321',
-  '陳淑美':'f88ce1339d1e505ad75fa74f887ef92c998e3dc148032f4dc6db41a5252b4b97',
-  '侯明智':'7f1c7707dbd94ad0d533e8514180ed310af55b150262f8334401c646b4e2dc96',
-  '許亞茵':'e267fdd79059c3fedb879b0d217b14161f887f91b0b022888edd720d18b0f662',
-  '曾素蘭':'bcdbc235be61568427d4dc97d618f8a94e11d3a24b9b34d48c2e8508c3137084',
-  '林紫君':'5dc68e25a569b297f0064cc73bcc7a3ebba6455663826f29e1e4b17c57e8a644',
-  '黃中興':'11208f74a73ad765f9ef4147ff0ae47ca60379e4d61b612065ddfb3122b065dd',
-  '黃彥程':'2ecb3cf2f3fe7c5142c288c61ffde506393dd77754add2bfcc28e658d7cfc2d4',
-  '孫運迪':'81b4791209f6395b3c8f8d45bd28ab9d243e0af77673b7febb7dbb4f8cb59089',
-  '陳丰彥':'a68a448b87bd6d083de1295dc76e538bc70ac679c09d679a64b793b57b00d110',
-  '劉常裕':'e5690285bb6a965e7cb91f88d2ce4513639047b3c6bfd11690ef7df12cd584ce',
-  '施向宇':'a946e992fe9a53dedf601d8af2b7c309885df3e16cef4c1075d9e4f43ddc70df',
-  '莊環蔭':'6099fc0b8a8576c0fd06080d9243a316484603c9ce2b53fb9968cf233e5b2414',
-  '廉海桃':'caa6d9c2e3ba98b595ad49d7a23d25e2d9bc4f76c0a47e94223730cd5a56c1a0',
-  '劉晁綱':'1f49b5bd21e3a6af3b0711c8f1b72f377bc021217f6cc4244a44457983cb58f1',
-  '游馥宇':'221731a68f4f0cff16c3856e09960bca4a574e1e70312b6dd1d5649dc75435c7'
-};
-
-// ── SHA-256（Web Crypto API，與 GAS 相同 salt）──
-async function sha256(str) {
-  var buf = await crypto.subtle.digest('SHA-256',
-    new TextEncoder().encode(str + 'futime_salt_2026'));
-  return Array.from(new Uint8Array(buf))
-    .map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
-}
-
-// ── 登入主函式 ──
-async function doLogin() {
-  var user = document.getElementById('userSelect').value;
-  var pwd  = document.getElementById('pwdInput').value;
-  if (!user) return showLoginErr('🔒 請選擇身份');
-  if (!pwd)  return showLoginErr('🔒 請輸入密碼');
-
-  setLoginLoading(true);
-  var hash = await sha256(pwd);
-  setLoginLoading(false);
-
-  if (PWD_HASH[user] && PWD_HASH[user] === hash) {
-    // 驗證成功
-    document.getElementById('loginPage').style.display = 'none';
-    document.getElementById('mainApp').style.display   = 'block';
-  } else {
-    showLoginErr('🔒 帳號或密碼錯誤');
-  }
-}
-
-// ── 錯誤提示 ──
-function showLoginErr(msg) {
-  var el = document.getElementById('loginErr');
-  el.textContent = msg;
-  el.classList.add('active');
-  setTimeout(function() { el.classList.remove('active'); }, 3000);
-}
-
-// ── 按鈕 loading 狀態 ──
-function setLoginLoading(on) {
-  var btn = document.getElementById('loginBtn');
-  btn.disabled    = on;
-  btn.textContent = on ? '⏳ 驗證中...' : '🔐 進入作戰中心';
-}
-</script>
 
 </body>
 </html>
