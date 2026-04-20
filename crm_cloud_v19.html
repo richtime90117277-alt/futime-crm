@@ -867,8 +867,10 @@ function claimSeminarLead() {}
       </div>
       <div id="resetUrlBox" style="display:none;margin-top:1rem;padding:1rem;background:#f8fafc;border:2px solid #e1e8f0;border-radius:var(--radius-sm)">
         <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:.5rem">貼入新的 Apps Script 網址</div>
-        <input type="text" id="apiUrlInput" placeholder="https://script.google.com/macros/s/..." style="margin-bottom:.75rem">
-        <button class="btn btn-primary" style="margin-top:0" onclick="saveApiUrl()">💾 儲存網址</button>
+        <input type="text" id="apiUrlInputReset" placeholder="https://script.google.com/macros/s/..." style="margin-bottom:.75rem">
+        <button class="btn btn-primary" style="margin-top:0" onclick="saveApiUrlFromReset()">💾 儲存並測試</button>
+        <button class="btn btn-secondary" style="margin-top:.5rem;background:#f1f5f9;color:var(--text-soft);border:1px solid #e2e8f0" onclick="restoreDefaultUrl()">🔄 還原為內建網址</button>
+        <div id="resetUrlStatus" style="font-size:12px;color:var(--text-muted);margin-top:.5rem"></div>
       </div>
     </div>
   </div>
@@ -2254,8 +2256,19 @@ function rebuildSalesSelects() {
   }
 }
 
-// ── 取得 API URL ──
-function getApiUrl() { return HARDCODED_API_URL; }
+// ── 取得 API URL（優先 localStorage、其次 HARDCODED）──
+// v20.1 修正：讓更新網址更容易，重新部署後只要貼新網址到「重新設定雲端網址」即可
+function getApiUrl() {
+  try {
+    var saved = localStorage.getItem(API_URL_KEY);
+    if (saved && saved.indexOf('script.google.com') !== -1) return saved;
+  } catch(e) {}
+  return HARDCODED_API_URL;
+}
+// ── 清除已儲存的 API URL（fallback 回 HARDCODED）──
+function clearSavedApiUrl() {
+  try { localStorage.removeItem(API_URL_KEY); } catch(e) {}
+}
 function showResetUrl() {
   var box = document.getElementById('resetUrlBox');
   box.style.display = box.style.display === 'none' ? 'block' : 'none';
@@ -2273,6 +2286,48 @@ function saveApiUrl() {
   document.getElementById('resetUrlBox').style.display = 'none';
   document.getElementById('apiStatus').textContent = '✅ 雲端已設定，請登入';
   alert('✅ 設定完成！請選擇身份登入');
+}
+
+// ── 重設面板：儲存新網址並立即測試連通 ──
+function saveApiUrlFromReset() {
+  var input = document.getElementById('apiUrlInputReset');
+  var statusEl = document.getElementById('resetUrlStatus');
+  if (!input) return;
+  var url = (input.value || '').trim();
+  if (!url) { statusEl.innerHTML = '<span style="color:#d84040">⚠️ 請先貼入網址</span>'; return; }
+  if (url.indexOf('script.google.com') === -1) {
+    statusEl.innerHTML = '<span style="color:#d84040">⚠️ 網址格式不對</span>';
+    return;
+  }
+  if (!/\/exec\s*$/.test(url) && !/\/exec\?/.test(url)) {
+    statusEl.innerHTML = '<span style="color:#d84040">⚠️ 網址結尾必須是 /exec（請貼部署後的 Web App 網址）</span>';
+    return;
+  }
+  // 先存起來
+  try { localStorage.setItem(API_URL_KEY, url); } catch(e) {}
+  statusEl.innerHTML = '<span style="color:#666">⏳ 測試連線中...</span>';
+  // 呼叫 GAS 驗證連通（getTargets 是最輕量的 action）
+  callAPI({ action: 'getTargets' }, function(res) {
+    if (res && res.success !== false && !res.error) {
+      statusEl.innerHTML = '<span style="color:#2e7d52">✅ 連線成功！請登入</span>';
+      document.getElementById('apiStatus').textContent = '✅ 雲端已設定，請登入';
+      setTimeout(function() {
+        document.getElementById('resetUrlBox').style.display = 'none';
+      }, 1500);
+    } else {
+      statusEl.innerHTML = '<span style="color:#d84040">❌ 連線失敗：' + (res.error || '請確認網址正確') + '</span>';
+    }
+  });
+}
+
+// ── 還原為 HARDCODED 內建網址 ──
+function restoreDefaultUrl() {
+  clearSavedApiUrl();
+  var input = document.getElementById('apiUrlInputReset');
+  if (input) input.value = '';
+  var statusEl = document.getElementById('resetUrlStatus');
+  if (statusEl) statusEl.innerHTML = '<span style="color:#666">已還原為內建網址：' + HARDCODED_API_URL.slice(0, 60) + '...</span>';
+  document.getElementById('apiStatus').textContent = '🔄 已還原為內建網址，請登入';
 }
 
 // ── 呼叫 Google Apps Script API ──
@@ -2362,7 +2417,20 @@ function login() {
       currentRole = res.role;
       enterApp();
     } else {
-      showErr('🔒 ' + (res && res.error ? res.error : '帳號或密碼錯誤'));
+      var errMsg = res && res.error ? res.error : '帳號或密碼錯誤';
+      // ── 連線失敗：判斷是不是 API URL 過期 ──
+      var isNetworkErr = /Load failed|Failed to fetch|NetworkError|連線逾時|404|not found/i.test(errMsg);
+      if (isNetworkErr) {
+        showErr('🔌 連線失敗，請更新雲端網址');
+        // 自動展開重設網址面板
+        var box = document.getElementById('resetUrlBox');
+        if (box) box.style.display = 'block';
+        // 把目前用的網址帶入 input 供比對
+        var input = document.getElementById('apiUrlInputReset');
+        if (input && !input.value) input.value = getApiUrl();
+      } else {
+        showErr('🔒 ' + errMsg);
+      }
     }
   });
 }
