@@ -189,6 +189,38 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
 .detail-label{color:var(--text-muted);font-weight:600}
 .detail-value{color:var(--text);word-break:break-word}
 .modal-actions .btn{margin-top:0}
+/* ── 🎯 智偉哥建議區塊（v20 新增）── */
+.advice-block{margin-top:1.25rem;background:linear-gradient(135deg,#07192d 0%,#1a3c5e 100%);border-radius:14px;padding:1.1rem 1.2rem;color:#f5ecd7;box-shadow:0 8px 24px rgba(7,25,45,.25)}
+.advice-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:.85rem;padding-bottom:.7rem;border-bottom:1px solid rgba(245,236,215,.15)}
+.advice-title{font-size:15px;font-weight:800;color:#f5ecd7;letter-spacing:.04em}
+.advice-tags{display:flex;gap:.35rem;flex-wrap:wrap}
+.advice-tag{font-size:11px;font-weight:700;padding:.2rem .55rem;border-radius:10px;letter-spacing:.03em}
+.tag-type{background:rgba(245,236,215,.15);color:#f5ecd7;border:1px solid rgba(245,236,215,.3)}
+.tag-stage{background:rgba(245,236,215,.15);color:#f5ecd7;border:1px solid rgba(245,236,215,.3)}
+.tag-temp-A{background:#ff6b6b;color:#fff}
+.tag-temp-B{background:#f4a261;color:#fff}
+.tag-temp-C{background:#4a90a4;color:#fff}
+.tag-temp-D{background:rgba(245,236,215,.25);color:#f5ecd7}
+.advice-section-title{font-size:12px;font-weight:700;color:#e8c060;letter-spacing:.08em;margin-bottom:.5rem;text-transform:uppercase}
+.advice-loading{font-size:13px;color:rgba(245,236,215,.7);text-align:center;padding:1rem 0}
+.advice-empty{font-size:13px;color:rgba(245,236,215,.7);padding:.6rem;background:rgba(245,236,215,.06);border-radius:8px;line-height:1.6}
+.advice-rule{background:rgba(245,236,215,.08);border-left:3px solid #e8c060;border-radius:8px;padding:.7rem .85rem;margin-bottom:.5rem}
+.advice-rule-head{display:flex;align-items:center;gap:.4rem;margin-bottom:.4rem;flex-wrap:wrap}
+.advice-rank{font-size:11px;font-weight:800;color:#e8c060;background:rgba(232,192,96,.15);padding:.1rem .4rem;border-radius:6px}
+.advice-score{font-size:11px;color:rgba(245,236,215,.75);font-weight:600}
+.advice-script{font-size:11px;font-weight:700;color:#07192d;background:#e8c060;padding:.15rem .5rem;border-radius:6px;margin-left:auto}
+.advice-action{font-size:13px;line-height:1.6;color:#f5ecd7}
+.advice-case{background:rgba(245,236,215,.06);border-radius:8px;padding:.65rem .8rem;margin-bottom:.5rem;font-size:12px;line-height:1.55}
+.advice-case-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem}
+.advice-case-id{font-weight:700;color:#e8c060;font-size:11px;letter-spacing:.05em}
+.advice-case-outcome{font-size:10px;font-weight:700;padding:.12rem .45rem;border-radius:6px}
+.outcome-win{background:#4ade80;color:#052e16}
+.outcome-lose{background:rgba(245,236,215,.2);color:rgba(245,236,215,.7)}
+.outcome-progress{background:#60a5fa;color:#0c2340}
+.outcome-default{background:rgba(245,236,215,.15);color:#f5ecd7}
+.advice-case-key{color:rgba(245,236,215,.85);margin-bottom:.25rem}
+.advice-case-action{color:#f5ecd7;margin-bottom:.25rem}
+.advice-case-lesson{color:#e8c060;font-style:italic;padding-top:.3rem;border-top:1px dashed rgba(245,236,215,.15);margin-top:.35rem}
 /* LOADING */
 .loading-overlay{display:none;position:fixed;inset:0;background:rgba(15,39,68,.4);z-index:3000;align-items:center;justify-content:center}
 .loading-overlay.active{display:flex}
@@ -2108,7 +2140,7 @@ function claimSeminarLead() {}
 // ════════════════════════════════════════════════
 
 var API_URL_KEY = 'futime_api_url';
-var HARDCODED_API_URL = 'https://script.google.com/macros/s/AKfycbyoYXfbxxFUU7qaud8uBTUWsXw0z7cSEEIO1oW1PiU9QdvginvjfXGypWtG0Lzk15-C/exec';
+var HARDCODED_API_URL = 'https://script.google.com/macros/s/AKfycbyt8tcy6pORzZ1nc0HP4YVLV-AY1tOuahJWjhmWQ2VBTSZPLZe2qgBzZgczbDQTVsPI/exec';
 var currentUser = null, currentRole = null;
 var customers = [];
 var MANAGERS = ['總經理','CRM營運長','知識長','AI訓練長'];
@@ -2980,6 +3012,233 @@ function stageOf(c) {
   if ((c.painPoints && c.painPoints.toString().trim()) || (c.customerNeeds && c.customerNeeds.toString().trim()) || c.blueprintCompletion) return 3;
   if (c.trustScore || c.professionalScore || (c.currentStatus && c.currentStatus.toString().trim()) || (c.trustChecks && c.trustChecks.toString().trim())) return 2;
   return 1;
+}
+
+// ══════════════════════════════════════════════
+// 🎯 智偉哥建議區塊（v20 新增）
+// 根據客戶資料自動判斷分型/溫度，比對規則庫與案例庫
+// ══════════════════════════════════════════════
+
+// 規則與案例快取（頁面 session 層級，避免每次開 modal 都打 API）
+var _ruleCache = null;
+var _ruleCacheTime = 0;
+var _caseCacheByType = {};
+var RULE_CACHE_LIFETIME = 10 * 60 * 1000; // 10 分鐘
+
+// ── 推斷客戶分型（8 類）──
+// 優先順序：有明確欄位 > 從痛點/需求關鍵字推斷 > 預設「雙薪無殼」
+function inferCustomerType(c) {
+  var age = parseInt(c.customerAge) || 0;
+  var text = [c.painPoints, c.customerNeeds, c.notes, c.personalityType].join(' ').toLowerCase();
+
+  // 關鍵字優先判斷
+  if (/退休|退休規劃|退休金/.test(text)) return '退休規劃';
+  if (/換屋|舊屋|換房/.test(text)) return '換屋族';
+  if (/高資產|節稅|傳承|資產配置/.test(text)) return '高資產';
+  if (/股票|美股|台股|etf/.test(text)) return '股票族';
+  if (/定存|保本/.test(text)) return '定存族';
+  if (/租屋|租金|房租/.test(text)) return '租屋族';
+
+  // 年齡輔助判斷
+  if (age >= 60) return '退休規劃';
+  if (age > 0 && age <= 28) return '新鮮人';
+
+  // 預設：最常見的族群
+  return '雙薪無殼';
+}
+
+// ── 推斷客戶溫度（A/B/C/D）──
+// A=熱（近期高互動）、B=溫、C=涼、D=冷
+function inferTemperature(c) {
+  var stage = stageOf(c);
+  var days = daysSinceUpdate(c);
+
+  // 已成交或進入簽約階段一律標 A
+  if (stage >= 5) return 'A';
+  // 有做資產健檢 + 已帶看/完整解說 + 近期互動 → A
+  if (c.blueprintCompletion && stage >= 4 && days <= 7) return 'A';
+  // 有做資產健檢 或 已帶看，14 天內互動 → B
+  if ((c.blueprintCompletion || stage >= 4) && days <= 14) return 'B';
+  // 進到第 3 部曲（需求確認）但互動漸弱 → C
+  if (stage >= 2 && days <= 30) return 'C';
+  // 其他（長期無互動、僅基本資料） → D
+  return 'D';
+}
+
+// ── 計算規則與客戶的匹配分數（0-100）──
+function calcRuleMatchScore(rule, customer, inferredType, inferredTemp, inferredStage) {
+  var score = 0;
+  // 分型匹配 +40 分（規則若未指定則不扣分）
+  if (rule.triggerType) {
+    if (rule.triggerType === inferredType) score += 40;
+    else return 0; // 分型不符直接淘汰
+  } else {
+    score += 10; // 通用規則基礎分
+  }
+  // 階段匹配 +20 分（容忍 ±1 階段）
+  if (rule.triggerStage) {
+    var ruleStage = parseInt(rule.triggerStage);
+    if (ruleStage === inferredStage) score += 20;
+    else if (Math.abs(ruleStage - inferredStage) === 1) score += 10;
+  } else {
+    score += 5;
+  }
+  // 溫度匹配 +15 分
+  if (rule.triggerTemp) {
+    if (rule.triggerTemp === inferredTemp) score += 15;
+  } else {
+    score += 5;
+  }
+  // 關鍵字比對 +25 分（客戶痛點/需求/異議中是否含規則關鍵字）
+  if (rule.triggerKeyword) {
+    var custText = [customer.painPoints, customer.customerNeeds, customer.objections, customer.notes].join(' ');
+    var keywords = rule.triggerKeyword.split(/[,，、]/);
+    var hit = keywords.some(function(kw){
+      kw = kw.trim();
+      return kw && custText.indexOf(kw) !== -1;
+    });
+    if (hit) score += 25;
+  }
+  // 規則本身的 priority 加權（priority 90 → +3 分，滿分微調用）
+  score += (rule.priority || 50) * 0.05;
+  return Math.min(100, Math.round(score));
+}
+
+// ── 渲染「智偉哥建議」佔位區塊（modal 開啟時立即顯示 loading 狀態）──
+function renderConsultantAdvicePlaceholder(c) {
+  var inferredType = inferCustomerType(c);
+  var inferredTemp = inferTemperature(c);
+  var inferredStage = stageOf(c);
+  var stageName = STAGE_NAMES[inferredStage] || '—';
+  return ''
+    + '<div class="advice-block" id="adviceBlock">'
+    + '  <div class="advice-head">'
+    + '    <div class="advice-title">🎯 智偉哥建議</div>'
+    + '    <div class="advice-tags">'
+    + '      <span class="advice-tag tag-type">'+inferredType+'</span>'
+    + '      <span class="advice-tag tag-temp tag-temp-'+inferredTemp+'">'+inferredTemp+' 溫</span>'
+    + '      <span class="advice-tag tag-stage">'+stageName+'</span>'
+    + '    </div>'
+    + '  </div>'
+    + '  <div class="advice-body" id="adviceBody">'
+    + '    <div class="advice-loading">載入中…</div>'
+    + '  </div>'
+    + '</div>';
+}
+
+// ── 非同步載入建議（抓規則庫 + 案例庫）──
+function loadConsultantAdvice(c) {
+  var now = Date.now();
+  var inferredType = inferCustomerType(c);
+  var inferredTemp = inferTemperature(c);
+  var inferredStage = stageOf(c);
+
+  // 併發抓規則與案例（各自有快取）
+  var rulesPromise = new Promise(function(resolve) {
+    if (_ruleCache && (now - _ruleCacheTime) < RULE_CACHE_LIFETIME) {
+      resolve(_ruleCache);
+    } else {
+      callAPI({ action: 'getRules' }, function(res) {
+        if (res && res.success && Array.isArray(res.rules)) {
+          _ruleCache = res.rules;
+          _ruleCacheTime = now;
+          resolve(res.rules);
+        } else {
+          resolve([]);
+        }
+      });
+    }
+  });
+
+  var casesPromise = new Promise(function(resolve) {
+    if (_caseCacheByType[inferredType]) {
+      resolve(_caseCacheByType[inferredType]);
+    } else {
+      callAPI({ action: 'getCases', customerType: inferredType }, function(res) {
+        if (res && res.success && Array.isArray(res.cases)) {
+          _caseCacheByType[inferredType] = res.cases;
+          resolve(res.cases);
+        } else {
+          resolve([]);
+        }
+      });
+    }
+  });
+
+  Promise.all([rulesPromise, casesPromise]).then(function(results) {
+    var rules = results[0] || [];
+    var cases = results[1] || [];
+    renderAdviceBody(c, rules, cases, inferredType, inferredTemp, inferredStage);
+  });
+}
+
+// ── 渲染建議內容本體（把前 3 條規則與前 3 筆案例塞進去）──
+function renderAdviceBody(c, rules, cases, inferredType, inferredTemp, inferredStage) {
+  var body = document.getElementById('adviceBody');
+  if (!body) return;
+
+  // 算所有規則的匹配分數
+  var scored = rules.map(function(r){
+    return { rule: r, score: calcRuleMatchScore(r, c, inferredType, inferredTemp, inferredStage) };
+  }).filter(function(s){ return s.score >= 30; })
+    .sort(function(a,b){ return b.score - a.score; })
+    .slice(0, 3);
+
+  var html = '';
+
+  // ── 建議動作區 ──
+  if (scored.length > 0) {
+    html += '<div class="advice-section-title">📋 建議下一步動作</div>';
+    scored.forEach(function(s, idx){
+      var r = s.rule;
+      html += ''
+        + '<div class="advice-rule">'
+        + '  <div class="advice-rule-head">'
+        + '    <span class="advice-rank">#'+(idx+1)+'</span>'
+        + '    <span class="advice-score">匹配 '+s.score+'%</span>'
+        + '    '+(r.recommendedScript ? '<span class="advice-script">話術 '+r.recommendedScript+'</span>' : '')
+        + '  </div>'
+        + '  <div class="advice-action">'+escapeHtml(r.recommendedAction || '')+'</div>'
+        + '</div>';
+    });
+  } else {
+    html += '<div class="advice-empty">尚無匹配的決策規則。此案例將進入人工審視池，歡迎補充案例主檔。</div>';
+  }
+
+  // ── 類似案例區 ──
+  if (cases.length > 0) {
+    html += '<div class="advice-section-title" style="margin-top:1rem">📚 類似案例參考（'+inferredType+'）</div>';
+    cases.slice(0, 3).forEach(function(cs){
+      html += ''
+        + '<div class="advice-case">'
+        + '  <div class="advice-case-head">'
+        + '    <span class="advice-case-id">'+cs.caseId+'</span>'
+        + '    <span class="advice-case-outcome outcome-'+getOutcomeClass(cs.outcome)+'">'+cs.outcome+'</span>'
+        + '  </div>'
+        + '  <div class="advice-case-key">❗ '+escapeHtml(cs.keyIssue||'')+'</div>'
+        + '  <div class="advice-case-action">✅ '+escapeHtml(cs.actionTaken||'')+'</div>'
+        + (cs.lessonLearned ? '  <div class="advice-case-lesson">💡 '+escapeHtml(cs.lessonLearned)+'</div>' : '')
+        + '</div>';
+    });
+  }
+
+  body.innerHTML = html;
+}
+
+// ── 結果樣式分類 ──
+function getOutcomeClass(outcome) {
+  if (!outcome) return 'default';
+  if (outcome.indexOf('成交') !== -1) return 'win';
+  if (outcome.indexOf('流失') !== -1) return 'lose';
+  return 'progress';
+}
+
+// ── HTML escape 小工具 ──
+function escapeHtml(s) {
+  if (!s) return '';
+  return s.toString()
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
 // ── 儀表板 ──
@@ -5110,7 +5369,9 @@ function showDetail(id) {
   ];
   document.getElementById('modalBody').innerHTML = rows.filter(function(r){ return r[1]; }).map(function(r){
     return '<div class="detail-row"><div class="detail-label">'+r[0]+'</div><div class="detail-value">'+r[1]+'</div></div>';
-  }).join('');
+  }).join('') + renderConsultantAdvicePlaceholder(c);
+  // 非同步載入「智偉哥建議」區塊（不阻塞 modal 開啟）
+  loadConsultantAdvice(c);
   var sid = c.id.toString();
   var canEdit = currentRole==='manager' || c.salesPerson===currentUser;
   var actionsDiv = document.getElementById('modalActions');
