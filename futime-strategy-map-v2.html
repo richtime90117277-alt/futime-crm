@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>富時代 15 年戰略地圖 v2 | Futime Strategic Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Noto+Serif+TC:wght@300;400;500;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ════════════════════════════
+   色彩系統：延續 Hub 的極深墨黑 × 香檳金
+════════════════════════════ */
+:root {
+  --bg:          #080604;
+  --bg-card:     #100e0b;
+  --bg-hero:    #16120d;
+  --bg-lift:     #1e1810;
+
+  --white:       #ffffff;
+  --text-primary: #f0ead8;
+  --text-sub:    #c8bfa8;
+  --text-dim:    #7a6e5c;
+
+  --gold:        #d4a843;
+  --gold-bright: #f0c860;
+  --gold-dim:    #8a6820;
+  --gold-glow:   rgba(212,168,67,0.18);
+  --gold-line:   rgba(212,168,67,0.20);
+  --gold-line-v: rgba(212,168,67,0.40);
+
+  --border:      rgba(212,168,67,0.10);
+  --border-v:    rgba(212,168,67,0.25);
+
+  --shadow-xs:   0 1px 6px  rgba(0,0,0,0.40);
+  --shadow-sm:   0 4px 20px rgba(0,0,0,0.50);
+  --shadow-md:   0 8px 40px rgba(0,0,0,0.60);
+  --shadow-gold: 0 0 40px   rgba(212,168,67,0.12);
+  --shadow-gold-v: 0 0 60px rgba(212,168,67,0.22);
+
+  --r:    18px;
+  --r-sm: 10px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: 'Noto Serif TC', serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  background-image:
+    radial-gradient(ellipse 80% 40% at 50% 0%, rgba(212,168,67,0.08) 0%, transparent 60%),
+    url("data:image/svg+xml,%3Csvg width='64' height='64' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='1' cy='1' r='0.8' fill='%23d4a843' fill-opacity='0.03'/%3E%3C/svg%3E");
+}
+
+/* ════════════════════════════
+   共用元件
+════════════════════════════ */
+.container { max-width: 1200px; margin: 0 auto; padding: 0 40px; }
+
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 14px; margin-bottom: 20px;
+}
+.eyebrow-line {
+  width: 32px; height: 1px;
+  background: linear-gradient(90deg, var(--gold), transparent);
+}
+.eyebrow-text {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; letter-spacing: 0.32em; text-transform: uppercase;
+  color: var(--gold); opacity: 0.8;
+}
+
+.section-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(32px, 4.5vw, 56px);
+  font-weight: 600; line-height: 1.1;
+  letter-spacing: -0.015em;
+  color: var(--text-primary);
+  margin-bottom: 18px;
+}
+.section-title .gold { color: var(--gold); }
+
+.section-subtitle {
+  font-size: 15px; color: var(--text-sub);
+  line-height: 1.85; max-width: 720px;
+  letter-spacing: 0.02em;
+}
+
+/* ════════════════════════════
+   Hero — 新敘事開場
+════════════════════════════ */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: center;
+  position: relative;
+  padding: 100px 40px 60px;
+  text-align: center;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%, var(--gold-dim) 20%, var(--gold) 50%,
+    var(--gold-dim) 80%, transparent 100%);
+}
+.hero::after {
+  content: ''; position: absolute;
+  top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 900px; height: 900px; max-width: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212,168,67,0.06) 0%, transparent 55%);
+  pointer-events: none;
+  animation: pulse 6s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
+}
+
+.hero-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; letter-spacing: 0.4em;
+  color: var(--gold); text-transform: uppercase;
+  margin-bottom: 40px; opacity: 0;
+  animation: fadeUp 1.2s ease 0.3s forwards;
+}
+
+.hero-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(48px, 8vw, 96px);
+  font-weight: 700; line-height: 0.95;
+  letter-spacing: -0.03em;
+  margin-bottom: 24px;
+  position: relative; z-index: 1;
+  opacity: 0; animation: fadeUp 1.4s ease 0.6s forwards;
+}
+.hero-title .brand {
+  color: var(--gold);
+  text-shadow: 0 0 80px rgba(212,168,67,0.5);
+  display: block;
+}
+.hero-title .sub {
+  color: var(--text-primary);
+  font-size: clamp(28px, 5vw, 56px);
+  font-weight: 500;
+  display: block; margin-top: 8px;
+  font-style: italic;
+}
+
+.hero-declaration {
+  margin: 40px auto 0;
+  max-width: 760px;
+  opacity: 0; animation: fadeUp 1.4s ease 0.9s forwards;
+  position: relative; z-index: 1;
+}
+.hero-declaration-line {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(20px, 2.5vw, 28px);
+  line-height: 1.7;
+  color: var(--text-sub);
+  font-weight: 400;
+  margin-bottom: 10px;
+}
+.hero-declaration-line.strike {
+  color: var(--text-dim);
+  text-decoration: line-through;
+  text-decoration-color: var(--gold-dim);
+  text-decoration-thickness: 1px;
+}
+.hero-declaration-line.strong {
+  color: var(--text-primary);
+  font-style: italic;
+  font-weight: 500;
+}
+.hero-declaration-line .gold { color: var(--gold); }
+
+.hero-english {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px; letter-spacing: 0.35em;
+  color: var(--text-dim); text-transform: uppercase;
+  margin-top: 48px;
+  opacity: 0; animation: fadeUp 1.4s ease 1.2s forwards;
+}
+
+.hero-scroll {
+  position: absolute; bottom: 40px; left: 50%;
+  transform: translateX(-50%);
+  opacity: 0; animation: fadeUp 1.4s ease 1.6s forwards;
+  text-align: center;
+}
+.scroll-dot {
+  width: 1px; height: 60px;
+  background: linear-gradient(180deg, var(--gold) 0%, transparent 100%);
+  margin: 0 auto 8px;
+  animation: scrollPulse 2s ease-in-out infinite;
+}
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.3; height: 40px; }
+  50% { opacity: 1; height: 60px; }
+}
+.scroll-text {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; letter-spacing: 0.3em;
+  color: var(--gold-dim); text-transform: uppercase;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ════════════════════════════
+   通用 section
+════════════════════════════ */
+.section {
+  padding: 140px 0 100px;
+  position: relative;
+}
+.section-header { margin-bottom: 80px; }
+
+.section.alt { background: linear-gradient(180deg, transparent 0%, rgba(16,14,11,0.4) 50%, transparent 100%); }
+
+/* ════════════════════════════
+   第一幕：我們不做這一行（房仲對比）
+════════════════════════════ */
+.compare-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 40px;
+  align-items: stretch;
+  margin-top: 60px;
+}
+
+.compare-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 48px 40px;
+  position: relative;
+}
+.compare-card.not-us {
+  opacity: 0.65;
+}
+.compare-card.us {
+  background: linear-gradient(180deg, var(--bg-hero) 0%, var(--bg-card) 100%);
+  border: 1px solid var(--gold-line-v);
+  box-shadow: var(--shadow-gold);
+}
+.compare-card.us::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+.compare-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+.compare-card.not-us .compare-label { color: var(--text-dim); }
+.compare-card.us .compare-label { color: var(--gold); }
+
+.compare-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 34px; font-weight: 600;
+  line-height: 1.15; margin-bottom: 8px;
+}
+.compare-card.not-us .compare-title { color: var(--text-sub); }
+.compare-card.us .compare-title { color: var(--text-primary); }
+
+.compare-subtitle {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; letter-spacing: 0.2em;
+  color: var(--text-dim); margin-bottom: 28px;
+  text-transform: uppercase;
+}
+
+.compare-attr {
+  display: flex;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  line-height: 1.7;
+}
+.compare-attr:last-child { border-bottom: none; }
+.compare-attr-key {
+  width: 90px; flex-shrink: 0;
+  color: var(--text-dim);
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.compare-attr-value {
+  flex: 1; color: var(--text-sub);
+}
+.compare-card.us .compare-attr-value {
+  color: var(--text-primary);
+}
+.compare-card.us .compare-attr-value strong {
+  color: var(--gold); font-weight: 500;
+}
+
+.compare-divider {
+  display: flex; align-items: center;
+  justify-content: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 28px;
+  color: var(--gold-dim);
+}
+
+/* ════════════════════════════
+   第二幕：真正的對標（代銷業三強）
+════════════════════════════ */
+.benchmark-section {
+  padding: 140px 0 100px;
+}
+
+.benchmark-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 60px;
+}
+
+.benchmark-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 36px 32px;
+  position: relative; overflow: hidden;
+  transition: all 0.4s ease;
+}
+.benchmark-card:hover {
+  border-color: var(--border-v);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-gold);
+}
+
+.benchmark-rank {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; letter-spacing: 0.25em;
+  color: var(--gold-dim); text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.benchmark-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 30px; font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+  line-height: 1.1;
+}
+.benchmark-name-en {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; letter-spacing: 0.2em;
+  color: var(--text-dim); margin-bottom: 24px;
+  text-transform: uppercase;
+}
+.benchmark-stat {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 40px; font-weight: 600;
+  color: var(--gold); line-height: 1;
+  margin-bottom: 4px;
+  letter-spacing: -0.02em;
+}
+.benchmark-stat-unit {
+  font-size: 12px; color: var(--text-dim);
+  margin-bottom: 20px;
+}
+.benchmark-stat-sub {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; letter-spacing: 0.15em;
+  color: var(--text-dim); text-transform: uppercase;
+  margin-bottom: 20px;
+}
+.benchmark-feature {
+  font-size: 13px; color: var(--text-sub);
+  line-height: 1.75; border-top: 1px solid var(--border);
+  padding-top: 18px;
+}
+.benchmark-feature strong {
+  color: var(--gold); font-weight: 500;
+}
+.benchmark-badge {
+  display: inline-block;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px; letter-spacing: 0.2em;
+  color: var(--gold); text-transform: uppercase;
+  background: var(--gold-glow); padding: 4px 10px;
+  border-radius: 4px; margin-top: 12px;
+}
+
+.benchmark-insight {
+  margin-top: 60px;
+  padding: 40px 48px;
+  background: var(--bg-card);
+  border-left: 3px solid var(--gold);
+  border-radius: 0 var(--r) var(--r) 0;
+}
+.benchmark-insight-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; letter-spacing: 0.3em;
+  color: var(--gold); text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.benchmark-insight-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 22px; line-height: 1.6;
+  color: var(--text-primary);
+}
+.benchmark-insight-text strong {
+  color: var(--gold);
+  font-family: 'Noto Serif TC', serif;
+  font-weight: 500;
+  font-style: normal;
+}
+
+/* ════════════════════════════
+   第三幕：三腳架商業模式
+════════════════════════════ */
+.tripod-section {
+  padding: 140px 0 100px;
+  background: linear-gradient(180deg, transparent 0%, rgba(16,14,11,0.5) 50%, transparent 100%);
+}
+
+.tripod-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  margin-top: 60px;
+  position: relative;
+}
+
+.tripod-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 48px 36px;
+  position: relative;
+  transition: all 0.4s ease;
+}
+.tripod-card:hover {
+  border-color: var(--gold-line-v);
+  background: var(--bg-hero);
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-gold-v);
+}
+
+.tripod-leg {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 110px; font-weight: 400;
+  color: var(--gold-dim);
+  line-height: 0.9;
+  position: absolute;
+  top: 20px; right: 28px;
+  opacity: 0.25;
+  letter-spacing: -0.04em;
+  transition: all 0.4s ease;
+}
+.tripod-card:hover .tripod-leg {
+  color: var(--gold); opacity: 0.7;
+  text-shadow: 0 0 40px rgba(212,168,67,0.5);
+}
+
+.tripod-role {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; letter-spacing: 0.3em;
+  color: var(--gold); text-transform: uppercase;
+  margin-bottom: 20px;
+  position: relative; z-index: 1;
+}
+.tripod-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 30px; font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+  letter-spacing: -0.01em;
+  position: relative; z-index: 1;
+}
+.tripod-title-en {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 16px;
+  color: var(--gold);
+  margin-bottom: 22px;
+}
+.tripod-function {
+  font-size: 14px; color: var(--text-sub);
+  line-height: 1.85;
+  margin-bottom: 22px;
+  letter-spacing: 0.02em;
+}
+.tripod-metric {
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+}
+.tripod-metric-key {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px; letter-spacing: 0.25em;
+  color: var(--text-dim); text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.tripod-metric-value {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px; color: var(--gold);
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.tripod-flow {
+  margin-top: 60px;
+  padding: 40px 48px;
+  background: linear-gradient(135deg, var(--bg-hero) 0%, var(--bg-card) 100%);
+  border: 1px solid var(--gold-line-v);
+  border-radius: var(--r);
+  text-align: center;
+  position: relative; overflow: hidden;
+}
+.tripod-flow::before {
+  content: ''; position: absolute;
+  top: -100px; left: -100px;
+  width: 400px; height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212,168,67,0.08) 0%, transparent 60%);
+}
+.tripod-flow-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; letter-spacing: 0.3em;
+  color: var(--gold); text-transform: uppercase;
+  margin-bottom: 20px;
+  position: relative; z-index: 1;
+}
+.tripod-flow-diagram {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(18px, 2.5vw, 26px);
+  line-height: 1.6;
+  color: var(--text-primary);
+  font-weight: 500;
+  position: relative; z-index: 1;
+}
+.tripod-flow-diagram .arrow {
+  color: var(--gold);
+  margin: 0 16px;
+  font-style: italic;
+}
+.tripod-flow-diagram .gold {
+  color: var(--gold);
+}
+
+/* ════════════════════════════
+   第四幕：三階段路徑
+════════════════════════════ */
+.timeline-section {
+  padding: 140px 0 120px;
+}
+
+.timeline {
+  position: relative;
+  margin-top: 80px;
+  padding-left: 60px;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 20px; top: 0; bottom: 0;
+  width: 1px;
+  background: linear-gradient(180deg,
+    var(--gold) 0%, var(--gold-dim) 50%, transparent 100%);
+}
+
+.phase {
+  position: relative;
+  margin-bottom: 80px;
+  padding-bottom: 40px;
+}
+.phase:last-child { margin-bottom: 0; }
+
+.phase-marker {
+  position: absolute;
+  left: -60px; top: 6px;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 2px solid var(--gold);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px; font-weight: 500;
+  color: var(--gold);
+  box-shadow: 0 0 20px var(--gold-glow);
+}
+
+.phase-period {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; letter-spacing: 0.3em;
+  color: var(--gold); text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.phase-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 38px; font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.015em;
+  margin-bottom: 8px;
+  line-height: 1.15;
+}
+.phase-title-en {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 20px;
+  color: var(--gold);
+  margin-bottom: 24px;
+}
+
+.phase-goal {
+  background: var(--bg-card);
+  border-left: 2px solid var(--gold);
+  padding: 20px 28px;
+  margin-bottom: 28px;
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+}
+.phase-goal-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; letter-spacing: 0.3em;
+  color: var(--gold-dim); text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.phase-goal-text {
+  font-size: 17px; color: var(--text-primary);
+  line-height: 1.7; font-weight: 500;
+}
+
+.phase-milestones {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+.milestone {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 22px 24px;
+  transition: all 0.3s ease;
+}
+.milestone:hover {
+  border-color: var(--border-v);
+  background: var(--bg-hero);
+}
+.milestone-check {
+  display: inline-block;
+  width: 20px; height: 20px;
+  border: 1px solid var(--gold);
+  border-radius: 50%;
+  margin-right: 10px;
+  position: relative; top: 3px;
+  color: var(--gold); font-size: 10px;
+  text-align: center; line-height: 18px;
+}
+.milestone-text {
+  display: inline;
+  font-size: 14px; color: var(--text-primary);
+  line-height: 1.7;
+}
+
+.phase-keyinsight {
+  margin-top: 24px;
+  padding: 18px 24px;
+  background: rgba(212,168,67,0.04);
+  border: 1px dashed var(--gold-line-v);
+  border-radius: var(--r-sm);
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 17px; line-height: 1.6;
+  color: var(--text-sub);
+}
+.phase-keyinsight strong {
+  color: var(--gold); font-style: normal;
+  font-family: 'Noto Serif TC', serif; font-weight: 500;
+}
+
+/* ════════════════════════════
+   第五幕：護城河
+════════════════════════════ */
+.moat-section {
+  padding: 140px 0 100px;
+  background: linear-gradient(180deg, transparent 0%, rgba(16,14,11,0.5) 50%, transparent 100%);
+}
+
+.moat-container {
+  background: linear-gradient(135deg, var(--bg-hero) 0%, var(--bg-card) 100%);
+  border: 1px solid var(--gold-line-v);
+  border-radius: var(--r);
+  padding: 80px 60px;
+  margin-top: 60px;
+  position: relative; overflow: hidden;
+}
+.moat-container::before {
+  content: ''; position: absolute;
+  top: -200px; right: -200px;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212,168,67,0.08) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.moat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  position: relative; z-index: 1;
+}
+
+.moat-col h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px;
+  color: var(--gold);
+  font-weight: 600;
+  margin-bottom: 20px;
+  letter-spacing: -0.01em;
+}
+.moat-col h3 .sub {
+  display: block;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  margin-top: 4px;
+  font-style: normal;
+}
+.moat-col ul { list-style: none; }
+.moat-col li {
+  font-size: 15px; color: var(--text-sub);
+  line-height: 2.1;
+  padding-left: 22px;
+  position: relative;
+}
+.moat-col li::before {
+  content: '◆'; color: var(--gold-dim);
+  position: absolute; left: 0; top: 0;
+  font-size: 10px;
+}
+.moat-col li strong {
+  color: var(--text-primary); font-weight: 500;
+}
+.moat-col li .gold {
+  color: var(--gold); font-weight: 500;
+}
+
+/* ════════════════════════════
+   終章
+════════════════════════════ */
+.finale {
+  padding: 160px 40px 140px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.finale::before {
+  content: ''; position: absolute;
+  top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 1000px; height: 1000px; max-width: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(212,168,67,0.1) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.finale-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; letter-spacing: 0.4em;
+  color: var(--gold); text-transform: uppercase;
+  margin-bottom: 32px;
+  position: relative; z-index: 1;
+}
+
+.finale-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(44px, 6.5vw, 76px);
+  font-weight: 700; line-height: 1.05;
+  letter-spacing: -0.025em;
+  margin-bottom: 32px;
+  position: relative; z-index: 1;
+}
+.finale-title .gold {
+  color: var(--gold);
+  text-shadow: 0 0 60px rgba(212,168,67,0.5);
+}
+
+.finale-body {
+  font-size: 18px; line-height: 2;
+  color: var(--text-sub);
+  max-width: 720px;
+  margin: 0 auto 60px;
+  position: relative; z-index: 1;
+  letter-spacing: 0.02em;
+}
+.finale-body p { margin-bottom: 20px; }
+.finale-body strong {
+  color: var(--gold); font-weight: 500;
+}
+
+.finale-signature {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 22px;
+  color: var(--text-primary);
+  margin-top: 40px;
+  position: relative; z-index: 1;
+}
+.finale-signature::before {
+  content: '';
+  display: block;
+  width: 60px; height: 1px;
+  background: var(--gold);
+  margin: 0 auto 24px;
+}
+
+.finale-meta {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; letter-spacing: 0.3em;
+  color: var(--text-dim); text-transform: uppercase;
+  margin-top: 60px;
+  position: relative; z-index: 1;
+}
+
+/* ════════════════════════════
+   Footer
+════════════════════════════ */
+.footer {
+  padding: 50px 40px;
+  text-align: center;
+  border-top: 1px solid var(--border);
+}
+.footer-text {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; letter-spacing: 0.3em;
+  color: var(--text-dim); text-transform: uppercase;
+}
+
+/* ════════════════════════════
+   Scroll-triggered animations
+════════════════════════════ */
+.fade-in {
+  opacity: 0; transform: translateY(40px);
+  transition: opacity 0.9s ease, transform 0.9s ease;
+}
+.fade-in.visible { opacity: 1; transform: translateY(0); }
+
+.stagger > * {
+  opacity: 0; transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.stagger.visible > *:nth-child(1) { transition-delay: 0s; }
+.stagger.visible > *:nth-child(2) { transition-delay: 0.12s; }
+.stagger.visible > *:nth-child(3) { transition-delay: 0.24s; }
+.stagger.visible > *:nth-child(4) { transition-delay: 0.36s; }
+.stagger.visible > * { opacity: 1; transform: translateY(0); }
+
+/* ════════════════════════════
+   響應式
+════════════════════════════ */
+@media (max-width: 900px) {
+  .container { padding: 0 24px; }
+  .compare-grid { grid-template-columns: 1fr; gap: 24px; }
+  .compare-divider { padding: 10px 0; }
+  .benchmark-grid { grid-template-columns: 1fr; }
+  .tripod-grid { grid-template-columns: 1fr; }
+  .moat-grid { grid-template-columns: 1fr; gap: 40px; }
+  .moat-container { padding: 48px 32px; }
+  .timeline { padding-left: 48px; }
+  .phase-marker { left: -48px; width: 32px; height: 32px; font-size: 11px; }
+  .phase-milestones { grid-template-columns: 1fr; }
+  .section { padding: 80px 0 60px; }
+  .finale { padding: 100px 24px 80px; }
+  .tripod-flow { padding: 32px 24px; }
+}
+
+@media (max-width: 600px) {
+  .hero { padding: 80px 24px 40px; }
+  .hero-declaration-line { font-size: 16px; }
+  .section { padding: 70px 0 50px; }
+  .section-header { margin-bottom: 50px; }
+  .phase-title { font-size: 28px; }
+  .timeline { padding-left: 40px; }
+  .phase-marker { left: -40px; }
+  .compare-card { padding: 32px 24px; }
+  .compare-attr-key { width: 70px; }
+  .benchmark-insight { padding: 28px 24px; }
+  .benchmark-insight-text { font-size: 18px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════
+     Hero：重新定義
+════════════════════════════ -->
+<section class="hero">
+  <div class="hero-eyebrow">Futime Strategic Map · v2 · 2026—2041</div>
+  <h1 class="hero-title">
+    <span class="brand">富時代</span>
+    <span class="sub">15 年戰略地圖</span>
+  </h1>
+
+  <div class="hero-declaration">
+    <div class="hero-declaration-line strike">我們不是房仲業務</div>
+    <div class="hero-declaration-line strong">
+      我們是<span class="gold">資產配置顧問</span>，也是<span class="gold">自建案的開發者</span>
+    </div>
+  </div>
+
+  <div class="hero-english">Wealth Advisory · In-house Development · Agency</div>
+
+  <div class="hero-scroll">
+    <div class="scroll-dot"></div>
+    <div class="scroll-text">Scroll</div>
+  </div>
+</section>
+
+<!-- ════════════════════════════
+     第一幕：我們不做房仲
+════════════════════════════ -->
+<section class="section">
+  <div class="container">
+    <div class="section-header fade-in">
+      <div class="eyebrow">
+        <span class="eyebrow-line"></span>
+        <span class="eyebrow-text">Act I · We Are Not Realtors</span>
+      </div>
+      <h2 class="section-title">我們不做<span class="gold">這一行</span></h2>
+      <p class="section-subtitle">
+        市場上 6,500 家房仲都在同一個賽道搶客戶。
+        智偉哥從第一天就清楚——富時代不要在那個紅海裡消耗。
+        我們做的是另一件事。
+      </p>
+    </div>
+
+    <div class="compare-grid fade-in">
+
+      <div class="compare-card not-us">
+        <div class="compare-label">× Not Us</div>
+        <h3 class="compare-title">傳統房仲</h3>
+        <div class="compare-subtitle">Traditional Realtor</div>
+
+        <div class="compare-attr">
+          <div class="compare-attr-key">Model</div>
+          <div class="compare-attr-value">仲介買賣、居間收費</div>
+        </div>
+        <div class="compare-attr">
+          <div class="compare-attr-key">Income</div>
+          <div class="compare-attr-value">成交抽佣 2–4%</div>
+        </div>
+        <div class="compare-attr">
+          <div class="compare-attr-key">Relation</div>
+          <div class="compare-attr-value">一次性交易</div>
+        </div>
+        <div class="compare-attr">
+          <div class="compare-attr-key">Asset</div>
+          <div class="compare-attr-value">店數、廣告曝光</div>
+        </div>
+        <div class="compare-attr">
+          <div class="compare-attr-key">Scale</div>
+          <div class="compare-attr-value">勞力密集</div>
+        </div>
+      </div>
+
+      <div class="compare-divider">vs.</div>
+
+      <div class="compare-card us">
+        <div class="compare-label">◆ This Is Us</div>
+        <h3 class="compare-title">富時代模式</h3>
+        <div class="compare-subtitle">The Futime Way</div>
+
+        <div class="compare-attr">
+          <div class="compare-attr-key">Model</div>
+          <div class="compare-attr-value"><strong>顧問諮詢 + 自建案 + 代銷</strong></div>
+        </div>
+        <div class="compare-attr">
+          <div class="compare-attr-key">Income</div>
+          <div class="compare-attr-value">顧問費 + 代銷佣金 + <strong>自建利潤</strong></div>
+        </div>
+        <div class="compare-attr">
+          <div class="compare-attr-key">Relation</div>
+          <div class="compare-attr-value"><strong>長期信任、資產全程陪伴</strong></div>
+        </div>
+        <div class="compare-attr">
+          <div class="compare-attr-key">Asset</div>
+          <div class="compare-attr-value"><strong>VIP 客戶池 + 土地開發權</strong></div>
+        </div>
+        <div class="compare-attr">
+          <div class="compare-attr-key">Scale</div>
+          <div class="compare-attr-value"><strong>知識+資產 密集</strong></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="fade-in" style="margin-top: 60px; padding: 32px 40px; background: var(--bg-card); border-left: 2px solid var(--gold); border-radius: 0 var(--r-sm) var(--r-sm) 0;">
+      <div style="font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 22px; line-height: 1.6; color: var(--text-sub);">
+        智偉哥說得對——
+        <span style="color: var(--gold); font-weight: 500;">自建案的利潤跟機會，都掌握在自己手上。</span><br>
+        我們賺的不是勞力錢，是<span style="color: var(--gold); font-weight: 500;">信任複利錢</span>。
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════
+     第二幕：真正的對標
+════════════════════════════ -->
+<section class="section benchmark-section alt">
+  <div class="container">
+    <div class="section-header fade-in">
+      <div class="eyebrow">
+        <span class="eyebrow-line"></span>
+        <span class="eyebrow-text">Act II · Our Real Benchmarks</span>
+      </div>
+      <h2 class="section-title">真正的<span class="gold">對標對象</span></h2>
+      <p class="section-subtitle">
+        如果我們不跟信義、住商、永慶比店數，那要跟誰比？
+        答案是——2024 年全台代銷業前三強。他們的今天，是我們的地圖。
+      </p>
+    </div>
+
+    <div class="benchmark-grid stagger fade-in">
+
+      <div class="benchmark-card">
+        <div class="benchmark-rank">No. 1 · 連霸 6 年</div>
+        <div class="benchmark-name">海悅廣告</div>
+        <div class="benchmark-name-en">Haiyue · 2348-TW</div>
+        <div class="benchmark-stat">2,402<span style="font-size:22px;">億</span></div>
+        <div class="benchmark-stat-unit">2024 接案量</div>
+        <div class="benchmark-stat-sub">已上櫃 · Public Listed</div>
+        <div class="benchmark-feature">
+          全台布局、連霸冠軍。<br>
+          <strong>證明代銷業可以走到上市。</strong>
+        </div>
+        <span class="benchmark-badge">IPO 標竿</span>
+      </div>
+
+      <div class="benchmark-card">
+        <div class="benchmark-rank">No. 2 · 雙北豪宅王</div>
+        <div class="benchmark-name">新聯陽機構</div>
+        <div class="benchmark-name-en">Sinlien · Private</div>
+        <div class="benchmark-stat">2,040<span style="font-size:22px;">億</span></div>
+        <div class="benchmark-stat-unit">2024 接案量</div>
+        <div class="benchmark-stat-sub">未上市 · Family Empire</div>
+        <div class="benchmark-feature">
+          專攻雙北、承接百億豪宅案。<br>
+          <strong>代銷可以不靠規模，靠選案品質。</strong>
+        </div>
+        <span class="benchmark-badge">精品路線</span>
+      </div>
+
+      <div class="benchmark-card" style="border: 1px solid var(--gold-line-v); background: linear-gradient(180deg, var(--bg-hero) 0%, var(--bg-card) 100%);">
+        <div class="benchmark-rank" style="color: var(--gold);">◆ Our Path</div>
+        <div class="benchmark-name">甲山林集團</div>
+        <div class="benchmark-name-en">Chia Shan Lin</div>
+        <div class="benchmark-stat">1,200<span style="font-size:22px;">億</span></div>
+        <div class="benchmark-stat-unit">2024 接案量</div>
+        <div class="benchmark-stat-sub">自建 40% · 目標 90%</div>
+        <div class="benchmark-feature">
+          從代銷起家、轉型自建為主。<br>
+          <strong>這條路，就是富時代的路。</strong>
+        </div>
+        <span class="benchmark-badge">核心對標</span>
+      </div>
+
+    </div>
+
+    <div class="benchmark-insight fade-in">
+      <div class="benchmark-insight-label">Strategic Insight</div>
+      <div class="benchmark-insight-text">
+        甲山林 2024 年自建案已占<strong>四成</strong>案量，
+        總經理公開表示未來要拉到<strong>自建 9 : 代銷 1</strong>。<br><br>
+        這證明了一件事——<strong>代銷只是入場券，自建才是終局</strong>。<br>
+        富時代從第一天就走這條路，只是剛好比甲山林晚 20 年出發。
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════
+     第三幕：三腳架商業模式
+════════════════════════════ -->
+<section class="section tripod-section">
+  <div class="container">
+    <div class="section-header fade-in">
+      <div class="eyebrow">
+        <span class="eyebrow-line"></span>
+        <span class="eyebrow-text">Act III · The Tripod Model</span>
+      </div>
+      <h2 class="section-title">我們的<span class="gold">三腳架</span></h2>
+      <p class="section-subtitle">
+        一腳不夠、兩腳會倒——三腳架才站得穩。
+        這是富時代商業模式的核心結構，也是為什麼我們比甲山林更抗風險。
+      </p>
+    </div>
+
+    <div class="tripod-grid stagger fade-in">
+
+      <div class="tripod-card">
+        <div class="tripod-leg">I</div>
+        <div class="tripod-role">第一腳 · Entry</div>
+        <div class="tripod-title">財商顧問</div>
+        <div class="tripod-title-en">Wealth Advisory</div>
+        <div class="tripod-function">
+          講座、一對一諮詢、資產配置、<br>
+          貸款策略、稅務法務規劃。<br><br>
+          不推房子，只談財富——<br>
+          這就是我們建立信任的入口。
+        </div>
+        <div class="tripod-metric">
+          <div class="tripod-metric-key">Value</div>
+          <div class="tripod-metric-value">信任流量入口</div>
+        </div>
+      </div>
+
+      <div class="tripod-card">
+        <div class="tripod-leg">II</div>
+        <div class="tripod-role">第二腳 · Core</div>
+        <div class="tripod-title">自建案</div>
+        <div class="tripod-title-en">In-house Development</div>
+        <div class="tripod-function">
+          危老重建、都更開發、<br>
+          整合土地、親自推案。<br><br>
+          客戶信任已建立、案子自己做——<br>
+          利潤留在內部，不被外人瓜分。
+        </div>
+        <div class="tripod-metric">
+          <div class="tripod-metric-key">Value</div>
+          <div class="tripod-metric-value">利潤核心引擎</div>
+        </div>
+      </div>
+
+      <div class="tripod-card">
+        <div class="tripod-leg">III</div>
+        <div class="tripod-role">第三腳 · Leverage</div>
+        <div class="tripod-title">代銷事業</div>
+        <div class="tripod-title-en">Agency Service</div>
+        <div class="tripod-function">
+          對外承接建商案件、<br>
+          擴大規模、累積案源人脈、<br>
+          同時培養新人實戰。<br><br>
+          穩定現金流 + 放大能見度。
+        </div>
+        <div class="tripod-metric">
+          <div class="tripod-metric-key">Value</div>
+          <div class="tripod-metric-value">規模槓桿 + 現金流</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="tripod-flow fade-in">
+      <div class="tripod-flow-label">The Flywheel · 正循環</div>
+      <div class="tripod-flow-diagram">
+        <span class="gold">顧問</span>
+        <span class="arrow">→</span>
+        建立信任
+        <span class="arrow">→</span>
+        <span class="gold">自建案</span>
+        <span class="arrow">→</span>
+        高利潤<br>
+        <span style="opacity: 0.5; font-size: 0.8em;">↑</span>
+        <br>
+        再投入研發系統
+        <span class="arrow" style="opacity: 0.5;">←</span>
+        <span class="gold" style="opacity: 0.8;">代銷規模</span>
+        <span class="arrow" style="opacity: 0.5;">←</span>
+        客戶擴散
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════
+     第四幕：三階段路徑
+════════════════════════════ -->
+<section class="section timeline-section">
+  <div class="container">
+    <div class="section-header fade-in">
+      <div class="eyebrow">
+        <span class="eyebrow-line"></span>
+        <span class="eyebrow-text">Act IV · The Path Forward</span>
+      </div>
+      <h2 class="section-title">三階段<span class="gold">演進路徑</span></h2>
+      <p class="section-subtitle">
+        從現在到上市，15 年分三個階段。
+        每一階段的主軸不同，但方向只有一個——<strong>把三腳架的每一隻腳都做深、做強</strong>。
+      </p>
+    </div>
+
+    <div class="timeline">
+
+      <!-- Phase 1 -->
+      <div class="phase fade-in">
+        <div class="phase-marker">01</div>
+        <div class="phase-period">Year 1 — 3 · 2026—2029</div>
+        <h3 class="phase-title">顧問品牌期</h3>
+        <div class="phase-title-en">Advisory Brand Building</div>
+
+        <div class="phase-goal">
+          <div class="phase-goal-label">Primary Objective</div>
+          <div class="phase-goal-text">
+            讓「找智偉哥諮詢」變成桃園高資產族群的共識<br>
+            以財商顧問為入口，累積第一批 500 位 VIP 客戶
+          </div>
+        </div>
+
+        <div class="phase-milestones">
+          <div class="milestone">
+            <span class="milestone-check">✓</span>
+            <span class="milestone-text">Asset Planner + CRM 系統化上線，每場諮詢產出專業資產規劃書</span>
+          </div>
+          <div class="milestone">
+            <span class="milestone-check">✓</span>
+            <span class="milestone-text">財商講座月均 2–3 場，建立內容 IP 與自有客戶名單</span>
+          </div>
+          <div class="milestone">
+            <span class="milestone-check">✓</span>
+            <span class="milestone-text">板橋、三重自建案持續推案，累積自建開發經驗與品牌認證</span>
+          </div>
+          <div class="milestone">
+            <span class="milestone-check">✓</span>
+            <span class="milestone-text">建立 3–5 位核心顧問團隊，「智偉哥方法論」完成 SOP 化</span>
+          </div>
+        </div>
+
+        <div class="phase-keyinsight">
+          <strong>關鍵洞察：</strong>
+          這三年不追求店數、不追求業績排名，只追求一件事——
+          <strong>讓「智偉哥 = 資產顧問」成為可信的品牌符號</strong>。
+          信任建立了，後面的戲才演得下去。
+        </div>
+      </div>
+
+      <!-- Phase 2 -->
+      <div class="phase fade-in">
+        <div class="phase-marker">02</div>
+        <div class="phase-period">Year 4 — 7 · 2030—2033</div>
+        <h3 class="phase-title">自建主力期</h3>
+        <div class="phase-title-en">Development-led Growth</div>
+
+        <div class="phase-goal">
+          <div class="phase-goal-label">Primary Objective</div>
+          <div class="phase-goal-text">
+            把自建案從「偶爾推」升級為「年年推」<br>
+            同時啟動代銷部門，對外接案擴大規模
+          </div>
+        </div>
+
+        <div class="phase-milestones">
+          <div class="milestone">
+            <span class="milestone-check">✓</span>
+            <span class="milestone-text">每年自建推案至少 2–3 案，鎖定危老重建與都更整合</span>
+          </div>
+          <div class="milestone">
+            <span class="milestone-check">✓</span>
+            <span class="milestone-text">富時代代銷事業部獨立運作，年接案量衝擊 100 億</span>
+          </div>
+          <div class="milestone">
+            <span class="milestone-check">✓</span>
+            <span class="milestone-text">VIP 客戶池擴大至 3,000 位，半數具備換屋/置產持續需求</span>
+          </div>
+          <div class="milestone">
+            <span class="milestone-check">✓</span>
+            <span class="milestone-text">桃園擴展至雙北、新竹、台中，建立跨區開發能力</span>
+          </div>
+        </div>
+
+        <div class="phase-keyinsight">
+          <strong>關鍵洞察：</strong>
+          此階段會出現一個甜蜜的陷阱——代銷案量成長快、誘惑很大。
+          但要記住：<strong>代銷是槓桿，自建才是本體</strong>。
+          營收結構必須保持<strong>自建 ≥ 代銷</strong>，不能倒過來。
+        </div>
+      </div>
+
+      <!-- Phase 3 -->
+      <div class="phase fade-in">
+        <div class="phase-marker">03</div>
+        <div class="phase-period">Year 8 — 15 · 2034—2041</div>
+        <h3 class="phase-title">上市集團化</h3>
+        <div class="phase-title-en">Group IPO</div>
+
+        <div class="phase-goal">
+          <div class="phase-goal-label">Primary Objective</div>
+          <div class="phase-goal-text">
+            達成甲山林路徑——自建 : 代銷 = 7 : 3<br>
+            上市掛牌，成為台灣「顧問型不動產開發商」第一股
+          </div>
+        </div>
+
+        <div class="phase-milestones">
+          <div class="milestone">
+            <span class="milestone-check">✓</span>
+            <span class="milestone-text">富時代開發 · 富時代代銷 · 富時代財顧 三事業體集團化</span>
+          </div>
+          <div class="milestone">
+            <span class="milestone-check">✓</span>
+            <span class="milestone-text">每年自建案總銷累計超過 100 億，營收結構穩定透明</span>
+          </div>
+          <div class="milestone">
+            <span class="milestone-check">✓</span>
+            <span class="milestone-text">送件 IPO 上市櫃，成為繼海悅、信義後的代表性標的</span>
+          </div>
+          <div class="milestone">
+            <span class="milestone-check">✓</span>
+            <span class="milestone-text">啟動海外布局：日本置產 + 東南亞代銷整合</span>
+          </div>
+        </div>
+
+        <div class="phase-keyinsight">
+          <strong>關鍵洞察：</strong>
+          上市是結果，不是目標。真正要問的是——
+          <strong>15 年後，台灣高資產族群要做不動產配置，會不會第一個想到富時代？</strong>
+          這一題解了，上市是自然發生的事。
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════
+     第五幕：護城河
+════════════════════════════ -->
+<section class="section moat-section">
+  <div class="container">
+    <div class="section-header fade-in">
+      <div class="eyebrow">
+        <span class="eyebrow-line"></span>
+        <span class="eyebrow-text">Act V · Why We Win</span>
+      </div>
+      <h2 class="section-title">為什麼<span class="gold">我們會贏</span></h2>
+      <p class="section-subtitle">
+        海悅花了 30 年才上櫃，甲山林還在轉型自建。
+        我們有他們當年沒有的三樣東西——這就是我們的護城河。
+      </p>
+    </div>
+
+    <div class="moat-container fade-in">
+      <div class="moat-grid">
+
+        <div class="moat-col">
+          <h3>
+            他們有的，我們學起來
+            <span class="sub">What we learn from them</span>
+          </h3>
+          <ul>
+            <li><strong>海悅的</strong><span class="gold">上市路徑</span>——證明代銷模式可以走到資本市場</li>
+            <li><strong>甲山林的</strong><span class="gold">自建轉型</span>——驗證自建比代銷利潤高 3–5 倍</li>
+            <li><strong>新聯陽的</strong><span class="gold">選案紀律</span>——寧可案量小，不要壞案子</li>
+            <li><strong>信義的</strong><span class="gold">品牌公信力</span>——誠實服務是長線複利</li>
+          </ul>
+        </div>
+
+        <div class="moat-col">
+          <h3>
+            我們有的，他們沒有
+            <span class="sub">Our competitive moat</span>
+          </h3>
+          <ul>
+            <li><strong>財商方法論</strong>——智偉哥 30 年實戰 + AI 系統化，<span class="gold">入口流量不靠廣告</span></li>
+            <li><strong>B2C VIP 客戶池</strong>——代銷業者只對建商，我們<span class="gold">直接擁有客戶</span></li>
+            <li><strong>AI 作業系統</strong>——CRM / Asset Planner / 話術庫，<span class="gold">規模化不靠人海</span></li>
+            <li><strong>信任複利結構</strong>——一個客戶從<span class="gold">諮詢 → 買 → 換 → 傳下一代</span>，生命週期價值遠超單次仲介費</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════
+     終章
+════════════════════════════ -->
+<section class="finale">
+  <div class="finale-eyebrow fade-in">Finale · The Vision</div>
+  <h2 class="finale-title fade-in">
+    我們要成為的<br>
+    <span class="gold">不是最大的房仲</span>
+  </h2>
+  <div class="finale-body fade-in">
+    <p>
+      我們要成為的，是<strong>台灣第一個「顧問型不動產開發集團」</strong>。
+    </p>
+    <p>
+      15 年後，當桃園、雙北、新竹的高資產族群要做資產配置，
+      他們會第一個想到<strong>富時代</strong>——
+      因為我們懂他們的錢怎麼流、也懂他們的房子怎麼蓋。
+    </p>
+    <p>
+      這是智偉哥從第一天就看見的未來。<br>
+      現在，我們要把它<strong>做出來</strong>。
+    </p>
+  </div>
+  <div class="finale-signature fade-in">
+    富時代地產開發 · 戰略委員會
+  </div>
+  <div class="finale-meta fade-in">
+    Version 2.0 · Internal Use · 2026
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-text">
+    Futime Real Estate · Strategic Map v2 · Confidential
+  </div>
+</footer>
+
+<script>
+// ════════════════════════════
+// Scroll-triggered fade-in 動畫
+// ════════════════════════════
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      observer.unobserve(entry.target);
+    }
+  });
+}, {
+  threshold: 0.12,
+  rootMargin: '0px 0px -60px 0px'
+});
+
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
