@@ -2142,7 +2142,7 @@ function claimSeminarLead() {}
 // ════════════════════════════════════════════════
 
 var API_URL_KEY = 'futime_api_url';
-var HARDCODED_API_URL = 'https://script.google.com/macros/s/AKfycbyt8tcy6pORzZ1nc0HP4YVLV-AY1tOuahJWjhmWQ2VBTSZPLZe2qgBzZgczbDQTVsPI/exec';
+var HARDCODED_API_URL = 'https://script.google.com/macros/s/AKfycbycQXNmY6eSF2LHpLgIUxufpCyfIVU4jSSbWipt2NhhIhPRn5R_5NN_nYJgvpPOGk63/exec';
 var currentUser = null, currentRole = null;
 var customers = [];
 var MANAGERS = ['總經理','CRM營運長','知識長','AI訓練長'];
@@ -2256,12 +2256,15 @@ function rebuildSalesSelects() {
   }
 }
 
-// ── 取得 API URL（優先 localStorage、其次 HARDCODED）──
-// v20.1 修正：讓更新網址更容易，重新部署後只要貼新網址到「重新設定雲端網址」即可
+// ── 取得 API URL（優先 localStorage 自訂網址、其次 HARDCODED）──
+// v21：HARDCODED 已是最新網址，localStorage 僅在明確手動設定時才覆蓋
 function getApiUrl() {
   try {
     var saved = localStorage.getItem(API_URL_KEY);
-    if (saved && saved.indexOf('script.google.com') !== -1) return saved;
+    // 只有當 saved 存在且與 HARDCODED 不同時才用（避免舊版本殘留的壞網址）
+    if (saved && saved.indexOf('script.google.com') !== -1 && saved !== HARDCODED_API_URL) {
+      return saved;
+    }
   } catch(e) {}
   return HARDCODED_API_URL;
 }
@@ -2310,7 +2313,9 @@ function saveApiUrlFromReset() {
   callAPI({ action: 'getTargets' }, function(res) {
     if (res && res.success !== false && !res.error) {
       statusEl.innerHTML = '<span style="color:#2e7d52">✅ 連線成功！請登入</span>';
-      document.getElementById('apiStatus').textContent = '✅ 雲端已設定，請登入';
+      var apiStatusEl2 = document.getElementById('apiStatus');
+      apiStatusEl2.textContent = '✅ 雲端已連線，請登入';
+      apiStatusEl2.style.color = '#1e6b42';
       setTimeout(function() {
         document.getElementById('resetUrlBox').style.display = 'none';
       }, 1500);
@@ -6626,7 +6631,51 @@ function showToast(msg) {
 (function(){
   loadSalesList();
   rebuildSalesSelects();
-  document.getElementById('apiStatus').textContent = '✅ 雲端已設定，請登入';
+
+  // ── 自動測試連線（v21：每次載入都驗證，失敗自動展開設定面板）──
+  var apiStatusEl = document.getElementById('apiStatus');
+  var savedUrl = '';
+  try { savedUrl = localStorage.getItem(API_URL_KEY) || ''; } catch(e) {}
+
+  // 先顯示「測試中」
+  apiStatusEl.textContent = '⏳ 測試雲端連線中...';
+  apiStatusEl.style.color = '#888';
+
+  // 快速 ping（timeout 8秒，避免等太久）
+  var pingUrl = savedUrl && savedUrl.indexOf('script.google.com') !== -1
+    ? savedUrl : HARDCODED_API_URL;
+
+  var fetchDone = false;
+  var fetchPromise = fetch(pingUrl, {
+    method: 'POST',
+    body: JSON.stringify({ action: 'getTargets' }),
+    headers: { 'Content-Type': 'text/plain' }
+  });
+  var timeoutPromise = new Promise(function(_, reject){
+    setTimeout(function(){
+      if (!fetchDone) reject(new Error('timeout'));
+    }, 8000);
+  });
+
+  Promise.race([fetchPromise, timeoutPromise])
+    .then(function(r){ fetchDone = true; return r.text(); })
+    .then(function(text){
+      // 只要有回應就視為連線成功（即使回傳錯誤也代表 API 活著）
+      apiStatusEl.textContent = '✅ 雲端已連線，請登入';
+      apiStatusEl.style.color = '#1e6b42';
+      // 如果測試的是 HARDCODED 而非 saved，確保 localStorage 不殘留舊壞網址
+      // （不清除，讓 getApiUrl 繼續優先用 saved）
+    })
+    .catch(function(){
+      fetchDone = true;
+      // 連線失敗：顯示錯誤並自動展開重設面板
+      apiStatusEl.textContent = '❌ 連線失敗，請更新雲端網址';
+      apiStatusEl.style.color = '#b02a20';
+      var box = document.getElementById('resetUrlBox');
+      if (box) box.style.display = 'block';
+      var input = document.getElementById('apiUrlInputReset');
+      if (input && !input.value) input.value = pingUrl;
+    });
 })();
 </script>
 
