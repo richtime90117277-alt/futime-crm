@@ -3,42 +3,40 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>富時代 AI 自動化成交系統</title>
+<title>富時代 AI 決策引擎</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Noto+Serif+TC:wght@300;400;500&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;700&family=DM+Mono:wght@300;400;500&family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-
-/* ════════════════════════════
-   色彩系統：極深墨黑 × 香檳金
-════════════════════════════ */
 :root {
-  --bg:          #080604;        /* 極深暖黑底 */
-  --bg-card:     #100e0b;        /* 卡片底色，比背景亮一階 */
-  --bg-hero:     #16120d;        /* Hero 卡略亮 */
-  --bg-lift:     #1e1810;        /* hover 提亮 */
+  --bg:         #0d1117;
+  --bg-dark:    #080c10;
+  --bg-card:    #111820;
+  --bg-hero:    #0f1822;
+  --bg-lift:    #16222e;
 
-  --white:       #ffffff;
-  --text-primary: #f0ead8;       /* 主文字：暖白，不刺眼 */
-  --text-sub:    #c8bfa8;        /* 次要文字 */
-  --text-dim:    #7a6e5c;        /* 淡化文字 */
+  --blue:       #4a9eca;
+  --blue-bright:#7ec8e8;
+  --blue-dim:   #2a5f80;
+  --blue-glow:  rgba(74,158,202,0.18);
+  --blue-line:  rgba(74,158,202,0.20);
+  --blue-line-v:rgba(74,158,202,0.45);
 
-  --gold:        #d4a843;        /* 香檳金主色 */
-  --gold-bright: #f0c860;        /* 高光金 */
-  --gold-dim:    #8a6820;        /* 暗金 */
-  --gold-glow:   rgba(212,168,67,0.18);
-  --gold-line:   rgba(212,168,67,0.20);
-  --gold-line-v: rgba(212,168,67,0.40);
+  --teal:       #3dd6c8;
+  --teal-dim:   rgba(61,214,200,0.15);
 
-  --border:      rgba(212,168,67,0.10);
-  --border-v:    rgba(212,168,67,0.25);
+  --text-primary: #e8f4fc;
+  --text-sub:     #8bafc8;
+  --text-dim:     #4a6880;
 
-  --shadow-xs:   0 1px 6px  rgba(0,0,0,0.40);
-  --shadow-sm:   0 4px 20px rgba(0,0,0,0.50);
-  --shadow-md:   0 8px 40px rgba(0,0,0,0.60);
-  --shadow-gold: 0 0 40px   rgba(212,168,67,0.12);
-  --shadow-gold-v: 0 0 60px rgba(212,168,67,0.22);
+  --border:     rgba(74,158,202,0.12);
+  --border-v:   rgba(74,158,202,0.30);
 
-  --r:    18px;
+  --shadow-sm:  0 4px 24px rgba(0,0,0,0.50);
+  --shadow-md:  0 8px 48px rgba(0,0,0,0.65);
+  --shadow-blue:0 0 40px rgba(74,158,202,0.10);
+  --shadow-blue-v:0 0 60px rgba(74,158,202,0.22);
+
+  --r:    16px;
   --r-sm: 10px;
 }
 
@@ -46,126 +44,120 @@
 html { scroll-behavior: smooth; }
 
 body {
-  background: var(--bg);
+  background: var(--bg-dark);
   color: var(--text-primary);
   font-family: 'Noto Serif TC', serif;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
-  /* 全頁底紋：細噪點 + 頂部金光暈 */
-  background-image:
-    radial-gradient(ellipse 80% 40% at 50% 0%, rgba(212,168,67,0.07) 0%, transparent 60%),
-    url("data:image/svg+xml,%3Csvg width='64' height='64' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='1' cy='1' r='0.8' fill='%23d4a843' fill-opacity='0.03'/%3E%3C/svg%3E");
+  overflow-x: hidden;
 }
 
-/* ════════════════════════════
-   Header — 深黑橫幅，大字霸氣
-════════════════════════════ */
+/* ════ Canvas 背景 ════ */
+#bgCanvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.55;
+}
+
+/* ════ Header ════ */
 .header {
-  background: linear-gradient(180deg, #0e0b07 0%, #080604 100%);
-  border-bottom: 1px solid var(--gold-line);
   position: relative;
-  overflow: hidden;
+  z-index: 10;
+  background: linear-gradient(180deg, rgba(8,12,16,0.95) 0%, rgba(13,17,23,0.90) 100%);
+  border-bottom: 1px solid var(--blue-line);
+  backdrop-filter: blur(8px);
 }
 
-/* 頂部細金線 */
+/* 頂部亮線 */
 .header::before {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0; height: 1px;
   background: linear-gradient(90deg,
     transparent 0%,
-    var(--gold-dim) 20%,
-    var(--gold) 50%,
-    var(--gold-dim) 80%,
+    var(--blue-dim) 20%,
+    var(--blue) 50%,
+    var(--blue-dim) 80%,
     transparent 100%);
 }
 
-/* 右側金色光暈 */
-.header::after {
-  content: '';
-  position: absolute;
-  top: -120px; right: -120px;
-  width: 500px; height: 500px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(212,168,67,0.06) 0%, transparent 60%);
-  pointer-events: none;
-}
-
 .header-inner {
-  max-width: 1280px;
+  max-width: 1360px;
   margin: 0 auto;
-  padding: 48px 60px 44px;
+  padding: 36px 60px 32px;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
   gap: 32px;
-  position: relative;
-  z-index: 1;
 }
 
-/* 左側：eyebrow + 大標 */
 .eyebrow {
   display: inline-flex;
   align-items: center;
   gap: 14px;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 .eyebrow-line {
-  width: 32px; height: 1px;
-  background: linear-gradient(90deg, var(--gold), transparent);
+  width: 28px; height: 1px;
+  background: linear-gradient(90deg, var(--blue), transparent);
 }
 .eyebrow-text {
   font-family: 'DM Mono', monospace;
   font-size: 10px;
-  letter-spacing: 0.32em;
+  letter-spacing: 0.34em;
   text-transform: uppercase;
-  color: var(--gold);
-  opacity: 0.75;
+  color: var(--blue);
+  opacity: 0.80;
 }
 
-/* 主標題：富時代 AI 自動化成交系統 */
+/* 主標題：富時代 AI 決策引擎 */
 .site-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(36px, 4.5vw, 62px);
+  font-family: 'Noto Serif TC', serif;
+  font-size: clamp(38px, 5vw, 68px);
   font-weight: 700;
   line-height: 1.0;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: baseline;
+  gap: 0.15em;
 }
-
-/* 「富時代」金色 */
 .site-title .brand {
-  color: var(--gold);
-  text-shadow: 0 0 60px rgba(212,168,67,0.35);
+  color: #d4b896;
+  text-shadow: 0 0 50px rgba(212,184,150,0.30);
 }
-
-/* 「AI 自動化成交系統」純白，霸氣清晰 */
-.site-title .label {
+.site-title .ai-label {
+  color: var(--text-primary);
+  font-size: 0.95em;
+}
+.site-title .sys-label {
   color: var(--text-primary);
 }
 
-/* 英文副標 */
 .site-subtitle {
   font-family: 'DM Mono', monospace;
   font-size: 11px;
-  letter-spacing: 0.28em;
+  letter-spacing: 0.26em;
   text-transform: uppercase;
   color: var(--text-dim);
   margin-top: 10px;
 }
-.site-subtitle .sub-brand {
-  color: var(--gold-dim);
-}
+.site-subtitle .sub-brand { color: var(--blue-dim); }
 
 /* 右側裝飾數字 */
-.header-right { text-align: right; padding-bottom: 4px; flex-shrink: 0; }
+.header-right { text-align: right; flex-shrink: 0; padding-bottom: 2px; }
 .deco-num {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 72px;
-  font-weight: 700;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 64px;
+  font-weight: 400;
   line-height: 1;
   letter-spacing: -0.04em;
-  -webkit-text-stroke: 1px rgba(212,168,67,0.30);
   color: transparent;
+  -webkit-text-stroke: 1px rgba(74,158,202,0.35);
+  /* 圖片中右上的手寫字感 */
+  font-style: italic;
 }
 .deco-label {
   font-family: 'DM Mono', monospace;
@@ -173,34 +165,30 @@ body {
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--text-dim);
-  margin-top: 6px;
+  margin-top: 4px;
 }
 
-/* ════════════════════════════
-   分隔線
-════════════════════════════ */
+/* ════ 分隔線 ════ */
 .divider {
-  max-width: 1280px;
-  margin: 32px auto 0;
+  max-width: 1360px;
+  margin: 28px auto 0;
   padding: 0 60px;
   display: flex;
   align-items: center;
   gap: 18px;
+  position: relative;
+  z-index: 10;
 }
 .div-line {
   flex: 1; height: 1px;
   background: linear-gradient(90deg,
     transparent,
-    var(--gold-line) 25%,
-    var(--gold-line-v) 50%,
-    var(--gold-line) 75%,
+    var(--blue-line) 25%,
+    var(--blue-line-v) 50%,
+    var(--blue-line) 75%,
     transparent);
 }
-.div-dot {
-  width: 3px; height: 3px;
-  border-radius: 50%;
-  background: var(--gold-dim);
-}
+.div-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--blue-dim); }
 .div-text {
   font-family: 'DM Mono', monospace;
   font-size: 9px;
@@ -210,374 +198,365 @@ body {
   white-space: nowrap;
 }
 
-/* ════════════════════════════
-   工具區
-════════════════════════════ */
+/* ════ 工具區 ════ */
 .tools {
-  max-width: 1280px;
+  max-width: 1360px;
   margin: 0 auto;
-  padding: 28px 60px 0;
+  padding: 24px 60px 0;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 18px;
+  position: relative;
+  z-index: 10;
 }
 
-/* ── Hero 卡（CRM）── */
+/* ── Hero 卡 ── */
 .hero {
-  display: flex;
+  display: grid;
+  grid-template-columns: 200px 1fr auto;
   align-items: center;
-  gap: 44px;
+  gap: 0;
   background: var(--bg-hero);
   border: 1px solid var(--border-v);
   border-radius: var(--r);
-  padding: 44px 52px;
   text-decoration: none;
   color: var(--text-primary);
   position: relative;
   overflow: hidden;
-  box-shadow: var(--shadow-sm), var(--shadow-gold);
+  box-shadow: var(--shadow-sm), var(--shadow-blue);
+  min-height: 200px;
   transition: transform 0.28s cubic-bezier(0.25,0.46,0.45,0.94),
               box-shadow 0.28s ease,
               border-color 0.28s ease;
 }
 
-/* Hero 右側掃光效果 */
-.hero::before {
-  content: '';
-  position: absolute;
-  top: 0; right: 0; bottom: 0;
-  width: 40%;
-  background: linear-gradient(90deg,
-    transparent,
-    rgba(212,168,67,0.04) 60%,
-    rgba(212,168,67,0.08) 100%);
-  pointer-events: none;
+/* 左側藍色科技側邊 */
+.hero-side {
+  height: 100%;
+  background: linear-gradient(180deg, rgba(74,158,202,0.06) 0%, rgba(74,158,202,0.03) 100%);
+  border-right: 1px solid var(--border-v);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+  gap: 16px;
+  position: relative;
 }
 
-/* Hero 頂部細金線 */
-.hero::after {
-  content: '';
-  position: absolute;
-  top: 0; left: 52px; right: 52px; height: 1px;
-  background: linear-gradient(90deg,
-    transparent,
-    var(--gold-dim) 30%,
-    var(--gold) 50%,
-    var(--gold-dim) 70%,
-    transparent);
+/* 左側 HUD 數據條 */
+.hud-data {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  color: var(--blue-dim);
+  letter-spacing: 0.12em;
+  line-height: 2;
+  align-self: flex-start;
   opacity: 0.6;
 }
 
-.hero:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-md), var(--shadow-gold-v);
-  border-color: rgba(212,168,67,0.45);
+/* 3D 水晶圖示容器 */
+.hero-crystal {
+  width: 110px;
+  height: 110px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hero-crystal svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 12px rgba(74,158,202,0.50)) drop-shadow(0 0 30px rgba(74,158,202,0.25));
+  animation: crystalFloat 4s ease-in-out infinite;
+}
+@keyframes crystalFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%       { transform: translateY(-8px) rotate(3deg); }
 }
 
-.hero-icon {
-  width: 80px; height: 80px;
-  border-radius: 18px;
-  background: rgba(212,168,67,0.08);
-  border: 1px solid var(--border-v);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 34px;
-  flex-shrink: 0;
-  box-shadow: 0 0 20px rgba(212,168,67,0.10);
-  transition: transform 0.22s ease, box-shadow 0.22s ease;
-}
-.hero:hover .hero-icon {
-  transform: scale(1.08) rotate(-2deg);
-  box-shadow: 0 0 30px rgba(212,168,67,0.20);
+/* 左側邊碼 */
+.hero-side-code {
+  font-family: 'DM Mono', monospace;
+  font-size: 7.5px;
+  color: var(--blue-dim);
+  letter-spacing: 0.10em;
+  opacity: 0.5;
+  align-self: flex-start;
 }
 
-.hero-body { flex: 1; min-width: 0; }
+/* Hero 主體 */
+.hero-body {
+  flex: 1;
+  padding: 40px 44px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Hero 右側星雲背景 */
+.hero-body::after {
+  content: '';
+  position: absolute;
+  top: 0; right: -50px; bottom: 0;
+  width: 320px;
+  background: 
+    radial-gradient(ellipse 60% 70% at 80% 40%, rgba(74,158,202,0.08) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 50% at 90% 80%, rgba(61,214,200,0.05) 0%, transparent 60%);
+  pointer-events: none;
+}
 
 .hero-tag {
   font-family: 'DM Mono', monospace;
   font-size: 10px;
-  letter-spacing: 0.26em;
+  letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: var(--gold);
-  margin-bottom: 10px;
+  color: var(--blue);
+  margin-bottom: 12px;
+  opacity: 0.85;
 }
 
 .hero-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 34px;
+  font-family: 'Noto Serif TC', serif;
+  font-size: 44px;
   font-weight: 700;
-  letter-spacing: -0.01em;
   color: var(--text-primary);
   line-height: 1.1;
-  margin-bottom: 10px;
+  margin-bottom: 14px;
+  letter-spacing: 0.02em;
 }
 
 .hero-desc {
-  font-size: 13.5px;
-  font-weight: 400;
+  font-size: 13px;
   color: var(--text-sub);
-  line-height: 1.70;
+  line-height: 1.80;
+  letter-spacing: 0.05em;
 }
+.hero-desc .sep { opacity: 0.4; margin: 0 6px; }
 
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 20px;
-}
+/* Chips */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
 .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-family: 'DM Mono', monospace;
-  font-size: 9.5px;
-  letter-spacing: 0.12em;
-  padding: 5px 14px;
+  font-size: 10px;
+  letter-spacing: 0.10em;
+  padding: 6px 14px;
   border-radius: 100px;
-  border: 1px solid var(--gold-line-v);
-  color: var(--gold);
-  background: rgba(212,168,67,0.06);
-  font-weight: 400;
-  transition: background 0.18s ease, border-color 0.18s ease;
+  border: 1px solid rgba(74,158,202,0.28);
+  color: var(--text-sub);
+  background: rgba(74,158,202,0.07);
+  transition: all 0.18s ease;
 }
+.chip-icon { font-size: 11px; opacity: 0.75; }
 .hero:hover .chip {
-  background: rgba(212,168,67,0.12);
-  border-color: rgba(212,168,67,0.50);
+  background: rgba(74,158,202,0.14);
+  border-color: rgba(74,158,202,0.55);
+  color: var(--blue-bright);
 }
 
+/* 右側箭頭 */
+.hero-arrow-wrap {
+  padding: 40px 40px 40px 20px;
+  display: flex;
+  align-items: center;
+  z-index: 1;
+}
 .hero-arrow {
-  font-size: 22px;
-  color: var(--gold);
-  opacity: 0.40;
-  flex-shrink: 0;
+  font-size: 20px;
+  color: var(--blue);
+  opacity: 0.45;
   transition: transform 0.22s ease, opacity 0.22s ease;
 }
-.hero:hover .hero-arrow { transform: translate(6px,-6px); opacity: 1; }
+.hero:hover { transform: translateY(-3px); box-shadow: var(--shadow-md), var(--shadow-blue-v); border-color: rgba(74,158,202,0.50); }
+.hero:hover .hero-arrow { transform: translate(5px,-5px); opacity: 1; }
 
-/* ── 小卡 5 欄 ── */
+/* ── 六欄小卡 ── */
 .row {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 16px;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 14px;
 }
 
 .card {
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--r);
-  padding: 28px 24px 22px;
+  padding: 24px 20px 20px;
   text-decoration: none;
   color: var(--text-primary);
   display: flex;
   flex-direction: column;
   position: relative;
   overflow: hidden;
-  box-shadow: var(--shadow-xs);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.40);
   transition: transform 0.25s cubic-bezier(0.25,0.46,0.45,0.94),
               box-shadow 0.25s ease,
               border-color 0.25s ease,
               background 0.25s ease;
 }
 
-/* 頂部金線，hover 出現 */
+/* 頂部亮線 */
 .card::before {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0; height: 1px;
   background: linear-gradient(90deg,
-    transparent,
-    var(--gold-dim) 30%,
-    var(--gold) 50%,
-    var(--gold-dim) 70%,
-    transparent);
+    transparent, var(--blue-dim) 30%, var(--blue) 50%, var(--blue-dim) 70%, transparent);
   opacity: 0;
   transition: opacity 0.22s ease;
 }
-
-/* 右下角光暈裝飾 */
-.card::after {
-  content: '';
-  position: absolute;
-  bottom: -40px; right: -40px;
-  width: 100px; height: 100px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(212,168,67,0.06) 0%, transparent 70%);
-  pointer-events: none;
-  transition: opacity 0.25s ease;
-  opacity: 0;
-}
-
-.card:hover {
-  transform: translateY(-5px);
-  background: var(--bg-lift);
-  box-shadow: var(--shadow-md), var(--shadow-gold);
-  border-color: var(--border-v);
-}
+.card:hover { transform: translateY(-5px); background: var(--bg-lift); box-shadow: var(--shadow-md), var(--shadow-blue); border-color: var(--border-v); }
 .card:hover::before { opacity: 1; }
-.card:hover::after  { opacity: 1; }
 
+/* 卡片頂部：圖示 + 編號 */
 .card-top {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
-.card-icon {
-  width: 50px; height: 50px;
-  border-radius: var(--r-sm);
-  background: rgba(212,168,67,0.07);
-  border: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 22px;
-  flex-shrink: 0;
-  transition: transform 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
+/* 3D 圖示區 */
+.card-icon-wrap {
+  width: 60px; height: 60px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.card:hover .card-icon {
-  transform: scale(1.10) rotate(-3deg);
-  background: rgba(212,168,67,0.12);
-  box-shadow: 0 0 16px rgba(212,168,67,0.15);
+.card-icon-wrap svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 8px rgba(74,158,202,0.40));
+  transition: filter 0.22s ease, transform 0.22s ease;
+}
+.card:hover .card-icon-wrap svg {
+  filter: drop-shadow(0 0 14px rgba(74,158,202,0.65));
+  transform: scale(1.08) translateY(-2px);
 }
 
 .card-num {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 13px;
-  font-weight: 500;
-  -webkit-text-stroke: 0.8px rgba(212,168,67,0.25);
-  color: transparent;
-  letter-spacing: 0.06em;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--blue-dim);
+  letter-spacing: 0.08em;
+  opacity: 0.6;
 }
 
 .card-body { flex: 1; display: flex; flex-direction: column; }
 
 .card-tag {
   font-family: 'DM Mono', monospace;
-  font-size: 9px;
-  letter-spacing: 0.24em;
+  font-size: 8.5px;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--blue-dim);
   margin-bottom: 7px;
+  opacity: 0.80;
 }
+.card:hover .card-tag { color: var(--blue); opacity: 1; }
 
 .card-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 21px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  line-height: 1.15;
+  font-family: 'Noto Serif TC', serif;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.25;
   color: var(--text-primary);
   margin-bottom: 10px;
 }
 
 .card-desc {
-  font-size: 12px;
-  font-weight: 400;
+  font-size: 11.5px;
   color: var(--text-sub);
-  line-height: 1.80;
+  line-height: 1.85;
   flex: 1;
+  letter-spacing: 0.03em;
 }
 
 .card-footer {
-  margin-top: 18px;
-  padding-top: 14px;
+  margin-top: 16px;
+  padding-top: 12px;
   border-top: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
-
 .card-cta {
   font-family: 'DM Mono', monospace;
-  font-size: 9.5px;
+  font-size: 9px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--text-dim);
-  font-weight: 400;
   transition: color 0.18s ease;
 }
-.card:hover .card-cta { color: var(--gold); }
+.card:hover .card-cta { color: var(--blue); }
+.card-arrow { font-size: 13px; color: rgba(74,158,202,0.30); transition: transform 0.2s ease, color 0.2s ease; }
+.card:hover .card-arrow { transform: translate(4px,-4px); color: var(--blue); }
 
-.card-arrow {
-  font-size: 14px;
-  color: var(--gold-line-v);
-  transition: transform 0.2s ease, color 0.2s ease;
-}
-.card:hover .card-arrow { transform: translate(4px,-4px); color: var(--gold); }
-
-/* ════════════════════════════
-   Footer
-════════════════════════════ */
+/* ════ Footer ════ */
 .footer-wrap {
-  max-width: 1280px;
-  margin: 32px auto 0;
-  padding: 20px 60px 48px;
+  max-width: 1360px;
+  margin: 28px auto 0;
+  padding: 18px 60px 44px;
   border-top: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: relative;
+  z-index: 10;
 }
-.footer-l {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  letter-spacing: 0.14em;
-  color: var(--text-dim);
-}
-.footer-r {
-  font-family: 'DM Mono', monospace;
-  font-size: 9.5px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--gold-dim);
-}
+.footer-l { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: var(--text-dim); }
+.footer-r { font-family: 'DM Mono', monospace; font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--blue-dim); }
 
-/* ════════════════════════════
-   入場動畫
-════════════════════════════ */
+/* ════ 入場動畫 ════ */
 @keyframes riseIn {
-  from { opacity: 0; transform: translateY(22px); filter: blur(4px); }
+  from { opacity: 0; transform: translateY(20px); filter: blur(3px); }
   to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
 }
+.header      { animation: riseIn 0.70s cubic-bezier(0.22,1,0.36,1) both; }
+.divider     { animation: riseIn 0.60s 0.10s cubic-bezier(0.22,1,0.36,1) both; }
+.hero        { animation: riseIn 0.65s 0.18s cubic-bezier(0.22,1,0.36,1) both; }
+.card        { animation: riseIn 0.55s cubic-bezier(0.22,1,0.36,1) both; }
+.card:nth-child(1) { animation-delay: 0.28s; }
+.card:nth-child(2) { animation-delay: 0.34s; }
+.card:nth-child(3) { animation-delay: 0.40s; }
+.card:nth-child(4) { animation-delay: 0.46s; }
+.card:nth-child(5) { animation-delay: 0.52s; }
+.card:nth-child(6) { animation-delay: 0.58s; }
+.footer-wrap { animation: riseIn 0.50s 0.62s cubic-bezier(0.22,1,0.36,1) both; }
 
-.header      { animation: riseIn 0.70s cubic-bezier(0.22,1,0.36,1) forwards; }
-.divider     { animation: riseIn 0.60s 0.10s cubic-bezier(0.22,1,0.36,1) forwards; }
-.hero        { animation: riseIn 0.65s 0.18s cubic-bezier(0.22,1,0.36,1) forwards; }
-.card        { animation: riseIn 0.55s cubic-bezier(0.22,1,0.36,1) forwards; }
-.card:nth-child(1) { animation-delay: 0.26s; }
-.card:nth-child(2) { animation-delay: 0.32s; }
-.card:nth-child(3) { animation-delay: 0.38s; }
-.card:nth-child(4) { animation-delay: 0.44s; }
-.card:nth-child(5) { animation-delay: 0.50s; }
-.footer-wrap { animation: riseIn 0.50s 0.54s cubic-bezier(0.22,1,0.36,1) forwards; }
-
-/* 動畫不支援時直接顯示，避免卡在 opacity:0 */
 @media (prefers-reduced-motion: reduce) {
-  .header, .divider, .hero, .card, .footer-wrap { animation: none; opacity: 1; }
+  * { animation: none !important; }
 }
 
-/* ════════════════════════════
-   RWD
-════════════════════════════ */
-@media (max-width: 1024px) {
+/* RWD */
+@media (max-width: 1200px) {
   .row { grid-template-columns: repeat(3, 1fr); }
+  .hero { grid-template-columns: 160px 1fr auto; }
+}
+@media (max-width: 768px) {
+  .row { grid-template-columns: repeat(2, 1fr); }
+  .hero { grid-template-columns: 1fr; }
+  .hero-side { display: none; }
+  .hero-body { padding: 28px 24px; }
 }
 @media (max-width: 640px) {
-  .header-inner { padding: 36px 24px 30px; flex-direction: column; align-items: flex-start; }
+  .header-inner { padding: 28px 20px 24px; flex-direction: column; align-items: flex-start; }
   .header-right { display: none; }
-  .divider      { padding: 0 24px; }
-  .tools        { padding: 20px 24px 0; gap: 14px; }
-  .hero         { flex-direction: column; align-items: flex-start; padding: 30px 24px; gap: 22px; }
-  .hero-arrow   { align-self: flex-end; }
-  .row          { grid-template-columns: 1fr 1fr; gap: 12px; }
-  .card         { padding: 22px 18px 18px; }
-  .footer-wrap  { padding: 18px 24px 40px; flex-direction: column; align-items: flex-start; gap: 6px; }
+  .divider, .tools { padding-left: 20px; padding-right: 20px; }
+  .row { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .footer-wrap { padding: 16px 20px 40px; flex-direction: column; gap: 6px; }
 }
-
 </style>
-<!-- LINE 專用 Open Graph 標籤 -->
-<meta property="og:title" content="富時代機構六大系統" />
-<meta property="og:description" content="房產銷售全流程管理工具，從客戶開發到成交一次到位，提升業務效率30%" />
-<meta property="og:image" content="https://richtime90117277-alt.github.io/futime-crm/logo.jpg" />
-<meta property="og:url" content="https://richtime90117277-alt.github.io/futime-crm/futime-hub%20(1).html" />
 </head>
 <body>
 
-<!-- ══ 主畫面 ══ -->
+<!-- 粒子網格背景 -->
+<canvas id="bgCanvas"></canvas>
+
 <div id="mainApp">
 
 <!-- ══ Header ══ -->
@@ -589,10 +568,10 @@ body {
         <span class="eyebrow-text">Richtime Internal Portal</span>
       </div>
       <h1 class="site-title">
-        <span class="brand">富時代</span><span class="label"> AI 自動化成交系統</span>
+        <span class="brand">富時代</span>&nbsp;<span class="ai-label">AI</span>&nbsp;<span class="sys-label">決策引擎</span>
       </h1>
       <div class="site-subtitle">
-        <span class="sub-brand">RICHTIME</span> · AI Automated Sales System
+        <span class="sub-brand">RICHTIME</span>&nbsp;·&nbsp;AI DECISION ENGINE
       </div>
     </div>
     <div class="header-right">
@@ -614,39 +593,128 @@ body {
 <!-- 工具區 -->
 <div class="tools">
 
-  <!-- CRM Hero -->
+  <!-- ══ Hero：顧問決策系統 ══ -->
   <a class="hero"
      href="https://richtime90117277-alt.github.io/futime-crm/crm_cloud_v19.html"
      target="_blank">
-    <div class="hero-icon">🏆</div>
+
+    <!-- 左側 3D 圖示 + HUD 數據 -->
+    <div class="hero-side">
+      <div class="hud-data">5.A.37485010<br>CN:15555959</div>
+      <!-- SVG 3D 水晶圖示 -->
+      <div class="hero-crystal">
+        <svg viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="crystalG1" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#7ec8e8" stop-opacity="0.9"/>
+              <stop offset="100%" stop-color="#4a9eca" stop-opacity="0.4"/>
+            </linearGradient>
+            <linearGradient id="crystalG2" x1="100%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#3dd6c8" stop-opacity="0.6"/>
+              <stop offset="100%" stop-color="#2a5f80" stop-opacity="0.3"/>
+            </linearGradient>
+            <linearGradient id="crystalG3" x1="0%" y1="100%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#ffffff" stop-opacity="0.15"/>
+              <stop offset="100%" stop-color="#4a9eca" stop-opacity="0.05"/>
+            </linearGradient>
+            <filter id="crystalGlow">
+              <feGaussianBlur stdDeviation="2" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <!-- 旋轉軌道環 -->
+          <ellipse cx="55" cy="55" rx="48" ry="14" fill="none" stroke="rgba(74,158,202,0.20)" stroke-width="0.8" transform="rotate(-30 55 55)"/>
+          <ellipse cx="55" cy="55" rx="48" ry="14" fill="none" stroke="rgba(61,214,200,0.15)" stroke-width="0.6" transform="rotate(30 55 55)"/>
+          <!-- 外框八角星 -->
+          <polygon points="55,8 72,22 86,40 88,60 72,78 55,88 38,78 22,60 24,40 38,22"
+            fill="none" stroke="rgba(74,158,202,0.30)" stroke-width="0.8"/>
+          <!-- 主菱形幾何體 -->
+          <polygon points="55,18 80,42 55,70 30,42"
+            fill="url(#crystalG2)" opacity="0.5"/>
+          <polygon points="55,18 80,42 55,52 30,42"
+            fill="url(#crystalG1)" opacity="0.75"/>
+          <polygon points="55,52 80,42 70,68 55,70"
+            fill="url(#crystalG2)" opacity="0.4"/>
+          <polygon points="55,52 30,42 40,68 55,70"
+            fill="url(#crystalG3)" opacity="0.6"/>
+          <!-- 內部線條 -->
+          <line x1="55" y1="18" x2="55" y2="70" stroke="rgba(255,255,255,0.20)" stroke-width="0.6"/>
+          <line x1="30" y1="42" x2="80" y2="42" stroke="rgba(255,255,255,0.15)" stroke-width="0.6"/>
+          <!-- 勾形 -->
+          <polyline points="43,44 51,53 68,35"
+            fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round"
+            filter="url(#crystalGlow)"/>
+          <!-- 頂部光點 -->
+          <circle cx="55" cy="18" r="2.5" fill="#7ec8e8" opacity="0.8"/>
+          <circle cx="80" cy="42" r="1.8" fill="#3dd6c8" opacity="0.6"/>
+        </svg>
+      </div>
+      <div class="hero-side-code">ZN: 9068379</div>
+    </div>
+
+    <!-- 主體文字 -->
     <div class="hero-body">
-      <div class="hero-tag">核心系統 · Core System</div>
-      <div class="hero-title">CRM 業務作戰系統</div>
-      <div class="hero-desc">客戶管理・成交機率預測・業績排行榜・智偉哥 SOS 隨身顧問</div>
+      <div class="hero-tag">Consultant Decision System</div>
+      <div class="hero-title">顧問決策系統</div>
+      <div class="hero-desc">
+        客戶狀態潤澤
+        <span class="sep">｜</span>
+        需求分析模型
+        <span class="sep">｜</span>
+        決策節點預測
+        <span class="sep">｜</span>
+        即時顧問支援
+      </div>
       <div class="chips">
-        <span class="chip">八部曲銷售流程</span>
-        <span class="chip">Line 跟進通知</span>
-        <span class="chip">AI 話術救援</span>
-        <span class="chip">Boss Dashboard</span>
+        <span class="chip"><span class="chip-icon">⚡</span>決策點點</span>
+        <span class="chip"><span class="chip-icon">👤</span>客戶分析</span>
+        <span class="chip"><span class="chip-icon">📍</span>情境應對</span>
+        <span class="chip"><span class="chip-icon">◎</span>決策面板</span>
       </div>
     </div>
-    <div class="hero-arrow">↗</div>
+
+    <div class="hero-arrow-wrap">
+      <div class="hero-arrow">↗</div>
+    </div>
   </a>
 
-  <!-- 4 小卡 -->
+  <!-- ══ 六小卡 ══ -->
   <div class="row">
 
+    <!-- 01 資產決策報告 -->
     <a class="card"
        href="https://richtime90117277-alt.github.io/futime-crm/asset-planner.html"
        target="_blank">
       <div class="card-top">
-        <div class="card-icon">📊</div>
+        <div class="card-icon-wrap">
+          <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="g01a" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#7ec8e8" stop-opacity="0.8"/>
+                <stop offset="100%" stop-color="#4a9eca" stop-opacity="0.3"/>
+              </linearGradient>
+            </defs>
+            <!-- 立方體透視 -->
+            <polygon points="30,8 50,18 50,42 30,52 10,42 10,18" fill="rgba(74,158,202,0.08)" stroke="rgba(74,158,202,0.40)" stroke-width="0.8"/>
+            <polygon points="30,8 50,18 30,28 10,18" fill="url(#g01a)" opacity="0.5"/>
+            <polygon points="30,28 50,18 50,42 30,52" fill="rgba(74,158,202,0.20)"/>
+            <polygon points="30,28 10,18 10,42 30,52" fill="rgba(74,158,202,0.10)"/>
+            <!-- 內部圖表線 -->
+            <line x1="20" y1="38" x2="20" y2="30" stroke="#3dd6c8" stroke-width="2" stroke-linecap="round"/>
+            <line x1="25" y1="38" x2="25" y2="26" stroke="#4a9eca" stroke-width="2" stroke-linecap="round"/>
+            <line x1="30" y1="38" x2="30" y2="22" stroke="#7ec8e8" stroke-width="2" stroke-linecap="round"/>
+            <line x1="35" y1="38" x2="35" y2="28" stroke="#4a9eca" stroke-width="2" stroke-linecap="round"/>
+            <line x1="16" y1="22" x2="42" y2="34" stroke="rgba(255,255,255,0.30)" stroke-width="0.8"/>
+            <circle cx="50" cy="18" r="1.5" fill="#7ec8e8" opacity="0.7"/>
+          </svg>
+        </div>
         <div class="card-num">01</div>
       </div>
       <div class="card-body">
         <div class="card-tag">諮詢工具</div>
-        <div class="card-title">資產規劃報告書</div>
-        <div class="card-desc">財務分析・ROI 試算・等待代價計算機，諮詢現場即時生成個人化報告。</div>
+        <div class="card-title">資產決策報告</div>
+        <div class="card-desc">ROI 分析・鳳凰評鈷・多策比較，協助客戶做出現性判斷</div>
       </div>
       <div class="card-footer">
         <span class="card-cta">開啟工具</span>
@@ -654,17 +722,41 @@ body {
       </div>
     </a>
 
+    <!-- 02 專屬活動入口 -->
     <a class="card"
        href="https://tinyurl.com/55nfe22y"
        target="_blank">
       <div class="card-top">
-        <div class="card-icon">🌐</div>
+        <div class="card-icon-wrap">
+          <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="g02a" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#3dd6c8" stop-opacity="0.7"/>
+                <stop offset="100%" stop-color="#4a9eca" stop-opacity="0.3"/>
+              </linearGradient>
+            </defs>
+            <!-- 日曆主體 -->
+            <rect x="10" y="14" width="40" height="36" rx="4" fill="rgba(74,158,202,0.08)" stroke="rgba(74,158,202,0.40)" stroke-width="0.8"/>
+            <rect x="10" y="14" width="40" height="12" rx="4" fill="url(#g02a)" opacity="0.5"/>
+            <!-- 日期方格 -->
+            <rect x="14" y="30" width="7" height="6" rx="1.5" fill="rgba(74,158,202,0.20)"/>
+            <rect x="24" y="30" width="7" height="6" rx="1.5" fill="rgba(74,158,202,0.20)"/>
+            <rect x="34" y="30" width="7" height="6" rx="1.5" fill="rgba(74,158,202,0.20)"/>
+            <rect x="14" y="39" width="7" height="6" rx="1.5" fill="rgba(74,158,202,0.20)"/>
+            <rect x="24" y="39" width="7" height="6" rx="1.5" fill="rgba(61,214,200,0.40)" stroke="rgba(61,214,200,0.60)" stroke-width="0.6"/>
+            <!-- 勾 -->
+            <polyline points="36,41 39,44 44,39" fill="none" stroke="#3dd6c8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <!-- 頂部圓點 -->
+            <circle cx="22" cy="11" r="2.5" fill="rgba(74,158,202,0.60)" stroke="rgba(74,158,202,0.90)" stroke-width="0.8"/>
+            <circle cx="38" cy="11" r="2.5" fill="rgba(74,158,202,0.60)" stroke="rgba(74,158,202,0.90)" stroke-width="0.8"/>
+          </svg>
+        </div>
         <div class="card-num">02</div>
       </div>
       <div class="card-body">
         <div class="card-tag">行銷入口</div>
-        <div class="card-title">研討會報名頁</div>
-        <div class="card-desc">一頁式活動網站，提供客戶直接報名，精準掌握活動流量與名單。</div>
+        <div class="card-title">專屬活動入口</div>
+        <div class="card-desc">輔導報名員・客戶分辨，提升有獎來產品質</div>
       </div>
       <div class="card-footer">
         <span class="card-cta">開啟頁面</span>
@@ -672,17 +764,38 @@ body {
       </div>
     </a>
 
+    <!-- 03 品牌信任平台 -->
     <a class="card"
        href="https://richtimes.tw/"
        target="_blank">
       <div class="card-top">
-        <div class="card-icon">🏠</div>
+        <div class="card-icon-wrap">
+          <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="g03a" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#7ec8e8" stop-opacity="0.9"/>
+                <stop offset="100%" stop-color="#3dd6c8" stop-opacity="0.4"/>
+              </linearGradient>
+            </defs>
+            <!-- 三角錐 -->
+            <polygon points="30,8 52,48 8,48" fill="rgba(74,158,202,0.08)" stroke="rgba(74,158,202,0.35)" stroke-width="0.8"/>
+            <polygon points="30,8 52,48 30,36" fill="url(#g03a)" opacity="0.60"/>
+            <polygon points="30,8 8,48 30,36" fill="rgba(74,158,202,0.25)"/>
+            <polygon points="30,36 8,48 52,48" fill="rgba(74,158,202,0.12)"/>
+            <!-- 內部線 -->
+            <line x1="30" y1="8" x2="30" y2="36" stroke="rgba(255,255,255,0.25)" stroke-width="0.7"/>
+            <!-- 頂光 -->
+            <circle cx="30" cy="8" r="2.5" fill="#7ec8e8" opacity="0.85"/>
+            <circle cx="52" cy="48" r="1.5" fill="#3dd6c8" opacity="0.5"/>
+            <circle cx="8" cy="48" r="1.5" fill="#3dd6c8" opacity="0.5"/>
+          </svg>
+        </div>
         <div class="card-num">03</div>
       </div>
       <div class="card-body">
         <div class="card-tag">品牌主站</div>
-        <div class="card-title">富時代官網</div>
-        <div class="card-desc">公司品牌形象、產品介紹，對客戶展示的正式形象窗口。</div>
+        <div class="card-title">品牌信任平台</div>
+        <div class="card-desc">建立專業形象，讓客戶理解產品與價值</div>
       </div>
       <div class="card-footer">
         <span class="card-cta">前往官網</span>
@@ -690,17 +803,38 @@ body {
       </div>
     </a>
 
+    <!-- 04 知識中框系統 -->
     <a class="card"
        href="https://www.notion.so/059972580dae4a54b07a57fd410b3090"
        target="_blank">
       <div class="card-top">
-        <div class="card-icon">📋</div>
+        <div class="card-icon-wrap">
+          <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="g04a" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#4a9eca" stop-opacity="0.8"/>
+                <stop offset="100%" stop-color="#2a5f80" stop-opacity="0.4"/>
+              </linearGradient>
+            </defs>
+            <!-- 多層堆疊卡片 -->
+            <rect x="12" y="36" width="36" height="14" rx="3" fill="rgba(42,95,128,0.50)" stroke="rgba(74,158,202,0.25)" stroke-width="0.7"/>
+            <rect x="10" y="28" width="36" height="14" rx="3" fill="rgba(74,158,202,0.15)" stroke="rgba(74,158,202,0.35)" stroke-width="0.7"/>
+            <rect x="8" y="20" width="36" height="14" rx="3" fill="url(#g04a)" opacity="0.55" stroke="rgba(74,158,202,0.50)" stroke-width="0.7"/>
+            <rect x="6" y="12" width="36" height="14" rx="3" fill="rgba(74,158,202,0.20)" stroke="rgba(74,158,202,0.55)" stroke-width="0.8"/>
+            <!-- 橫線紋理 -->
+            <line x1="10" y1="16" x2="36" y2="16" stroke="rgba(255,255,255,0.18)" stroke-width="0.8"/>
+            <line x1="10" y1="19" x2="30" y2="19" stroke="rgba(255,255,255,0.10)" stroke-width="0.6"/>
+            <!-- 右側裝飾 -->
+            <circle cx="50" cy="20" r="5" fill="rgba(61,214,200,0.15)" stroke="rgba(61,214,200,0.45)" stroke-width="0.8"/>
+            <circle cx="50" cy="20" r="2" fill="#3dd6c8" opacity="0.65"/>
+          </svg>
+        </div>
         <div class="card-num">04</div>
       </div>
       <div class="card-body">
         <div class="card-tag">知識中樞</div>
-        <div class="card-title">富時代機構</div>
-        <div class="card-desc">ABC 必修・素材庫・話術案例・幹部訓練・公司公告，團隊知識庫。</div>
+        <div class="card-title">知識中框系統</div>
+        <div class="card-desc">葵閣庫・培訓系統・決策邏輯，持續優化顧問能力</div>
       </div>
       <div class="card-footer">
         <span class="card-cta">進入 Notion</span>
@@ -708,17 +842,40 @@ body {
       </div>
     </a>
 
+    <!-- 05 溝通策略資料庫 -->
     <a class="card"
        href="https://richtime90117277-alt.github.io/futime-crm/LIB.html"
        target="_blank">
       <div class="card-top">
-        <div class="card-icon">📚</div>
+        <div class="card-icon-wrap">
+          <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="g05a" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#7ec8e8" stop-opacity="0.7"/>
+                <stop offset="100%" stop-color="#4a9eca" stop-opacity="0.3"/>
+              </linearGradient>
+            </defs>
+            <!-- 對話氣泡 -->
+            <rect x="8" y="10" width="34" height="22" rx="6" fill="url(#g05a)" opacity="0.45" stroke="rgba(74,158,202,0.45)" stroke-width="0.8"/>
+            <polygon points="14,32 10,40 22,34" fill="rgba(74,158,202,0.35)" stroke="rgba(74,158,202,0.40)" stroke-width="0.6"/>
+            <!-- 第二個氣泡 -->
+            <rect x="20" y="30" width="32" height="18" rx="5" fill="rgba(74,158,202,0.12)" stroke="rgba(74,158,202,0.30)" stroke-width="0.7"/>
+            <polygon points="46,48 50,54 38,50" fill="rgba(74,158,202,0.20)" stroke="rgba(74,158,202,0.25)" stroke-width="0.5"/>
+            <!-- 文字線 -->
+            <line x1="14" y1="18" x2="34" y2="18" stroke="rgba(255,255,255,0.25)" stroke-width="1.2" stroke-linecap="round"/>
+            <line x1="14" y1="23" x2="28" y2="23" stroke="rgba(255,255,255,0.15)" stroke-width="1" stroke-linecap="round"/>
+            <line x1="26" y1="36" x2="46" y2="36" stroke="rgba(255,255,255,0.20)" stroke-width="1" stroke-linecap="round"/>
+            <!-- 叉號裝飾 -->
+            <line x1="50" y1="10" x2="54" y2="14" stroke="rgba(74,158,202,0.50)" stroke-width="1.2"/>
+            <line x1="54" y1="10" x2="50" y2="14" stroke="rgba(74,158,202,0.50)" stroke-width="1.2"/>
+          </svg>
+        </div>
         <div class="card-num">05</div>
       </div>
       <div class="card-body">
-        <div class="card-tag">話術教材</div>
-        <div class="card-title">智偉哥話術庫</div>
-        <div class="card-desc">141 筆話術・9 大模組・觸發句速查，現場即用即找。</div>
+        <div class="card-tag">溝通策略</div>
+        <div class="card-title">溝通策略資料庫</div>
+        <div class="card-desc">橫通應對・對技模型，提升客戶理解信任</div>
       </div>
       <div class="card-footer">
         <span class="card-cta">開啟話術庫</span>
@@ -726,16 +883,135 @@ body {
       </div>
     </a>
 
+    <!-- 06 客戶歷程追蹤 -->
+    <a class="card" href="#" target="_blank">
+      <div class="card-top">
+        <div class="card-icon-wrap">
+          <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="g06a" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#3dd6c8" stop-opacity="0.8"/>
+                <stop offset="100%" stop-color="#4a9eca" stop-opacity="0.3"/>
+              </linearGradient>
+            </defs>
+            <!-- 路徑線 -->
+            <path d="M12,44 C12,44 20,44 22,34 C24,24 28,24 30,24 C32,24 34,28 38,22 C42,16 50,16 50,16"
+              fill="none" stroke="url(#g06a)" stroke-width="2" stroke-linecap="round"/>
+            <!-- 節點 -->
+            <circle cx="12" cy="44" r="4" fill="rgba(74,158,202,0.20)" stroke="rgba(74,158,202,0.70)" stroke-width="1.2"/>
+            <circle cx="12" cy="44" r="1.8" fill="#4a9eca"/>
+            <circle cx="30" cy="24" r="4" fill="rgba(61,214,200,0.15)" stroke="rgba(61,214,200,0.65)" stroke-width="1.2"/>
+            <circle cx="30" cy="24" r="1.8" fill="#3dd6c8"/>
+            <circle cx="50" cy="16" r="5" fill="rgba(74,158,202,0.15)" stroke="rgba(74,158,202,0.70)" stroke-width="1.2"/>
+            <circle cx="50" cy="16" r="2.2" fill="#7ec8e8"/>
+            <!-- 迷你圖表右側 -->
+            <polyline points="4,52 8,48 12,50 16,44 20,46 24,40 28,42" fill="none" stroke="rgba(74,158,202,0.35)" stroke-width="0.8" stroke-linecap="round"/>
+            <!-- 裝飾叉 -->
+            <line x1="54" y1="42" x2="58" y2="46" stroke="rgba(74,158,202,0.45)" stroke-width="1.2"/>
+            <line x1="58" y1="42" x2="54" y2="46" stroke="rgba(74,158,202,0.45)" stroke-width="1.2"/>
+          </svg>
+        </div>
+        <div class="card-num">06</div>
+      </div>
+      <div class="card-body">
+        <div class="card-tag">歷程管理</div>
+        <div class="card-title">客戶歷程追蹤</div>
+        <div class="card-desc">全流程掌握客戶決策軌跡，精準掌握每個關鍵節點</div>
+      </div>
+      <div class="card-footer">
+        <span class="card-cta">開啟追蹤</span>
+        <span class="card-arrow">↗</span>
+      </div>
+    </a>
+
   </div>
+</div>
 
 <!-- Footer -->
 <footer class="footer-wrap">
   <div class="footer-l">Richtime © 2026 ｜ 內部版僅供團隊使用</div>
-  <div class="footer-r">AI Automated Sales System · v11</div>
+  <div class="footer-r">AI Decision Engine · v12</div>
 </footer>
 
-</div><!-- /#mainApp -->
+</div>
 
+<script>
+// ══ 粒子網格背景 ══
+const canvas = document.getElementById('bgCanvas');
+const ctx = canvas.getContext('2d');
+let W, H, nodes = [], RAF;
+
+function resize() {
+  W = canvas.width  = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+
+function initNodes() {
+  nodes = [];
+  const count = Math.floor((W * H) / 18000);
+  for (let i = 0; i < count; i++) {
+    nodes.push({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: (Math.random() - 0.5) * 0.3,
+      r: Math.random() * 1.5 + 0.5,
+      a: Math.random() * 0.6 + 0.2,
+    });
+  }
+}
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+
+  // 微弱的頂部漸層
+  const grad = ctx.createLinearGradient(0, 0, 0, H * 0.4);
+  grad.addColorStop(0, 'rgba(74,158,202,0.04)');
+  grad.addColorStop(1, 'transparent');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  const maxDist = 140;
+
+  // 連線
+  for (let i = 0; i < nodes.length; i++) {
+    for (let j = i + 1; j < nodes.length; j++) {
+      const dx = nodes[j].x - nodes[i].x;
+      const dy = nodes[j].y - nodes[i].y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (dist < maxDist) {
+        const alpha = (1 - dist / maxDist) * 0.18;
+        ctx.beginPath();
+        ctx.strokeStyle = `rgba(74,158,202,${alpha})`;
+        ctx.lineWidth = 0.6;
+        ctx.moveTo(nodes[i].x, nodes[i].y);
+        ctx.lineTo(nodes[j].x, nodes[j].y);
+        ctx.stroke();
+      }
+    }
+  }
+
+  // 節點
+  nodes.forEach(n => {
+    ctx.beginPath();
+    ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(74,158,202,${n.a})`;
+    ctx.fill();
+
+    n.x += n.vx;
+    n.y += n.vy;
+    if (n.x < 0 || n.x > W) n.vx *= -1;
+    if (n.y < 0 || n.y > H) n.vy *= -1;
+  });
+
+  RAF = requestAnimationFrame(draw);
+}
+
+window.addEventListener('resize', () => { resize(); initNodes(); });
+resize();
+initNodes();
+draw();
+</script>
 
 </body>
 </html>
