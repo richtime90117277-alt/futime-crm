@@ -168,6 +168,77 @@ body {
   margin-top: 4px;
 }
 
+/* ════ 系統大標 ════ */
+.system-banner {
+  max-width: 1360px;
+  margin: 36px auto 0;
+  padding: 0 60px;
+  position: relative;
+  z-index: 10;
+}
+.system-banner-inner {
+  background: linear-gradient(135deg, rgba(74,158,202,0.06) 0%, rgba(8,12,16,0.0) 60%);
+  border: 1px solid var(--border-v);
+  border-radius: var(--r);
+  padding: 32px 56px 30px;
+  display: flex;
+  align-items: baseline;
+  gap: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.system-banner-inner::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--blue) 40%, var(--teal) 60%, transparent);
+  opacity: 0.6;
+}
+.system-banner-inner::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0; bottom: 0; width: 40%;
+  background: radial-gradient(ellipse 80% 100% at 100% 50%, rgba(74,158,202,0.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+.sys-big-title {
+  font-family: 'Noto Serif TC', serif;
+  font-size: clamp(32px, 4.5vw, 58px);
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.06em;
+  line-height: 1;
+  position: relative;
+  z-index: 1;
+}
+.sys-big-title .highlight {
+  color: var(--blue-bright);
+  text-shadow: 0 0 40px rgba(126,200,232,0.35);
+}
+.sys-sub-info {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  position: relative;
+  z-index: 1;
+}
+.sys-deco-num {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 80px;
+  font-weight: 400;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(74,158,202,0.15);
+  position: absolute;
+  right: 56px;
+  top: 50%;
+  transform: translateY(-50%);
+  letter-spacing: -0.04em;
+  pointer-events: none;
+  z-index: 0;
+}
+
 /* ════ 分隔線 ════ */
 .divider {
   max-width: 1360px;
@@ -518,14 +589,13 @@ body {
 }
 .header      { animation: riseIn 0.70s cubic-bezier(0.22,1,0.36,1) both; }
 .divider     { animation: riseIn 0.60s 0.10s cubic-bezier(0.22,1,0.36,1) both; }
-.hero        { animation: riseIn 0.65s 0.18s cubic-bezier(0.22,1,0.36,1) both; }
 .card        { animation: riseIn 0.55s cubic-bezier(0.22,1,0.36,1) both; }
 .card:nth-child(1) { animation-delay: 0.28s; }
-.card:nth-child(2) { animation-delay: 0.34s; }
-.card:nth-child(3) { animation-delay: 0.40s; }
-.card:nth-child(4) { animation-delay: 0.46s; }
-.card:nth-child(5) { animation-delay: 0.52s; }
-.card:nth-child(6) { animation-delay: 0.58s; }
+.card:nth-child(2) { animation-delay: 0.33s; }
+.card:nth-child(3) { animation-delay: 0.38s; }
+.card:nth-child(4) { animation-delay: 0.43s; }
+.card:nth-child(5) { animation-delay: 0.48s; }
+.card:nth-child(6) { animation-delay: 0.53s; }
 .footer-wrap { animation: riseIn 0.50s 0.62s cubic-bezier(0.22,1,0.36,1) both; }
 
 @media (prefers-reduced-motion: reduce) {
@@ -534,20 +604,24 @@ body {
 
 /* RWD */
 @media (max-width: 1200px) {
-  .row { grid-template-columns: repeat(3, 1fr); }
+  .row { grid-template-columns: repeat(3, 1fr) !important; }
   .hero { grid-template-columns: 160px 1fr auto; }
+  .system-banner-inner { padding: 24px 32px; }
 }
 @media (max-width: 768px) {
-  .row { grid-template-columns: repeat(2, 1fr); }
+  .row { grid-template-columns: repeat(2, 1fr) !important; }
   .hero { grid-template-columns: 1fr; }
   .hero-side { display: none; }
   .hero-body { padding: 28px 24px; }
+  .system-banner { padding: 0 20px; }
+  .sys-big-title { font-size: 28px; }
+  .sys-deco-num { display: none; }
 }
 @media (max-width: 640px) {
   .header-inner { padding: 28px 20px 24px; flex-direction: column; align-items: flex-start; }
   .header-right { display: none; }
   .divider, .tools { padding-left: 20px; padding-right: 20px; }
-  .row { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .row { grid-template-columns: 1fr 1fr !important; gap: 10px; }
   .footer-wrap { padding: 16px 20px 40px; flex-direction: column; gap: 6px; }
 }
 </style>
@@ -575,7 +649,7 @@ body {
       </div>
     </div>
     <div class="header-right">
-      <div class="deco-num">06</div>
+      <div class="deco-num">05</div>
       <div class="deco-label">核心工具</div>
     </div>
   </div>
@@ -590,97 +664,67 @@ body {
   <div class="div-line"></div>
 </div>
 
+<!-- 系統大標 -->
+<div class="system-banner" style="animation: riseIn 0.65s 0.12s cubic-bezier(0.22,1,0.36,1) both;">
+  <div class="system-banner-inner">
+    <div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.30em;text-transform:uppercase;color:var(--blue);opacity:0.7;margin-bottom:12px;">Richtime · Integrated Intelligence Platform</div>
+      <div class="sys-big-title">富時代 <span class="highlight">六大</span>系統</div>
+      <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.20em;color:var(--text-dim);margin-top:12px;text-transform:uppercase;">Six Core Systems · AI-Driven · Real Estate Excellence</div>
+    </div>
+    <div class="sys-deco-num">06</div>
+  </div>
+</div>
+
 <!-- 工具區 -->
 <div class="tools">
 
-  <!-- ══ Hero：顧問決策系統 ══ -->
-  <a class="hero"
-     href="https://richtime90117277-alt.github.io/futime-crm/crm_cloud_v19.html"
-     target="_blank">
+  <!-- ══ 六欄小卡 ══ -->
+  <div class="row" style="grid-template-columns: repeat(6, 1fr);">
 
-    <!-- 左側 3D 圖示 + HUD 數據 -->
-    <div class="hero-side">
-      <div class="hud-data">5.A.37485010<br>CN:15555959</div>
-      <!-- SVG 3D 水晶圖示 -->
-      <div class="hero-crystal">
-        <svg viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="crystalG1" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#7ec8e8" stop-opacity="0.9"/>
-              <stop offset="100%" stop-color="#4a9eca" stop-opacity="0.4"/>
-            </linearGradient>
-            <linearGradient id="crystalG2" x1="100%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#3dd6c8" stop-opacity="0.6"/>
-              <stop offset="100%" stop-color="#2a5f80" stop-opacity="0.3"/>
-            </linearGradient>
-            <linearGradient id="crystalG3" x1="0%" y1="100%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="#ffffff" stop-opacity="0.15"/>
-              <stop offset="100%" stop-color="#4a9eca" stop-opacity="0.05"/>
-            </linearGradient>
-            <filter id="crystalGlow">
-              <feGaussianBlur stdDeviation="2" result="blur"/>
-              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-            </filter>
-          </defs>
-          <!-- 旋轉軌道環 -->
-          <ellipse cx="55" cy="55" rx="48" ry="14" fill="none" stroke="rgba(74,158,202,0.20)" stroke-width="0.8" transform="rotate(-30 55 55)"/>
-          <ellipse cx="55" cy="55" rx="48" ry="14" fill="none" stroke="rgba(61,214,200,0.15)" stroke-width="0.6" transform="rotate(30 55 55)"/>
-          <!-- 外框八角星 -->
-          <polygon points="55,8 72,22 86,40 88,60 72,78 55,88 38,78 22,60 24,40 38,22"
-            fill="none" stroke="rgba(74,158,202,0.30)" stroke-width="0.8"/>
-          <!-- 主菱形幾何體 -->
-          <polygon points="55,18 80,42 55,70 30,42"
-            fill="url(#crystalG2)" opacity="0.5"/>
-          <polygon points="55,18 80,42 55,52 30,42"
-            fill="url(#crystalG1)" opacity="0.75"/>
-          <polygon points="55,52 80,42 70,68 55,70"
-            fill="url(#crystalG2)" opacity="0.4"/>
-          <polygon points="55,52 30,42 40,68 55,70"
-            fill="url(#crystalG3)" opacity="0.6"/>
-          <!-- 內部線條 -->
-          <line x1="55" y1="18" x2="55" y2="70" stroke="rgba(255,255,255,0.20)" stroke-width="0.6"/>
-          <line x1="30" y1="42" x2="80" y2="42" stroke="rgba(255,255,255,0.15)" stroke-width="0.6"/>
-          <!-- 勾形 -->
-          <polyline points="43,44 51,53 68,35"
-            fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="2.5"
-            stroke-linecap="round" stroke-linejoin="round"
-            filter="url(#crystalGlow)"/>
-          <!-- 頂部光點 -->
-          <circle cx="55" cy="18" r="2.5" fill="#7ec8e8" opacity="0.8"/>
-          <circle cx="80" cy="42" r="1.8" fill="#3dd6c8" opacity="0.6"/>
-        </svg>
+    <!-- 00 顧問決策系統 -->
+    <a class="card"
+       href="https://richtime90117277-alt.github.io/futime-crm/crm_cloud_v19.html"
+       target="_blank">
+      <div class="card-top">
+        <div class="card-icon-wrap">
+          <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="g00a" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#7ec8e8" stop-opacity="0.9"/>
+                <stop offset="100%" stop-color="#4a9eca" stop-opacity="0.4"/>
+              </linearGradient>
+              <linearGradient id="g00b" x1="100%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#3dd6c8" stop-opacity="0.6"/>
+                <stop offset="100%" stop-color="#2a5f80" stop-opacity="0.3"/>
+              </linearGradient>
+              <filter id="glow00">
+                <feGaussianBlur stdDeviation="1.5" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+            <ellipse cx="30" cy="30" rx="22" ry="7" fill="none" stroke="rgba(74,158,202,0.20)" stroke-width="0.7" transform="rotate(-30 30 30)"/>
+            <polygon points="30,10 42,20 42,40 30,48 18,40 18,20" fill="rgba(74,158,202,0.06)" stroke="rgba(74,158,202,0.30)" stroke-width="0.7"/>
+            <polygon points="30,10 42,20 30,28 18,20" fill="url(#g00a)" opacity="0.70"/>
+            <polygon points="30,28 42,20 42,40 30,48" fill="url(#g00b)" opacity="0.40"/>
+            <polygon points="30,28 18,20 18,40 30,48" fill="rgba(74,158,202,0.15)"/>
+            <line x1="30" y1="10" x2="30" y2="28" stroke="rgba(255,255,255,0.20)" stroke-width="0.5"/>
+            <polyline points="24,28 28,32 36,23" fill="none" stroke="rgba(255,255,255,0.90)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow00)"/>
+            <circle cx="30" cy="10" r="2" fill="#7ec8e8" opacity="0.85"/>
+          </svg>
+        </div>
+        <div class="card-num">00</div>
       </div>
-      <div class="hero-side-code">ZN: 9068379</div>
-    </div>
-
-    <!-- 主體文字 -->
-    <div class="hero-body">
-      <div class="hero-tag">Consultant Decision System</div>
-      <div class="hero-title">顧問決策系統</div>
-      <div class="hero-desc">
-        客戶狀態潤澤
-        <span class="sep">｜</span>
-        需求分析模型
-        <span class="sep">｜</span>
-        決策節點預測
-        <span class="sep">｜</span>
-        即時顧問支援
+      <div class="card-body">
+        <div class="card-tag">核心系統</div>
+        <div class="card-title">顧問決策系統</div>
+        <div class="card-desc">客戶分析・決策節點・即時顧問支援・CRM 全流程</div>
       </div>
-      <div class="chips">
-        <span class="chip"><span class="chip-icon">⚡</span>決策點點</span>
-        <span class="chip"><span class="chip-icon">👤</span>客戶分析</span>
-        <span class="chip"><span class="chip-icon">📍</span>情境應對</span>
-        <span class="chip"><span class="chip-icon">◎</span>決策面板</span>
+      <div class="card-footer">
+        <span class="card-cta">進入系統</span>
+        <span class="card-arrow">↗</span>
       </div>
-    </div>
-
-    <div class="hero-arrow-wrap">
-      <div class="hero-arrow">↗</div>
-    </div>
-  </a>
-
-  <!-- ══ 六小卡 ══ -->
-  <div class="row">
+    </a>
 
     <!-- 01 資產決策報告 -->
     <a class="card"
@@ -695,12 +739,10 @@ body {
                 <stop offset="100%" stop-color="#4a9eca" stop-opacity="0.3"/>
               </linearGradient>
             </defs>
-            <!-- 立方體透視 -->
             <polygon points="30,8 50,18 50,42 30,52 10,42 10,18" fill="rgba(74,158,202,0.08)" stroke="rgba(74,158,202,0.40)" stroke-width="0.8"/>
             <polygon points="30,8 50,18 30,28 10,18" fill="url(#g01a)" opacity="0.5"/>
             <polygon points="30,28 50,18 50,42 30,52" fill="rgba(74,158,202,0.20)"/>
             <polygon points="30,28 10,18 10,42 30,52" fill="rgba(74,158,202,0.10)"/>
-            <!-- 內部圖表線 -->
             <line x1="20" y1="38" x2="20" y2="30" stroke="#3dd6c8" stroke-width="2" stroke-linecap="round"/>
             <line x1="25" y1="38" x2="25" y2="26" stroke="#4a9eca" stroke-width="2" stroke-linecap="round"/>
             <line x1="30" y1="38" x2="30" y2="22" stroke="#7ec8e8" stroke-width="2" stroke-linecap="round"/>
@@ -714,7 +756,7 @@ body {
       <div class="card-body">
         <div class="card-tag">諮詢工具</div>
         <div class="card-title">資產決策報告</div>
-        <div class="card-desc">ROI 分析・鳳凰評鈷・多策比較，協助客戶做出現性判斷</div>
+        <div class="card-desc">ROI 分析・多策比較，協助客戶做出理性判斷</div>
       </div>
       <div class="card-footer">
         <span class="card-cta">開啟工具</span>
@@ -722,41 +764,42 @@ body {
       </div>
     </a>
 
-    <!-- 02 專屬活動入口 -->
+    <!-- 02 官網與近期活動（合併） -->
     <a class="card"
-       href="https://tinyurl.com/55nfe22y"
+       href="https://www.notion.so/625809993b2746b7842e022bd0279fe7?source=copy_link"
        target="_blank">
       <div class="card-top">
         <div class="card-icon-wrap">
           <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
             <defs>
-              <linearGradient id="g02a" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#3dd6c8" stop-opacity="0.7"/>
-                <stop offset="100%" stop-color="#4a9eca" stop-opacity="0.3"/>
+              <linearGradient id="g02b" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#3dd6c8" stop-opacity="0.75"/>
+                <stop offset="100%" stop-color="#4a9eca" stop-opacity="0.30"/>
               </linearGradient>
             </defs>
-            <!-- 日曆主體 -->
-            <rect x="10" y="14" width="40" height="36" rx="4" fill="rgba(74,158,202,0.08)" stroke="rgba(74,158,202,0.40)" stroke-width="0.8"/>
-            <rect x="10" y="14" width="40" height="12" rx="4" fill="url(#g02a)" opacity="0.5"/>
-            <!-- 日期方格 -->
-            <rect x="14" y="30" width="7" height="6" rx="1.5" fill="rgba(74,158,202,0.20)"/>
-            <rect x="24" y="30" width="7" height="6" rx="1.5" fill="rgba(74,158,202,0.20)"/>
-            <rect x="34" y="30" width="7" height="6" rx="1.5" fill="rgba(74,158,202,0.20)"/>
-            <rect x="14" y="39" width="7" height="6" rx="1.5" fill="rgba(74,158,202,0.20)"/>
-            <rect x="24" y="39" width="7" height="6" rx="1.5" fill="rgba(61,214,200,0.40)" stroke="rgba(61,214,200,0.60)" stroke-width="0.6"/>
-            <!-- 勾 -->
-            <polyline points="36,41 39,44 44,39" fill="none" stroke="#3dd6c8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <!-- 頂部圓點 -->
-            <circle cx="22" cy="11" r="2.5" fill="rgba(74,158,202,0.60)" stroke="rgba(74,158,202,0.90)" stroke-width="0.8"/>
-            <circle cx="38" cy="11" r="2.5" fill="rgba(74,158,202,0.60)" stroke="rgba(74,158,202,0.90)" stroke-width="0.8"/>
+            <!-- 地球儀外圓 -->
+            <circle cx="30" cy="30" r="20" fill="rgba(74,158,202,0.07)" stroke="rgba(74,158,202,0.40)" stroke-width="0.8"/>
+            <!-- 經緯線 -->
+            <ellipse cx="30" cy="30" rx="10" ry="20" fill="none" stroke="rgba(74,158,202,0.30)" stroke-width="0.7"/>
+            <ellipse cx="30" cy="30" rx="20" ry="8" fill="none" stroke="rgba(74,158,202,0.25)" stroke-width="0.6"/>
+            <line x1="10" y1="30" x2="50" y2="30" stroke="rgba(74,158,202,0.25)" stroke-width="0.6"/>
+            <!-- 頂部光暈 -->
+            <path d="M18,18 Q30,10 42,18" fill="none" stroke="url(#g02b)" stroke-width="1.2" stroke-linecap="round"/>
+            <!-- 日曆角標 -->
+            <rect x="36" y="36" width="18" height="16" rx="3" fill="#080c10" stroke="rgba(61,214,200,0.50)" stroke-width="0.8"/>
+            <rect x="36" y="36" width="18" height="6" rx="3" fill="rgba(61,214,200,0.35)"/>
+            <rect x="38" y="45" width="4" height="3" rx="1" fill="rgba(74,158,202,0.40)"/>
+            <rect x="44" y="45" width="4" height="3" rx="1" fill="rgba(61,214,200,0.55)" stroke="rgba(61,214,200,0.70)" stroke-width="0.4"/>
+            <circle cx="40" cy="34" r="1.2" fill="rgba(74,158,202,0.70)"/>
+            <circle cx="50" cy="34" r="1.2" fill="rgba(74,158,202,0.70)"/>
           </svg>
         </div>
         <div class="card-num">02</div>
       </div>
       <div class="card-body">
-        <div class="card-tag">行銷入口</div>
-        <div class="card-title">專屬活動入口</div>
-        <div class="card-desc">輔導報名員・客戶分辨，提升有獎來產品質</div>
+        <div class="card-tag">品牌 · 行銷</div>
+        <div class="card-title">官網與近期活動</div>
+        <div class="card-desc">🌐 富時代官網 · 精美活動入口，提升品牌形象與報名質量</div>
       </div>
       <div class="card-footer">
         <span class="card-cta">開啟頁面</span>
@@ -764,46 +807,7 @@ body {
       </div>
     </a>
 
-    <!-- 03 品牌信任平台 -->
-    <a class="card"
-       href="https://richtimes.tw/"
-       target="_blank">
-      <div class="card-top">
-        <div class="card-icon-wrap">
-          <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="g03a" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#7ec8e8" stop-opacity="0.9"/>
-                <stop offset="100%" stop-color="#3dd6c8" stop-opacity="0.4"/>
-              </linearGradient>
-            </defs>
-            <!-- 三角錐 -->
-            <polygon points="30,8 52,48 8,48" fill="rgba(74,158,202,0.08)" stroke="rgba(74,158,202,0.35)" stroke-width="0.8"/>
-            <polygon points="30,8 52,48 30,36" fill="url(#g03a)" opacity="0.60"/>
-            <polygon points="30,8 8,48 30,36" fill="rgba(74,158,202,0.25)"/>
-            <polygon points="30,36 8,48 52,48" fill="rgba(74,158,202,0.12)"/>
-            <!-- 內部線 -->
-            <line x1="30" y1="8" x2="30" y2="36" stroke="rgba(255,255,255,0.25)" stroke-width="0.7"/>
-            <!-- 頂光 -->
-            <circle cx="30" cy="8" r="2.5" fill="#7ec8e8" opacity="0.85"/>
-            <circle cx="52" cy="48" r="1.5" fill="#3dd6c8" opacity="0.5"/>
-            <circle cx="8" cy="48" r="1.5" fill="#3dd6c8" opacity="0.5"/>
-          </svg>
-        </div>
-        <div class="card-num">03</div>
-      </div>
-      <div class="card-body">
-        <div class="card-tag">品牌主站</div>
-        <div class="card-title">品牌信任平台</div>
-        <div class="card-desc">建立專業形象，讓客戶理解產品與價值</div>
-      </div>
-      <div class="card-footer">
-        <span class="card-cta">前往官網</span>
-        <span class="card-arrow">↗</span>
-      </div>
-    </a>
-
-    <!-- 04 知識中框系統 -->
+    <!-- 03 知識中框系統 -->
     <a class="card"
        href="https://www.notion.so/059972580dae4a54b07a57fd410b3090"
        target="_blank">
@@ -816,25 +820,22 @@ body {
                 <stop offset="100%" stop-color="#2a5f80" stop-opacity="0.4"/>
               </linearGradient>
             </defs>
-            <!-- 多層堆疊卡片 -->
             <rect x="12" y="36" width="36" height="14" rx="3" fill="rgba(42,95,128,0.50)" stroke="rgba(74,158,202,0.25)" stroke-width="0.7"/>
             <rect x="10" y="28" width="36" height="14" rx="3" fill="rgba(74,158,202,0.15)" stroke="rgba(74,158,202,0.35)" stroke-width="0.7"/>
             <rect x="8" y="20" width="36" height="14" rx="3" fill="url(#g04a)" opacity="0.55" stroke="rgba(74,158,202,0.50)" stroke-width="0.7"/>
             <rect x="6" y="12" width="36" height="14" rx="3" fill="rgba(74,158,202,0.20)" stroke="rgba(74,158,202,0.55)" stroke-width="0.8"/>
-            <!-- 橫線紋理 -->
             <line x1="10" y1="16" x2="36" y2="16" stroke="rgba(255,255,255,0.18)" stroke-width="0.8"/>
             <line x1="10" y1="19" x2="30" y2="19" stroke="rgba(255,255,255,0.10)" stroke-width="0.6"/>
-            <!-- 右側裝飾 -->
             <circle cx="50" cy="20" r="5" fill="rgba(61,214,200,0.15)" stroke="rgba(61,214,200,0.45)" stroke-width="0.8"/>
             <circle cx="50" cy="20" r="2" fill="#3dd6c8" opacity="0.65"/>
           </svg>
         </div>
-        <div class="card-num">04</div>
+        <div class="card-num">03</div>
       </div>
       <div class="card-body">
         <div class="card-tag">知識中樞</div>
         <div class="card-title">知識中框系統</div>
-        <div class="card-desc">葵閣庫・培訓系統・決策邏輯，持續優化顧問能力</div>
+        <div class="card-desc">話術庫・培訓系統・決策邏輯，持續優化顧問能力</div>
       </div>
       <div class="card-footer">
         <span class="card-cta">進入 Notion</span>
@@ -842,7 +843,7 @@ body {
       </div>
     </a>
 
-    <!-- 05 溝通策略資料庫 -->
+    <!-- 04 溝通策略資料庫 -->
     <a class="card"
        href="https://richtime90117277-alt.github.io/futime-crm/LIB.html"
        target="_blank">
@@ -855,27 +856,21 @@ body {
                 <stop offset="100%" stop-color="#4a9eca" stop-opacity="0.3"/>
               </linearGradient>
             </defs>
-            <!-- 對話氣泡 -->
             <rect x="8" y="10" width="34" height="22" rx="6" fill="url(#g05a)" opacity="0.45" stroke="rgba(74,158,202,0.45)" stroke-width="0.8"/>
             <polygon points="14,32 10,40 22,34" fill="rgba(74,158,202,0.35)" stroke="rgba(74,158,202,0.40)" stroke-width="0.6"/>
-            <!-- 第二個氣泡 -->
             <rect x="20" y="30" width="32" height="18" rx="5" fill="rgba(74,158,202,0.12)" stroke="rgba(74,158,202,0.30)" stroke-width="0.7"/>
             <polygon points="46,48 50,54 38,50" fill="rgba(74,158,202,0.20)" stroke="rgba(74,158,202,0.25)" stroke-width="0.5"/>
-            <!-- 文字線 -->
             <line x1="14" y1="18" x2="34" y2="18" stroke="rgba(255,255,255,0.25)" stroke-width="1.2" stroke-linecap="round"/>
             <line x1="14" y1="23" x2="28" y2="23" stroke="rgba(255,255,255,0.15)" stroke-width="1" stroke-linecap="round"/>
             <line x1="26" y1="36" x2="46" y2="36" stroke="rgba(255,255,255,0.20)" stroke-width="1" stroke-linecap="round"/>
-            <!-- 叉號裝飾 -->
-            <line x1="50" y1="10" x2="54" y2="14" stroke="rgba(74,158,202,0.50)" stroke-width="1.2"/>
-            <line x1="54" y1="10" x2="50" y2="14" stroke="rgba(74,158,202,0.50)" stroke-width="1.2"/>
           </svg>
         </div>
-        <div class="card-num">05</div>
+        <div class="card-num">04</div>
       </div>
       <div class="card-body">
         <div class="card-tag">溝通策略</div>
         <div class="card-title">溝通策略資料庫</div>
-        <div class="card-desc">橫通應對・對技模型，提升客戶理解信任</div>
+        <div class="card-desc">話術應對・對話模型，提升客戶理解與信任</div>
       </div>
       <div class="card-footer">
         <span class="card-cta">開啟話術庫</span>
@@ -883,43 +878,47 @@ body {
       </div>
     </a>
 
-    <!-- 06 客戶歷程追蹤 -->
-    <a class="card" href="#" target="_blank">
+    <!-- 05 精選優質物件 -->
+    <a class="card" href="https://www.notion.so/68f46f920de14f07bc4161d221a83995?source=copy_link" target="_blank">
       <div class="card-top">
         <div class="card-icon-wrap">
           <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
             <defs>
-              <linearGradient id="g06a" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#3dd6c8" stop-opacity="0.8"/>
-                <stop offset="100%" stop-color="#4a9eca" stop-opacity="0.3"/>
+              <linearGradient id="g06b" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#d4b896" stop-opacity="0.80"/>
+                <stop offset="100%" stop-color="#a07850" stop-opacity="0.35"/>
+              </linearGradient>
+              <linearGradient id="g06c" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#7ec8e8" stop-opacity="0.60"/>
+                <stop offset="100%" stop-color="#4a9eca" stop-opacity="0.20"/>
               </linearGradient>
             </defs>
-            <!-- 路徑線 -->
-            <path d="M12,44 C12,44 20,44 22,34 C24,24 28,24 30,24 C32,24 34,28 38,22 C42,16 50,16 50,16"
-              fill="none" stroke="url(#g06a)" stroke-width="2" stroke-linecap="round"/>
-            <!-- 節點 -->
-            <circle cx="12" cy="44" r="4" fill="rgba(74,158,202,0.20)" stroke="rgba(74,158,202,0.70)" stroke-width="1.2"/>
-            <circle cx="12" cy="44" r="1.8" fill="#4a9eca"/>
-            <circle cx="30" cy="24" r="4" fill="rgba(61,214,200,0.15)" stroke="rgba(61,214,200,0.65)" stroke-width="1.2"/>
-            <circle cx="30" cy="24" r="1.8" fill="#3dd6c8"/>
-            <circle cx="50" cy="16" r="5" fill="rgba(74,158,202,0.15)" stroke="rgba(74,158,202,0.70)" stroke-width="1.2"/>
-            <circle cx="50" cy="16" r="2.2" fill="#7ec8e8"/>
-            <!-- 迷你圖表右側 -->
-            <polyline points="4,52 8,48 12,50 16,44 20,46 24,40 28,42" fill="none" stroke="rgba(74,158,202,0.35)" stroke-width="0.8" stroke-linecap="round"/>
-            <!-- 裝飾叉 -->
-            <line x1="54" y1="42" x2="58" y2="46" stroke="rgba(74,158,202,0.45)" stroke-width="1.2"/>
-            <line x1="58" y1="42" x2="54" y2="46" stroke="rgba(74,158,202,0.45)" stroke-width="1.2"/>
+            <!-- 建築主體 -->
+            <rect x="16" y="26" width="28" height="26" rx="1" fill="rgba(74,158,202,0.08)" stroke="rgba(212,184,150,0.45)" stroke-width="0.8"/>
+            <!-- 屋頂三角 -->
+            <polygon points="30,8 48,26 12,26" fill="url(#g06b)" opacity="0.55"/>
+            <line x1="12" y1="26" x2="48" y2="26" stroke="rgba(212,184,150,0.60)" stroke-width="0.8"/>
+            <!-- 窗戶 -->
+            <rect x="20" y="32" width="7" height="7" rx="1" fill="rgba(74,158,202,0.25)" stroke="rgba(74,158,202,0.50)" stroke-width="0.6"/>
+            <rect x="33" y="32" width="7" height="7" rx="1" fill="rgba(74,158,202,0.25)" stroke="rgba(74,158,202,0.50)" stroke-width="0.6"/>
+            <!-- 門 -->
+            <rect x="25" y="40" width="10" height="12" rx="1.5" fill="rgba(212,184,150,0.25)" stroke="rgba(212,184,150,0.55)" stroke-width="0.7"/>
+            <!-- 頂部光點 -->
+            <circle cx="30" cy="8" r="2.2" fill="#d4b896" opacity="0.80"/>
+            <!-- 星形裝飾 -->
+            <circle cx="50" cy="14" r="1.2" fill="#3dd6c8" opacity="0.60"/>
+            <circle cx="10" cy="18" r="0.9" fill="#4a9eca" opacity="0.50"/>
           </svg>
         </div>
-        <div class="card-num">06</div>
+        <div class="card-num">05</div>
       </div>
       <div class="card-body">
-        <div class="card-tag">歷程管理</div>
-        <div class="card-title">客戶歷程追蹤</div>
-        <div class="card-desc">全流程掌握客戶決策軌跡，精準掌握每個關鍵節點</div>
+        <div class="card-tag">精選物件</div>
+        <div class="card-title">頂級物件展廳</div>
+        <div class="card-desc">🏡 公司精選物件｜文華新站，精準配對客戶需求</div>
       </div>
       <div class="card-footer">
-        <span class="card-cta">開啟追蹤</span>
+        <span class="card-cta">查看物件</span>
         <span class="card-arrow">↗</span>
       </div>
     </a>
@@ -930,7 +929,7 @@ body {
 <!-- Footer -->
 <footer class="footer-wrap">
   <div class="footer-l">Richtime © 2026 ｜ 內部版僅供團隊使用</div>
-  <div class="footer-r">AI Decision Engine · v12</div>
+  <div class="footer-r">AI Decision Engine · v13</div>
 </footer>
 
 </div>
