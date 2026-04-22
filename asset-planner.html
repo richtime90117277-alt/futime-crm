@@ -6,7 +6,7 @@
 
 
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>富時代｜資產規劃報告 v32</title>
+<title>富時代｜資產規劃報告 v33</title>
 <style>
 /* ── 全域重置 ── */
 *{box-sizing:border-box;margin:0;padding:0}
@@ -608,11 +608,6 @@ body{
       </div>
 
 
-      <!-- ★ v30 整合試算入口 -->
-      <button class="v30-conso-trigger" onclick="openConsoCalc()">
-        💡 試算整合貸款方案（智偉哥模式）
-      </button>
-
       <!-- 優良負債 -->
       <div style="font-size:10px;color:#e07a5a;letter-spacing:1px;font-weight:bold;margin-top:14px;margin-bottom:10px">📋 優良負債</div>
 
@@ -794,38 +789,38 @@ body{
           <input type="number" id="iPartTimeYear" placeholder="例：120000" oninput="ca()">
           <div style="font-size:9px;color:#8a5040;margin-top:2px" id="iPartTimeYearHint">月均：—</div>
         </div>
+        <div class="fl">
+          <label>執行業務／自營年收入</label>
+          <input type="number" id="iSelfEmpYear" placeholder="例：1300000" oninput="ca()">
+          <div style="font-size:9px;color:#e07a5a;margin-top:2px" id="iSelfEmpYearHint">月均：— <span style="color:#c87040">（銀行約7折認列）</span></div>
+        </div>
       </div>
       <!-- 隱藏欄位供舊版計算相容 -->
       <input type="hidden" id="iSal">
       <input type="hidden" id="iBon">
       <input type="hidden" id="iSpo">
       <input type="hidden" id="iPartTime">
+      <input type="hidden" id="iSelfEmp">
 
       <!-- ── 非薪資類（銀行認列約 6~7 折）── -->
-      <div style="font-size:9px;color:#e07a5a;letter-spacing:2px;font-weight:bold;margin-top:12px;margin-bottom:4px;font-family:'DM Mono',Menlo,Consolas,monospace">⚠️ 非薪資類（銀行約 6~7 折認列，依銀行不同）</div>
+      <div style="font-size:9px;color:#e07a5a;letter-spacing:2px;font-weight:bold;margin-top:12px;margin-bottom:4px;font-family:'DM Mono',Menlo,Consolas,monospace">⚠️ 其他非薪資收入（銀行約 7 折認列，依銀行不同）</div>
       <div style="font-size:10px;color:#8a5040;margin-bottom:8px;line-height:1.5;padding:6px 8px;background:rgba(224,122,90,.06);border-radius:6px;border-left:2px solid rgba(224,122,90,.3)">
-        自營商：以所得稅申報收入為準，銀行依「淨所得」認列，約 6~7 折。<br>
         租金收入：需有租賃合約，銀行通常認列 7~8 折。<br>
         投資配息：需有交割明細，銀行通常只參考，不全額認列。
       </div>
       <div class="g2">
         <div class="fl">
-          <label>自營商月均收入</label>
-          <input type="number" id="iSelfEmp" placeholder="0（稅申報年收÷12）" oninput="ca()">
-          <div style="font-size:9px;color:#8a5040;margin-top:2px">銀行認列約 60~70%</div>
-        </div>
-        <div class="fl">
           <label>租金收入（元／月）</label>
           <input type="number" id="iRen" placeholder="0" oninput="ca()">
           <div style="font-size:9px;color:#8a5040;margin-top:2px">銀行認列約 70~80%</div>
         </div>
-      </div>
-      <div class="g2">
         <div class="fl">
           <label>投資配息（月均）</label>
           <input type="number" id="iInv" placeholder="0" oninput="ca()">
           <div style="font-size:9px;color:#8a5040;margin-top:2px">銀行參考，非全額認列</div>
         </div>
+      </div>
+      <div class="g2">
         <div class="fl">
           <label>其他收入（月均）</label>
           <input type="number" id="iOtI" placeholder="0" oninput="ca()">
@@ -880,6 +875,40 @@ body{
       <div class="st"><span class="stl">生活總支出</span><span class="stv" id="stE">$0</span></div>
     </div>
   </div>
+
+  <!-- ★ 整合貸款方案總結（Card 04.5 — 出現在收支後、購屋試算前） -->
+  <div class="card" style="border-color:rgba(46,204,113,.3)">
+    <div class="ch" style="background:linear-gradient(90deg,rgba(46,204,113,.1),rgba(46,204,113,.03));border-bottom-color:rgba(46,204,113,.2)">
+      <span class="cn" style="border-color:#27ae60;color:#1a6b3a">整合</span>
+      <span class="ct" style="color:#0a3a1a">資產整合方案試算（依據案例配置）</span>
+    </div>
+    <div class="cb">
+      <div style="font-size:11px;color:#2a5a2a;line-height:1.8;padding:8px 10px;background:rgba(46,204,113,.06);border-radius:8px;border-left:3px solid rgba(46,204,113,.5);margin-bottom:4px">
+        💡 完成資產與負債登錄後，點擊下方按鈕進行整合貸款試算。<br>
+        系統將依現有月付合計，模擬整合後的月付差異與可釋出資金。
+      </div>
+      <!-- 現有月付快覽 -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px">
+        <div style="background:rgba(224,122,90,.06);border:1px solid rgba(224,122,90,.2);border-radius:8px;padding:10px 12px">
+          <div style="font-size:9px;color:#e07a5a;letter-spacing:1px;font-weight:bold;margin-bottom:4px">現有每月還款合計</div>
+          <div style="font-size:20px;font-weight:bold;color:#c85030;font-family:'DM Mono',monospace" id="consoSummaryBefore">$0</div>
+        </div>
+        <div style="background:rgba(46,204,113,.06);border:1px solid rgba(46,204,113,.2);border-radius:8px;padding:10px 12px">
+          <div style="font-size:9px;color:#1a6b3a;letter-spacing:1px;font-weight:bold;margin-bottom:4px">整合後月付（試算後顯示）</div>
+          <div style="font-size:20px;font-weight:bold;color:#1a6b3a;font-family:'DM Mono',monospace" id="consoSummaryAfter">—</div>
+        </div>
+      </div>
+      <!-- 整合差異摘要（填完後才出現） -->
+      <div id="consoSummaryDiff" style="display:none;padding:10px 14px;border-radius:8px;font-size:13px;font-weight:bold;text-align:center;margin-bottom:4px"></div>
+      <!-- 方案摘要列表 -->
+      <div id="consoSummarySchemes" style="display:none;margin-bottom:8px"></div>
+      <!-- 開啟試算按鈕 -->
+      <button class="v30-conso-trigger" onclick="openConsoCalc()" style="width:100%;justify-content:center;margin-top:0">
+        💡 開啟整合貸款試算（可新增多個方案）
+      </button>
+    </div>
+  </div>
+
   <div class="card">
     <div class="ch"><span class="cn">05</span><span class="ct">購屋貸款試算</span></div>
     <div class="cb">
@@ -966,6 +995,7 @@ body{
               <select id="iLtvPct" onchange="calcPresale()">
                 <option value="70">7成（套房）</option>
                 <option value="75" selected>7.5成（一般）</option>
+                <option value="80">8成（首購/預售）</option>
               </select>
             </div>
             <div class="fl"><label>交屋預計（月後）</label>
@@ -1108,6 +1138,35 @@ body{
           <span style="font-size:20px;font-weight:bold" id="snapReserve">—</span>
         </div>
       </div>
+    </div>
+
+    <!-- ③-B 整合方案對比（有整合方案時顯示） -->
+    <div id="consoReportBox" style="display:none;background:linear-gradient(160deg,#f0fff6,#e4f7ec);border:1.5px solid rgba(46,204,113,.35);border-radius:14px;padding:18px;margin-bottom:14px;box-shadow:0 3px 16px rgba(46,204,113,.08)">
+      <div style="font-size:9px;letter-spacing:3px;color:#1a6b3a;margin-bottom:14px;font-weight:bold;font-family:'DM Mono',Menlo,Consolas,monospace">LOAN CONSOLIDATION — 整合方案總覽</div>
+      <!-- 整合前後對比大數字 -->
+      <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin-bottom:12px">
+        <div style="text-align:center;padding:14px 8px;background:rgba(224,122,90,.08);border:1px solid rgba(224,122,90,.25);border-radius:10px">
+          <div style="font-size:9px;color:#c85030;letter-spacing:1px;font-weight:bold;margin-bottom:5px">整合前每月還款</div>
+          <div style="font-size:24px;font-weight:900;color:#8a3010;font-family:'DM Mono',monospace" id="rConsoBeforeVal">—</div>
+        </div>
+        <div style="font-size:22px;color:#c8a870;text-align:center">→</div>
+        <div style="text-align:center;padding:14px 8px;background:rgba(46,204,113,.1);border:1.5px solid rgba(46,204,113,.4);border-radius:10px">
+          <div style="font-size:9px;color:#1a6b3a;letter-spacing:1px;font-weight:bold;margin-bottom:5px">整合後每月還款</div>
+          <div style="font-size:24px;font-weight:900;color:#0a4a20;font-family:'DM Mono',monospace" id="rConsoAfterVal">—</div>
+        </div>
+      </div>
+      <!-- 差值 highlight -->
+      <div id="rConsoDiffBox" style="text-align:center;padding:10px 14px;border-radius:10px;margin-bottom:12px;font-size:14px;font-weight:bold"></div>
+      <!-- 各方案明細 -->
+      <div id="rConsoSchemeRows" style="margin-bottom:12px"></div>
+      <!-- 釋出資金 -->
+      <div id="rConsoReleaseBox" style="display:none;background:rgba(46,204,113,.08);border:1px solid rgba(46,204,113,.25);border-radius:10px;padding:12px 14px">
+        <div style="font-size:9px;color:#1a6b3a;letter-spacing:1px;font-weight:bold;margin-bottom:6px">💰 整合後可動用資金</div>
+        <div style="font-size:26px;font-weight:900;color:#0a4a20;font-family:'DM Mono',monospace" id="rConsoReleaseVal">—</div>
+        <div style="font-size:11px;color:#2a5a2a;margin-top:4px" id="rConsoReleaseNote">—</div>
+      </div>
+      <!-- 核心話術 -->
+      <div id="rConsoScript" style="margin-top:12px;padding:12px 14px;background:rgba(201,146,43,.06);border:1px dashed rgba(201,146,43,.3);border-radius:8px;font-size:13px;color:#2c1a06;line-height:2;font-style:italic;display:none"></div>
     </div>
 
     <!-- ④ 這個物件的數字 -->
@@ -1737,8 +1796,15 @@ function ca(){
   if(g('iSpo'))      g('iSpo').value      = spo;
   if(g('iPartTime')) g('iPartTime').value = partTime;
 
+  var selfEmpYear = nv('iSelfEmpYear') || 0;
+  var selfEmp = Math.round(selfEmpYear / 12);
+
+  if(g('iSelfEmpYearHint')) g('iSelfEmpYearHint').innerHTML = selfEmpYear > 0
+    ? '月均：' + fmt(selfEmp) + ' <span style="color:#c87040">（銀行約7折認列）</span>'
+    : '月均：— <span style="color:#c87040">（銀行約7折認列）</span>';
+  if(g('iSelfEmp')) g('iSelfEmp').value = selfEmp;
+
   // ── 實際月收入（全額加總）──────────────────────────────────
-  var selfEmp  = nv('iSelfEmp');   // 自營商
   var ren      = nv('iRen');       // 租金
   var inv      = nv('iInv');       // 投資配息
   var otI      = nv('iOtI');
@@ -1746,9 +1812,9 @@ function ca(){
   var inc = sal + bon + spo + partTime + selfEmp + ren + inv + otI;
 
   // ── 銀行估認所得（各類折扣）──────────────────────────────
-  // 薪資/兼職：全額；自營商：65%；租金：75%；配息：50%；其他：60%
+  // 薪資/兼職：全額；執行業務/自營：70%；租金：75%；配息：50%；其他：60%
   var incBank = (sal + bon + spo + partTime)
-              + selfEmp * 0.65
+              + selfEmp * 0.70
               + ren     * 0.75
               + inv     * 0.50
               + otI     * 0.60;
@@ -1792,6 +1858,8 @@ function ca(){
   ratio=inc>0?effMn/inc*100:0;
   window._C={inc:inc,exp:exp,mn:mn,ratio:ratio,ts:s0+s1+s2+s3+s4+s5,pr:pr,dw:dw,ln:ln,rent:rentInc,effMn:effMn};
   lsSave(); // 自動記憶
+  // 更新整合方案總結卡的「現有月付」顯示
+  syncConsoSummary();
   // 預售試算
   if(MORTGAGE_MODE==='presale') calcPresale();
 }
@@ -2092,6 +2160,84 @@ function doGen(){
     }
   } else {
     g('assetSnapshotBox').style.display='none';
+  }
+
+  // ── ③-B 整合方案報告區塊 ──────────────────────────────────
+  var _consoBox = g('consoReportBox');
+  var _ccAfterRpt  = g('cc_after');
+  var _ccBeforeRpt = g('cc_before');
+  var _hasConsoRpt = _ccAfterRpt && _ccAfterRpt.textContent && _ccAfterRpt.textContent !== '—';
+  if(_consoBox && _hasConsoRpt) {
+    _consoBox.style.display = 'block';
+    var _rBefore = _ccBeforeRpt ? _ccBeforeRpt.textContent : '—';
+    var _rAfter  = _ccAfterRpt.textContent;
+    var _rBeforeMn = parseInt(_rBefore.replace(/[^0-9]/g,''))||0;
+    var _rAfterMn  = parseInt(_rAfter.replace(/[^0-9]/g,''))||0;
+    if(g('rConsoBeforeVal')) g('rConsoBeforeVal').textContent = _rBefore;
+    if(g('rConsoAfterVal'))  g('rConsoAfterVal').textContent  = _rAfter;
+    // 差值
+    var _rDiffBox = g('rConsoDiffBox');
+    if(_rDiffBox && _rBeforeMn > 0 && _rAfterMn > 0) {
+      var _rDiff = _rAfterMn - _rBeforeMn;
+      if(_rDiff <= 0) {
+        _rDiffBox.style.cssText='background:rgba(46,204,113,.12);border:1.5px solid rgba(46,204,113,.4);border-radius:10px;padding:10px 14px;text-align:center;margin-bottom:12px;font-size:14px;font-weight:bold;color:#0a4a20';
+        _rDiffBox.innerHTML='✅ 整合後月付 <strong>減少 '+Math.abs(_rDiff).toLocaleString('zh-TW')+' 元</strong>，同時釋出資金額度！';
+      } else {
+        _rDiffBox.style.cssText='background:rgba(201,146,43,.1);border:1.5px solid rgba(201,146,43,.4);border-radius:10px;padding:10px 14px;text-align:center;margin-bottom:12px;font-size:14px;font-weight:bold;color:#5a2e00';
+        _rDiffBox.innerHTML='🟡 整合後每月僅多繳 <strong>'+_rDiff.toLocaleString('zh-TW')+' 元</strong>（每天不到 '+Math.round(_rDiff/30).toLocaleString('zh-TW')+' 元）';
+      }
+    }
+    // 方案明細
+    var _schemeRows = g('rConsoSchemeRows');
+    var _schemeList = g('cc_scheme_list');
+    if(_schemeRows && _schemeList) {
+      var _sHtml = '<div style="font-size:9px;color:#2a5a2a;letter-spacing:1px;font-weight:bold;margin-bottom:6px">各整合方案明細</div>';
+      Array.from(_schemeList.children).forEach(function(row) {
+        var _si = row.id.replace('cs_row_','');
+        var _sName = (document.getElementById('cs_name_'+_si)||{}).value || '方案'+(parseInt(_si)+1);
+        var _sLoan = (document.getElementById('cs_loan_'+_si)||{}).value || '—';
+        var _sRate = (document.getElementById('cs_rate_'+_si)||{}).value || '—';
+        var _sYrs  = (document.getElementById('cs_years_'+_si)||{}).value || '—';
+        var _sMnEl = document.getElementById('cs_monthly_'+_si);
+        var _sMn   = _sMnEl ? _sMnEl.textContent : '—';
+        var _sTypeEl = document.getElementById('cs_type_'+_si);
+        var _sTypeVal = _sTypeEl ? _sTypeEl.value : '';
+        var _sTypeIcon = _sTypeVal==='mortgage'?'🏠':_sTypeVal==='personal'?'💳':_sTypeVal==='car'?'🚗':'🔀';
+        _sHtml += '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:rgba(46,204,113,.06);border:1px solid rgba(46,204,113,.2);border-radius:8px;margin-bottom:6px">' +
+          '<div><span style="font-size:11px;color:#0a3a1a;font-weight:bold">'+_sTypeIcon+' '+_sName+'</span>' +
+          '<div style="font-size:10px;color:#4a6040;margin-top:2px">'+_sLoan+'萬 · 利率 '+_sRate+'% · '+_sYrs+'年</div></div>' +
+          '<div style="font-size:18px;font-weight:900;color:#0a4a20;font-family:\'DM Mono\',monospace">'+_sMn+'</div>' +
+          '</div>';
+      });
+      _schemeRows.innerHTML = _sHtml;
+    }
+    // 釋出資金
+    var _rReleased = parseFloat((g('cc_released')||{value:'0'}).value)||0;
+    var _rContract = parseFloat((g('cc_contract')||{value:'0'}).value)||0;
+    var _rRelBox = g('rConsoReleaseBox');
+    var _rRelVal = g('rConsoReleaseVal');
+    var _rRelNote= g('rConsoReleaseNote');
+    if(_rRelBox) {
+      if(_rReleased > 0) {
+        _rRelBox.style.display = 'block';
+        if(_rRelVal) _rRelVal.textContent = _rReleased + ' 萬';
+        if(_rRelNote) {
+          var _remain = _rReleased - _rContract;
+          _rRelNote.textContent = _rContract>0 ? '扣除簽約款 '+_rContract+' 萬，實際可用 '+Math.round(_remain)+' 萬' : '可投入自備款或工程款';
+        }
+      } else {
+        _rRelBox.style.display = 'none';
+      }
+    }
+    // 核心話術
+    var _rScript = g('rConsoScript');
+    var _ccScript = g('cc_script_text');
+    if(_rScript && _ccScript && _ccScript.textContent) {
+      _rScript.textContent = _ccScript.textContent;
+      _rScript.style.display = 'block';
+    }
+  } else if(_consoBox) {
+    _consoBox.style.display = 'none';
   }
 
   // ── ④ 這個物件 ──────────────────────────────────
@@ -2607,17 +2753,60 @@ function doGen(){
     var _roiStr=_roiV.profit>0?' 年化投報 '+_roiV.ann+'%，10年賺 '+_roiV.profit+'萬。':'';
 
     if(isPresale){
-      // 預售 verdict：用月存缺口判斷，不用負擔比
-      // _csAfterSave 在上方 csCompare 區塊已算出，但 scope 不同，重算一次
+      // 預售 verdict：智偉哥邏輯
+      // 如果有整合方案，用整合後月付合計 vs 整合前月付的差額來評估，而非單純看新月付
       var _vSavedRent=parseFloat((g('iRnt')||{value:'0'}).value)||0;
       var _vExpNoRent=Math.round(C.exp-_vSavedRent);
       var _vSurplus=Math.round(C.inc-_vExpNoRent);
-      var _vMnSave=window._presaleMnSave||0; // 從時間軸計算存入
-      var _vGap=_vSurplus-_vMnSave;
+      var _vMnSave=window._presaleMnSave||0;
+
+      // ── 整合方案判斷 ──────────────────────────────────────────
+      var _ccAfterEl=g('cc_after');
+      var _ccBeforeEl=g('cc_before');
+      var _hasConsoScheme = _ccAfterEl && _ccAfterEl.textContent && _ccAfterEl.textContent !== '—';
+      var _consoAfterMn  = _hasConsoScheme ? parseInt((_ccAfterEl.textContent||'').replace(/[^0-9]/g,''))||0 : 0;
+      var _consoBeforeMn = _hasConsoScheme ? parseInt((_ccBeforeEl ? _ccBeforeEl.textContent : '0').replace(/[^0-9]/g,''))||0 : 0;
+      var _consoDiff     = _hasConsoScheme ? (_consoAfterMn - _consoBeforeMn) : 0;
+
+      // 釋出資金
+      var _ccReleased = parseFloat((g('cc_released')||{value:'0'}).value)||0;
+
       var _gNmV=(g('g_name')||{}).value||'';
       var _gCtV=parseFloat((g('g_contribution')||{value:'0'}).value)||0;
-      var _gNmStr=_gNmV?_gNmV+'支援':_gCtV>0?'家人支援':'';
-      if(_vGap>=15000){
+      var _vGap;
+
+      if(_hasConsoScheme && _consoDiff > 0) {
+        // 有整合方案：壓力 = 整合後月付差 + 每月需存工程款
+        _vGap = _vSurplus - _consoDiff - _vMnSave;
+      } else {
+        _vGap = _vSurplus - _vMnSave;
+      }
+
+      if(_hasConsoScheme) {
+        // 整合方案 verdict：強調「每月只多X元，多拿XXX萬」
+        var _diffFmt = fmt(Math.abs(_consoDiff));
+        var _relFmt  = _ccReleased > 0 ? _ccReleased+'萬' : '大量額度';
+        if(_consoDiff <= 4000) {
+          vb.className='vd gs';
+          vb.innerHTML='<span class="vdh">✅ '+nm+'，整合完之後你的負擔幾乎不變。</span>'
+            +'整合後每月只多 <b style="color:#1a7a3a">'+_diffFmt+'</b>，同時多取得 <b style="color:#1a7a3a">'+_relFmt+'</b> 資金額度。'
+            +'<br>這不是增加負擔，是讓你的資產做最有效率的配置。'+_roiStr
+            +'<br><br><span style="font-size:12px;color:#c9922b">▶ '+deliv+'個月後，這間房就是你的了。</span>';
+          sh.textContent='「'+nm+'，你看——整合完之後，每個月只多繳 '+_diffFmt+'，但你同時多了 '+_relFmt+' 可以動用。一天不到 '+fmt(Math.round(parseInt(_diffFmt.replace(/[^0-9]/g,''))/30))+' 元，換來一間房子，這個算盤划算嗎？」';
+        } else if(_consoDiff <= 10000) {
+          vb.className='vd gs';
+          vb.innerHTML='<span class="vdh">✅ '+nm+'，數字說你做得到。</span>'
+            +'整合後每月多繳 <b>'+_diffFmt+'</b>，取得 <b>'+_relFmt+'</b>。'
+            +'<br>這是最保守的算法——你的年終與獎金一分沒算進去。'+_roiStr
+            +'<br><br><span style="font-size:12px;color:#c9922b">▶ 你覺得這個方案可以嗎？</span>';
+          sh.textContent='「'+nm+'，我故意用最保守的方式算——連你的年終都沒算。真實情況比這個更從容。每月多 '+_diffFmt+'，換來的是置產機會。」';
+        } else {
+          vb.className='vd gw';
+          vb.innerHTML='<span class="vdh">✅ '+nm+'，方案可行，我們一起確認節奏。</span>'
+            +'整合後月付差 <b>'+_diffFmt+'</b>，需要再確認現金流規劃。'+_roiStr;
+          sh.textContent='「'+nm+'，讓我們一起把每一期工程款逐一確認，確保每期你都有足夠的資金。」';
+        }
+      } else if(_vGap>=15000){
         vb.className='vd gs';
         vb.innerHTML='<span class="vdh">✅ '+nm+'，數字說你存得到。</span>'
           +(_gCtV>0?'頭期款由'+(_gNmV||'家人')+'支援，你負責每月固定存工程款。<br>':'')
@@ -2633,10 +2822,10 @@ function doGen(){
         sh.textContent='「'+nm+'，這個缺口不大。我故意用最保守的算法——你真實的情況比這個好。年終獎金一下去，這個問題就消失了。」';
       } else {
         vb.className='vd gw';
-        vb.innerHTML='<span class="vdh">⚠️ 月存有壓力，但不是買不了。</span>'
-          +'每月需存 <b>'+fmt(_vMnSave)+'</b>，目前缺口 <b>'+fmt(Math.abs(_vGap))+'</b>。<br>'
-          +'建議確認年終補存策略，或調整貸款成數降低自備款需求。';
-        sh.textContent='「'+nm+'，我們來看一下，年終獎金大概多少？如果一年補一次，這個問題就解決了。」';
+        vb.innerHTML='<span class="vdh">✅ '+nm+'，方案可行，讓我們一步步確認。</span>'
+          +'每月需存 <b>'+fmt(_vMnSave)+'</b>，工程款分期繳付，非一次性支出。<br>'
+          +'建議逐期確認資金，搭配年終補存策略。'+_roiStr;
+        sh.textContent='「'+nm+'，工程款不是每個月都要存滿。讓我們逐期把數字攤開來看，確認你每一期都有足夠的錢。你當初想買房，最主要的原因是什麼？」';
       }
     } else {
       // 成屋 verdict：原有負擔比邏輯
@@ -2921,16 +3110,46 @@ function addPersonalLoan() {
       '<button onclick="removeLoanRow(\'pl_row_' + idx + '\',\'personalLoanList\',\'personalLoanEmpty\',calcAssets)" ' +
         'style="background:rgba(224,90,90,.15);border:1px solid rgba(224,90,90,.3);color:#f08080;border-radius:5px;padding:2px 7px;cursor:pointer;font-size:11px">✕</button>' +
     '</div>' +
-    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:6px">' +
       '<div class="fl" style="margin:0"><label style="font-size:10px">原始金額（萬）</label>' +
         '<input type="number" id="pl_orig_' + idx + '" placeholder="例：67" oninput="calcAssets()" style="font-size:12px"></div>' +
       '<div class="fl" style="margin:0"><label style="font-size:10px">剩餘餘額（萬）</label>' +
         '<input type="number" id="pl_bal_' + idx + '" placeholder="例：45" oninput="calcAssets()" style="font-size:12px;border-color:rgba(224,122,90,.4)"></div>' +
-      '<div class="fl" style="margin:0"><label style="font-size:10px">每月還款（元）</label>' +
+      '<div class="fl" style="margin:0"><label style="font-size:10px">綁約年限</label>' +
+        '<select id="pl_years_' + idx + '" onchange="calcPlMonthly('+idx+')" style="width:100%;padding:5px 4px;border:1px solid rgba(224,122,90,.3);border-radius:6px;background:#fff;font-size:11px;color:#3a2010">' +
+          '<option value="">不綁約</option>' +
+          '<option value="3">3年</option>' +
+          '<option value="5">5年</option>' +
+          '<option value="7">7年</option>' +
+          '<option value="10">10年</option>' +
+        '</select></div>' +
+      '<div class="fl" style="margin:0"><label style="font-size:10px">每月還款（元）<button onclick="calcPlMonthly('+idx+')" style="font-size:9px;background:rgba(93,173,226,.12);border:1px solid rgba(93,173,226,.4);color:#3a6a90;border-radius:4px;padding:1px 5px;cursor:pointer;margin-left:3px">試算</button></label>' +
         '<input type="number" id="pl_pay_' + idx + '" placeholder="例：12660" oninput="calcAssets()" style="font-size:12px;border-color:rgba(93,173,226,.4)"></div>' +
+    '</div>' +
+    '<div style="display:flex;gap:8px">' +
+      '<div class="fl" style="margin:0;flex:1"><label style="font-size:10px">利率（%）—選填，供試算</label>' +
+        '<input type="number" id="pl_rate_' + idx + '" placeholder="例：4.5" step="0.1" oninput="calcPlMonthly('+idx+')" style="font-size:12px"></div>' +
+      '<div id="pl_calc_hint_'+idx+'" style="font-size:10px;color:#1a6b3a;font-weight:bold;align-self:flex-end;padding-bottom:3px;white-space:nowrap"></div>' +
     '</div>';
   list.appendChild(row);
   calcAssets();
+}
+
+// 信貸月付試算
+function calcPlMonthly(idx) {
+  var bal  = parseFloat((g('pl_bal_'+idx)||{}).value)||0;
+  var rate = parseFloat((g('pl_rate_'+idx)||{}).value)||0;
+  var yrs  = parseInt((g('pl_years_'+idx)||{}).value)||0;
+  var hint = g('pl_calc_hint_'+idx);
+  if(bal>0 && rate>0 && yrs>0){
+    var mn = calcMonthlyPayment(bal, rate, yrs, false);
+    var payEl = g('pl_pay_'+idx);
+    if(payEl && !payEl.value) payEl.value = mn;
+    if(hint) hint.textContent = '≈ $' + mn.toLocaleString('zh-TW') + '/月';
+    calcAssets();
+  } else if(hint) {
+    hint.textContent = '';
+  }
 }
 
 // ── 多筆車貸 ─────────────────────────────────────────────────────────
@@ -3331,6 +3550,7 @@ function calcAssets() {
     rBox.style.display = 'none';
   }
   lsSave(); // ★ 不動產變動後自動記憶
+  syncConsoSummary(); // 同步整合總結卡月付顯示
 }
 
 function toggleGuarantor() {
@@ -3814,9 +4034,9 @@ function calcWaitCost() {
 
 
 // ══ localStorage 自動記憶 ══════════════════════
-var LS_KEY='futime_planner_v32';
+var LS_KEY='futime_planner_v33';
 var LS_FIELDS=['iName','iAdv','iProp','iPropRoom','iPropFloor',
-  'iSalYear','iSpoYear','iPartTimeYear','iSelfEmp','iInv','iRen','iOtI',
+  'iSalYear','iSpoYear','iPartTimeYear','iSelfEmpYear','iInv','iRen','iOtI',
   'iRnt','iCar','iOLn','iIns','iMel','iTrn','iEnt','iPar','iKid','iSub','iOtE',
   'iPrc','iDwn','iRat','iGrowth','iRentIncome','iDelivery','sv2i','sv3i',
   'a_earnest','a_earnestEst'];
@@ -4326,6 +4546,67 @@ function applyPayCalc() {
   closePayCalc();
 }
 
+// ══ 整合方案總結卡同步 ══════════════════════════════════════════════
+function syncConsoSummary() {
+  // 計算現有所有月付合計
+  var totalMonthPay = 0;
+  document.querySelectorAll('[class^="p_loanpay_"]').forEach(function(el){
+    totalMonthPay += parseFloat(el.value) || 0;
+  });
+  var iCar = parseFloat((document.getElementById('iCar')||{}).value)||0;
+  var iOLn = parseFloat((document.getElementById('iOLn')||{}).value)||0;
+  totalMonthPay += iCar + iOLn;
+
+  var beforeEl = document.getElementById('consoSummaryBefore');
+  if(beforeEl) beforeEl.textContent = totalMonthPay > 0 ? '$' + Math.round(totalMonthPay).toLocaleString('zh-TW') : '$0';
+
+  // 同步整合後月付（從 cc_after 讀）
+  var ccAfterEl = document.getElementById('cc_after');
+  var afterEl = document.getElementById('consoSummaryAfter');
+  if(afterEl && ccAfterEl && ccAfterEl.textContent && ccAfterEl.textContent !== '—') {
+    afterEl.textContent = ccAfterEl.textContent;
+  }
+
+  // 同步差異提示
+  var diffSrc = document.getElementById('cc_diff_box');
+  var diffDst = document.getElementById('consoSummaryDiff');
+  if(diffDst && diffSrc) {
+    if(diffSrc.style.display !== 'none' && diffSrc.innerHTML) {
+      diffDst.style.cssText = diffSrc.style.cssText;
+      diffDst.innerHTML = diffSrc.innerHTML;
+      diffDst.style.display = 'block';
+    } else {
+      diffDst.style.display = 'none';
+    }
+  }
+
+  // 方案摘要列表
+  var schemesEl = document.getElementById('consoSummarySchemes');
+  var schemeList = document.getElementById('cc_scheme_list');
+  if(schemesEl && schemeList && schemeList.children.length > 0) {
+    var rows = '';
+    Array.from(schemeList.children).forEach(function(row) {
+      var idx = row.id.replace('cs_row_','');
+      var name = (document.getElementById('cs_name_'+idx)||{}).value || '';
+      var loan = (document.getElementById('cs_loan_'+idx)||{}).value || '—';
+      var rate = (document.getElementById('cs_rate_'+idx)||{}).value || '—';
+      var yrs  = (document.getElementById('cs_years_'+idx)||{}).value || '—';
+      var mn   = document.getElementById('cs_monthly_'+idx);
+      var mnVal = mn ? mn.textContent : '—';
+      var label = name || ('方案 '+(parseInt(idx)+1));
+      rows += '<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 8px;background:rgba(46,204,113,.05);border:1px solid rgba(46,204,113,.2);border-radius:6px;margin-bottom:4px;font-size:11px">' +
+        '<span style="color:#1a6b3a;font-weight:bold">'+label+'</span>' +
+        '<span style="color:#2c1a06">'+loan+'萬 · '+rate+'% · '+yrs+'年</span>' +
+        '<span style="color:#0a4a20;font-weight:bold">'+mnVal+'</span>' +
+        '</div>';
+    });
+    schemesEl.innerHTML = rows;
+    schemesEl.style.display = 'block';
+  } else if(schemesEl) {
+    schemesEl.style.display = 'none';
+  }
+}
+
 // ══ 整合試算 Modal（多方案版）═══════════════════════════════════════════
 var consoSchemeCount = 0;
 
@@ -4561,6 +4842,8 @@ function updateConsoCalc() {
   } else if (scriptBox) {
     scriptBox.style.display = 'none';
   }
+  // 同步整合總結卡
+  syncConsoSummary();
 }
 </script>
 </body>
