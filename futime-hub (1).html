@@ -12,7 +12,6 @@
   :root {
     --accent: #4dd8e8;
     --accent-dim: rgba(77,216,232,0.35);
-    --accent-faint: rgba(77,216,232,0.08);
     --bg: #080d12;
     --bg-card: rgba(10,18,26,0.97);
     --bg-card-hover: rgba(18,32,46,0.99);
@@ -37,8 +36,7 @@
     inset: 0;
     background:
       radial-gradient(ellipse 55% 45% at 15% 15%, rgba(0,180,180,0.05) 0%, transparent 65%),
-      radial-gradient(ellipse 40% 35% at 85% 85%, rgba(0,140,200,0.05) 0%, transparent 60%),
-      radial-gradient(ellipse 30% 25% at 50% 50%, rgba(0,100,160,0.03) 0%, transparent 60%);
+      radial-gradient(ellipse 40% 35% at 85% 85%, rgba(0,140,200,0.05) 0%, transparent 60%);
     pointer-events: none;
     z-index: 0;
   }
@@ -63,7 +61,6 @@
     flex-direction: column;
   }
 
-  /* ── HEADER ── */
   header {
     padding: 36px 48px 28px;
     border-bottom: 1px solid var(--border);
@@ -90,10 +87,7 @@
     margin-bottom: 10px;
   }
 
-  h1 em {
-    font-style: normal;
-    color: var(--accent);
-  }
+  h1 em { font-style: normal; color: var(--accent); }
 
   .header-sub {
     font-size: 10px;
@@ -125,16 +119,14 @@
     color: rgba(77,216,232,0.07);
     letter-spacing: -0.04em;
     line-height: 1;
-    font-variant-numeric: tabular-nums;
     border: 1px solid rgba(77,216,232,0.05);
     padding: 6px 16px;
     border-radius: 4px;
   }
 
-  /* ── GRID ── */
   .grid {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(6, minmax(0, 1fr));
     gap: 1px;
     background: var(--border-card);
     margin: 28px 48px;
@@ -149,7 +141,6 @@
     padding: 26px 22px 22px;
     display: flex;
     flex-direction: column;
-    cursor: pointer;
     transition: background 0.25s ease;
     position: relative;
     min-height: 260px;
@@ -157,9 +148,7 @@
     color: inherit;
   }
 
-  .card:hover {
-    background: var(--bg-card-hover);
-  }
+  .card:hover { background: var(--bg-card-hover); }
 
   .card-line {
     position: absolute;
@@ -169,11 +158,8 @@
     transition: background 0.3s ease;
   }
 
-  .card:hover .card-line {
-    background: rgba(77,216,232,0.28);
-  }
+  .card:hover .card-line { background: rgba(77,216,232,0.28); }
 
-  /* staggered entrance */
   .card { animation: fadeUp 0.55s ease both; }
   .card:nth-child(1) { animation-delay: 0.08s; }
   .card:nth-child(2) { animation-delay: 0.14s; }
@@ -215,7 +201,6 @@
     font-size: 10px;
     letter-spacing: 0.1em;
     color: rgba(100,200,220,0.2);
-    font-variant-numeric: tabular-nums;
   }
 
   .card-tag {
@@ -254,16 +239,50 @@
     padding-top: 14px;
   }
 
-  .card-cta::after {
-    content: '↗';
+  .card-cta::after { content: '↗'; font-size: 11px; }
+  .card:hover .card-cta { color: var(--accent); }
+
+  /* S5 雙按鈕 */
+  .s5-btns {
+    margin-top: 20px;
+    border-top: 1px solid rgba(77,216,232,0.07);
+    padding-top: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .s5-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 14px;
+    border: 1px solid rgba(77,216,232,0.2);
+    border-radius: 5px;
+    background: rgba(77,216,232,0.05);
+    color: #4dd8e8;
     font-size: 11px;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    transition: background 0.2s, border-color 0.2s;
   }
 
-  .card:hover .card-cta {
-    color: var(--accent);
+  .s5-btn:hover {
+    background: rgba(77,216,232,0.13);
+    border-color: rgba(77,216,232,0.45);
   }
 
-  /* ── FOOTER ── */
+  .s5-btn svg {
+    width: 13px;
+    height: 13px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
+  }
+
   footer {
     display: flex;
     justify-content: space-between;
@@ -273,19 +292,9 @@
     animation: fadeUp 0.5s 0.5s ease both;
   }
 
-  .footer-l {
-    font-size: 9.5px;
-    letter-spacing: 0.12em;
-    color: rgba(100,200,220,0.22);
-  }
+  .footer-l { font-size: 9.5px; letter-spacing: 0.12em; color: rgba(100,200,220,0.22); }
+  .footer-r { font-size: 9.5px; letter-spacing: 0.16em; color: rgba(77,216,232,0.18); }
 
-  .footer-r {
-    font-size: 9.5px;
-    letter-spacing: 0.16em;
-    color: rgba(77,216,232,0.18);
-  }
-
-  /* ── ANIMATIONS ── */
   @keyframes fadeDown {
     from { opacity: 0; transform: translateY(-12px); }
     to   { opacity: 1; transform: translateY(0); }
@@ -296,17 +305,16 @@
     to   { opacity: 1; transform: translateY(0); }
   }
 
-  /* ── RESPONSIVE ── */
   @media (max-width: 1100px) {
-    .grid { grid-template-columns: repeat(3, 1fr); margin: 24px 32px; }
+    .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 24px 32px; }
     header { padding: 28px 32px 22px; }
     footer { padding: 14px 32px; }
   }
 
   @media (max-width: 680px) {
-    .grid { grid-template-columns: repeat(2, 1fr); margin: 16px 16px; }
+    .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 16px 16px; }
     header { padding: 22px 20px 18px; flex-direction: column; align-items: flex-start; gap: 12px; }
-    footer { padding: 12px 20px; }
+    footer { padding: 12px 20px; flex-direction: column; gap: 6px; }
     .counter-box { font-size: 44px; }
   }
 
@@ -332,7 +340,7 @@
 
   <div class="grid">
 
-    <!-- S1 顧問決策系統 -->
+    <!-- S1 -->
     <a class="card" href="https://richtime90117277-alt.github.io/futime-crm/crm_cloud_v19.html" target="_blank">
       <div class="card-line"></div>
       <div class="card-top">
@@ -347,7 +355,7 @@
       <div class="card-cta">進入系統</div>
     </a>
 
-    <!-- S2 AI資產規劃報告 -->
+    <!-- S2 -->
     <a class="card" href="https://richtime90117277-alt.github.io/futime-crm/asset-planner.html" target="_blank">
       <div class="card-line"></div>
       <div class="card-top">
@@ -362,7 +370,7 @@
       <div class="card-cta">開啟工具</div>
     </a>
 
-    <!-- S3 官網與近期活動 -->
+    <!-- S3 -->
     <a class="card" href="https://richtimes.tw" target="_blank">
       <div class="card-line"></div>
       <div class="card-top">
@@ -377,7 +385,7 @@
       <div class="card-cta">開啟頁面</div>
     </a>
 
-    <!-- S4 知識中樞系統 -->
+    <!-- S4 -->
     <a class="card" href="https://www.notion.so/059972580dae4a54b07a57fd410b3090" target="_blank">
       <div class="card-line"></div>
       <div class="card-top">
@@ -392,8 +400,8 @@
       <div class="card-cta">進入 NOTION</div>
     </a>
 
-    <!-- S5 話術教材庫 -->
-    <a class="card" href="https://richtime90117277-alt.github.io/futime-crm/LIB.html" target="_blank">
+    <!-- S5 雙入口 -->
+    <div class="card">
       <div class="card-line"></div>
       <div class="card-top">
         <div class="icon">
@@ -404,10 +412,19 @@
       <div class="card-tag">溝通策略</div>
       <div class="card-name">話術教材庫</div>
       <div class="card-desc">話術應對・對話模型・SOS 異議處理・情境演練腳本</div>
-      <div class="card-cta">開啟教材庫</div>
-    </a>
+      <div class="s5-btns">
+        <a class="s5-btn" href="https://richtime90117277-alt.github.io/futime-crm/LIB.html" target="_blank">
+          <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+          話術教材庫
+        </a>
+        <a class="s5-btn" href="https://richtime90117277-alt.github.io/futime-crm/zhiwei-ai-coach.html" target="_blank">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          智偉 AI 教練
+        </a>
+      </div>
+    </div>
 
-    <!-- S6 頂級物件展廳 -->
+    <!-- S6 -->
     <a class="card" href="https://www.notion.so/68f46f920de14f07bc4161d221a83995" target="_blank">
       <div class="card-line"></div>
       <div class="card-top">
