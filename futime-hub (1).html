@@ -3,1014 +3,432 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>富時代 AI 決策引擎</title>
+<title>富時代 六大系統 · Richtime Integrated Intelligence Platform</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;700&family=DM+Mono:wght@300;400;500&family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:         #0d1117;
-  --bg-dark:    #080c10;
-  --bg-card:    #111820;
-  --bg-hero:    #0f1822;
-  --bg-lift:    #16222e;
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  --blue:       #4a9eca;
-  --blue-bright:#7ec8e8;
-  --blue-dim:   #2a5f80;
-  --blue-glow:  rgba(74,158,202,0.18);
-  --blue-line:  rgba(74,158,202,0.20);
-  --blue-line-v:rgba(74,158,202,0.45);
+  :root {
+    --accent: #4dd8e8;
+    --accent-dim: rgba(77,216,232,0.35);
+    --accent-faint: rgba(77,216,232,0.08);
+    --bg: #080d12;
+    --bg-card: rgba(10,18,26,0.97);
+    --bg-card-hover: rgba(18,32,46,0.99);
+    --text-primary: #ddeef5;
+    --text-secondary: rgba(160,200,220,0.55);
+    --text-label: rgba(77,216,232,0.4);
+    --border: rgba(100,200,220,0.1);
+    --border-card: rgba(100,200,220,0.09);
+  }
 
-  --teal:       #3dd6c8;
-  --teal-dim:   rgba(61,214,200,0.15);
+  html, body {
+    min-height: 100vh;
+    background: var(--bg);
+    font-family: 'Noto Sans TC', sans-serif;
+    color: var(--text-primary);
+    overflow-x: hidden;
+  }
 
-  --text-primary: #e8f4fc;
-  --text-sub:     #8bafc8;
-  --text-dim:     #4a6880;
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 55% 45% at 15% 15%, rgba(0,180,180,0.05) 0%, transparent 65%),
+      radial-gradient(ellipse 40% 35% at 85% 85%, rgba(0,140,200,0.05) 0%, transparent 60%),
+      radial-gradient(ellipse 30% 25% at 50% 50%, rgba(0,100,160,0.03) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
 
-  --border:     rgba(74,158,202,0.12);
-  --border-v:   rgba(74,158,202,0.30);
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(rgba(100,180,200,0.055) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events: none;
+    z-index: 0;
+  }
 
-  --shadow-sm:  0 4px 24px rgba(0,0,0,0.50);
-  --shadow-md:  0 8px 48px rgba(0,0,0,0.65);
-  --shadow-blue:0 0 40px rgba(74,158,202,0.10);
-  --shadow-blue-v:0 0 60px rgba(74,158,202,0.22);
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 1440px;
+    margin: 0 auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
 
-  --r:    16px;
-  --r-sm: 10px;
-}
+  /* ── HEADER ── */
+  header {
+    padding: 36px 48px 28px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    animation: fadeDown 0.6s ease both;
+  }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+  .header-meta {
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    color: rgba(77,216,232,0.4);
+    margin-bottom: 10px;
+    font-weight: 300;
+  }
 
-body {
-  background: var(--bg-dark);
-  color: var(--text-primary);
-  font-family: 'Noto Serif TC', serif;
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
-}
+  h1 {
+    font-size: clamp(36px, 5vw, 56px);
+    font-weight: 700;
+    color: #e8f4f8;
+    letter-spacing: -0.01em;
+    line-height: 1;
+    margin-bottom: 10px;
+  }
 
-/* ════ Canvas 背景 ════ */
-#bgCanvas {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.55;
-}
+  h1 em {
+    font-style: normal;
+    color: var(--accent);
+  }
 
-/* ════ Header ════ */
-.header {
-  position: relative;
-  z-index: 10;
-  background: linear-gradient(180deg, rgba(8,12,16,0.95) 0%, rgba(13,17,23,0.90) 100%);
-  border-bottom: 1px solid var(--blue-line);
-  backdrop-filter: blur(8px);
-}
+  .header-sub {
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    color: rgba(100,200,220,0.35);
+    font-weight: 300;
+  }
 
-/* 頂部亮線 */
-.header::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg,
-    transparent 0%,
-    var(--blue-dim) 20%,
-    var(--blue) 50%,
-    var(--blue-dim) 80%,
-    transparent 100%);
-}
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-shrink: 0;
+  }
 
-.header-inner {
-  max-width: 1360px;
-  margin: 0 auto;
-  padding: 36px 60px 32px;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 32px;
-}
+  .badge {
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    color: rgba(77,216,232,0.35);
+    border: 1px solid rgba(77,216,232,0.14);
+    padding: 5px 12px;
+    border-radius: 2px;
+    font-weight: 300;
+  }
 
-.eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 14px;
-}
-.eyebrow-line {
-  width: 28px; height: 1px;
-  background: linear-gradient(90deg, var(--blue), transparent);
-}
-.eyebrow-text {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  letter-spacing: 0.34em;
-  text-transform: uppercase;
-  color: var(--blue);
-  opacity: 0.80;
-}
+  .counter-box {
+    font-size: clamp(52px, 6vw, 72px);
+    font-weight: 700;
+    color: rgba(77,216,232,0.07);
+    letter-spacing: -0.04em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    border: 1px solid rgba(77,216,232,0.05);
+    padding: 6px 16px;
+    border-radius: 4px;
+  }
 
-/* 主標題：富時代 AI 決策引擎 */
-.site-title {
-  font-family: 'Noto Serif TC', serif;
-  font-size: clamp(38px, 5vw, 68px);
-  font-weight: 700;
-  line-height: 1.0;
-  letter-spacing: -0.01em;
-  display: flex;
-  align-items: baseline;
-  gap: 0.15em;
-}
-.site-title .brand {
-  color: #d4b896;
-  text-shadow: 0 0 50px rgba(212,184,150,0.30);
-}
-.site-title .ai-label {
-  color: var(--text-primary);
-  font-size: 0.95em;
-}
-.site-title .sys-label {
-  color: var(--text-primary);
-}
+  /* ── GRID ── */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1px;
+    background: var(--border-card);
+    margin: 28px 48px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid rgba(100,200,220,0.11);
+    flex: 1;
+  }
 
-.site-subtitle {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  letter-spacing: 0.26em;
-  text-transform: uppercase;
-  color: var(--text-dim);
-  margin-top: 10px;
-}
-.site-subtitle .sub-brand { color: var(--blue-dim); }
+  .card {
+    background: var(--bg-card);
+    padding: 26px 22px 22px;
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+    transition: background 0.25s ease;
+    position: relative;
+    min-height: 260px;
+    text-decoration: none;
+    color: inherit;
+  }
 
-/* 右側裝飾數字 */
-.header-right { text-align: right; flex-shrink: 0; padding-bottom: 2px; }
-.deco-num {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 64px;
-  font-weight: 400;
-  line-height: 1;
-  letter-spacing: -0.04em;
-  color: transparent;
-  -webkit-text-stroke: 1px rgba(74,158,202,0.35);
-  /* 圖片中右上的手寫字感 */
-  font-style: italic;
-}
-.deco-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 9.5px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--text-dim);
-  margin-top: 4px;
-}
+  .card:hover {
+    background: var(--bg-card-hover);
+  }
 
-/* ════ 系統大標 ════ */
-.system-banner {
-  max-width: 1360px;
-  margin: 36px auto 0;
-  padding: 0 60px;
-  position: relative;
-  z-index: 10;
-}
-.system-banner-inner {
-  background: linear-gradient(135deg, rgba(74,158,202,0.06) 0%, rgba(8,12,16,0.0) 60%);
-  border: 1px solid var(--border-v);
-  border-radius: var(--r);
-  padding: 32px 56px 30px;
-  display: flex;
-  align-items: baseline;
-  gap: 24px;
-  position: relative;
-  overflow: hidden;
-}
-.system-banner-inner::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, transparent, var(--blue) 40%, var(--teal) 60%, transparent);
-  opacity: 0.6;
-}
-.system-banner-inner::after {
-  content: '';
-  position: absolute;
-  top: 0; right: 0; bottom: 0; width: 40%;
-  background: radial-gradient(ellipse 80% 100% at 100% 50%, rgba(74,158,202,0.07) 0%, transparent 70%);
-  pointer-events: none;
-}
-.sys-big-title {
-  font-family: 'Noto Serif TC', serif;
-  font-size: clamp(32px, 4.5vw, 58px);
-  font-weight: 700;
-  color: var(--text-primary);
-  letter-spacing: 0.06em;
-  line-height: 1;
-  position: relative;
-  z-index: 1;
-}
-.sys-big-title .highlight {
-  color: var(--blue-bright);
-  text-shadow: 0 0 40px rgba(126,200,232,0.35);
-}
-.sys-sub-info {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--text-dim);
-  position: relative;
-  z-index: 1;
-}
-.sys-deco-num {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 80px;
-  font-weight: 400;
-  color: transparent;
-  -webkit-text-stroke: 1px rgba(74,158,202,0.15);
-  position: absolute;
-  right: 56px;
-  top: 50%;
-  transform: translateY(-50%);
-  letter-spacing: -0.04em;
-  pointer-events: none;
-  z-index: 0;
-}
+  .card-line {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: transparent;
+    transition: background 0.3s ease;
+  }
 
-/* ════ 分隔線 ════ */
-.divider {
-  max-width: 1360px;
-  margin: 28px auto 0;
-  padding: 0 60px;
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  position: relative;
-  z-index: 10;
-}
-.div-line {
-  flex: 1; height: 1px;
-  background: linear-gradient(90deg,
-    transparent,
-    var(--blue-line) 25%,
-    var(--blue-line-v) 50%,
-    var(--blue-line) 75%,
-    transparent);
-}
-.div-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--blue-dim); }
-.div-text {
-  font-family: 'DM Mono', monospace;
-  font-size: 9px;
-  letter-spacing: 0.30em;
-  text-transform: uppercase;
-  color: var(--text-dim);
-  white-space: nowrap;
-}
+  .card:hover .card-line {
+    background: rgba(77,216,232,0.28);
+  }
 
-/* ════ 工具區 ════ */
-.tools {
-  max-width: 1360px;
-  margin: 0 auto;
-  padding: 24px 60px 0;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  position: relative;
-  z-index: 10;
-}
+  /* staggered entrance */
+  .card { animation: fadeUp 0.55s ease both; }
+  .card:nth-child(1) { animation-delay: 0.08s; }
+  .card:nth-child(2) { animation-delay: 0.14s; }
+  .card:nth-child(3) { animation-delay: 0.20s; }
+  .card:nth-child(4) { animation-delay: 0.26s; }
+  .card:nth-child(5) { animation-delay: 0.32s; }
+  .card:nth-child(6) { animation-delay: 0.38s; }
 
-/* ── Hero 卡 ── */
-.hero {
-  display: grid;
-  grid-template-columns: 200px 1fr auto;
-  align-items: center;
-  gap: 0;
-  background: var(--bg-hero);
-  border: 1px solid var(--border-v);
-  border-radius: var(--r);
-  text-decoration: none;
-  color: var(--text-primary);
-  position: relative;
-  overflow: hidden;
-  box-shadow: var(--shadow-sm), var(--shadow-blue);
-  min-height: 200px;
-  transition: transform 0.28s cubic-bezier(0.25,0.46,0.45,0.94),
-              box-shadow 0.28s ease,
-              border-color 0.28s ease;
-}
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 18px;
+  }
 
-/* 左側藍色科技側邊 */
-.hero-side {
-  height: 100%;
-  background: linear-gradient(180deg, rgba(74,158,202,0.06) 0%, rgba(74,158,202,0.03) 100%);
-  border-right: 1px solid var(--border-v);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 32px 20px;
-  gap: 16px;
-  position: relative;
-}
+  .icon {
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgba(77,216,232,0.18);
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(77,216,232,0.04);
+    flex-shrink: 0;
+  }
 
-/* 左側 HUD 數據條 */
-.hud-data {
-  font-family: 'DM Mono', monospace;
-  font-size: 8px;
-  color: var(--blue-dim);
-  letter-spacing: 0.12em;
-  line-height: 2;
-  align-self: flex-start;
-  opacity: 0.6;
-}
+  .icon svg {
+    width: 18px;
+    height: 18px;
+    stroke: var(--accent);
+    fill: none;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
 
-/* 3D 水晶圖示容器 */
-.hero-crystal {
-  width: 110px;
-  height: 110px;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.hero-crystal svg {
-  width: 100%;
-  height: 100%;
-  filter: drop-shadow(0 0 12px rgba(74,158,202,0.50)) drop-shadow(0 0 30px rgba(74,158,202,0.25));
-  animation: crystalFloat 4s ease-in-out infinite;
-}
-@keyframes crystalFloat {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50%       { transform: translateY(-8px) rotate(3deg); }
-}
+  .card-num {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: rgba(100,200,220,0.2);
+    font-variant-numeric: tabular-nums;
+  }
 
-/* 左側邊碼 */
-.hero-side-code {
-  font-family: 'DM Mono', monospace;
-  font-size: 7.5px;
-  color: var(--blue-dim);
-  letter-spacing: 0.10em;
-  opacity: 0.5;
-  align-self: flex-start;
-}
+  .card-tag {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--text-label);
+    margin-bottom: 8px;
+    font-weight: 300;
+  }
 
-/* Hero 主體 */
-.hero-body {
-  flex: 1;
-  padding: 40px 44px;
-  position: relative;
-  z-index: 1;
-}
+  .card-name {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.35;
+    margin-bottom: 12px;
+  }
 
-/* Hero 右側星雲背景 */
-.hero-body::after {
-  content: '';
-  position: absolute;
-  top: 0; right: -50px; bottom: 0;
-  width: 320px;
-  background: 
-    radial-gradient(ellipse 60% 70% at 80% 40%, rgba(74,158,202,0.08) 0%, transparent 70%),
-    radial-gradient(ellipse 40% 50% at 90% 80%, rgba(61,214,200,0.05) 0%, transparent 60%);
-  pointer-events: none;
-}
+  .card-desc {
+    font-size: 11.5px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    flex: 1;
+  }
 
-.hero-tag {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  letter-spacing: 0.28em;
-  text-transform: uppercase;
-  color: var(--blue);
-  margin-bottom: 12px;
-  opacity: 0.85;
-}
+  .card-cta {
+    margin-top: 20px;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    color: var(--accent-dim);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.2s ease;
+    border-top: 1px solid rgba(77,216,232,0.07);
+    padding-top: 14px;
+  }
 
-.hero-title {
-  font-family: 'Noto Serif TC', serif;
-  font-size: 44px;
-  font-weight: 700;
-  color: var(--text-primary);
-  line-height: 1.1;
-  margin-bottom: 14px;
-  letter-spacing: 0.02em;
-}
+  .card-cta::after {
+    content: '↗';
+    font-size: 11px;
+  }
 
-.hero-desc {
-  font-size: 13px;
-  color: var(--text-sub);
-  line-height: 1.80;
-  letter-spacing: 0.05em;
-}
-.hero-desc .sep { opacity: 0.4; margin: 0 6px; }
+  .card:hover .card-cta {
+    color: var(--accent);
+  }
 
-/* Chips */
-.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
-.chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  letter-spacing: 0.10em;
-  padding: 6px 14px;
-  border-radius: 100px;
-  border: 1px solid rgba(74,158,202,0.28);
-  color: var(--text-sub);
-  background: rgba(74,158,202,0.07);
-  transition: all 0.18s ease;
-}
-.chip-icon { font-size: 11px; opacity: 0.75; }
-.hero:hover .chip {
-  background: rgba(74,158,202,0.14);
-  border-color: rgba(74,158,202,0.55);
-  color: var(--blue-bright);
-}
+  /* ── FOOTER ── */
+  footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 48px;
+    border-top: 1px solid var(--border);
+    animation: fadeUp 0.5s 0.5s ease both;
+  }
 
-/* 右側箭頭 */
-.hero-arrow-wrap {
-  padding: 40px 40px 40px 20px;
-  display: flex;
-  align-items: center;
-  z-index: 1;
-}
-.hero-arrow {
-  font-size: 20px;
-  color: var(--blue);
-  opacity: 0.45;
-  transition: transform 0.22s ease, opacity 0.22s ease;
-}
-.hero:hover { transform: translateY(-3px); box-shadow: var(--shadow-md), var(--shadow-blue-v); border-color: rgba(74,158,202,0.50); }
-.hero:hover .hero-arrow { transform: translate(5px,-5px); opacity: 1; }
+  .footer-l {
+    font-size: 9.5px;
+    letter-spacing: 0.12em;
+    color: rgba(100,200,220,0.22);
+  }
 
-/* ── 六欄小卡 ── */
-.row {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 14px;
-}
+  .footer-r {
+    font-size: 9.5px;
+    letter-spacing: 0.16em;
+    color: rgba(77,216,232,0.18);
+  }
 
-.card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--r);
-  padding: 24px 20px 20px;
-  text-decoration: none;
-  color: var(--text-primary);
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.40);
-  transition: transform 0.25s cubic-bezier(0.25,0.46,0.45,0.94),
-              box-shadow 0.25s ease,
-              border-color 0.25s ease,
-              background 0.25s ease;
-}
+  /* ── ANIMATIONS ── */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
 
-/* 頂部亮線 */
-.card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg,
-    transparent, var(--blue-dim) 30%, var(--blue) 50%, var(--blue-dim) 70%, transparent);
-  opacity: 0;
-  transition: opacity 0.22s ease;
-}
-.card:hover { transform: translateY(-5px); background: var(--bg-lift); box-shadow: var(--shadow-md), var(--shadow-blue); border-color: var(--border-v); }
-.card:hover::before { opacity: 1; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
 
-/* 卡片頂部：圖示 + 編號 */
-.card-top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 18px;
-}
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1100px) {
+    .grid { grid-template-columns: repeat(3, 1fr); margin: 24px 32px; }
+    header { padding: 28px 32px 22px; }
+    footer { padding: 14px 32px; }
+  }
 
-/* 3D 圖示區 */
-.card-icon-wrap {
-  width: 60px; height: 60px;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.card-icon-wrap svg {
-  width: 100%;
-  height: 100%;
-  filter: drop-shadow(0 0 8px rgba(74,158,202,0.40));
-  transition: filter 0.22s ease, transform 0.22s ease;
-}
-.card:hover .card-icon-wrap svg {
-  filter: drop-shadow(0 0 14px rgba(74,158,202,0.65));
-  transform: scale(1.08) translateY(-2px);
-}
+  @media (max-width: 680px) {
+    .grid { grid-template-columns: repeat(2, 1fr); margin: 16px 16px; }
+    header { padding: 22px 20px 18px; flex-direction: column; align-items: flex-start; gap: 12px; }
+    footer { padding: 12px 20px; }
+    .counter-box { font-size: 44px; }
+  }
 
-.card-num {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  color: var(--blue-dim);
-  letter-spacing: 0.08em;
-  opacity: 0.6;
-}
-
-.card-body { flex: 1; display: flex; flex-direction: column; }
-
-.card-tag {
-  font-family: 'DM Mono', monospace;
-  font-size: 8.5px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--blue-dim);
-  margin-bottom: 7px;
-  opacity: 0.80;
-}
-.card:hover .card-tag { color: var(--blue); opacity: 1; }
-
-.card-title {
-  font-family: 'Noto Serif TC', serif;
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  line-height: 1.25;
-  color: var(--text-primary);
-  margin-bottom: 10px;
-}
-
-.card-desc {
-  font-size: 11.5px;
-  color: var(--text-sub);
-  line-height: 1.85;
-  flex: 1;
-  letter-spacing: 0.03em;
-}
-
-.card-footer {
-  margin-top: 16px;
-  padding-top: 12px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.card-cta {
-  font-family: 'DM Mono', monospace;
-  font-size: 9px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--text-dim);
-  transition: color 0.18s ease;
-}
-.card:hover .card-cta { color: var(--blue); }
-.card-arrow { font-size: 13px; color: rgba(74,158,202,0.30); transition: transform 0.2s ease, color 0.2s ease; }
-.card:hover .card-arrow { transform: translate(4px,-4px); color: var(--blue); }
-
-/* ════ Footer ════ */
-.footer-wrap {
-  max-width: 1360px;
-  margin: 28px auto 0;
-  padding: 18px 60px 44px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: relative;
-  z-index: 10;
-}
-.footer-l { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.14em; color: var(--text-dim); }
-.footer-r { font-family: 'DM Mono', monospace; font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--blue-dim); }
-
-/* ════ 入場動畫 ════ */
-@keyframes riseIn {
-  from { opacity: 0; transform: translateY(20px); filter: blur(3px); }
-  to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
-}
-.header      { animation: riseIn 0.70s cubic-bezier(0.22,1,0.36,1) both; }
-.divider     { animation: riseIn 0.60s 0.10s cubic-bezier(0.22,1,0.36,1) both; }
-.card        { animation: riseIn 0.55s cubic-bezier(0.22,1,0.36,1) both; }
-.card:nth-child(1) { animation-delay: 0.28s; }
-.card:nth-child(2) { animation-delay: 0.33s; }
-.card:nth-child(3) { animation-delay: 0.38s; }
-.card:nth-child(4) { animation-delay: 0.43s; }
-.card:nth-child(5) { animation-delay: 0.48s; }
-.card:nth-child(6) { animation-delay: 0.53s; }
-.footer-wrap { animation: riseIn 0.50s 0.62s cubic-bezier(0.22,1,0.36,1) both; }
-
-@media (prefers-reduced-motion: reduce) {
-  * { animation: none !important; }
-}
-
-/* RWD */
-@media (max-width: 1200px) {
-  .row { grid-template-columns: repeat(3, 1fr) !important; }
-  .hero { grid-template-columns: 160px 1fr auto; }
-  .system-banner-inner { padding: 24px 32px; }
-}
-@media (max-width: 768px) {
-  .row { grid-template-columns: repeat(2, 1fr) !important; }
-  .hero { grid-template-columns: 1fr; }
-  .hero-side { display: none; }
-  .hero-body { padding: 28px 24px; }
-  .system-banner { padding: 0 20px; }
-  .sys-big-title { font-size: 28px; }
-  .sys-deco-num { display: none; }
-}
-@media (max-width: 640px) {
-  .header-inner { padding: 28px 20px 24px; flex-direction: column; align-items: flex-start; }
-  .header-right { display: none; }
-  .divider, .tools { padding-left: 20px; padding-right: 20px; }
-  .row { grid-template-columns: 1fr 1fr !important; gap: 10px; }
-  .footer-wrap { padding: 16px 20px 40px; flex-direction: column; gap: 6px; }
-}
+  @media (max-width: 420px) {
+    .grid { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
+<div class="wrap">
 
-<!-- 粒子網格背景 -->
-<canvas id="bgCanvas"></canvas>
-
-<div id="mainApp">
-
-<!-- ══ Header ══ -->
-<header class="header">
-  <div class="header-inner">
-    <div class="header-left">
-      <div class="eyebrow">
-        <div class="eyebrow-line"></div>
-        <span class="eyebrow-text">Richtime Internal Portal</span>
-      </div>
-      <h1 class="site-title">
-        <span class="brand">富時代</span>&nbsp;<span class="ai-label">AI</span>&nbsp;<span class="sys-label">決策引擎</span>
-      </h1>
-      <div class="site-subtitle">
-        <span class="sub-brand">RICHTIME</span>&nbsp;·&nbsp;AI DECISION ENGINE
-      </div>
+  <header>
+    <div>
+      <div class="header-meta">RICHTIME · INTEGRATED INTELLIGENCE PLATFORM</div>
+      <h1>富時代 <em>六大</em>系統</h1>
+      <div class="header-sub">SIX CORE SYSTEMS · AI-DRIVEN · REAL ESTATE EXCELLENCE</div>
     </div>
     <div class="header-right">
-      <div class="deco-num">05</div>
-      <div class="deco-label">核心工具</div>
+      <div class="badge">V1.4 · 2026</div>
+      <div class="counter-box">06</div>
     </div>
-  </div>
-</header>
+  </header>
 
-<!-- 分隔線 -->
-<div class="divider">
-  <div class="div-line"></div>
-  <div class="div-dot"></div>
-  <div class="div-text">選擇工具入口</div>
-  <div class="div-dot"></div>
-  <div class="div-line"></div>
-</div>
+  <div class="grid">
 
-<!-- 系統大標 -->
-<div class="system-banner" style="animation: riseIn 0.65s 0.12s cubic-bezier(0.22,1,0.36,1) both;">
-  <div class="system-banner-inner">
-    <div>
-      <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.30em;text-transform:uppercase;color:var(--blue);opacity:0.7;margin-bottom:12px;">Richtime · Integrated Intelligence Platform</div>
-      <div class="sys-big-title">富時代 <span class="highlight">六大</span>系統</div>
-      <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.20em;color:var(--text-dim);margin-top:12px;text-transform:uppercase;">Six Core Systems · AI-Driven · Real Estate Excellence</div>
-    </div>
-    <div class="sys-deco-num">06</div>
-  </div>
-</div>
-
-<!-- 工具區 -->
-<div class="tools">
-
-  <!-- ══ 六欄小卡 ══ -->
-  <div class="row" style="grid-template-columns: repeat(6, 1fr);">
-
-    <!-- 00 顧問決策系統 -->
-    <a class="card"
-       href="https://richtime90117277-alt.github.io/futime-crm/crm_cloud_v19.html"
-       target="_blank">
+    <!-- S1 顧問決策系統 -->
+    <a class="card" href="#crm">
+      <div class="card-line"></div>
       <div class="card-top">
-        <div class="card-icon-wrap">
-          <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="g00a" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#7ec8e8" stop-opacity="0.9"/>
-                <stop offset="100%" stop-color="#4a9eca" stop-opacity="0.4"/>
-              </linearGradient>
-              <linearGradient id="g00b" x1="100%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stop-color="#3dd6c8" stop-opacity="0.6"/>
-                <stop offset="100%" stop-color="#2a5f80" stop-opacity="0.3"/>
-              </linearGradient>
-              <filter id="glow00">
-                <feGaussianBlur stdDeviation="1.5" result="blur"/>
-                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-              </filter>
-            </defs>
-            <ellipse cx="30" cy="30" rx="22" ry="7" fill="none" stroke="rgba(74,158,202,0.20)" stroke-width="0.7" transform="rotate(-30 30 30)"/>
-            <polygon points="30,10 42,20 42,40 30,48 18,40 18,20" fill="rgba(74,158,202,0.06)" stroke="rgba(74,158,202,0.30)" stroke-width="0.7"/>
-            <polygon points="30,10 42,20 30,28 18,20" fill="url(#g00a)" opacity="0.70"/>
-            <polygon points="30,28 42,20 42,40 30,48" fill="url(#g00b)" opacity="0.40"/>
-            <polygon points="30,28 18,20 18,40 30,48" fill="rgba(74,158,202,0.15)"/>
-            <line x1="30" y1="10" x2="30" y2="28" stroke="rgba(255,255,255,0.20)" stroke-width="0.5"/>
-            <polyline points="24,28 28,32 36,23" fill="none" stroke="rgba(255,255,255,0.90)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow00)"/>
-            <circle cx="30" cy="10" r="2" fill="#7ec8e8" opacity="0.85"/>
-          </svg>
+        <div class="icon">
+          <svg viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>
         </div>
-        <div class="card-num">00</div>
+        <div class="card-num">S1</div>
       </div>
-      <div class="card-body">
-        <div class="card-tag">核心系統</div>
-        <div class="card-title">顧問決策系統</div>
-        <div class="card-desc">客戶分析・決策節點・即時顧問支援・CRM 全流程</div>
-      </div>
-      <div class="card-footer">
-        <span class="card-cta">進入系統</span>
-        <span class="card-arrow">↗</span>
-      </div>
+      <div class="card-tag">核心系統</div>
+      <div class="card-name">顧問決策系統</div>
+      <div class="card-desc">客戶分析・決策節點・即時顧問支援・CRM 全流程</div>
+      <div class="card-cta">進入系統</div>
     </a>
 
-    <!-- 01 資產決策報告 -->
-    <a class="card"
-       href="https://richtime90117277-alt.github.io/futime-crm/asset-planner.html"
-       target="_blank">
+    <!-- S2 AI資產規劃報告 -->
+    <a class="card" href="#ai-report">
+      <div class="card-line"></div>
       <div class="card-top">
-        <div class="card-icon-wrap">
-          <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="g01a" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#7ec8e8" stop-opacity="0.8"/>
-                <stop offset="100%" stop-color="#4a9eca" stop-opacity="0.3"/>
-              </linearGradient>
-            </defs>
-            <polygon points="30,8 50,18 50,42 30,52 10,42 10,18" fill="rgba(74,158,202,0.08)" stroke="rgba(74,158,202,0.40)" stroke-width="0.8"/>
-            <polygon points="30,8 50,18 30,28 10,18" fill="url(#g01a)" opacity="0.5"/>
-            <polygon points="30,28 50,18 50,42 30,52" fill="rgba(74,158,202,0.20)"/>
-            <polygon points="30,28 10,18 10,42 30,52" fill="rgba(74,158,202,0.10)"/>
-            <line x1="20" y1="38" x2="20" y2="30" stroke="#3dd6c8" stroke-width="2" stroke-linecap="round"/>
-            <line x1="25" y1="38" x2="25" y2="26" stroke="#4a9eca" stroke-width="2" stroke-linecap="round"/>
-            <line x1="30" y1="38" x2="30" y2="22" stroke="#7ec8e8" stroke-width="2" stroke-linecap="round"/>
-            <line x1="35" y1="38" x2="35" y2="28" stroke="#4a9eca" stroke-width="2" stroke-linecap="round"/>
-            <line x1="16" y1="22" x2="42" y2="34" stroke="rgba(255,255,255,0.30)" stroke-width="0.8"/>
-            <circle cx="50" cy="18" r="1.5" fill="#7ec8e8" opacity="0.7"/>
-          </svg>
+        <div class="icon">
+          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
         </div>
-        <div class="card-num">01</div>
+        <div class="card-num">S2</div>
       </div>
-      <div class="card-body">
-        <div class="card-tag">諮詢工具</div>
-        <div class="card-title">資產決策報告</div>
-        <div class="card-desc">ROI 分析・多策比較，協助客戶做出理性判斷</div>
-      </div>
-      <div class="card-footer">
-        <span class="card-cta">開啟工具</span>
-        <span class="card-arrow">↗</span>
-      </div>
+      <div class="card-tag">規劃工具</div>
+      <div class="card-name">AI 資產規劃報告</div>
+      <div class="card-desc">ROI 分析・多策略比較・AI 自動生成個案報告</div>
+      <div class="card-cta">開啟工具</div>
     </a>
 
-    <!-- 02 官網與近期活動（合併） -->
-    <a class="card"
-       href="https://www.notion.so/625809993b2746b7842e022bd0279fe7?source=copy_link"
-       target="_blank">
+    <!-- S3 官網與近期活動 -->
+    <a class="card" href="https://richtimes.tw" target="_blank">
+      <div class="card-line"></div>
       <div class="card-top">
-        <div class="card-icon-wrap">
-          <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="g02b" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#3dd6c8" stop-opacity="0.75"/>
-                <stop offset="100%" stop-color="#4a9eca" stop-opacity="0.30"/>
-              </linearGradient>
-            </defs>
-            <!-- 地球儀外圓 -->
-            <circle cx="30" cy="30" r="20" fill="rgba(74,158,202,0.07)" stroke="rgba(74,158,202,0.40)" stroke-width="0.8"/>
-            <!-- 經緯線 -->
-            <ellipse cx="30" cy="30" rx="10" ry="20" fill="none" stroke="rgba(74,158,202,0.30)" stroke-width="0.7"/>
-            <ellipse cx="30" cy="30" rx="20" ry="8" fill="none" stroke="rgba(74,158,202,0.25)" stroke-width="0.6"/>
-            <line x1="10" y1="30" x2="50" y2="30" stroke="rgba(74,158,202,0.25)" stroke-width="0.6"/>
-            <!-- 頂部光暈 -->
-            <path d="M18,18 Q30,10 42,18" fill="none" stroke="url(#g02b)" stroke-width="1.2" stroke-linecap="round"/>
-            <!-- 日曆角標 -->
-            <rect x="36" y="36" width="18" height="16" rx="3" fill="#080c10" stroke="rgba(61,214,200,0.50)" stroke-width="0.8"/>
-            <rect x="36" y="36" width="18" height="6" rx="3" fill="rgba(61,214,200,0.35)"/>
-            <rect x="38" y="45" width="4" height="3" rx="1" fill="rgba(74,158,202,0.40)"/>
-            <rect x="44" y="45" width="4" height="3" rx="1" fill="rgba(61,214,200,0.55)" stroke="rgba(61,214,200,0.70)" stroke-width="0.4"/>
-            <circle cx="40" cy="34" r="1.2" fill="rgba(74,158,202,0.70)"/>
-            <circle cx="50" cy="34" r="1.2" fill="rgba(74,158,202,0.70)"/>
-          </svg>
+        <div class="icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
         </div>
-        <div class="card-num">02</div>
+        <div class="card-num">S3</div>
       </div>
-      <div class="card-body">
-        <div class="card-tag">品牌 · 行銷</div>
-        <div class="card-title">官網與近期活動</div>
-        <div class="card-desc">🌐 富時代官網 · 精美活動入口，提升品牌形象與報名質量</div>
-      </div>
-      <div class="card-footer">
-        <span class="card-cta">開啟頁面</span>
-        <span class="card-arrow">↗</span>
-      </div>
+      <div class="card-tag">品牌・行銷</div>
+      <div class="card-name">官網與近期活動</div>
+      <div class="card-desc">富時代官網・精美活動入口・提升品牌形象與報名質量</div>
+      <div class="card-cta">開啟頁面</div>
     </a>
 
-    <!-- 03 知識中框系統 -->
-    <a class="card"
-       href="https://www.notion.so/059972580dae4a54b07a57fd410b3090"
-       target="_blank">
+    <!-- S4 知識中樞系統 -->
+    <a class="card" href="#knowledge">
+      <div class="card-line"></div>
       <div class="card-top">
-        <div class="card-icon-wrap">
-          <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="g04a" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#4a9eca" stop-opacity="0.8"/>
-                <stop offset="100%" stop-color="#2a5f80" stop-opacity="0.4"/>
-              </linearGradient>
-            </defs>
-            <rect x="12" y="36" width="36" height="14" rx="3" fill="rgba(42,95,128,0.50)" stroke="rgba(74,158,202,0.25)" stroke-width="0.7"/>
-            <rect x="10" y="28" width="36" height="14" rx="3" fill="rgba(74,158,202,0.15)" stroke="rgba(74,158,202,0.35)" stroke-width="0.7"/>
-            <rect x="8" y="20" width="36" height="14" rx="3" fill="url(#g04a)" opacity="0.55" stroke="rgba(74,158,202,0.50)" stroke-width="0.7"/>
-            <rect x="6" y="12" width="36" height="14" rx="3" fill="rgba(74,158,202,0.20)" stroke="rgba(74,158,202,0.55)" stroke-width="0.8"/>
-            <line x1="10" y1="16" x2="36" y2="16" stroke="rgba(255,255,255,0.18)" stroke-width="0.8"/>
-            <line x1="10" y1="19" x2="30" y2="19" stroke="rgba(255,255,255,0.10)" stroke-width="0.6"/>
-            <circle cx="50" cy="20" r="5" fill="rgba(61,214,200,0.15)" stroke="rgba(61,214,200,0.45)" stroke-width="0.8"/>
-            <circle cx="50" cy="20" r="2" fill="#3dd6c8" opacity="0.65"/>
-          </svg>
+        <div class="icon">
+          <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
         </div>
-        <div class="card-num">03</div>
+        <div class="card-num">S4</div>
       </div>
-      <div class="card-body">
-        <div class="card-tag">知識中樞</div>
-        <div class="card-title">知識中框系統</div>
-        <div class="card-desc">話術庫・培訓系統・決策邏輯，持續優化顧問能力</div>
-      </div>
-      <div class="card-footer">
-        <span class="card-cta">進入 Notion</span>
-        <span class="card-arrow">↗</span>
-      </div>
+      <div class="card-tag">知識中樞</div>
+      <div class="card-name">知識中樞系統</div>
+      <div class="card-desc">話術庫・培訓系統・決策邏輯・持續優化顧問能力</div>
+      <div class="card-cta">進入 NOTION</div>
     </a>
 
-    <!-- 04 溝通策略資料庫 -->
-    <a class="card"
-       href="https://richtime90117277-alt.github.io/futime-crm/LIB.html"
-       target="_blank">
+    <!-- S5 話術教材庫 -->
+    <a class="card" href="#scripts">
+      <div class="card-line"></div>
       <div class="card-top">
-        <div class="card-icon-wrap">
-          <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="g05a" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#7ec8e8" stop-opacity="0.7"/>
-                <stop offset="100%" stop-color="#4a9eca" stop-opacity="0.3"/>
-              </linearGradient>
-            </defs>
-            <rect x="8" y="10" width="34" height="22" rx="6" fill="url(#g05a)" opacity="0.45" stroke="rgba(74,158,202,0.45)" stroke-width="0.8"/>
-            <polygon points="14,32 10,40 22,34" fill="rgba(74,158,202,0.35)" stroke="rgba(74,158,202,0.40)" stroke-width="0.6"/>
-            <rect x="20" y="30" width="32" height="18" rx="5" fill="rgba(74,158,202,0.12)" stroke="rgba(74,158,202,0.30)" stroke-width="0.7"/>
-            <polygon points="46,48 50,54 38,50" fill="rgba(74,158,202,0.20)" stroke="rgba(74,158,202,0.25)" stroke-width="0.5"/>
-            <line x1="14" y1="18" x2="34" y2="18" stroke="rgba(255,255,255,0.25)" stroke-width="1.2" stroke-linecap="round"/>
-            <line x1="14" y1="23" x2="28" y2="23" stroke="rgba(255,255,255,0.15)" stroke-width="1" stroke-linecap="round"/>
-            <line x1="26" y1="36" x2="46" y2="36" stroke="rgba(255,255,255,0.20)" stroke-width="1" stroke-linecap="round"/>
-          </svg>
+        <div class="icon">
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
         </div>
-        <div class="card-num">04</div>
+        <div class="card-num">S5</div>
       </div>
-      <div class="card-body">
-        <div class="card-tag">溝通策略</div>
-        <div class="card-title">溝通策略資料庫</div>
-        <div class="card-desc">話術應對・對話模型，提升客戶理解與信任</div>
-      </div>
-      <div class="card-footer">
-        <span class="card-cta">開啟話術庫</span>
-        <span class="card-arrow">↗</span>
-      </div>
+      <div class="card-tag">溝通策略</div>
+      <div class="card-name">話術教材庫</div>
+      <div class="card-desc">話術應對・對話模型・SOS 異議處理・情境演練腳本</div>
+      <div class="card-cta">開啟教材庫</div>
     </a>
 
-    <!-- 05 精選優質物件 -->
-    <a class="card" href="https://www.notion.so/68f46f920de14f07bc4161d221a83995?source=copy_link" target="_blank">
+    <!-- S6 頂級物件展廳 -->
+    <a class="card" href="#properties">
+      <div class="card-line"></div>
       <div class="card-top">
-        <div class="card-icon-wrap">
-          <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="g06b" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#d4b896" stop-opacity="0.80"/>
-                <stop offset="100%" stop-color="#a07850" stop-opacity="0.35"/>
-              </linearGradient>
-              <linearGradient id="g06c" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#7ec8e8" stop-opacity="0.60"/>
-                <stop offset="100%" stop-color="#4a9eca" stop-opacity="0.20"/>
-              </linearGradient>
-            </defs>
-            <!-- 建築主體 -->
-            <rect x="16" y="26" width="28" height="26" rx="1" fill="rgba(74,158,202,0.08)" stroke="rgba(212,184,150,0.45)" stroke-width="0.8"/>
-            <!-- 屋頂三角 -->
-            <polygon points="30,8 48,26 12,26" fill="url(#g06b)" opacity="0.55"/>
-            <line x1="12" y1="26" x2="48" y2="26" stroke="rgba(212,184,150,0.60)" stroke-width="0.8"/>
-            <!-- 窗戶 -->
-            <rect x="20" y="32" width="7" height="7" rx="1" fill="rgba(74,158,202,0.25)" stroke="rgba(74,158,202,0.50)" stroke-width="0.6"/>
-            <rect x="33" y="32" width="7" height="7" rx="1" fill="rgba(74,158,202,0.25)" stroke="rgba(74,158,202,0.50)" stroke-width="0.6"/>
-            <!-- 門 -->
-            <rect x="25" y="40" width="10" height="12" rx="1.5" fill="rgba(212,184,150,0.25)" stroke="rgba(212,184,150,0.55)" stroke-width="0.7"/>
-            <!-- 頂部光點 -->
-            <circle cx="30" cy="8" r="2.2" fill="#d4b896" opacity="0.80"/>
-            <!-- 星形裝飾 -->
-            <circle cx="50" cy="14" r="1.2" fill="#3dd6c8" opacity="0.60"/>
-            <circle cx="10" cy="18" r="0.9" fill="#4a9eca" opacity="0.50"/>
-          </svg>
+        <div class="icon">
+          <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         </div>
-        <div class="card-num">05</div>
+        <div class="card-num">S6</div>
       </div>
-      <div class="card-body">
-        <div class="card-tag">精選物件</div>
-        <div class="card-title">頂級物件展廳</div>
-        <div class="card-desc">🏡 公司精選物件｜文華新站，精準配對客戶需求</div>
-      </div>
-      <div class="card-footer">
-        <span class="card-cta">查看物件</span>
-        <span class="card-arrow">↗</span>
-      </div>
+      <div class="card-tag">精選物件</div>
+      <div class="card-name">頂級物件展廳</div>
+      <div class="card-desc">公司精選物件・文華新站・精準配對客戶需求</div>
+      <div class="card-cta">查看物件</div>
     </a>
 
   </div>
-</div>
 
-<!-- Footer -->
-<footer class="footer-wrap">
-  <div class="footer-l">Richtime © 2026 ｜ 內部版僅供團隊使用</div>
-  <div class="footer-r">AI Decision Engine · v13</div>
-</footer>
+  <footer>
+    <div class="footer-l">Richtime © 2026 ｜ 內部版僅供團隊使用</div>
+    <div class="footer-r">AI DECISION ENGINE · V1.4</div>
+  </footer>
 
 </div>
-
-<script>
-// ══ 粒子網格背景 ══
-const canvas = document.getElementById('bgCanvas');
-const ctx = canvas.getContext('2d');
-let W, H, nodes = [], RAF;
-
-function resize() {
-  W = canvas.width  = window.innerWidth;
-  H = canvas.height = window.innerHeight;
-}
-
-function initNodes() {
-  nodes = [];
-  const count = Math.floor((W * H) / 18000);
-  for (let i = 0; i < count; i++) {
-    nodes.push({
-      x: Math.random() * W,
-      y: Math.random() * H,
-      vx: (Math.random() - 0.5) * 0.3,
-      vy: (Math.random() - 0.5) * 0.3,
-      r: Math.random() * 1.5 + 0.5,
-      a: Math.random() * 0.6 + 0.2,
-    });
-  }
-}
-
-function draw() {
-  ctx.clearRect(0, 0, W, H);
-
-  // 微弱的頂部漸層
-  const grad = ctx.createLinearGradient(0, 0, 0, H * 0.4);
-  grad.addColorStop(0, 'rgba(74,158,202,0.04)');
-  grad.addColorStop(1, 'transparent');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, W, H);
-
-  const maxDist = 140;
-
-  // 連線
-  for (let i = 0; i < nodes.length; i++) {
-    for (let j = i + 1; j < nodes.length; j++) {
-      const dx = nodes[j].x - nodes[i].x;
-      const dy = nodes[j].y - nodes[i].y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist < maxDist) {
-        const alpha = (1 - dist / maxDist) * 0.18;
-        ctx.beginPath();
-        ctx.strokeStyle = `rgba(74,158,202,${alpha})`;
-        ctx.lineWidth = 0.6;
-        ctx.moveTo(nodes[i].x, nodes[i].y);
-        ctx.lineTo(nodes[j].x, nodes[j].y);
-        ctx.stroke();
-      }
-    }
-  }
-
-  // 節點
-  nodes.forEach(n => {
-    ctx.beginPath();
-    ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(74,158,202,${n.a})`;
-    ctx.fill();
-
-    n.x += n.vx;
-    n.y += n.vy;
-    if (n.x < 0 || n.x > W) n.vx *= -1;
-    if (n.y < 0 || n.y > H) n.vy *= -1;
-  });
-
-  RAF = requestAnimationFrame(draw);
-}
-
-window.addEventListener('resize', () => { resize(); initNodes(); });
-resize();
-initNodes();
-draw();
-</script>
-
 </body>
 </html>
