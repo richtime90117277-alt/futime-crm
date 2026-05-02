@@ -312,14 +312,95 @@
   }
 
   @media (max-width: 680px) {
-    .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); margin: 16px 16px; }
-    header { padding: 22px 20px 18px; flex-direction: column; align-items: flex-start; gap: 12px; }
-    footer { padding: 12px 20px; flex-direction: column; gap: 6px; }
-    .counter-box { font-size: 44px; }
-  }
+    html, body { height: 100%; overflow: hidden; }
 
-  @media (max-width: 420px) {
-    .grid { grid-template-columns: 1fr; }
+    .wrap {
+      height: 100dvh;
+      min-height: unset;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 12px 16px 10px;
+      flex-direction: row;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .header-meta { font-size: 8px; margin-bottom: 4px; letter-spacing: 0.15em; }
+
+    h1 { font-size: 26px; margin-bottom: 4px; }
+
+    .header-sub { font-size: 8px; letter-spacing: 0.12em; }
+
+    .badge { display: none; }
+
+    .counter-box {
+      font-size: 36px;
+      padding: 4px 10px;
+    }
+
+    .grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin: 6px 10px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .card {
+      padding: 10px 10px 8px;
+      min-height: unset;
+    }
+
+    .card-top { margin-bottom: 6px; }
+
+    .icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 5px;
+    }
+
+    .icon svg { width: 13px; height: 13px; }
+
+    .card-num { font-size: 8px; }
+
+    .card-tag { font-size: 8px; margin-bottom: 3px; letter-spacing: 0.12em; }
+
+    .card-name { font-size: 12px; margin-bottom: 4px; line-height: 1.2; }
+
+    .card-desc { font-size: 9.5px; line-height: 1.5; }
+
+    .card-cta {
+      margin-top: 8px;
+      padding-top: 7px;
+      font-size: 8.5px;
+    }
+
+    .s5-btns {
+      margin-top: 8px;
+      padding-top: 7px;
+      gap: 5px;
+    }
+
+    .s5-btn {
+      padding: 6px 8px;
+      font-size: 9px;
+      gap: 5px;
+    }
+
+    .s5-btn svg { width: 10px; height: 10px; }
+
+    footer {
+      padding: 7px 16px;
+      flex-direction: row;
+      gap: 0;
+      flex-shrink: 0;
+    }
+
+    .footer-l, .footer-r { font-size: 8px; }
   }
 </style>
 </head>
