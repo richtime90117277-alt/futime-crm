@@ -11,25 +11,26 @@ body { font-family: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-se
 </style>
 <style>
 :root{
-  --gold:#b8962e;--gold-light:#d4af5a;--gold-pale:#fdf4e3;
-  --navy:#07192d;--navy-mid:#0f2744;--navy-light:#1a3a5c;
-  --cream:#faf7f2;--cream2:#f0e9dc;--white:#ffffff;--text:#0f1e2e;--text-soft:#4a5d6e;--text-muted:#8a9aaa;
+  /* ── 太空主題色系 v22 ── */
+  --gold:#00c8c8;--gold-light:#33d6d6;--gold-pale:#e6fafa;
+  --navy:#0a0c10;--navy-mid:#0f1318;--navy-light:#161c24;
+  --cream:#f0f4f8;--cream2:#e2eaf2;--white:#ffffff;--text:#0f1e2e;--text-soft:#4a5d6e;--text-muted:#8a9aaa;
   --success:#1e6b42;--success-bg:#e8f5ee;--danger:#b02a20;--danger-bg:#fdf0ee;
-  --shadow:0 2px 12px rgba(7,25,45,.07),0 8px 28px rgba(7,25,45,.05);
-  --shadow-lg:0 8px 40px rgba(7,25,45,.14);
-  --shadow-gold:0 4px 20px rgba(184,150,46,.25);
+  --shadow:0 2px 12px rgba(0,0,0,.12),0 8px 28px rgba(0,0,0,.08);
+  --shadow-lg:0 8px 40px rgba(0,0,0,.24);
+  --shadow-gold:0 4px 20px rgba(0,200,200,.25);
   --radius:16px;--radius-sm:10px;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{scroll-behavior:smooth}
 body{font-family:'Noto Sans TC',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;line-height:1.6}
-.login-page{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:1.5rem;background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 60%,#1e4d6b 100%)}
-.login-page::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9a84c' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");pointer-events:none}
+.login-page{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:1.5rem;background:linear-gradient(135deg,#050709 0%,#0a0c10 60%,#0d1318 100%)}
+.login-page::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2300c8c8' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");pointer-events:none}
 .login-box{background:var(--white);border-radius:24px;box-shadow:0 32px 80px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.04);max-width:420px;width:100%;overflow:hidden;animation:loginSlide .7s cubic-bezier(.22,.68,0,1.2)}
 @keyframes loginSlide{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
 .login-header{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-light) 100%);padding:2.5rem 2rem;text-align:center;position:relative;overflow:hidden}
 .login-header::after{content:'';position:absolute;bottom:-30px;left:50%;transform:translateX(-50%);width:200px;height:60px;background:var(--white);border-radius:50%}
-.logo-mark{width:72px;height:72px;background:linear-gradient(145deg,#c9a84c 0%,#f0d080 45%,#b8962e 100%);border-radius:22px;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:36px;font-weight:700;color:var(--navy);margin:0 auto 1.25rem;box-shadow:0 8px 32px rgba(184,150,46,.5),inset 0 1px 0 rgba(255,255,255,.3)}
+.logo-mark{width:72px;height:72px;background:linear-gradient(145deg,#00c8c8 0%,#33e0e0 45%,#009999 100%);border-radius:22px;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:36px;font-weight:700;color:var(--navy);margin:0 auto 1.25rem;box-shadow:0 8px 32px rgba(0,200,200,.5),inset 0 1px 0 rgba(255,255,255,.3)}
 .login-header h1{color:var(--white);font-size:22px;font-weight:600;letter-spacing:.06em;position:relative;z-index:1;font-family:'Playfair Display',serif}
 .login-header p{color:rgba(255,255,255,0.65);font-size:13px;margin-top:.25rem;position:relative;z-index:1}
 .login-body{padding:2.5rem 2rem 2rem}
@@ -42,7 +43,7 @@ label{display:block;font-size:12px;font-weight:700;color:var(--navy);letter-spac
 label:first-child{margin-top:0}
 select,input,textarea{width:100%;padding:.875rem 1rem;border:2px solid #e8edf2;border-radius:var(--radius-sm);font-size:15px;font-family:inherit;background:var(--cream);color:var(--text);transition:border-color .2s,box-shadow .2s;outline:none;appearance:none}
 select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235a6a7a' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .875rem center;padding-right:2.5rem}
-select:focus,input:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.15);background:var(--white)}
+select:focus,input:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(0,200,200,.15);background:var(--white)}
 textarea{min-height:90px;resize:vertical;line-height:1.6}
 .ms-wrap{position:relative;user-select:none;z-index:1}
 .ms-wrap.open{z-index:9999}
@@ -58,7 +59,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
 .ms-opt:hover{background:var(--cream2)}
 .ms-opt input{width:18px;height:18px;margin-top:1px;accent-color:var(--navy);flex-shrink:0;cursor:pointer}
 .ms-group{font-size:11px;font-weight:700;color:var(--navy);padding:.5rem 1rem .2rem;background:var(--cream2);letter-spacing:.05em;position:sticky;top:0}
-.btn-primary{background:linear-gradient(135deg,#07192d 0%,#0f2744 60%,#1a3a5c 100%);color:var(--white);margin-top:1.5rem;box-shadow:0 4px 16px rgba(7,25,45,.3)}
+.btn-primary{background:linear-gradient(135deg,#0a0c10 0%,#0f1318 60%,#161c24 100%);color:var(--white);margin-top:1.5rem;box-shadow:0 4px 16px rgba(7,25,45,.3)}
 .btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(15,39,68,.32)}
 .btn-primary:active{transform:scale(.98)}
 .btn-secondary{background:var(--cream2);color:var(--navy);border:2px solid #dde3ea;margin-top:0}
@@ -68,8 +69,8 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
 /* SETUP BANNER */
 .setup-banner{background:linear-gradient(135deg,#fff3cd,#fff8e1);border:2px solid #ffc107;border-radius:var(--radius);padding:1.25rem;margin-bottom:1.25rem;display:none}
 .setup-banner.show{display:block}
-.setup-banner h4{color:#856404;font-size:15px;margin-bottom:.5rem}
-.setup-banner p{color:#856404;font-size:13px;line-height:1.7}
+.setup-banner h4{color:#00c8c8;font-size:15px;margin-bottom:.5rem}
+.setup-banner p{color:#00c8c8;font-size:13px;line-height:1.7}
 .setup-banner input{margin-top:.75rem;background:white}
 /* ── 預警清單 ── */
 .alert-panel{background:#fff;border:2.5px solid #e53935;border-radius:14px;overflow:hidden;margin-bottom:1rem;box-shadow:0 4px 20px rgba(229,57,53,.12)}
@@ -103,10 +104,10 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
 /* APP */
 .app{display:none}
 .app.active{display:flex;flex-direction:column;height:100vh;overflow:hidden}
-.header{background:linear-gradient(160deg,#050f1c 0%,#07192d 50%,#0f2744 100%);padding:.875rem 1.25rem;color:var(--white);position:sticky;top:0;z-index:1000;box-shadow:0 1px 0 rgba(184,150,46,.2),0 4px 20px rgba(0,0,0,.25);flex-shrink:0}
+.header{background:linear-gradient(160deg,#050f1c 0%,#0a0c10 50%,#0f1318 100%);padding:.875rem 1.25rem;color:var(--white);position:sticky;top:0;z-index:1000;box-shadow:0 1px 0 rgba(0,200,200,.2),0 4px 20px rgba(0,0,0,.25);flex-shrink:0}
 .header-inner{display:flex;justify-content:space-between;align-items:center;max-width:1200px;margin:0 auto;gap:1rem}
 .header-brand{display:flex;align-items:center;gap:.75rem}
-.header-logo{width:40px;height:40px;background:linear-gradient(135deg,var(--gold),#e8c060);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--navy);flex-shrink:0;box-shadow:0 3px 12px rgba(184,150,46,.4)}
+.header-logo{width:40px;height:40px;background:linear-gradient(135deg,var(--gold),#00a8a8);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--navy);flex-shrink:0;box-shadow:0 3px 12px rgba(0,200,200,.4)}
 .header-name{font-weight:700;font-size:15px}
 .header-role{font-size:11px;opacity:.7;margin-top:.1rem}
 .sync-dot{width:8px;height:8px;border-radius:50%;background:#4caf50;display:inline-block;margin-right:4px;animation:pulse 2s infinite}
@@ -118,7 +119,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
 .logout-btn:hover{background:rgba(255,255,255,.22)}
 .nav-tabs{background:var(--white);display:flex;border-bottom:1px solid var(--cream2);position:sticky;top:0;z-index:999;box-shadow:0 2px 12px rgba(7,25,45,.06);flex-shrink:0}
 .nav-tabs button{flex:1;min-width:70px;padding:.875rem .4rem;background:none;border:none;border-bottom:3px solid transparent;color:var(--text-soft);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;transition:all .2s;white-space:nowrap}
-.nav-tabs button.active{color:var(--navy);border-bottom-color:var(--gold);border-bottom-width:3px;font-weight:700}
+.nav-tabs button.active{color:var(--gold);border-bottom-color:var(--gold);border-bottom-width:3px;font-weight:700}
 .nav-tabs button:hover:not(.active){color:var(--navy);background:var(--cream)}
 .container{padding:1.5rem 1rem 5rem;max-width:1200px;margin:0 auto;flex:1;overflow-y:auto;height:0}
 .page{display:none}
@@ -128,20 +129,20 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
 .stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.875rem;margin-bottom:1.5rem}
 @media(min-width:640px){.stats-grid{grid-template-columns:repeat(4,1fr)}}
 .stat-card{background:var(--white);padding:1.25rem;border-radius:var(--radius);box-shadow:var(--shadow);position:relative;overflow:hidden;transition:transform .2s}
-.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),#f0d080,var(--gold))}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),#33e0e0,var(--gold))}
 .stat-card:hover{transform:translateY(-2px)}
 .stat-value{font-size:30px;font-weight:900;color:var(--navy);line-height:1;margin-bottom:.375rem}
 .stat-label{color:var(--text-muted);font-size:12px;font-weight:500}
 .card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:1.25rem;overflow:visible;border:1px solid rgba(228,221,208,.6)}
 .card-header{padding:1.25rem 1.5rem;border-bottom:2px solid var(--cream2);display:flex;align-items:center;gap:.75rem;border-radius:var(--radius) var(--radius) 0 0}
 .card-header h3{font-size:16px;font-weight:700;color:var(--navy)}
-.card-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--gold),#e8c060);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.card-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--gold),#00a8a8);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
 .card-body{padding:1.5rem}
 /* FORM */
 .form-grid{display:grid;grid-template-columns:1fr}
 @media(min-width:640px){.form-grid.two{grid-template-columns:1fr 1fr;gap:0 1rem}}
 .form-group{margin-bottom:1rem}
-.form-group.highlight{background:linear-gradient(135deg,#fffbf0,#fff8e7);padding:1.25rem;border-radius:var(--radius);border:2px solid var(--gold-light);margin-bottom:1.5rem}
+.form-group.highlight{background:linear-gradient(135deg,#0d1520,#111826);padding:1.25rem;border-radius:var(--radius);border:2px solid var(--gold-light);margin-bottom:1.5rem}
 .button-row{display:flex;gap:.75rem;margin-top:1.5rem}
 .button-row .btn{flex:1;margin-top:0}
 /* LIST */
@@ -190,7 +191,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
 .detail-value{color:var(--text);word-break:break-word}
 .modal-actions .btn{margin-top:0}
 /* ── 🎯 智偉哥建議區塊（v20 新增）── */
-.advice-block{margin-top:1.25rem;background:linear-gradient(135deg,#07192d 0%,#1a3c5e 100%);border-radius:14px;padding:1.1rem 1.2rem;color:#f5ecd7;box-shadow:0 8px 24px rgba(7,25,45,.25)}
+.advice-block{margin-top:1.25rem;background:linear-gradient(135deg,#0a0c10 0%,#1a3c5e 100%);border-radius:14px;padding:1.1rem 1.2rem;color:#f5ecd7;box-shadow:0 8px 24px rgba(7,25,45,.25)}
 .advice-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:.85rem;padding-bottom:.7rem;border-bottom:1px solid rgba(245,236,215,.15)}
 .advice-title{font-size:15px;font-weight:800;color:#f5ecd7;letter-spacing:.04em}
 .advice-tags{display:flex;gap:.35rem;flex-wrap:wrap}
@@ -201,18 +202,18 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
 .tag-temp-B{background:#f4a261;color:#fff}
 .tag-temp-C{background:#4a90a4;color:#fff}
 .tag-temp-D{background:rgba(245,236,215,.25);color:#f5ecd7}
-.advice-section-title{font-size:12px;font-weight:700;color:#e8c060;letter-spacing:.08em;margin-bottom:.5rem;text-transform:uppercase}
+.advice-section-title{font-size:12px;font-weight:700;color:#00c8c8;letter-spacing:.08em;margin-bottom:.5rem;text-transform:uppercase}
 .advice-loading{font-size:13px;color:rgba(245,236,215,.7);text-align:center;padding:1rem 0}
 .advice-empty{font-size:13px;color:rgba(245,236,215,.7);padding:.6rem;background:rgba(245,236,215,.06);border-radius:8px;line-height:1.6}
-.advice-rule{background:rgba(245,236,215,.08);border-left:3px solid #e8c060;border-radius:8px;padding:.7rem .85rem;margin-bottom:.5rem}
+.advice-rule{background:rgba(245,236,215,.08);border-left:3px solid #00c8c8;border-radius:8px;padding:.7rem .85rem;margin-bottom:.5rem}
 .advice-rule-head{display:flex;align-items:center;gap:.4rem;margin-bottom:.4rem;flex-wrap:wrap}
-.advice-rank{font-size:11px;font-weight:800;color:#e8c060;background:rgba(232,192,96,.15);padding:.1rem .4rem;border-radius:6px}
+.advice-rank{font-size:11px;font-weight:800;color:#00c8c8;background:rgba(0,200,200,.15);padding:.1rem .4rem;border-radius:6px}
 .advice-score{font-size:11px;color:rgba(245,236,215,.75);font-weight:600}
-.advice-script{font-size:11px;font-weight:700;color:#07192d;background:#e8c060;padding:.15rem .5rem;border-radius:6px;margin-left:auto}
+.advice-script{font-size:11px;font-weight:700;color:#0a0c10;background:#00c8c8;padding:.15rem .5rem;border-radius:6px;margin-left:auto}
 .advice-action{font-size:13px;line-height:1.6;color:#f5ecd7}
 .advice-case{background:rgba(245,236,215,.06);border-radius:8px;padding:.65rem .8rem;margin-bottom:.5rem;font-size:12px;line-height:1.55}
 .advice-case-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem}
-.advice-case-id{font-weight:700;color:#e8c060;font-size:11px;letter-spacing:.05em}
+.advice-case-id{font-weight:700;color:#00c8c8;font-size:11px;letter-spacing:.05em}
 .advice-case-outcome{font-size:10px;font-weight:700;padding:.12rem .45rem;border-radius:6px}
 .outcome-win{background:#4ade80;color:#052e16}
 .outcome-lose{background:rgba(245,236,215,.2);color:rgba(245,236,215,.7)}
@@ -220,7 +221,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
 .outcome-default{background:rgba(245,236,215,.15);color:#f5ecd7}
 .advice-case-key{color:rgba(245,236,215,.85);margin-bottom:.25rem}
 .advice-case-action{color:#f5ecd7;margin-bottom:.25rem}
-.advice-case-lesson{color:#e8c060;font-style:italic;padding-top:.3rem;border-top:1px dashed rgba(245,236,215,.15);margin-top:.35rem}
+.advice-case-lesson{color:#00c8c8;font-style:italic;padding-top:.3rem;border-top:1px dashed rgba(245,236,215,.15);margin-top:.35rem}
 /* LOADING */
 .loading-overlay{display:none;position:fixed;inset:0;background:rgba(15,39,68,.4);z-index:3000;align-items:center;justify-content:center}
 .loading-overlay.active{display:flex}
@@ -234,7 +235,7 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
 .cmd-category{font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:.06em;text-transform:uppercase;padding:.5rem 0 .25rem;margin-top:.5rem}
 .guide-step{display:flex;gap:1rem;padding:.875rem 0;border-bottom:1px solid var(--cream2);align-items:flex-start}
 .guide-step:last-child{border-bottom:none}
-.guide-num{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#e8c060);color:white;font-weight:900;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.1rem}
+.guide-num{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#00a8a8);color:white;font-weight:900;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.1rem}
 .code-box{background:var(--navy);color:#a8d4f0;padding:1rem;border-radius:var(--radius-sm);font-size:12px;line-height:1.7;margin-top:.625rem;cursor:pointer;word-break:break-all;white-space:pre-wrap}
 .code-box:hover{opacity:.85}
 @media(max-width:480px){
@@ -420,8 +421,8 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
 
 /* ── 精緻細節升級 ── */
 .card-header { border-bottom: 1px solid var(--cream2) !important; }
-.card-icon { background: linear-gradient(145deg,#c9a84c 0%,#f0d080 50%,#b8962e 100%) !important; box-shadow: var(--shadow-gold); }
-.rank-fill { background: linear-gradient(90deg,var(--gold),#f0d080,var(--gold)) !important; }
+.card-icon { background: linear-gradient(145deg,#00c8c8 0%,#33e0e0 50%,#009999 100%) !important; box-shadow: var(--shadow-gold); }
+.rank-fill { background: linear-gradient(90deg,var(--gold),#33e0e0,var(--gold)) !important; }
 .badge-1{background:#deeaf8;color:#0d4a8a}.badge-2{background:#fff0e0;color:#c45000}
 .badge-3{background:#f0e6f8;color:#5a0e8a}.badge-4{background:#e0f5e8;color:#1a5c30}
 .badge-5{background:#fce8e5;color:#8a1a10}.badge-6{background:#d8f5f0;color:#005048}
@@ -437,14 +438,14 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
 /* input focus 金色光暈 */
 select:focus,input:focus,textarea:focus {
   border-color: var(--gold) !important;
-  box-shadow: 0 0 0 3px rgba(184,150,46,.12) !important;
+  box-shadow: 0 0 0 3px rgba(0,200,200,.12) !important;
 }
 
 /* 卡片 hover */
 .stat-card:hover { box-shadow: var(--shadow-lg) !important; }
 
 /* 頂部 header 底部金線 */
-.header::after { content:''; position:absolute; bottom:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(184,150,46,.4),transparent); }
+.header::after { content:''; position:absolute; bottom:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(0,200,200,.4),transparent); }
 .header { position: relative; }
 
 /* ── 房貸風控表單欄位縮短 ── */
@@ -500,9 +501,9 @@ select:focus,input:focus,textarea:focus {
   content: ' ✦ 必填';
   font-size: 10px;
   font-weight: 800;
-  color: #c9a84c;
-  background: linear-gradient(135deg,#fffbf0,#fff8e7);
-  border: 1px solid #f0d080;
+  color: var(--gold);
+  background: linear-gradient(135deg,#0d1520,#111826);
+  border: 1px solid #33d6d6;
   padding: 1px 6px;
   border-radius: 10px;
   margin-left: 6px;
@@ -513,7 +514,7 @@ select:focus,input:focus,textarea:focus {
 .field-required select,
 .field-required textarea {
   border-color: #d4b04a !important;
-  background: linear-gradient(to bottom, #fffdf6, #fffbf0) !important;
+  background: linear-gradient(to bottom, #0d1520, #111826) !important;
 }
 .field-required input:focus,
 .field-required select:focus,
@@ -668,10 +669,10 @@ select:focus,input:focus,textarea:focus {
 }
 .rescue-body { padding:1.5rem; flex:1; }
 .rescue-customer-tag {
-  background:linear-gradient(135deg,#fffbf0,#fff8e7);
-  border:1.5px solid #f0d080; border-radius:10px;
+  background:linear-gradient(135deg,#0d1520,#111826);
+  border:1.5px solid #33d6d6; border-radius:10px;
   padding:.75rem 1rem; margin-bottom:1.25rem;
-  font-size:13px; color:#856404; font-weight:600;
+  font-size:13px; color:#00c8c8; font-weight:600;
   display:flex; align-items:center; gap:.625rem;
 }
 .rescue-input-wrap { margin-bottom:1.25rem; }
@@ -715,8 +716,8 @@ select:focus,input:focus,textarea:focus {
 .rescue-result { display:none; }
 .rescue-result.show { display:block; }
 .rescue-section {
-  background:linear-gradient(135deg,#fffbf0,#fff8e7);
-  border-left:3px solid #c9a84c; border-radius:0 10px 10px 0;
+  background:linear-gradient(135deg,#0d1520,#111826);
+  border-left:3px solid var(--gold); border-radius:0 10px 10px 0;
   padding:1rem 1.125rem; margin-bottom:.875rem;
 }
 .rescue-section h4 {
@@ -728,14 +729,14 @@ select:focus,input:focus,textarea:focus {
   font-size:14px; line-height:1.8; color:var(--text);
 }
 .rescue-script {
-  background:linear-gradient(135deg,var(--navy),#1a3a5c);
+  background:linear-gradient(135deg,var(--navy),#161c24);
   color:#fff; border-radius:10px; padding:1.125rem;
   font-size:14px; line-height:1.8; margin-bottom:.875rem;
   position:relative;
 }
 .rescue-script-label {
   font-size:10px; font-weight:700; letter-spacing:.1em;
-  color:#c9a84c; margin-bottom:.5rem; text-transform:uppercase;
+  color:var(--gold); margin-bottom:.5rem; text-transform:uppercase;
 }
 .rescue-copy-btn {
   position:absolute; top:.875rem; right:.875rem;
@@ -914,7 +915,7 @@ function claimSeminarLead() {}
     <div id="dashboard" class="page active">
 
       <!-- 週報標題 -->
-      <div id="weeklyReportCard" style="background:linear-gradient(160deg,#050f1c 0%,#07192d 60%,#0f2744 100%);border-radius:16px;padding:1.25rem 1.5rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between">
+      <div id="weeklyReportCard" style="background:linear-gradient(160deg,#050f1c 0%,#0a0c10 60%,#0f1318 100%);border-radius:16px;padding:1.25rem 1.5rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between">
         <div>
           <div style="font-size:11px;letter-spacing:.15em;color:var(--gold);font-weight:700;margin-bottom:4px">WEEKLY MANAGEMENT REPORT</div>
           <div style="font-size:16px;font-weight:700;color:#fff;font-family:'Playfair Display',serif;letter-spacing:.02em" id="dashWeekLabel">本週管理儀表板</div>
@@ -931,13 +932,13 @@ function claimSeminarLead() {}
       <!-- 核心四格 -->
       <!-- 2026新戶 & 累積成交 大卡片 -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.875rem;margin-bottom:1rem">
-        <div style="background:linear-gradient(135deg,#07192d 0%,#1a3a5c 100%);border-radius:var(--radius);padding:1.25rem 1rem;box-shadow:var(--shadow-gold);position:relative;overflow:hidden">
+        <div style="background:linear-gradient(135deg,#0a0c10 0%,#161c24 100%);border-radius:var(--radius);padding:1.25rem 1rem;box-shadow:var(--shadow-gold);position:relative;overflow:hidden">
           <div style="position:absolute;top:-10px;right:-10px;font-size:60px;opacity:.08">🆕</div>
           <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.6);letter-spacing:.1em;margin-bottom:.4rem">2026 新增成交</div>
-          <div id="closing2026" style="font-size:40px;font-weight:900;color:#f0d080;line-height:1">—</div>
+          <div id="closing2026" style="font-size:40px;font-weight:900;color:#33d6d6;line-height:1">—</div>
           <div style="font-size:12px;color:rgba(255,255,255,.5);margin-top:.25rem">戶</div>
         </div>
-        <div style="background:linear-gradient(135deg,#1e3a5f 0%,#0f2744 100%);border-radius:var(--radius);padding:1.25rem 1rem;box-shadow:var(--shadow);position:relative;overflow:hidden;border:1px solid rgba(184,150,46,.3)">
+        <div style="background:linear-gradient(135deg,#0d1520 0%,#0f1318 100%);border-radius:var(--radius);padding:1.25rem 1rem;box-shadow:var(--shadow);position:relative;overflow:hidden;border:1px solid rgba(0,200,200,.3)">
           <div style="position:absolute;top:-10px;right:-10px;font-size:60px;opacity:.08">📦</div>
           <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.6);letter-spacing:.1em;margin-bottom:.4rem">歷年累積成交</div>
           <div id="closingAllTime" style="font-size:40px;font-weight:900;color:#b8d4f8;line-height:1">—</div>
@@ -969,7 +970,7 @@ function claimSeminarLead() {}
       <div class="card" style="margin-bottom:1rem">
         <div class="card-header"><div class="card-icon">🎯</div><h3>八部曲客戶分布</h3></div>
         <div class="card-body">
-          <div id="bottleneckHint" style="background:linear-gradient(135deg,#fff3cd,#fff8e1);border:1.5px solid #ffc107;border-radius:8px;padding:.75rem 1rem;font-size:13px;font-weight:700;color:#856404;margin-bottom:1rem"></div>
+          <div id="bottleneckHint" style="background:linear-gradient(135deg,#fff3cd,#fff8e1);border:1.5px solid #ffc107;border-radius:8px;padding:.75rem 1rem;font-size:13px;font-weight:700;color:#00c8c8;margin-bottom:1rem"></div>
           <div class="stats-grid" id="stagesGrid"></div>
         </div>
       </div>
@@ -1059,19 +1060,19 @@ function claimSeminarLead() {}
     <div id="bossDashboard" class="page">
 
       <!-- 頁頭 -->
-      <div style="background:linear-gradient(135deg,#0f2744,#1a3a5c);border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between">
+      <div style="background:linear-gradient(135deg,#0f1318,#161c24);border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between">
         <div>
-          <div style="font-size:11px;letter-spacing:.15em;color:#c9a84c;font-weight:700;margin-bottom:4px">BOSS INTELLIGENCE CENTER</div>
+          <div style="font-size:11px;letter-spacing:.15em;color:var(--gold);font-weight:700;margin-bottom:4px">BOSS INTELLIGENCE CENTER</div>
           <div style="font-size:16px;font-weight:700;color:#fff">老闆決策面板</div>
         </div>
         <div style="font-size:12px;color:rgba(255,255,255,.5)" id="bossDateLabel"></div>
       </div>
 
       <!-- 今日 Top3 推薦 -->
-      <div class="card" style="margin-bottom:1rem;border:2px solid #c9a84c">
-        <div class="card-header" style="background:linear-gradient(135deg,#fffbf0,#fff8e7)">
+      <div class="card" style="margin-bottom:1rem;border:2px solid var(--gold)">
+        <div class="card-header" style="background:linear-gradient(135deg,#0d1520,#111826)">
           <div class="card-icon">🎯</div>
-          <h3 style="color:#856404">今日最值得跟進的客戶 Top 3</h3>
+          <h3 style="color:#00c8c8">今日最值得跟進的客戶 Top 3</h3>
         </div>
         <div class="card-body" id="top3List"></div>
       </div>
@@ -1792,24 +1793,24 @@ function claimSeminarLead() {}
         </div>
 
         <!-- 語音新增功能 -->
-        <div id="voiceInputCard" style="background:linear-gradient(135deg,#0f2744,#1a3a5c);border-radius:14px;padding:1.25rem;margin-bottom:1rem">
+        <div id="voiceInputCard" style="background:linear-gradient(135deg,#0f1318,#161c24);border-radius:14px;padding:1.25rem;margin-bottom:1rem">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.875rem">
             <div>
-              <div style="font-size:13px;font-weight:700;color:#c9a84c;letter-spacing:.05em">🎤 語音快速建檔</div>
+              <div style="font-size:13px;font-weight:700;color:var(--gold);letter-spacing:.05em">🎤 語音快速建檔</div>
               <div style="font-size:11px;color:#a0b4c8;margin-top:.2rem">說出客戶資料，AI 自動填入表單</div>
             </div>
             <button type="button" id="voiceBtn" onclick="toggleVoiceInput()" 
-              style="background:linear-gradient(135deg,#c9a84c,#f0d080);color:#0f2744;border:none;border-radius:50px;padding:.625rem 1.25rem;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:.5rem;transition:all .2s">
+              style="background:linear-gradient(135deg,var(--gold),#33d6d6);color:#0f1318;border:none;border-radius:50px;padding:.625rem 1.25rem;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:.5rem;transition:all .2s">
               🎤 開始錄音
             </button>
           </div>
           <div id="voiceStatus" style="display:none;margin-bottom:.75rem">
-            <div id="voiceListening" style="display:none;align-items:center;gap:.75rem;padding:.75rem 1rem;background:rgba(201,168,76,.15);border:1.5px solid rgba(201,168,76,.4);border-radius:10px">
-              <div style="width:12px;height:12px;background:#c9a84c;border-radius:50%;animation:voicePulse 1s infinite"></div>
-              <span style="font-size:13px;color:#f0d080;font-weight:600">錄音中... 說完後點停止</span>
+            <div id="voiceListening" style="display:none;align-items:center;gap:.75rem;padding:.75rem 1rem;background:rgba(0,200,200,.15);border:1.5px solid rgba(201,168,76,.4);border-radius:10px">
+              <div style="width:12px;height:12px;background:var(--gold);border-radius:50%;animation:voicePulse 1s infinite"></div>
+              <span style="font-size:13px;color:#33d6d6;font-weight:600">錄音中... 說完後點停止</span>
             </div>
             <div id="voiceProcessing" style="display:none;align-items:center;gap:.75rem;padding:.75rem 1rem;background:rgba(255,255,255,.08);border-radius:10px">
-              <div style="width:16px;height:16px;border:2px solid #c9a84c;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite"></div>
+              <div style="width:16px;height:16px;border:2px solid var(--gold);border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite"></div>
               <span style="font-size:13px;color:#a0b4c8">AI 解析中...</span>
             </div>
           </div>
@@ -1818,7 +1819,7 @@ function claimSeminarLead() {}
             <div id="voiceTranscriptText" style="font-size:13px;color:#e8f0fb;line-height:1.6"></div>
           </div>
           <div id="voiceResult" style="display:none;background:rgba(201,168,76,.1);border:1.5px solid rgba(201,168,76,.3);border-radius:10px;padding:.875rem;margin-bottom:.75rem">
-            <div style="font-size:10px;color:#c9a84c;font-weight:700;margin-bottom:.5rem">✨ AI 已填入以下資料</div>
+            <div style="font-size:10px;color:var(--gold);font-weight:700;margin-bottom:.5rem">✨ AI 已填入以下資料</div>
             <div id="voiceResultText" style="font-size:12px;color:#e8f0fb;line-height:1.8"></div>
           </div>
           <div style="font-size:11px;color:#6a8aaa;line-height:1.6">
@@ -1850,9 +1851,9 @@ function claimSeminarLead() {}
 
       <!-- 快速記錄 -->
       <div class="card" style="margin-bottom:1rem;border:2px solid var(--gold)">
-        <div class="card-header" style="background:linear-gradient(135deg,#fffbf0,#fff8e7)">
+        <div class="card-header" style="background:linear-gradient(135deg,#0d1520,#111826)">
           <div class="card-icon">⚡</div>
-          <h3 style="color:#856404">30秒快速記錄</h3>
+          <h3 style="color:#00c8c8">30秒快速記錄</h3>
         </div>
         <div class="card-body">
           <div class="form-group">
@@ -2018,7 +2019,7 @@ function claimSeminarLead() {}
           <div id="lbWeekPanel">
             <div id="leaderboardList"></div>
             <div style="margin-top:1rem;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
-              <button onclick="saveAllWeekScores()" style="flex:1;min-width:140px;padding:.65rem 1rem;background:linear-gradient(135deg,var(--gold),#c9a84c);color:var(--navy);border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">💾 儲存本週積分</button>
+              <button onclick="saveAllWeekScores()" style="flex:1;min-width:140px;padding:.65rem 1rem;background:linear-gradient(135deg,var(--gold),var(--gold));color:var(--navy);border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">💾 儲存本週積分</button>
               <div id="lbSaveStatus" style="font-size:12px;color:var(--text-soft)"></div>
             </div>
             <!-- 補存歷史積分（僅 manager 可見） -->
@@ -2077,7 +2078,7 @@ function claimSeminarLead() {}
       <div class="card">
         <div class="card-header"><div class="card-icon">👥</div><h3>業務名單管理</h3></div>
         <div class="card-body">
-          <div style="background:linear-gradient(135deg,#fffbf0,#fff8e7);border:2px solid var(--gold-light);border-radius:var(--radius);padding:1.25rem;margin-bottom:1.25rem;font-size:14px;color:var(--text-soft);line-height:1.8">
+          <div style="background:linear-gradient(135deg,#0d1520,#111826);border:2px solid var(--gold-light);border-radius:var(--radius);padding:1.25rem;margin-bottom:1.25rem;font-size:14px;color:var(--text-soft);line-height:1.8">
             ✅ 新增業務後，登入頁的選單會立即更新。<br>
             ⚠️ 刪除業務不會刪除該業務的客戶資料，資料仍保留在系統中。
           </div>
@@ -2142,7 +2143,7 @@ function claimSeminarLead() {}
 // ════════════════════════════════════════════════
 
 var API_URL_KEY = 'futime_api_url';
-var HARDCODED_API_URL = 'https://script.google.com/macros/s/AKfycbycQXNmY6eSF2LHpLgIUxufpCyfIVU4jSSbWipt2NhhIhPRn5R_5NN_nYJgvpPOGk63/exec';
+var HARDCODED_API_URL = 'https://script.google.com/macros/s/AKfycbyt8tcy6pORzZ1nc0HP4YVLV-AY1tOuahJWjhmWQ2VBTSZPLZe2qgBzZgczbDQTVsPI/exec';
 var currentUser = null, currentRole = null;
 var customers = [];
 var MANAGERS = ['總經理','CRM營運長','知識長','AI訓練長'];
@@ -2256,13 +2257,12 @@ function rebuildSalesSelects() {
   }
 }
 
-// ── 取得 API URL（優先 localStorage 自訂網址、其次 HARDCODED）──
-// v21：HARDCODED 已是最新網址，localStorage 僅在明確手動設定時才覆蓋
+// ── 取得 API URL（優先 localStorage、其次 HARDCODED）──
+// v22：只要 localStorage 有合法 GAS URL 就直接用，不再排除與 HARDCODED 相同的值
 function getApiUrl() {
   try {
     var saved = localStorage.getItem(API_URL_KEY);
-    // 只有當 saved 存在且與 HARDCODED 不同時才用（避免舊版本殘留的壞網址）
-    if (saved && saved.indexOf('script.google.com') !== -1 && saved !== HARDCODED_API_URL) {
+    if (saved && saved.indexOf('script.google.com') !== -1) {
       return saved;
     }
   } catch(e) {}
@@ -2912,7 +2912,7 @@ function renderTotalLeaderboard() {
       '</span>' +
       '<div style="flex:2;margin:0 .75rem">' +
         '<div style="background:var(--cream2);border-radius:99px;height:6px;overflow:hidden">' +
-          '<div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,#1a3c5e,#c9a84c);border-radius:99px;transition:.6s"></div>' +
+          '<div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,#1a3c5e,var(--gold));border-radius:99px;transition:.6s"></div>' +
         '</div>' +
       '</div>' +
       '<span style="font-size:17px;font-weight:800;color:var(--gold);white-space:nowrap">' + total + '<span style="font-size:11px;font-weight:500;color:var(--text-soft)"> 分</span></span>' +
@@ -2999,7 +2999,7 @@ function renderLeaderboard() {
       '</span>' +
       '<div style="flex:2;margin:0 .75rem">' +
         '<div style="background:var(--cream2);border-radius:99px;height:6px;overflow:hidden">' +
-          '<div style="height:100%;width:' + barWidth + '%;background:linear-gradient(90deg,#1a3c5e,#c9a84c);border-radius:99px;transition:.6s"></div>' +
+          '<div style="height:100%;width:' + barWidth + '%;background:linear-gradient(90deg,#1a3c5e,var(--gold));border-radius:99px;transition:.6s"></div>' +
         '</div>' +
         '<div style="font-size:10px;color:var(--text-muted);margin-top:2px">' + (r.count > 0 ? r.count + ' 位客戶' : '本週未更新') + '</div>' +
       '</div>' +
@@ -3376,7 +3376,7 @@ function renderDashboard() {
   var spHtml = '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13px">';
   spHtml += '<tr style="background:var(--navy);color:#fff">';
   ['業務', '總客戶', '跟進中', '2026成交', '累積成交', '轉介紹數', '被介紹來', '成交率'].forEach(function(h){
-    var color = h==='2026成交' ? 'color:#f0d080;' : h==='累積成交' ? 'color:#b8d4f8;' : '';
+    var color = h==='2026成交' ? 'color:#33d6d6;' : h==='累積成交' ? 'color:#b8d4f8;' : '';
     spHtml += '<th style="padding:.5rem .75rem;text-align:center;font-weight:700;font-size:11px;'+color+'">'+h+'</th>';
   });
   spHtml += '</tr>';
@@ -3390,7 +3390,7 @@ function renderDashboard() {
     spHtml += '<td style="padding:.5rem .75rem;font-weight:700;color:var(--navy)">'+sp.name+(isMe?' 👤':'')+( d.closed2026 >= 3 ? ' ⭐':'')+'</td>';
     spHtml += '<td style="padding:.5rem .75rem;text-align:center">'+d.total+'</td>';
     spHtml += '<td style="padding:.5rem .75rem;text-align:center;color:#1565c0">'+d.active+'</td>';
-    spHtml += '<td style="padding:.5rem .75rem;text-align:center;color:#b8962e;font-weight:800;font-size:15px">'+d.closed2026+'</td>';
+    spHtml += '<td style="padding:.5rem .75rem;text-align:center;color:#009999;font-weight:800;font-size:15px">'+d.closed2026+'</td>';
     spHtml += '<td style="padding:.5rem .75rem;text-align:center;color:#2e7d32;font-weight:700">'+d.closed+'</td>';
     spHtml += '<td style="padding:.5rem .75rem;text-align:center;color:var(--gold)">'+d.referral+'</td>';
     spHtml += '<td style="padding:.5rem .75rem;text-align:center;color:#5dade2">'+d.referredBy+'</td>';
@@ -3541,13 +3541,13 @@ function renderCompanyTargetCard() {
     : '';
 
   el.innerHTML =
-    '<div style="background:linear-gradient(135deg,#07192d,#0f2744);border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:0;border:1px solid rgba(184,150,46,.3)">' +
+    '<div style="background:linear-gradient(135deg,#0a0c10,#0f1318);border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:0;border:1px solid rgba(0,200,200,.3)">' +
       '<div style="font-size:11px;letter-spacing:.12em;color:var(--gold);font-weight:700;margin-bottom:.75rem">🏢 ' + thisYear + ' 公司整體業績</div>' +
       '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;margin-bottom:1rem">' +
         // 實際業績
         '<div style="background:rgba(255,255,255,.07);border-radius:10px;padding:.75rem;text-align:center">' +
           '<div style="font-size:10px;color:rgba(255,255,255,.5);margin-bottom:.25rem">實際業績</div>' +
-          '<div style="font-size:22px;font-weight:900;color:#f0d080">' + (totalActual > 0 ? totalActual : '—') + '</div>' +
+          '<div style="font-size:22px;font-weight:900;color:#33d6d6">' + (totalActual > 0 ? totalActual : '—') + '</div>' +
           '<div style="font-size:10px;color:rgba(255,255,255,.4)">萬</div>' +
         '</div>' +
         // 年度目標
@@ -3872,8 +3872,8 @@ function showCustomerSummary(customerId) {
   else if (!c.budget) next='💰 確認資金來源與貸款能力';
   else next='🤝 持續維繫信任，等待時機';
   var html =
-    '<div style="padding:1.25rem;background:linear-gradient(135deg,#0f2744,#1a3a5c);border-radius:16px;margin-bottom:1rem;color:white">'+
-      '<div style="font-size:11px;color:#c9a84c;font-weight:700;letter-spacing:.1em;margin-bottom:.25rem">客戶分析摘要</div>'+
+    '<div style="padding:1.25rem;background:linear-gradient(135deg,#0f1318,#161c24);border-radius:16px;margin-bottom:1rem;color:white">'+
+      '<div style="font-size:11px;color:var(--gold);font-weight:700;letter-spacing:.1em;margin-bottom:.25rem">客戶分析摘要</div>'+
       '<div style="font-size:20px;font-weight:900">'+c.customerName+'</div>'+
       '<div style="font-size:12px;color:#a0b4c8;margin-top:.25rem">'+c.salesPerson+' ｜ '+STAGE_NAMES[stage]+'階段</div>'+
     '</div>'+
@@ -3883,14 +3883,14 @@ function showCustomerSummary(customerId) {
         '<div style="font-size:11px;font-weight:700;color:'+pColor+'">成交機率</div>'+
       '</div>'+
       '<div style="background:#fef9f0;border-radius:12px;padding:.875rem;text-align:center;display:flex;align-items:center;justify-content:center">'+
-        '<div style="font-size:13px;font-weight:700;color:#856404">'+riskText+'</div>'+
+        '<div style="font-size:13px;font-weight:700;color:#00c8c8">'+riskText+'</div>'+
       '</div>'+
     '</div>'+
     (c.painPoints?'<div style="background:var(--cream2);border-radius:10px;padding:.875rem;margin-bottom:.625rem"><div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:.3rem">💬 核心痛點</div><div style="font-size:13px">'+c.painPoints+'</div></div>':'')+
     ((c.budget||c.monthlyPayment)?'<div style="background:var(--cream2);border-radius:10px;padding:.875rem;margin-bottom:.625rem"><div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:.3rem">💰 預算</div><div style="font-size:13px">'+(c.budget?'總預算：'+c.budget:'')+(c.budget&&c.monthlyPayment?' ｜ ':'')+(c.monthlyPayment?'月付：'+c.monthlyPayment:'')+'</div></div>':'')+
     (blocks.length?'<div style="background:#fdf0ee;border-radius:10px;padding:.875rem;margin-bottom:.625rem"><div style="font-size:11px;font-weight:700;color:#c0392b;margin-bottom:.3rem">🚧 卡關原因</div><div style="font-size:13px">'+blocks.join('、')+'</div></div>':'')+
-    '<div style="background:linear-gradient(135deg,#fffbf0,#fff8e7);border:1.5px solid #f0d080;border-radius:10px;padding:.875rem">'+
-      '<div style="font-size:11px;font-weight:700;color:#856404;margin-bottom:.3rem">⚡ 建議下一步</div>'+
+    '<div style="background:linear-gradient(135deg,#0d1520,#111826);border:1.5px solid #33d6d6;border-radius:10px;padding:.875rem">'+
+      '<div style="font-size:11px;font-weight:700;color:#00c8c8;margin-bottom:.3rem">⚡ 建議下一步</div>'+
       '<div style="font-size:13px;font-weight:600;color:#5c4000">'+next+'</div>'+
     '</div>';
   var overlay = document.getElementById('summaryModal');
@@ -3983,7 +3983,7 @@ function renderBossDashboard() {
             '👤 '+c.salesPerson+' ｜ '+s+'️⃣ '+STAGE_NAMES[s]+
             (c.buyingTimeline?' ｜ ⏰ '+c.buyingTimeline:'')+
           '</div>'+
-          '<div style="font-size:12px;background:linear-gradient(135deg,#fffbf0,#fff8e7);border:1px solid #f0d080;border-radius:8px;padding:.4rem .75rem;color:#856404;font-weight:600">'+hint+'</div>'+
+          '<div style="font-size:12px;background:linear-gradient(135deg,#0d1520,#111826);border:1px solid #33d6d6;border-radius:8px;padding:.4rem .75rem;color:#00c8c8;font-weight:600">'+hint+'</div>'+
         '</div>'+
       '</div>';
     }).join('');
@@ -4055,9 +4055,9 @@ function renderBossDashboard() {
   if (!alerts.length) {
     alertEl.innerHTML = '<div style="color:#2e7d52;font-weight:600;padding:.5rem">✅ 目前無異常，整體運營健康</div>';
   } else {
-    var colorMap = { danger:'#fdf0ee', warning:'#fffbf0', info:'#e3f0fb' };
+    var colorMap = { danger:'#fdf0ee', warning:'#111826', info:'#e3f0fb' };
     var borderMap = { danger:'#f5c6c3', warning:'#ffd700', info:'#b3d4f5' };
-    var textMap = { danger:'#c0392b', warning:'#856404', info:'#1565c0' };
+    var textMap = { danger:'#c0392b', warning:'#00c8c8', info:'#1565c0' };
     alertEl.innerHTML = alerts.map(function(a){
       return '<div style="background:'+colorMap[a.level]+';border:1.5px solid '+borderMap[a.level]+';border-radius:10px;padding:.875rem 1rem;margin-bottom:.625rem">'+
         '<div style="font-weight:700;font-size:14px;color:'+textMap[a.level]+';margin-bottom:.25rem">'+a.icon+' '+a.title+'</div>'+
@@ -4147,9 +4147,9 @@ function renderBossDashboard() {
         '<div style="font-size:11px;color:var(--text-soft);font-weight:700;margin-top:.25rem">培育中 &lt;40%</div>'+
       '</div>'+
     '</div>'+
-    (estRevenue > 0 ? '<div style="background:linear-gradient(135deg,#0f2744,#1a3a5c);border-radius:12px;padding:1rem;text-align:center">'+
-      '<div style="font-size:11px;color:#c9a84c;font-weight:700;letter-spacing:.1em;margin-bottom:.25rem">預估可成交金額（高機率客戶）</div>'+
-      '<div style="font-size:28px;font-weight:900;color:#f0d080">'+estRevenue+' <span style="font-size:14px;font-weight:500">萬元</span></div>'+
+    (estRevenue > 0 ? '<div style="background:linear-gradient(135deg,#0f1318,#161c24);border-radius:12px;padding:1rem;text-align:center">'+
+      '<div style="font-size:11px;color:var(--gold);font-weight:700;letter-spacing:.1em;margin-bottom:.25rem">預估可成交金額（高機率客戶）</div>'+
+      '<div style="font-size:28px;font-weight:900;color:#33d6d6">'+estRevenue+' <span style="font-size:14px;font-weight:500">萬元</span></div>'+
     '</div>' : '')+
     '<div id="forecastListHigh" style="display:none;margin-top:.75rem;padding:.875rem;background:#f0faf0;border-radius:12px">'+
       '<div style="font-size:11px;font-weight:700;color:#2e7d52;margin-bottom:.5rem">🟢 高機率（'+highProb.length+'人）</div>'+
@@ -4195,9 +4195,9 @@ function renderBossDashboard() {
         '<div style="font-size:28px;font-weight:900;color:#1b5e20">'+weekClosed.length+'</div>'+
         '<div style="font-size:11px;color:#2e7d52;font-weight:700;margin-top:.25rem">本週成交</div>'+
       '</div>'+
-      '<div style="background:linear-gradient(135deg,#fffbf0,#fff8e7);border-radius:12px;padding:1rem;text-align:center">'+
-        '<div style="font-size:28px;font-weight:900;color:#856404">'+weekStageUp.length+'</div>'+
-        '<div style="font-size:11px;color:#856404;font-weight:700;margin-top:.25rem">三部曲以上活躍</div>'+
+      '<div style="background:linear-gradient(135deg,#0d1520,#111826);border-radius:12px;padding:1rem;text-align:center">'+
+        '<div style="font-size:28px;font-weight:900;color:#00c8c8">'+weekStageUp.length+'</div>'+
+        '<div style="font-size:11px;color:#00c8c8;font-weight:700;margin-top:.25rem">三部曲以上活躍</div>'+
       '</div>'+
     '</div>';
 
@@ -4280,7 +4280,7 @@ function renderSalesActivity() {
     } else if (d.lastActionDays <= 7) {
       grade = '✅ 正常'; gradeBg = '#f1f8e9;color:#33691e';
     } else if (d.lastActionDays <= 14) {
-      grade = '🟡 偏慢'; gradeBg = '#fffbf0;color:#856404';
+      grade = '🟡 偏慢'; gradeBg = '#fffbf0;color:#00c8c8';
     } else if (d.lastActionDays <= 30) {
       grade = '🟠 警告'; gradeBg = '#fff3e0;color:#e65100';
     } else {
@@ -4690,14 +4690,14 @@ function renderTodayFollowupList() {
     var s = stageOf(c);
     var daysLabel = x.days >= 999 ? '久未更新' : x.days + '天';
     var riskTag = x.risk==='critical' ? '<span style="font-size:10px;color:#c0392b;background:#fdf0ee;padding:2px 6px;border-radius:20px;font-weight:700">🔴 '+daysLabel+'未跟</span>' :
-                  x.risk==='high' ? '<span style="font-size:10px;color:#856404;background:#fffbf0;padding:2px 6px;border-radius:20px;font-weight:700">🟡 '+daysLabel+'</span>' : '';
+                  x.risk==='high' ? '<span style="font-size:10px;color:#00c8c8;background:#0d1520;padding:2px 6px;border-radius:20px;font-weight:700">🟡 '+daysLabel+'</span>' : '';
     // 跟進日期標籤
     var followupTag = '';
     if (x.followupOverdue) {
       var label = x.followupDaysLeft === 0 ? '今天' : Math.abs(x.followupDaysLeft)+'天前';
       followupTag = '<span style="font-size:10px;color:#fff;background:#c0392b;padding:2px 8px;border-radius:20px;font-weight:700;animation:voicePulse 1.5s infinite">📅 '+label+'到期！</span>';
     } else if (x.followupDue) {
-      followupTag = '<span style="font-size:10px;color:#856404;background:#fff3cd;padding:2px 8px;border-radius:20px;font-weight:700">📅 '+x.followupDaysLeft+'天後到期</span>';
+      followupTag = '<span style="font-size:10px;color:#00c8c8;background:#fff3cd;padding:2px 8px;border-radius:20px;font-weight:700">📅 '+x.followupDaysLeft+'天後到期</span>';
     } else if (c.nextFollowupGoal) {
       followupTag = '<span style="font-size:10px;color:#546e7a;background:#f0f4f8;padding:2px 8px;border-radius:20px">🎯 '+c.nextFollowupGoal.slice(0,12)+'</span>';
     }
@@ -4858,7 +4858,7 @@ function renderTrend() {
   }
 
   if (summary) {
-    html += '<div style="margin-top:.75rem;padding:.625rem 1rem;background:linear-gradient(135deg,#fffbf0,#fff8e7);border:1px solid #f0d080;border-radius:8px;font-size:13px;color:#856404;font-weight:600">'+summary+'</div>';
+    html += '<div style="margin-top:.75rem;padding:.625rem 1rem;background:linear-gradient(135deg,#0d1520,#111826);border:1px solid #33d6d6;border-radius:8px;font-size:13px;color:#00c8c8;font-weight:600">'+summary+'</div>';
   }
 
   el.innerHTML = html;
@@ -5168,8 +5168,8 @@ function startVoiceInput() {
     voiceActive = false;
     var btn = document.getElementById('voiceBtn');
     btn.innerHTML = '🎤 開始錄音';
-    btn.style.background = 'linear-gradient(135deg,#c9a84c,#f0d080)';
-    btn.style.color = '#0f2744';
+    btn.style.background = 'linear-gradient(135deg,var(--gold),#33d6d6)';
+    btn.style.color = '#0f1318';
     document.getElementById('voiceListening').style.display = 'none';
     if (finalTranscript.trim()) {
       parseVoiceInput(finalTranscript.trim());
@@ -5195,8 +5195,8 @@ function stopVoiceInput() {
   var btn = document.getElementById('voiceBtn');
   if (btn) {
     btn.innerHTML = '🎤 開始錄音';
-    btn.style.background = 'linear-gradient(135deg,#c9a84c,#f0d080)';
-    btn.style.color = '#0f2744';
+    btn.style.background = 'linear-gradient(135deg,var(--gold),#33d6d6)';
+    btn.style.color = '#0f1318';
   }
 }
 
@@ -5399,7 +5399,7 @@ function renderCustomers() {
     var riskBadge = '';
     var risk = getRiskLevel(c);
     if (risk === 'critical') riskBadge = '<span style="font-size:10px;color:#c0392b;background:#fdf0ee;padding:2px 6px;border-radius:20px;font-weight:700">🔴停滯</span>';
-    else if (risk === 'high') riskBadge = '<span style="font-size:10px;color:#856404;background:#fffbf0;padding:2px 6px;border-radius:20px;font-weight:700">🟡注意</span>';
+    else if (risk === 'high') riskBadge = '<span style="font-size:10px;color:#00c8c8;background:#0d1520;padding:2px 6px;border-radius:20px;font-weight:700">🟡注意</span>';
     return '<div class="customer-item" onclick="showDetail(\''+c.id.toString()+'\')">' +
       '<div class="customer-head"><span class="customer-name">'+c.customerName+'</span><span style="display:flex;gap:.375rem;align-items:center;flex-wrap:wrap"><span class="badge badge-'+s+'">'+s+'️⃣ '+STAGE_NAMES[s]+'</span>'+((c.seminarAttended==='已邀請並參加'||c.seminarAttended==='是'||c.seminarAttended==='已邀請參加2026'||c.seminarAttended==='已邀請未參加')?'<span style="background:#e8f5e9;color:#2e7d32;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600">🎓 研討會</span>':'')+probBadge+riskBadge+'</span></div>'+
       manInfo+
@@ -5453,7 +5453,7 @@ function showDetail(id) {
   // 📋 生成接談劇本按鈕（所有人都能用）
   var scriptBtn = document.createElement('button');
   scriptBtn.className = 'btn btn-primary';
-  scriptBtn.style.cssText = 'flex:2;margin-top:0;background:linear-gradient(135deg,#07192d,#1a3c5e);box-shadow:0 4px 16px rgba(7,25,45,.3)';
+  scriptBtn.style.cssText = 'flex:2;margin-top:0;background:linear-gradient(135deg,#0a0c10,#1a3c5e);box-shadow:0 4px 16px rgba(7,25,45,.3)';
   scriptBtn.innerHTML = '📋 生成接談劇本';
   scriptBtn.addEventListener('click', (function(id){ return function(){ openFullScript(id); }; })(sid));
   actionsDiv.appendChild(scriptBtn);
@@ -6438,7 +6438,7 @@ function runRescue() {
       };
       var sceneEl = document.getElementById('rescueSceneType');
       if (sceneEl && result.sceneType) {
-        var sc = sceneMap[result.sceneType] || { icon:'🧠', color:'#0f2744', bg:'#f0f4f8' };
+        var sc = sceneMap[result.sceneType] || { icon:'🧠', color:'#0f1318', bg:'#f0f4f8' };
         sceneEl.innerHTML = '<span style="background:'+sc.bg+';color:'+sc.color+';border:1.5px solid '+sc.color+'40;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700;">'+sc.icon+' '+result.sceneType+'</span>';
         sceneEl.style.display = 'block';
       }
@@ -6619,7 +6619,7 @@ function showToast(msg) {
   var t = document.getElementById('crm-toast');
   if (!t) {
     t = document.createElement('div'); t.id='crm-toast';
-    t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0f2744;color:white;padding:.75rem 1.5rem;border-radius:24px;font-size:14px;font-weight:600;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,.25);white-space:nowrap;transition:opacity .3s;pointer-events:none';
+    t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0f1318;color:white;padding:.75rem 1.5rem;border-radius:24px;font-size:14px;font-weight:600;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,.25);white-space:nowrap;transition:opacity .3s;pointer-events:none';
     document.body.appendChild(t);
   }
   t.textContent=msg; t.style.opacity='1';
@@ -6663,16 +6663,15 @@ function showToast(msg) {
       // 只要有回應就視為連線成功（即使回傳錯誤也代表 API 活著）
       apiStatusEl.textContent = '✅ 雲端已連線，請登入';
       apiStatusEl.style.color = '#1e6b42';
-      // 如果測試的是 HARDCODED 而非 saved，確保 localStorage 不殘留舊壞網址
-      // （不清除，讓 getApiUrl 繼續優先用 saved）
+      // ping 成功：把這次用的 URL 存進 localStorage，避免下次再失敗
+      try { localStorage.setItem(API_URL_KEY, pingUrl); } catch(e) {}
     })
     .catch(function(){
       fetchDone = true;
-      // 連線失敗：顯示錯誤並自動展開重設面板
-      apiStatusEl.textContent = '❌ 連線失敗，請更新雲端網址';
+      // 連線失敗：只顯示提示，不自動展開（避免每次網路慢就跳出設定面板）
+      apiStatusEl.textContent = '❌ 連線失敗，請點「重新設定雲端網址」';
       apiStatusEl.style.color = '#b02a20';
-      var box = document.getElementById('resetUrlBox');
-      if (box) box.style.display = 'block';
+      // 預填網址（但不展開面板，讓使用者主動點）
       var input = document.getElementById('apiUrlInputReset');
       if (input && !input.value) input.value = pingUrl;
     });
@@ -6800,7 +6799,7 @@ function showToast(msg) {
 <div class="modal-overlay" id="fullScriptModal" style="z-index:3000">
   <div style="background:#fff;border-radius:20px;max-width:560px;width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.4);animation:loginSlide .4s cubic-bezier(.22,.68,0,1.2)">
     <!-- Header -->
-    <div style="background:linear-gradient(135deg,#07192d,#1a3c5e);padding:1.25rem 1.5rem;border-radius:20px 20px 0 0;display:flex;justify-content:space-between;align-items:center">
+    <div style="background:linear-gradient(135deg,#0a0c10,#1a3c5e);padding:1.25rem 1.5rem;border-radius:20px 20px 0 0;display:flex;justify-content:space-between;align-items:center">
       <div>
         <div style="color:var(--gold);font-size:11px;font-weight:700;letter-spacing:.12em;margin-bottom:.25rem">📋 智偉哥分身AI</div>
         <div style="color:#fff;font-size:16px;font-weight:800">接談劇本生成</div>
@@ -6820,10 +6819,10 @@ function showToast(msg) {
 
     <!-- Generate Button -->
     <div id="fullScriptGenArea" style="padding:1.5rem">
-      <div style="background:linear-gradient(135deg,#fffbf0,#fff8e7);border:1.5px solid var(--gold-light);border-radius:12px;padding:1rem;margin-bottom:1.25rem;font-size:13px;color:var(--text-soft);line-height:1.8">
+      <div style="background:linear-gradient(135deg,#0d1520,#111826);border:1.5px solid var(--gold-light);border-radius:12px;padding:1rem;margin-bottom:1.25rem;font-size:13px;color:var(--text-soft);line-height:1.8">
         🧠 <b>智偉哥分身AI</b> 會根據這位客戶的完整資料，生成包含話術庫對應、核心策略、完整話術、財務破洞在內的 9 區塊完整接談劇本。
       </div>
-      <button id="fullScriptGenBtn" onclick="runFullScript()" style="width:100%;padding:1rem;background:linear-gradient(135deg,#07192d,#1a3c5e);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;letter-spacing:.05em">
+      <button id="fullScriptGenBtn" onclick="runFullScript()" style="width:100%;padding:1rem;background:linear-gradient(135deg,#0a0c10,#1a3c5e);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;letter-spacing:.05em">
         📋 開始生成接談劇本
       </button>
     </div>
