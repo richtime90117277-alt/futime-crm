@@ -74,7 +74,7 @@ header::after { content:'';position:absolute;bottom:-1px;left:32px;width:80px;he
 
 /* ══ SECTION LABEL ══ */
 .sec-label { flex-shrink:0;padding:8px 32px 6px;display:flex;align-items:center;gap:12px; }
-.sec-text  { font-size:7.5px;letter-spacing:0.26em;color:var(--tm);white-space:nowrap;font-weight:300; }
+.sec-text  { font-size:9px;letter-spacing:0.26em;color:var(--tm);white-space:nowrap;font-weight:300; }
 .sec-line  { flex:1;height:1px;background:linear-gradient(90deg,rgba(77,216,232,0.1),transparent); }
 
 /* ══ GRID: 6 equal columns, fills remaining space ══ */
@@ -135,7 +135,7 @@ header::after { content:'';position:absolute;bottom:-1px;left:32px;width:80px;he
 
 .nbadge {
   position:absolute;top:8px;left:10px;z-index:10;
-  font-size:8px;letter-spacing:0.1em;font-weight:700;
+  font-size:9.5px;letter-spacing:0.1em;font-weight:700;
   color:rgba(77,216,232,0.5);
   background:rgba(4,10,18,0.78);
   border:1px solid rgba(77,216,232,0.15);
@@ -145,21 +145,21 @@ header::after { content:'';position:absolute;bottom:-1px;left:32px;width:80px;he
 
 /* ══ CARD BODY ══ */
 .cb { padding:12px 14px 0;flex:1.2;display:flex;flex-direction:column;min-height:0; }
-.ctag  { font-size:7px;letter-spacing:0.2em;color:rgba(77,216,232,0.42);margin-bottom:4px;font-weight:300; }
-.cname { font-size:clamp(11px,1.1vw,15px);font-weight:700;color:var(--t);line-height:1.25;margin-bottom:5px; }
-.cdesc { font-size:clamp(8.5px,0.75vw,10.5px);color:var(--td);line-height:1.65;flex:1;overflow:hidden;
+.ctag  { font-size:9px;letter-spacing:0.2em;color:rgba(77,216,232,0.42);margin-bottom:4px;font-weight:300; }
+.cname { font-size:clamp(13px,1.3vw,17px);font-weight:700;color:var(--t);line-height:1.25;margin-bottom:5px; }
+.cdesc { font-size:clamp(10px,0.9vw,12px);color:var(--td);line-height:1.65;flex:1;overflow:hidden;
   display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical; }
 
 /* chips S1 */
 .chips { display:flex;gap:5px;flex-wrap:wrap;margin-top:8px; }
-.chip  { font-size:7.5px;letter-spacing:0.06em;color:rgba(77,216,232,0.7);
+.chip  { font-size:9px;letter-spacing:0.06em;color:rgba(77,216,232,0.7);
   background:rgba(77,216,232,0.07);border:1px solid rgba(77,216,232,0.18);
   padding:3px 9px;border-radius:100px;transition:all .2s;white-space:nowrap; }
 .card:hover .chip { background:rgba(77,216,232,0.12);border-color:rgba(77,216,232,0.32); }
 
 .cfoot { flex-shrink:0;padding:8px 14px 12px;border-top:1px solid rgba(255,255,255,0.04);
   display:flex;align-items:center;justify-content:space-between;margin-top:auto; }
-.ccta  { font-size:8px;letter-spacing:0.12em;color:rgba(77,216,232,0.38);transition:color .2s; }
+.ccta  { font-size:9.5px;letter-spacing:0.12em;color:rgba(77,216,232,0.38);transition:color .2s; }
 .card:hover .ccta { color:var(--c); }
 .carrow { width:22px;height:22px;border-radius:50%;border:1px solid rgba(77,216,232,0.12);
   display:flex;align-items:center;justify-content:center;transition:all .2s; }
@@ -173,7 +173,7 @@ header::after { content:'';position:absolute;bottom:-1px;left:32px;width:80px;he
   padding:8px 14px 12px;border-top:1px solid rgba(255,255,255,0.04);margin-top:auto; }
 .s5btn { display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;
   border:1px solid rgba(77,216,232,0.13);background:rgba(77,216,232,0.04);
-  text-decoration:none;color:rgba(200,232,242,0.72);font-size:9.5px;letter-spacing:0.03em;
+  text-decoration:none;color:rgba(200,232,242,0.72);font-size:11px;letter-spacing:0.03em;
   transition:all .2s;position:relative;overflow:hidden;white-space:nowrap; }
 .s5btn::before { content:'';position:absolute;inset:0;
   background:linear-gradient(90deg,rgba(77,216,232,0.07),transparent);opacity:0;transition:opacity .2s; }
@@ -189,7 +189,7 @@ header::after { content:'';position:absolute;bottom:-1px;left:32px;width:80px;he
 /* ══ FOOTER ══ */
 footer { flex-shrink:0;display:flex;justify-content:space-between;align-items:center;
   padding:8px 32px;border-top:1px solid rgba(77,216,232,0.05); }
-.fl,.fr { font-size:7.5px;letter-spacing:0.14em;color:rgba(90,170,195,0.15); }
+.fl,.fr { font-size:9px;letter-spacing:0.14em;color:rgba(90,170,195,0.15); }
 
 /* ══ ANIMATIONS ══ */
 @keyframes fadeDown { from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)} }
