@@ -2143,7 +2143,7 @@ function claimSeminarLead() {}
 
 var API_URL_KEY = 'futime_api_url';
 // v22：更新為最新 GAS deployment URL
-var HARDCODED_API_URL = 'https://script.google.com/macros/s/AKfycbyt8tcy6pORzZ1nc0HP4YVLV-AY1tOuahJWjhmWQ2VBTSZPLZe2qgBzZgczbDQTVsPI/exec';
+var HARDCODED_API_URL = 'https://script.google.com/macros/s/AKfycbxPExuVTXkz8ucGXscubiypyrWL_qqu53mlp8U_ggyz4kHUT1-bf29IVAFLEmlwnP85/exec';
 var currentUser = null, currentRole = null;
 var customers = [];
 var MANAGERS = ['總經理','CRM營運長','知識長','AI訓練長'];
@@ -2260,7 +2260,8 @@ function rebuildSalesSelects() {
 // ── 取得 API URL（優先 localStorage 自訂網址、其次 HARDCODED）──
 // v22：加入已知舊版壞網址黑名單，自動清除避免殘留
 var KNOWN_BAD_URLS = [
-  'AKfycbycQXNmY6eSF2LHpLgIUxufpCyfIVU4jSSbWipt2NhhIhPRn5R_5NN_nYJgvpPOGk63'
+  'AKfycbycQXNmY6eSF2LHpLgIUxufpCyfIVU4jSSbWipt2NhhIhPRn5R_5NN_nYJgvpPOGk63',
+  'AKfycbyt8tcy6pORzZ1nc0HP4YVLV-AY1tOuahJWjhmWQ2VBTSZPLZe2qgBzZgczbDQTVsPI'
 ];
 function getApiUrl() {
   try {
@@ -2319,8 +2320,8 @@ function saveApiUrlFromReset() {
   // 先存起來
   try { localStorage.setItem(API_URL_KEY, url); } catch(e) {}
   statusEl.innerHTML = '<span style="color:#666">⏳ 測試連線中...</span>';
-  // 呼叫 GAS 驗證連通（getSalesList 為低風險 action，確認 API 存活）
-  callAPI({ action: 'getSalesList' }, function(res) {
+  // 呼叫 GAS 驗證連通（getStaffList 是 GAS 有的 action）
+  callAPI({ action: 'getStaffList' }, function(res) {
     if (res && res.success !== false && !res.error) {
       statusEl.innerHTML = '<span style="color:#2e7d52">✅ 連線成功！請登入</span>';
       var apiStatusEl2 = document.getElementById('apiStatus');
@@ -6655,31 +6656,32 @@ function showToast(msg) {
   var pingUrl = getApiUrl();
 
   var fetchDone = false;
-  // v22：改用 getSalesList（GAS 一定有此 action），比 getTargets 更可靠
-  var fetchPromise = fetch(pingUrl, {
-    method: 'POST',
-    body: JSON.stringify({ action: 'getSalesList' }),
-    headers: { 'Content-Type': 'text/plain' }
-  });
+  // v22 fix：用 doGet 做 ping（GET 不需 action，GAS 一定回應）
+  // 區分「URL 到得了但 action 錯」vs「根本到不了」
+  var fetchPromise = fetch(pingUrl, { method: 'GET' });
   var timeoutPromise = new Promise(function(_, reject){
     setTimeout(function(){
       if (!fetchDone) reject(new Error('timeout'));
-    }, 8000);
+    }, 10000); // 行動網路較慢，延長到 10 秒
   });
 
   Promise.race([fetchPromise, timeoutPromise])
     .then(function(r){ fetchDone = true; return r.text(); })
     .then(function(text){
-      // 只要有回應就視為連線成功（即使回傳錯誤也代表 API 活著）
+      // HTTP 有回應即視為連線成功
       apiStatusEl.textContent = '✅ 雲端已連線，請登入';
       apiStatusEl.style.color = '#1e6b42';
-      // 如果測試的是 HARDCODED 而非 saved，確保 localStorage 不殘留舊壞網址
-      // （不清除，讓 getApiUrl 繼續優先用 saved）
     })
-    .catch(function(){
+    .catch(function(err){
       fetchDone = true;
-      // 連線失敗：顯示錯誤並自動展開重設面板
-      apiStatusEl.textContent = '❌ 連線失敗，請更新雲端網址';
+      var errMsg = err && err.message ? err.message : '未知錯誤';
+      var isTimeout = errMsg.indexOf('timeout') !== -1;
+      // 區分逾時 vs 網路拒絕
+      if (isTimeout) {
+        apiStatusEl.textContent = '⏱ 連線逾時，請確認網路後重試';
+      } else {
+        apiStatusEl.textContent = '❌ 無法連線 GAS（' + errMsg + '）';
+      }
       apiStatusEl.style.color = '#b02a20';
       var box = document.getElementById('resetUrlBox');
       if (box) box.style.display = 'block';
