@@ -14,421 +14,245 @@
   --c2: #38b6f5;
   --bg: #060a0f;
   --card: #0b1520;
-  --card2: #0d1825;
   --t: #d8eef6;
-  --td: rgba(160,205,220,0.52);
-  --tm: rgba(90,160,185,0.32);
+  --td: rgba(160,205,220,0.55);
+  --tm: rgba(90,160,185,0.30);
 }
 
+/* ── lock to viewport ── */
 html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
   background: var(--bg);
   font-family: 'Noto Sans TC', sans-serif;
   color: var(--t);
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
 }
 
-/* ── global bg layers ── */
-.bg-layer {
-  position: fixed; inset: 0; pointer-events: none; z-index: 0;
-}
-.bg-layer-1 {
+.bg1 { position:fixed;inset:0;z-index:0;pointer-events:none;
   background:
-    radial-gradient(ellipse 70% 50% at 0% 0%, rgba(0,190,210,0.08) 0%, transparent 55%),
-    radial-gradient(ellipse 60% 45% at 100% 100%, rgba(0,130,220,0.07) 0%, transparent 55%),
-    radial-gradient(ellipse 40% 30% at 50% 50%, rgba(4,20,35,0.9) 0%, transparent 80%);
-}
-.bg-layer-2 {
-  background-image: radial-gradient(rgba(77,216,232,0.055) 1px, transparent 1px);
-  background-size: 26px 26px;
-  opacity: 0.8;
-}
+    radial-gradient(ellipse 65% 45% at 0% 0%,   rgba(0,190,210,0.09) 0%,transparent 55%),
+    radial-gradient(ellipse 55% 40% at 100% 100%,rgba(0,130,220,0.07) 0%,transparent 55%); }
+.bg2 { position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:radial-gradient(rgba(77,216,232,0.055) 1px,transparent 1px);
+  background-size:26px 26px; }
 
+/* ── full-viewport flex column ── */
 .wrap {
   position: relative; z-index: 1;
-  max-width: 1400px; margin: 0 auto;
-  padding-bottom: 48px;
+  width: 100%; height: 100dvh;
+  display: flex; flex-direction: column;
+  padding: 0;
+  overflow: hidden;
 }
 
-/* ══════════════════════════
-   HEADER
-══════════════════════════ */
+/* ══ HEADER ══ */
 header {
+  flex-shrink: 0;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 30px 44px 24px;
+  padding: 16px 32px 12px;
   border-bottom: 1px solid rgba(77,216,232,0.08);
   position: relative;
-  animation: fadeDown .6s ease both;
 }
-header::after {
-  content: '';
-  position: absolute; bottom: -1px; left: 44px; width: 120px; height: 1px;
-  background: linear-gradient(90deg, var(--c), transparent);
-}
+header::after { content:'';position:absolute;bottom:-1px;left:32px;width:80px;height:1px;
+  background:linear-gradient(90deg,var(--c),transparent); }
 
-.hl { display: flex; align-items: center; gap: 16px; }
+.hl { display:flex;align-items:center;gap:12px; }
+.logo { width:38px;height:38px;border-radius:9px;flex-shrink:0;
+  background:linear-gradient(135deg,rgba(77,216,232,0.13),rgba(56,182,245,0.06));
+  border:1px solid rgba(77,216,232,0.28);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 16px rgba(77,216,232,0.1),inset 0 1px 0 rgba(255,255,255,0.07); }
+.logo svg { width:18px;height:18px;stroke:var(--c);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round; }
+.ht-sup { font-size:7px;letter-spacing:0.26em;color:rgba(77,216,232,0.35);font-weight:300;margin-bottom:3px; }
+.ht-h1  { font-size:clamp(16px,2vw,24px);font-weight:900;color:#eaf5fa;line-height:1;letter-spacing:-0.01em; }
+.ht-h1 em { font-style:normal;color:var(--c); }
+.hr { display:flex;align-items:center;gap:10px; }
+.badge { font-size:7.5px;letter-spacing:0.14em;color:rgba(77,216,232,0.3);border:1px solid rgba(77,216,232,0.12);padding:3px 10px;border-radius:4px; }
+.bignum { font-size:clamp(32px,3.5vw,48px);font-weight:900;letter-spacing:-0.06em;color:rgba(77,216,232,0.07);
+  border:1px solid rgba(77,216,232,0.05);border-radius:6px;padding:3px 12px; }
 
-.logo {
-  width: 46px; height: 46px; border-radius: 12px; flex-shrink: 0;
-  background: linear-gradient(135deg, rgba(77,216,232,0.12), rgba(56,182,245,0.06));
-  border: 1px solid rgba(77,216,232,0.28);
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 0 20px rgba(77,216,232,0.1), inset 0 1px 0 rgba(255,255,255,0.07);
-}
-.logo svg { width: 22px; height: 22px; stroke: var(--c); fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+/* ══ SECTION LABEL ══ */
+.sec-label { flex-shrink:0;padding:8px 32px 6px;display:flex;align-items:center;gap:12px; }
+.sec-text  { font-size:7.5px;letter-spacing:0.26em;color:var(--tm);white-space:nowrap;font-weight:300; }
+.sec-line  { flex:1;height:1px;background:linear-gradient(90deg,rgba(77,216,232,0.1),transparent); }
 
-.ht-sup { font-size: 8.5px; letter-spacing: 0.28em; color: rgba(77,216,232,0.38); font-weight: 300; margin-bottom: 5px; }
-.ht-h1  { font-size: clamp(22px,2.8vw,34px); font-weight: 900; letter-spacing: -0.015em; color: #eaf5fa; line-height: 1; }
-.ht-h1 em { font-style: normal; color: var(--c); }
-.ht-sub { font-size: 8px; letter-spacing: 0.2em; color: rgba(100,190,215,0.28); margin-top: 4px; font-weight: 300; }
-
-.hr { display: flex; align-items: center; gap: 14px; }
-.badge {
-  font-size: 8.5px; letter-spacing: 0.16em; color: rgba(77,216,232,0.32);
-  border: 1px solid rgba(77,216,232,0.12); padding: 5px 13px; border-radius: 4px;
-}
-.bignum {
-  font-size: clamp(44px,5.5vw,64px); font-weight: 900; letter-spacing: -0.06em; line-height: 1;
-  color: rgba(77,216,232,0.07);
-  border: 1px solid rgba(77,216,232,0.05); border-radius: 8px;
-  padding: 4px 14px;
-  text-shadow: 0 0 30px rgba(77,216,232,0.12);
-}
-
-/* ══════════════════════════
-   HERO CARD (S1)
-══════════════════════════ */
-.hero-wrap { padding: 28px 44px 0; animation: fadeUp .6s .1s ease both; }
-
-.hero {
-  position: relative; overflow: hidden;
-  border-radius: 16px;
-  border: 1px solid rgba(77,216,232,0.18);
-  background: linear-gradient(145deg, #0e1e2e 0%, #0a1520 40%, #0c1822 100%);
-  display: flex; align-items: stretch;
-  min-height: 190px;
-  text-decoration: none; color: inherit;
-  transition: border-color .35s, box-shadow .35s;
-  box-shadow: 0 4px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04);
-}
-.hero:hover {
-  border-color: rgba(77,216,232,0.38);
-  box-shadow: 0 4px 60px rgba(0,0,0,0.6), 0 0 40px rgba(77,216,232,0.1), inset 0 1px 0 rgba(255,255,255,0.06);
-}
-
-/* gradient border top */
-.hero::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, transparent 0%, rgba(77,216,232,0.5) 40%, rgba(56,182,245,0.3) 70%, transparent 100%);
-}
-
-/* canvas for neural network */
-#heroCanvas {
-  position: absolute; inset: 0; width: 100%; height: 100%;
-  pointer-events: none; opacity: 0.55;
-}
-
-/* left visual panel */
-.hero-vis {
-  flex-shrink: 0; width: 220px;
-  display: flex; align-items: center; justify-content: center;
-  position: relative; z-index: 2; padding: 32px 24px;
-}
-
-/* 3D cube icon */
-.cube-wrap {
-  width: 100px; height: 100px;
-  position: relative; display: flex; align-items: center; justify-content: center;
-}
-.cube-ring {
-  position: absolute; inset: 0; border-radius: 50%;
-  border: 1px solid rgba(77,216,232,0.22);
-  animation: spin 14s linear infinite;
-}
-.cube-ring::before {
-  content: ''; position: absolute; top: -4px; left: 50%; transform: translateX(-50%);
-  width: 7px; height: 7px; border-radius: 50%;
-  background: var(--c); box-shadow: 0 0 14px var(--c), 0 0 28px rgba(77,216,232,0.5);
-}
-.cube-ring2 {
-  position: absolute; inset: 16px; border-radius: 50%;
-  border: 1px solid rgba(77,216,232,0.12);
-  animation: spin 9s linear infinite reverse;
-}
-.cube-ring2::before {
-  content: ''; position: absolute; bottom: -3px; left: 50%; transform: translateX(-50%);
-  width: 5px; height: 5px; border-radius: 50%;
-  background: var(--c2); box-shadow: 0 0 10px var(--c2);
-}
-.cube-core {
-  width: 56px; height: 56px; border-radius: 14px; position: relative; z-index: 2;
-  background: linear-gradient(145deg, rgba(77,216,232,0.18) 0%, rgba(56,182,245,0.08) 100%);
-  border: 1px solid rgba(77,216,232,0.38);
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 0 30px rgba(77,216,232,0.2), 0 0 60px rgba(77,216,232,0.08), inset 0 1px 0 rgba(255,255,255,0.12);
-}
-.cube-core svg { width: 26px; height: 26px; stroke: var(--c); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
-
-/* hero text */
-.hero-body { flex: 1; padding: 34px 40px 34px 0; position: relative; z-index: 2; }
-.h-eyebrow { font-size: 8.5px; letter-spacing: 0.28em; color: rgba(77,216,232,0.48); font-weight: 300; margin-bottom: 5px; }
-.h-sub     { font-size: 9.5px; letter-spacing: 0.16em; color: rgba(77,216,232,0.28); font-weight: 300; margin-bottom: 10px; }
-.h-title   { font-size: clamp(26px,3vw,40px); font-weight: 900; letter-spacing: -0.01em; color: #eef8fc; line-height: 1.05; margin-bottom: 12px; }
-.h-desc    { font-size: 12px; color: var(--td); line-height: 1.85; margin-bottom: 20px; max-width: 460px; }
-.h-chips   { display: flex; gap: 8px; flex-wrap: wrap; }
-.h-chip {
-  font-size: 9.5px; letter-spacing: 0.08em; color: rgba(77,216,232,0.72);
-  background: rgba(77,216,232,0.07); border: 1px solid rgba(77,216,232,0.2);
-  padding: 5px 13px; border-radius: 100px;
-  transition: all .2s;
-}
-.hero:hover .h-chip { background: rgba(77,216,232,0.12); border-color: rgba(77,216,232,0.35); }
-
-.hero-arr { flex-shrink: 0; width: 72px; display: flex; align-items: center; justify-content: center; position: relative; z-index: 2; }
-.arr-btn {
-  width: 42px; height: 42px; border-radius: 50%;
-  border: 1px solid rgba(77,216,232,0.2);
-  display: flex; align-items: center; justify-content: center;
-  transition: all .25s;
-}
-.hero:hover .arr-btn { border-color: rgba(77,216,232,0.55); background: rgba(77,216,232,0.09); box-shadow: 0 0 20px rgba(77,216,232,0.15); }
-.arr-btn svg { width: 15px; height: 15px; stroke: rgba(77,216,232,0.45); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: stroke .2s; }
-.hero:hover .arr-btn svg { stroke: var(--c); }
-
-/* ══════════════════════════
-   SECTION DIVIDER
-══════════════════════════ */
-.divider {
-  padding: 22px 44px 14px;
-  display: flex; align-items: center; gap: 14px;
-  animation: fadeUp .5s .18s ease both;
-}
-.div-text { font-size: 8.5px; letter-spacing: 0.28em; color: var(--tm); white-space: nowrap; font-weight: 300; }
-.div-line { flex: 1; height: 1px; background: linear-gradient(90deg, rgba(77,216,232,0.1) 0%, transparent 100%); }
-
-/* ══════════════════════════
-   CARDS GRID
-══════════════════════════ */
+/* ══ GRID: 6 equal columns, fills remaining space ══ */
 .grid {
+  flex: 1;
+  min-height: 0;          /* allow shrinking */
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 14px; padding: 0 44px;
-  animation: fadeUp .55s .22s ease both;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: 1fr; /* single row, fills height */
+  gap: 10px;
+  padding: 0 32px 14px;
 }
-.card-s5 { grid-column: span 2; }
 
-/* ── base card ── */
+/* ══ CARD ══ */
 .card {
-  position: relative; overflow: hidden;
-  border-radius: 14px;
-  background: var(--card);
-  border: 1px solid rgba(255,255,255,0.055);
-  display: flex; flex-direction: column;
-  text-decoration: none; color: inherit;
-  transition: transform .22s ease, box-shadow .28s ease, border-color .28s ease;
-  box-shadow: 0 2px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.03);
+  position:relative;overflow:hidden;
+  border-radius:14px;
+  background:var(--card);
+  border:1px solid rgba(255,255,255,0.055);
+  display:flex;flex-direction:column;
+  text-decoration:none;color:inherit;
+  min-height: 0;   /* allow flex shrink */
+  transition:transform .2s,box-shadow .25s,border-color .25s;
+  box-shadow:0 2px 16px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.03);
 }
 .card:hover {
-  transform: translateY(-3px);
-  border-color: rgba(77,216,232,0.22);
-  box-shadow: 0 8px 40px rgba(0,0,0,0.55), 0 0 30px rgba(77,216,232,0.07), inset 0 1px 0 rgba(255,255,255,0.06);
+  transform:translateY(-2px);
+  border-color:rgba(77,216,232,0.24);
+  box-shadow:0 8px 36px rgba(0,0,0,0.5),0 0 24px rgba(77,216,232,0.08);
 }
+.card::before { content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(77,216,232,0.55),transparent);
+  opacity:0;transition:opacity .3s; }
+.card:hover::before { opacity:1; }
+.card::after { content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 80% 40% at 50% 0%,rgba(77,216,232,0.05) 0%,transparent 70%);
+  opacity:0;transition:opacity .3s; }
+.card:hover::after { opacity:1; }
 
-/* gradient top border */
-.card::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, transparent 0%, rgba(77,216,232,0.45) 50%, transparent 100%);
-  opacity: 0; transition: opacity .3s;
-}
-.card:hover::before { opacity: 1; }
-
-/* inner glow on hover */
-.card::after {
-  content: ''; position: absolute; inset: 0; pointer-events: none;
-  background: radial-gradient(ellipse 70% 40% at 50% 0%, rgba(77,216,232,0.06) 0%, transparent 70%);
-  opacity: 0; transition: opacity .3s;
-}
-.card:hover::after { opacity: 1; }
-
-/* ── ILLUSTRATION AREA ── */
+/* ══ ILLUSTRATION ══ */
 .ill {
-  position: relative; width: 100%;
-  aspect-ratio: 4 / 3;   /* more square = more space for scene */
-  overflow: hidden; flex-shrink: 0;
-  background: #07101a;
-  border-bottom: 1px solid rgba(77,216,232,0.07);
+  position:relative;
+  width:100%;
+  /* Use flex + ratio trick so it fills available space proportionally */
+  flex: 2;           /* illustration gets 2x weight vs text */
+  min-height: 0;
+  overflow:hidden;
+  background:#060e18;
+  border-bottom:1px solid rgba(77,216,232,0.07);
 }
+.ill::before { content:'';position:absolute;inset:0;z-index:0;
+  background-image:radial-gradient(rgba(77,216,232,0.09) 1px,transparent 1px);
+  background-size:18px 18px; }
+.ill::after { content:'';position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:linear-gradient(to bottom,transparent 52%,#060e18 100%); }
+.ill svg.scene { position:absolute;inset:0;width:100%;height:100%;z-index:1;overflow:visible; }
+#c1 { position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0.4;z-index:1; }
 
-/* shared dot grid */
-.ill::before {
-  content: ''; position: absolute; inset: 0;
-  background-image: radial-gradient(rgba(77,216,232,0.1) 1px, transparent 1px);
-  background-size: 18px 18px;
-  z-index: 0;
-}
-
-/* bottom fade into card */
-.ill::after {
-  content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none;
-  background: linear-gradient(to bottom, transparent 50%, #07101a 100%);
-}
-
-.ill svg.scene { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; overflow: visible; }
-
-/* num badge */
 .nbadge {
-  position: absolute; top: 10px; left: 12px; z-index: 10;
-  font-size: 9px; letter-spacing: 0.08em; font-weight: 700;
-  color: rgba(77,216,232,0.5);
-  background: rgba(6,14,22,0.7);
-  border: 1px solid rgba(77,216,232,0.14);
-  padding: 3px 8px; border-radius: 4px;
-  backdrop-filter: blur(8px);
+  position:absolute;top:8px;left:10px;z-index:10;
+  font-size:8px;letter-spacing:0.1em;font-weight:700;
+  color:rgba(77,216,232,0.5);
+  background:rgba(4,10,18,0.78);
+  border:1px solid rgba(77,216,232,0.15);
+  padding:2px 7px;border-radius:3px;
+  backdrop-filter:blur(6px);
 }
 
-/* ── CARD BODY ── */
-.cb { padding: 16px 18px 0; flex: 1; display: flex; flex-direction: column; }
-.ctag { font-size: 8px; letter-spacing: 0.22em; color: rgba(77,216,232,0.42); margin-bottom: 6px; font-weight: 300; }
-.cname { font-size: 15px; font-weight: 700; color: var(--t); line-height: 1.25; margin-bottom: 7px; }
-.cdesc { font-size: 11px; color: var(--td); line-height: 1.75; flex: 1; }
+/* ══ CARD BODY ══ */
+.cb { padding:12px 14px 0;flex:1.2;display:flex;flex-direction:column;min-height:0; }
+.ctag  { font-size:7px;letter-spacing:0.2em;color:rgba(77,216,232,0.42);margin-bottom:4px;font-weight:300; }
+.cname { font-size:clamp(11px,1.1vw,15px);font-weight:700;color:var(--t);line-height:1.25;margin-bottom:5px; }
+.cdesc { font-size:clamp(8.5px,0.75vw,10.5px);color:var(--td);line-height:1.65;flex:1;overflow:hidden;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical; }
 
-.cfoot {
-  margin-top: 14px; padding: 11px 18px 16px;
-  border-top: 1px solid rgba(255,255,255,0.04);
-  display: flex; align-items: center; justify-content: space-between;
-}
-.ccta { font-size: 9px; letter-spacing: 0.14em; color: rgba(77,216,232,0.38); transition: color .2s; }
-.card:hover .ccta { color: var(--c); }
-.carrow {
-  width: 24px; height: 24px; border-radius: 50%;
-  border: 1px solid rgba(77,216,232,0.12);
-  display: flex; align-items: center; justify-content: center;
-  transition: all .2s;
-}
-.card:hover .carrow { border-color: rgba(77,216,232,0.4); background: rgba(77,216,232,0.08); box-shadow: 0 0 12px rgba(77,216,232,0.15); }
-.carrow svg { width: 10px; height: 10px; stroke: rgba(77,216,232,0.38); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: stroke .2s; }
-.card:hover .carrow svg { stroke: var(--c); }
+/* chips S1 */
+.chips { display:flex;gap:5px;flex-wrap:wrap;margin-top:8px; }
+.chip  { font-size:7.5px;letter-spacing:0.06em;color:rgba(77,216,232,0.7);
+  background:rgba(77,216,232,0.07);border:1px solid rgba(77,216,232,0.18);
+  padding:3px 9px;border-radius:100px;transition:all .2s;white-space:nowrap; }
+.card:hover .chip { background:rgba(77,216,232,0.12);border-color:rgba(77,216,232,0.32); }
 
-/* ── S5 buttons ── */
-.s5btns { display: flex; flex-direction: column; gap: 8px; padding: 12px 18px 16px; border-top: 1px solid rgba(255,255,255,0.04); margin-top: 14px; }
-.s5btn {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 14px; border-radius: 8px;
-  border: 1px solid rgba(77,216,232,0.13);
-  background: rgba(77,216,232,0.04);
-  text-decoration: none; color: rgba(200,232,242,0.72);
-  font-size: 11px; letter-spacing: 0.04em;
-  transition: all .2s;
-  position: relative; overflow: hidden;
-}
-.s5btn::before {
-  content: ''; position: absolute; inset: 0;
-  background: linear-gradient(90deg, rgba(77,216,232,0.06) 0%, transparent 100%);
-  opacity: 0; transition: opacity .2s;
-}
-.s5btn:hover { border-color: rgba(77,216,232,0.35); color: var(--c); background: rgba(77,216,232,0.08); }
-.s5btn:hover::before { opacity: 1; }
-.s5btn svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; opacity: 0.65; transition: opacity .2s; }
-.s5btn:hover svg { opacity: 1; }
-.s5dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(77,216,232,0.28); margin-left: auto; flex-shrink: 0; transition: all .2s; }
-.s5btn:hover .s5dot { background: var(--c); box-shadow: 0 0 8px var(--c); }
+.cfoot { flex-shrink:0;padding:8px 14px 12px;border-top:1px solid rgba(255,255,255,0.04);
+  display:flex;align-items:center;justify-content:space-between;margin-top:auto; }
+.ccta  { font-size:8px;letter-spacing:0.12em;color:rgba(77,216,232,0.38);transition:color .2s; }
+.card:hover .ccta { color:var(--c); }
+.carrow { width:22px;height:22px;border-radius:50%;border:1px solid rgba(77,216,232,0.12);
+  display:flex;align-items:center;justify-content:center;transition:all .2s; }
+.card:hover .carrow { border-color:rgba(77,216,232,0.4);background:rgba(77,216,232,0.08); }
+.carrow svg { width:9px;height:9px;stroke:rgba(77,216,232,0.38);fill:none;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round;transition:stroke .2s; }
+.card:hover .carrow svg { stroke:var(--c); }
 
-/* ══════════════════════════
-   FOOTER
-══════════════════════════ */
-footer {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 18px 44px; margin-top: 32px;
-  border-top: 1px solid rgba(77,216,232,0.06);
-  animation: fadeUp .5s .35s ease both;
-}
-.fl, .fr { font-size: 8.5px; letter-spacing: 0.16em; color: rgba(90,170,195,0.18); }
+/* S5 buttons */
+.s5btns { flex-shrink:0;display:flex;flex-direction:column;gap:5px;
+  padding:8px 14px 12px;border-top:1px solid rgba(255,255,255,0.04);margin-top:auto; }
+.s5btn { display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;
+  border:1px solid rgba(77,216,232,0.13);background:rgba(77,216,232,0.04);
+  text-decoration:none;color:rgba(200,232,242,0.72);font-size:9.5px;letter-spacing:0.03em;
+  transition:all .2s;position:relative;overflow:hidden;white-space:nowrap; }
+.s5btn::before { content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,rgba(77,216,232,0.07),transparent);opacity:0;transition:opacity .2s; }
+.s5btn:hover { border-color:rgba(77,216,232,0.35);color:var(--c);background:rgba(77,216,232,0.08); }
+.s5btn:hover::before { opacity:1; }
+.s5btn svg { width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:1.8;
+  stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;opacity:0.65; }
+.s5btn:hover svg { opacity:1; }
+.s5dot { width:4px;height:4px;border-radius:50%;background:rgba(77,216,232,0.28);
+  margin-left:auto;flex-shrink:0;transition:all .2s; }
+.s5btn:hover .s5dot { background:var(--c);box-shadow:0 0 6px var(--c); }
 
-/* ══════════════════════════
-   ANIMATIONS
-══════════════════════════ */
-@keyframes fadeDown { from { opacity:0; transform:translateY(-12px); } to { opacity:1; transform:translateY(0); } }
-@keyframes fadeUp   { from { opacity:0; transform:translateY(18px);  } to { opacity:1; transform:translateY(0); } }
-@keyframes spin     { to { transform: rotate(360deg); } }
-@keyframes pulse    { 0%,100%{ opacity:.4; } 50%{ opacity:1; } }
+/* ══ FOOTER ══ */
+footer { flex-shrink:0;display:flex;justify-content:space-between;align-items:center;
+  padding:8px 32px;border-top:1px solid rgba(77,216,232,0.05); }
+.fl,.fr { font-size:7.5px;letter-spacing:0.14em;color:rgba(90,170,195,0.15); }
 
-/* ══════════════════════════
-   RESPONSIVE
-══════════════════════════ */
-@media (max-width: 1100px) {
-  .grid { grid-template-columns: repeat(3,1fr); padding: 0 28px; }
-  .card-s5 { grid-column: span 1; }
-  .hero-wrap, .divider { padding-left: 28px; padding-right: 28px; }
-  header, footer { padding-left: 28px; padding-right: 28px; }
-  header::after { left: 28px; }
-}
+/* ══ ANIMATIONS ══ */
+@keyframes fadeDown { from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)} }
+@keyframes fadeUp   { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+header     { animation:fadeDown .45s ease both; }
+.sec-label { animation:fadeUp .45s .07s ease both; }
+.grid      { animation:fadeUp .5s .14s ease both; }
+footer     { animation:fadeUp .45s .24s ease both; }
 
-@media (max-width: 680px) {
-  html, body { overflow-y: auto; }
+/* ══ MOBILE: 3+3 two compact rows, still fits one screen ══ */
+@media (max-width: 768px) {
+  html, body { overflow: hidden; }
 
-  header { padding: 12px 14px; }
+  header { padding: 10px 14px 8px; }
   header::after { left: 14px; }
-  .logo { width: 36px; height: 36px; border-radius: 9px; }
-  .logo svg { width: 18px; height: 18px; }
-  .ht-sup { font-size: 7.5px; margin-bottom: 3px; }
-  .ht-h1  { font-size: 21px; }
-  .ht-sub { display: none; }
+  .logo { width: 32px; height: 32px; border-radius: 7px; }
+  .logo svg { width: 15px; height: 15px; }
+  .ht-sup { font-size: 6.5px; }
+  .ht-h1  { font-size: 17px; }
   .badge  { display: none; }
-  .bignum { font-size: 38px; padding: 3px 10px; }
+  .bignum { font-size: 28px; padding: 2px 8px; }
 
-  .hero-wrap { padding: 10px 12px 0; }
-  .hero { border-radius: 12px; min-height: unset; }
-  .hero-vis { width: 76px; padding: 14px 12px; }
-  .cube-wrap { width: 52px; height: 52px; }
-  .cube-core { width: 34px; height: 34px; border-radius: 9px; }
-  .cube-core svg { width: 17px; height: 17px; }
-  .hero-body { padding: 14px 14px 14px 0; }
-  .h-eyebrow { font-size: 7px; margin-bottom: 2px; }
-  .h-sub { font-size: 8px; margin-bottom: 6px; }
-  .h-title { font-size: 17px; margin-bottom: 6px; }
-  .h-desc { font-size: 10px; line-height: 1.65; margin-bottom: 10px; }
-  .h-chip { font-size: 8px; padding: 3px 9px; }
-  .hero-arr { width: 40px; }
-  .arr-btn { width: 30px; height: 30px; }
-  .arr-btn svg { width: 12px; height: 12px; }
+  .sec-label { padding: 5px 12px 4px; }
+  .sec-text  { font-size: 7px; }
 
-  .divider { padding: 14px 12px 8px; }
-  .div-text { font-size: 7.5px; }
+  /* 3 columns × 2 rows */
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 7px;
+    padding: 0 12px 10px;
+  }
 
-  .grid { grid-template-columns: repeat(3,1fr); gap: 8px; padding: 0 12px; }
-  .card-s5 { grid-column: span 2; }
   .card { border-radius: 10px; }
   .card:hover { transform: none; }
 
-  .ill { aspect-ratio: 4/3; }
-  .ill::before { background-size: 14px 14px; }
-  .nbadge { font-size: 7.5px; top: 7px; left: 8px; padding: 2px 6px; }
+  .nbadge { font-size: 7px; top: 6px; left: 8px; padding: 2px 5px; }
 
-  .cb { padding: 10px 12px 0; }
-  .ctag { font-size: 7px; margin-bottom: 3px; }
-  .cname { font-size: 11.5px; margin-bottom: 4px; }
-  .cdesc { font-size: 9px; line-height: 1.6; }
+  .cb { padding: 8px 10px 0; }
+  .ctag  { font-size: 6.5px; margin-bottom: 3px; }
+  .cname { font-size: 11px; margin-bottom: 3px; }
+  .cdesc { font-size: 8.5px; line-height: 1.5; -webkit-line-clamp: 2; }
+  .chips { gap: 4px; margin-top: 5px; }
+  .chip  { font-size: 7px; padding: 2px 7px; }
 
-  .cfoot { margin-top: 8px; padding: 8px 12px 12px; }
-  .ccta { font-size: 8px; }
-  .carrow { width: 20px; height: 20px; }
-  .carrow svg { width: 9px; height: 9px; }
+  .cfoot { padding: 6px 10px 9px; }
+  .ccta  { font-size: 7px; }
+  .carrow { width: 18px; height: 18px; }
+  .carrow svg { width: 8px; height: 8px; }
 
-  .s5btns { gap: 6px; padding: 8px 12px 12px; margin-top: 8px; }
-  .s5btn { padding: 7px 10px; font-size: 9.5px; border-radius: 6px; gap: 7px; }
-  .s5btn svg { width: 11px; height: 11px; }
-  .s5dot { width: 4px; height: 4px; }
+  .s5btns { gap: 4px; padding: 5px 10px 9px; }
+  .s5btn  { padding: 5px 8px; font-size: 8.5px; gap: 6px; border-radius: 5px; }
+  .s5btn svg { width: 9px; height: 9px; }
+  .s5dot { width: 3px; height: 3px; }
 
-  footer { padding: 10px 14px; margin-top: 14px; }
-  .fl, .fr { font-size: 7.5px; }
+  footer { padding: 6px 14px; }
+  .fl,.fr { font-size: 7px; }
 }
 </style>
 </head>
 <body>
-
-<div class="bg-layer bg-layer-1"></div>
-<div class="bg-layer bg-layer-2"></div>
-
+<div class="bg1"></div>
+<div class="bg2"></div>
 <div class="wrap">
 
 <!-- HEADER -->
@@ -440,7 +264,6 @@ footer {
     <div>
       <div class="ht-sup">RICHTIME INTERNAL PORTAL</div>
       <h1 class="ht-h1">富時代 <em>AI</em> 決策引擎</h1>
-      <div class="ht-sub">SIX CORE SYSTEMS · AI-DRIVEN · REAL ESTATE EXCELLENCE</div>
     </div>
   </div>
   <div class="hr">
@@ -449,101 +272,125 @@ footer {
   </div>
 </header>
 
-<!-- HERO S1 -->
-<div class="hero-wrap">
-  <a class="hero" href="https://richtime90117277-alt.github.io/futime-crm/crm_cloud_v19.html" target="_blank">
-    <canvas id="heroCanvas"></canvas>
-    <div class="hero-vis">
-      <div class="cube-wrap">
-        <div class="cube-ring"></div>
-        <div class="cube-ring2"></div>
-        <div class="cube-core">
-          <svg viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>
-        </div>
-      </div>
-    </div>
-    <div class="hero-body">
-      <div class="h-eyebrow">CONSULTANT DECISION SYSTEM · S1</div>
-      <div class="h-sub">核心系統 · 進入工具入口</div>
-      <div class="h-title">顧問決策系統</div>
-      <div class="h-desc">客戶狀態評估 · 需求分析模型 · 決策節點預判 · 即時顧問支援</div>
-      <div class="h-chips">
-        <span class="h-chip">決策節點</span>
-        <span class="h-chip">客戶分析</span>
-        <span class="h-chip">情境應對</span>
-        <span class="h-chip">決策路圖</span>
-      </div>
-    </div>
-    <div class="hero-arr">
-      <div class="arr-btn">
-        <svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
-      </div>
-    </div>
-  </a>
+<!-- LABEL -->
+<div class="sec-label">
+  <div class="sec-text">SIX CORE SYSTEMS · 核心系統入口</div>
+  <div class="sec-line"></div>
 </div>
 
-<!-- DIVIDER -->
-<div class="divider">
-  <div class="div-text">延伸工具入口 · 05 SYSTEMS</div>
-  <div class="div-line"></div>
-</div>
-
-<!-- GRID -->
+<!-- 6-CARD GRID -->
 <div class="grid">
 
-  <!-- S2 · AI資產規劃 · 折線+柱狀圖場景 -->
+  <!-- S1 · 顧問決策系統 -->
+  <a class="card" href="https://richtime90117277-alt.github.io/futime-crm/crm_cloud_v19.html" target="_blank">
+    <div class="ill">
+      <canvas id="c1"></canvas>
+      <div class="nbadge">01</div>
+      <svg class="scene" viewBox="0 0 160 120" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <radialGradient id="rg1" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#4dd8e8" stop-opacity="0.2"/>
+            <stop offset="100%" stop-color="#4dd8e8" stop-opacity="0"/>
+          </radialGradient>
+          <filter id="g1"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="g1s"><feGaussianBlur stdDeviation="1.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <ellipse cx="80" cy="60" rx="52" ry="44" fill="url(#rg1)"/>
+        <circle cx="80" cy="60" r="46" fill="none" stroke="rgba(77,216,232,0.08)" stroke-width="0.8"/>
+        <circle cx="80" cy="60" r="32" fill="none" stroke="rgba(77,216,232,0.14)" stroke-width="0.8"/>
+        <!-- centre hex -->
+        <polygon points="80,36 98,47 98,69 80,80 62,69 62,47"
+          fill="rgba(77,216,232,0.1)" stroke="rgba(77,216,232,0.5)" stroke-width="1.1" filter="url(#g1s)"/>
+        <circle cx="80" cy="58" r="8" fill="rgba(77,216,232,0.2)" stroke="rgba(77,216,232,0.65)" stroke-width="0.9" filter="url(#g1)"/>
+        <circle cx="80" cy="58" r="3.5" fill="#4dd8e8"/>
+        <!-- orbit dot -->
+        <circle cx="80" cy="14" r="4" fill="rgba(77,216,232,0.85)" filter="url(#g1s)"/>
+        <circle cx="126" cy="60" r="3" fill="rgba(77,216,232,0.55)" filter="url(#g1s)"/>
+        <!-- node left -->
+        <circle cx="30" cy="42" r="6" fill="rgba(77,216,232,0.08)" stroke="rgba(77,216,232,0.3)" stroke-width="0.8"/>
+        <circle cx="30" cy="42" r="2.5" fill="rgba(77,216,232,0.5)"/>
+        <circle cx="28" cy="80" r="5" fill="rgba(77,216,232,0.07)" stroke="rgba(77,216,232,0.25)" stroke-width="0.7"/>
+        <circle cx="28" cy="80" r="2" fill="rgba(77,216,232,0.4)"/>
+        <!-- node right -->
+        <circle cx="130" cy="38" r="6" fill="rgba(77,216,232,0.08)" stroke="rgba(77,216,232,0.3)" stroke-width="0.8"/>
+        <circle cx="130" cy="38" r="2.5" fill="rgba(77,216,232,0.5)"/>
+        <circle cx="132" cy="80" r="5" fill="rgba(77,216,232,0.07)" stroke="rgba(77,216,232,0.25)" stroke-width="0.7"/>
+        <circle cx="132" cy="80" r="2" fill="rgba(77,216,232,0.4)"/>
+        <!-- connectors -->
+        <line x1="36" y1="44" x2="62" y2="52" stroke="rgba(77,216,232,0.18)" stroke-width="0.8" stroke-dasharray="4,3"/>
+        <line x1="33" y1="78" x2="62" y2="64" stroke="rgba(77,216,232,0.15)" stroke-width="0.7" stroke-dasharray="4,3"/>
+        <line x1="124" y1="40" x2="98" y2="52" stroke="rgba(77,216,232,0.18)" stroke-width="0.8" stroke-dasharray="4,3"/>
+        <line x1="127" y1="78" x2="98" y2="64" stroke="rgba(77,216,232,0.15)" stroke-width="0.7" stroke-dasharray="4,3"/>
+        <!-- labels -->
+        <rect x="12" y="30" width="30" height="9" rx="2" fill="rgba(77,216,232,0.1)" stroke="rgba(77,216,232,0.25)" stroke-width="0.5"/>
+        <text x="15" y="36.5" font-size="5.5" fill="rgba(77,216,232,0.7)" font-family="monospace">需求分析</text>
+        <rect x="10" y="86" width="30" height="9" rx="2" fill="rgba(77,216,232,0.08)" stroke="rgba(77,216,232,0.2)" stroke-width="0.5"/>
+        <text x="13" y="92.5" font-size="5.5" fill="rgba(77,216,232,0.55)" font-family="monospace">客戶評估</text>
+        <rect x="118" y="26" width="30" height="9" rx="2" fill="rgba(77,216,232,0.1)" stroke="rgba(77,216,232,0.25)" stroke-width="0.5"/>
+        <text x="121" y="32.5" font-size="5.5" fill="rgba(77,216,232,0.7)" font-family="monospace">決策路圖</text>
+        <rect x="120" y="86" width="30" height="9" rx="2" fill="rgba(77,216,232,0.08)" stroke="rgba(77,216,232,0.2)" stroke-width="0.5"/>
+        <text x="123" y="92.5" font-size="5.5" fill="rgba(77,216,232,0.55)" font-family="monospace">節點預判</text>
+      </svg>
+    </div>
+    <div class="cb">
+      <div class="ctag">S1 · 核心系統</div>
+      <div class="cname">顧問決策系統</div>
+      <div class="cdesc">客戶狀態評估・需求分析・決策節點預判・即時支援</div>
+      <div class="chips">
+        <span class="chip">決策節點</span>
+        <span class="chip">客戶分析</span>
+        <span class="chip">情境應對</span>
+      </div>
+    </div>
+    <div class="cfoot">
+      <div class="ccta">進入系統</div>
+      <div class="carrow"><svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
+    </div>
+  </a>
+
+  <!-- S2 · AI 資產規劃 -->
   <a class="card" href="https://richtime90117277-alt.github.io/futime-crm/asset-planner.html" target="_blank">
     <div class="ill">
       <div class="nbadge">02</div>
       <svg class="scene" viewBox="0 0 160 120" preserveAspectRatio="xMidYMid meet">
         <defs>
-          <linearGradient id="bar-g" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#4dd8e8" stop-opacity="0.6"/>
-            <stop offset="100%" stop-color="#4dd8e8" stop-opacity="0.05"/>
+          <linearGradient id="bg2" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#4dd8e8" stop-opacity="0.55"/>
+            <stop offset="100%" stop-color="#4dd8e8" stop-opacity="0.04"/>
           </linearGradient>
-          <linearGradient id="area-g" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#4dd8e8" stop-opacity="0.3"/>
+          <linearGradient id="area2" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#4dd8e8" stop-opacity="0.28"/>
             <stop offset="100%" stop-color="#4dd8e8" stop-opacity="0"/>
           </linearGradient>
-          <filter id="fg2"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-          <filter id="fg2s"><feGaussianBlur stdDeviation="1" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="g2"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="g2s"><feGaussianBlur stdDeviation="1" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
         </defs>
-        <!-- grid lines -->
-        <line x1="24" y1="30" x2="148" y2="30" stroke="rgba(77,216,232,0.07)" stroke-width="0.6"/>
-        <line x1="24" y1="50" x2="148" y2="50" stroke="rgba(77,216,232,0.07)" stroke-width="0.6"/>
-        <line x1="24" y1="70" x2="148" y2="70" stroke="rgba(77,216,232,0.07)" stroke-width="0.6"/>
-        <line x1="24" y1="90" x2="148" y2="90" stroke="rgba(77,216,232,0.12)" stroke-width="0.8"/>
-        <!-- bars -->
-        <rect x="28"  y="72" width="13" height="18" rx="2" fill="url(#bar-g)" stroke="rgba(77,216,232,0.22)" stroke-width="0.6"/>
-        <rect x="46"  y="60" width="13" height="30" rx="2" fill="url(#bar-g)" stroke="rgba(77,216,232,0.25)" stroke-width="0.6"/>
-        <rect x="64"  y="48" width="13" height="42" rx="2" fill="url(#bar-g)" stroke="rgba(77,216,232,0.28)" stroke-width="0.6"/>
-        <rect x="82"  y="55" width="13" height="35" rx="2" fill="url(#bar-g)" stroke="rgba(77,216,232,0.25)" stroke-width="0.6"/>
-        <rect x="100" y="38" width="13" height="52" rx="2" fill="url(#bar-g)" stroke="rgba(77,216,232,0.32)" stroke-width="0.6"/>
-        <rect x="118" y="26" width="13" height="64" rx="2" fill="rgba(77,216,232,0.22)" stroke="rgba(77,216,232,0.5)" stroke-width="0.8" filter="url(#fg2s)"/>
-        <!-- area fill -->
-        <polygon points="34,73 52,61 70,49 88,56 106,39 124,27 124,90 34,90" fill="url(#area-g)"/>
-        <!-- trend line -->
-        <polyline points="34,73 52,61 70,49 88,56 106,39 124,27"
-          fill="none" stroke="#4dd8e8" stroke-width="1.8"
-          stroke-linecap="round" stroke-linejoin="round" filter="url(#fg2)"/>
-        <!-- dots -->
-        <circle cx="34"  cy="73" r="2.5" fill="#0d1825" stroke="#4dd8e8" stroke-width="1.2"/>
-        <circle cx="70"  cy="49" r="2.5" fill="#0d1825" stroke="#4dd8e8" stroke-width="1.2"/>
-        <circle cx="106" cy="39" r="2.5" fill="#0d1825" stroke="#4dd8e8" stroke-width="1.2"/>
-        <!-- highlight last dot -->
-        <circle cx="124" cy="27" r="4"   fill="#4dd8e8" filter="url(#fg2)"/>
-        <circle cx="124" cy="27" r="2"   fill="#fff"/>
-        <!-- label -->
-        <rect x="108" y="14" width="36" height="10" rx="2" fill="rgba(77,216,232,0.12)" stroke="rgba(77,216,232,0.3)" stroke-width="0.6"/>
-        <text x="113" y="21.5" font-size="6" fill="#4dd8e8" font-family="monospace">+ROI ↑</text>
-        <!-- y-axis labels -->
-        <text x="14" y="32"  font-size="5.5" fill="rgba(77,216,232,0.3)" font-family="monospace">80</text>
-        <text x="14" y="52"  font-size="5.5" fill="rgba(77,216,232,0.3)" font-family="monospace">60</text>
-        <text x="14" y="72"  font-size="5.5" fill="rgba(77,216,232,0.3)" font-family="monospace">40</text>
+        <line x1="22" y1="96" x2="148" y2="96" stroke="rgba(77,216,232,0.15)" stroke-width="0.8"/>
+        <line x1="22" y1="36" x2="148" y2="36" stroke="rgba(77,216,232,0.06)" stroke-width="0.5"/>
+        <line x1="22" y1="56" x2="148" y2="56" stroke="rgba(77,216,232,0.06)" stroke-width="0.5"/>
+        <line x1="22" y1="76" x2="148" y2="76" stroke="rgba(77,216,232,0.06)" stroke-width="0.5"/>
+        <text x="8"  y="39" font-size="7" fill="rgba(77,216,232,0.3)" font-family="monospace">80</text>
+        <text x="8"  y="59" font-size="7" fill="rgba(77,216,232,0.3)" font-family="monospace">60</text>
+        <text x="8"  y="79" font-size="7" fill="rgba(77,216,232,0.3)" font-family="monospace">40</text>
+        <rect x="26"  y="78" width="12" height="18" rx="2" fill="url(#bg2)" stroke="rgba(77,216,232,0.22)" stroke-width="0.6"/>
+        <rect x="44"  y="66" width="12" height="30" rx="2" fill="url(#bg2)" stroke="rgba(77,216,232,0.25)" stroke-width="0.6"/>
+        <rect x="62"  y="52" width="12" height="44" rx="2" fill="url(#bg2)" stroke="rgba(77,216,232,0.28)" stroke-width="0.6"/>
+        <rect x="80"  y="60" width="12" height="36" rx="2" fill="url(#bg2)" stroke="rgba(77,216,232,0.26)" stroke-width="0.6"/>
+        <rect x="98"  y="42" width="12" height="54" rx="2" fill="url(#bg2)" stroke="rgba(77,216,232,0.32)" stroke-width="0.6"/>
+        <rect x="116" y="28" width="12" height="68" rx="2" fill="rgba(77,216,232,0.22)" stroke="rgba(77,216,232,0.55)" stroke-width="1" filter="url(#g2s)"/>
+        <polygon points="32,79 50,67 68,53 86,61 104,43 122,29 122,96 32,96" fill="url(#area2)"/>
+        <polyline points="32,79 50,67 68,53 86,61 104,43 122,29" fill="none" stroke="#4dd8e8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" filter="url(#g2)"/>
+        <circle cx="32"  cy="79" r="3.5" fill="#060e18" stroke="#4dd8e8" stroke-width="1.2"/>
+        <circle cx="68"  cy="53" r="3.5" fill="#060e18" stroke="#4dd8e8" stroke-width="1.2"/>
+        <circle cx="104" cy="43" r="3.5" fill="#060e18" stroke="#4dd8e8" stroke-width="1.2"/>
+        <circle cx="122" cy="29" r="5"   fill="#4dd8e8" filter="url(#g2)"/>
+        <circle cx="122" cy="29" r="2.5" fill="#fff"/>
+        <rect x="100" y="16" width="44" height="10" rx="2" fill="rgba(77,216,232,0.12)" stroke="rgba(77,216,232,0.35)" stroke-width="0.6"/>
+        <text x="106" y="23.5" font-size="6.5" fill="#4dd8e8" font-family="monospace">+ROI ↑ 142%</text>
       </svg>
     </div>
     <div class="cb">
-      <div class="ctag">規劃工具</div>
+      <div class="ctag">S2 · 規劃工具</div>
       <div class="cname">AI 資產規劃報告</div>
       <div class="cdesc">ROI 分析・多策略比較・AI 自動生成個案報告</div>
     </div>
@@ -553,52 +400,46 @@ footer {
     </div>
   </a>
 
-  <!-- S3 · 品牌活動 · 鑽石 + 光環場景 -->
+  <!-- S3 · 品牌活動 -->
   <a class="card" href="https://www.notion.so/625809993b2746b7842e022bd0279fe7" target="_blank">
     <div class="ill">
       <div class="nbadge">03</div>
       <svg class="scene" viewBox="0 0 160 120" preserveAspectRatio="xMidYMid meet">
         <defs>
-          <filter id="fg3"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-          <filter id="fg3s"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
           <radialGradient id="rg3" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stop-color="#4dd8e8" stop-opacity="0.2"/>
             <stop offset="100%" stop-color="#4dd8e8" stop-opacity="0"/>
           </radialGradient>
+          <filter id="g3"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="g3s"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
         </defs>
-        <!-- glow bg -->
-        <ellipse cx="80" cy="60" rx="40" ry="32" fill="url(#rg3)"/>
-        <!-- outer circles -->
-        <circle cx="80" cy="60" r="50" fill="none" stroke="rgba(77,216,232,0.06)" stroke-width="0.8"/>
-        <circle cx="80" cy="60" r="38" fill="none" stroke="rgba(77,216,232,0.1)"  stroke-width="0.8"/>
-        <circle cx="80" cy="60" r="26" fill="none" stroke="rgba(77,216,232,0.16)" stroke-width="0.8"/>
-        <!-- orbit dot -->
-        <circle cx="80" cy="22" r="3.5" fill="rgba(77,216,232,0.8)" filter="url(#fg3s)"/>
-        <circle cx="118" cy="60" r="2.5" fill="rgba(77,216,232,0.5)" filter="url(#fg3s)"/>
-        <circle cx="60" cy="96" r="2" fill="rgba(77,216,232,0.4)"/>
-        <!-- diamond shape -->
-        <polygon points="80,34 100,54 80,78 60,54"
-          fill="rgba(77,216,232,0.08)" stroke="rgba(77,216,232,0.45)" stroke-width="1"
-          filter="url(#fg3s)"/>
-        <!-- diamond facets -->
-        <line x1="80" y1="34" x2="80" y2="78" stroke="rgba(77,216,232,0.2)" stroke-width="0.6"/>
-        <line x1="60" y1="54" x2="100" y2="54" stroke="rgba(77,216,232,0.2)" stroke-width="0.6"/>
-        <polygon points="80,34 100,54 80,54" fill="rgba(77,216,232,0.12)"/>
-        <polygon points="80,34 60,54 80,54"  fill="rgba(77,216,232,0.07)"/>
-        <polygon points="80,78 60,54 80,54"  fill="rgba(77,216,232,0.14)"/>
-        <!-- center gem -->
-        <circle cx="80" cy="54" r="5" fill="rgba(77,216,232,0.25)" stroke="rgba(77,216,232,0.7)" stroke-width="0.8" filter="url(#fg3)"/>
-        <circle cx="80" cy="54" r="2" fill="#4dd8e8"/>
-        <!-- sparkles -->
-        <line x1="80" y1="11" x2="80" y2="17" stroke="#4dd8e8" stroke-width="1" opacity="0.7"/>
-        <line x1="77" y1="14" x2="83" y2="14" stroke="#4dd8e8" stroke-width="1" opacity="0.7"/>
-        <line x1="130" y1="30" x2="130" y2="34" stroke="#4dd8e8" stroke-width="0.8" opacity="0.5"/>
-        <line x1="128" y1="32" x2="132" y2="32" stroke="#4dd8e8" stroke-width="0.8" opacity="0.5"/>
-        <text x="56" y="112" font-size="5.5" fill="rgba(77,216,232,0.4)" font-family="monospace">BRAND · EVENT</text>
+        <ellipse cx="80" cy="60" rx="46" ry="40" fill="url(#rg3)"/>
+        <circle cx="80" cy="60" r="54" fill="none" stroke="rgba(77,216,232,0.05)" stroke-width="0.8"/>
+        <circle cx="80" cy="60" r="42" fill="none" stroke="rgba(77,216,232,0.09)" stroke-width="0.8"/>
+        <circle cx="80" cy="60" r="30" fill="none" stroke="rgba(77,216,232,0.15)" stroke-width="0.8"/>
+        <circle cx="80" cy="18" r="4"   fill="rgba(77,216,232,0.85)" filter="url(#g3s)"/>
+        <circle cx="122" cy="60" r="3"  fill="rgba(77,216,232,0.6)"  filter="url(#g3s)"/>
+        <circle cx="80" cy="102" r="2.5" fill="rgba(77,216,232,0.45)"/>
+        <circle cx="38" cy="60" r="2"   fill="rgba(77,216,232,0.35)"/>
+        <polygon points="80,36 106,56 80,88 54,56"
+          fill="rgba(77,216,232,0.07)" stroke="rgba(77,216,232,0.46)" stroke-width="1.1" filter="url(#g3s)"/>
+        <polygon points="80,36 106,56 80,56" fill="rgba(77,216,232,0.13)"/>
+        <polygon points="80,36  54,56 80,56" fill="rgba(77,216,232,0.07)"/>
+        <polygon points="80,88 106,56 80,56" fill="rgba(77,216,232,0.16)"/>
+        <polygon points="80,88  54,56 80,56" fill="rgba(77,216,232,0.09)"/>
+        <line x1="80" y1="36" x2="80" y2="88" stroke="rgba(77,216,232,0.2)" stroke-width="0.7"/>
+        <line x1="54" y1="56" x2="106" y2="56" stroke="rgba(77,216,232,0.2)" stroke-width="0.7"/>
+        <circle cx="80" cy="56" r="8" fill="rgba(77,216,232,0.25)" stroke="rgba(77,216,232,0.7)" stroke-width="1" filter="url(#g3)"/>
+        <circle cx="80" cy="56" r="3.5" fill="#4dd8e8"/>
+        <line x1="80" y1="5"  x2="80" y2="12" stroke="#4dd8e8" stroke-width="1.5" opacity="0.8"/>
+        <line x1="76" y1="8.5" x2="84" y2="8.5" stroke="#4dd8e8" stroke-width="1.5" opacity="0.8"/>
+        <line x1="136" y1="22" x2="136" y2="28" stroke="#4dd8e8" stroke-width="1" opacity="0.5"/>
+        <line x1="133" y1="25" x2="139" y2="25" stroke="#4dd8e8" stroke-width="1" opacity="0.5"/>
+        <text x="52" y="114" font-size="6" fill="rgba(77,216,232,0.38)" font-family="monospace">BRAND · EVENT</text>
       </svg>
     </div>
     <div class="cb">
-      <div class="ctag">品牌・行銷</div>
+      <div class="ctag">S3 · 品牌・行銷</div>
       <div class="cname">官網與近期活動</div>
       <div class="cdesc">富時代官網・精美活動入口・提升品牌形象</div>
     </div>
@@ -608,46 +449,36 @@ footer {
     </div>
   </a>
 
-  <!-- S4 · 知識中樞 · 等距3D層疊書冊 -->
+  <!-- S4 · 知識中樞 -->
   <a class="card" href="https://www.notion.so/059972580dae4a54b07a57fd410b3090" target="_blank">
     <div class="ill">
       <div class="nbadge">04</div>
       <svg class="scene" viewBox="0 0 160 120" preserveAspectRatio="xMidYMid meet">
         <defs>
-          <filter id="fg4"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-          <filter id="fg4s"><feGaussianBlur stdDeviation="1" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="g4"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="g4s"><feGaussianBlur stdDeviation="1" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
         </defs>
-        <!-- Layer 3 bottom -->
-        <polygon points="80,96 116,80 80,64 44,80" fill="rgba(77,216,232,0.05)" stroke="rgba(77,216,232,0.18)" stroke-width="0.8"/>
-        <polygon points="80,64 116,80 116,76 80,60" fill="rgba(20,50,70,0.6)" stroke="rgba(77,216,232,0.12)" stroke-width="0.5"/>
-        <polygon points="80,64 44,80  44,76  80,60" fill="rgba(77,216,232,0.06)" stroke="rgba(77,216,232,0.12)" stroke-width="0.5"/>
-        <!-- layer 3 text lines -->
-        <line x1="56" y1="78" x2="104" y2="62" stroke="rgba(77,216,232,0.12)" stroke-width="0.8"/>
-        <line x1="56" y1="82" x2="90"  y2="69" stroke="rgba(77,216,232,0.08)" stroke-width="0.6"/>
-
-        <!-- Layer 2 mid -->
-        <polygon points="80,78 116,62 80,46 44,62" fill="rgba(77,216,232,0.09)" stroke="rgba(77,216,232,0.28)" stroke-width="0.9"/>
-        <polygon points="80,46 116,62 116,58 80,42" fill="rgba(20,50,70,0.7)" stroke="rgba(77,216,232,0.2)" stroke-width="0.6"/>
-        <polygon points="80,46 44,62  44,58  80,42" fill="rgba(77,216,232,0.1)" stroke="rgba(77,216,232,0.2)" stroke-width="0.6"/>
-        <line x1="56" y1="60" x2="104" y2="44" stroke="rgba(77,216,232,0.2)" stroke-width="0.8"/>
-        <line x1="56" y1="64" x2="90"  y2="51" stroke="rgba(77,216,232,0.12)" stroke-width="0.6"/>
-
-        <!-- Layer 1 top — brightest -->
+        <polygon points="80,96 116,80 80,64 44,80" fill="rgba(77,216,232,0.04)" stroke="rgba(77,216,232,0.14)" stroke-width="0.7"/>
+        <polygon points="80,64 116,80 116,76 80,60" fill="rgba(77,216,232,0.03)" stroke="rgba(77,216,232,0.09)" stroke-width="0.5"/>
+        <polygon points="80,64  44,80  44,76 80,60" fill="rgba(77,216,232,0.05)" stroke="rgba(77,216,232,0.09)" stroke-width="0.5"/>
+        <polygon points="80,78 116,62 80,46 44,62" fill="rgba(77,216,232,0.09)" stroke="rgba(77,216,232,0.26)" stroke-width="0.8"/>
+        <polygon points="80,46 116,62 116,58 80,42" fill="rgba(77,216,232,0.05)" stroke="rgba(77,216,232,0.16)" stroke-width="0.6"/>
+        <polygon points="80,46  44,62  44,58 80,42" fill="rgba(77,216,232,0.1)"  stroke="rgba(77,216,232,0.18)" stroke-width="0.6"/>
+        <line x1="56" y1="60" x2="104" y2="44" stroke="rgba(77,216,232,0.18)" stroke-width="0.8"/>
         <polygon points="80,60 116,44 80,28 44,44"
-          fill="rgba(77,216,232,0.16)" stroke="rgba(77,216,232,0.55)" stroke-width="1.2"
-          filter="url(#fg4s)"/>
-        <polygon points="80,28 116,44 116,40 80,24" fill="rgba(30,70,90,0.8)"  stroke="rgba(77,216,232,0.32)" stroke-width="0.8"/>
-        <polygon points="80,28 44,44  44,40  80,24" fill="rgba(77,216,232,0.18)" stroke="rgba(77,216,232,0.38)" stroke-width="0.8"/>
-        <!-- top face lines -->
-        <line x1="56" y1="42" x2="104" y2="26" stroke="rgba(77,216,232,0.35)" stroke-width="1"/>
-        <line x1="56" y1="46" x2="90"  y2="33" stroke="rgba(77,216,232,0.22)" stroke-width="0.8"/>
-        <!-- glow on top -->
-        <ellipse cx="80" cy="44" rx="22" ry="9" fill="rgba(77,216,232,0.18)" filter="url(#fg4)"/>
-        <text x="52" y="112" font-size="5.5" fill="rgba(77,216,232,0.4)" font-family="monospace">KNOWLEDGE HUB</text>
+          fill="rgba(77,216,232,0.17)" stroke="rgba(77,216,232,0.58)" stroke-width="1.2" filter="url(#g4s)"/>
+        <polygon points="80,28 116,44 116,40 80,24" fill="rgba(24,60,80,0.9)"   stroke="rgba(77,216,232,0.32)" stroke-width="0.7"/>
+        <polygon points="80,28  44,44  44,40 80,24" fill="rgba(77,216,232,0.18)" stroke="rgba(77,216,232,0.36)" stroke-width="0.7"/>
+        <line x1="56" y1="42" x2="104" y2="26" stroke="rgba(77,216,232,0.4)" stroke-width="1.1"/>
+        <line x1="56" y1="46" x2="92"  y2="33" stroke="rgba(77,216,232,0.2)" stroke-width="0.8"/>
+        <ellipse cx="80" cy="44" rx="24" ry="9" fill="rgba(77,216,232,0.18)" filter="url(#g4)"/>
+        <rect x="96" y="17" width="40" height="10" rx="2" fill="rgba(77,216,232,0.1)" stroke="rgba(77,216,232,0.3)" stroke-width="0.6"/>
+        <text x="101" y="24" font-size="6" fill="rgba(77,216,232,0.75)" font-family="monospace">LAYER 01/03</text>
+        <text x="42" y="112" font-size="6" fill="rgba(77,216,232,0.38)" font-family="monospace">KNOWLEDGE HUB</text>
       </svg>
     </div>
     <div class="cb">
-      <div class="ctag">知識中樞</div>
+      <div class="ctag">S4 · 知識中樞</div>
       <div class="cname">知識中樞系統</div>
       <div class="cdesc">話術庫・培訓系統・決策邏輯・持續優化</div>
     </div>
@@ -657,46 +488,44 @@ footer {
     </div>
   </a>
 
-  <!-- S5 · 話術庫 · 對話場景 + 三入口 -->
-  <div class="card card-s5">
+  <!-- S5 · 話術教材庫 -->
+  <div class="card">
     <div class="ill">
       <div class="nbadge">05</div>
-      <svg class="scene" viewBox="0 0 320 120" preserveAspectRatio="xMidYMid meet">
+      <svg class="scene" viewBox="0 0 160 120" preserveAspectRatio="xMidYMid meet">
         <defs>
-          <filter id="fg5"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-          <filter id="fg5s"><feGaussianBlur stdDeviation="1" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="g5"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="g5s"><feGaussianBlur stdDeviation="1.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
         </defs>
-        <!-- left chat bubble -->
-        <rect x="18" y="34" width="110" height="44" rx="10" fill="rgba(77,216,232,0.06)" stroke="rgba(77,216,232,0.22)" stroke-width="0.9"/>
-        <polygon points="28,78 18,92 44,78" fill="rgba(77,216,232,0.06)" stroke="rgba(77,216,232,0.22)" stroke-width="0.9"/>
-        <!-- lines in left bubble -->
-        <rect x="28" y="44" width="90" height="6" rx="3" fill="rgba(77,216,232,0.2)"/>
-        <rect x="28" y="55" width="70" height="4" rx="2" fill="rgba(77,216,232,0.12)"/>
-        <rect x="28" y="64" width="50" height="4" rx="2" fill="rgba(77,216,232,0.08)"/>
-        <!-- right chat bubble — highlighted -->
-        <rect x="192" y="20" width="110" height="50" rx="10"
-          fill="rgba(77,216,232,0.11)" stroke="rgba(77,216,232,0.45)" stroke-width="1"
-          filter="url(#fg5s)"/>
-        <polygon points="294,70 302,86 278,70" fill="rgba(77,216,232,0.11)" stroke="rgba(77,216,232,0.45)" stroke-width="0.9"/>
-        <!-- lines in right bubble -->
-        <rect x="202" y="30" width="90" height="6" rx="3" fill="rgba(77,216,232,0.4)"/>
-        <rect x="202" y="41" width="72" height="4" rx="2" fill="rgba(77,216,232,0.25)"/>
-        <rect x="202" y="51" width="55" height="4" rx="2" fill="rgba(77,216,232,0.15)"/>
-        <!-- SOS badge centre -->
-        <circle cx="160" cy="60" r="22" fill="rgba(255,80,60,0.06)" stroke="rgba(255,100,80,0.35)" stroke-width="1.2" filter="url(#fg5s)"/>
-        <circle cx="160" cy="60" r="15" fill="rgba(255,80,60,0.04)" stroke="rgba(255,100,80,0.2)" stroke-width="0.8"/>
-        <text x="152" y="65" font-size="14" fill="rgba(255,140,110,0.85)" font-family="monospace" font-weight="bold">!</text>
-        <text x="136" y="97" font-size="5.5" fill="rgba(255,140,100,0.45)" font-family="monospace">SOS</text>
-        <!-- connector lines -->
-        <line x1="128" y1="56" x2="138" y2="56" stroke="rgba(77,216,232,0.2)" stroke-width="0.8" stroke-dasharray="3,2"/>
-        <line x1="182" y1="56" x2="192" y2="56" stroke="rgba(77,216,232,0.2)" stroke-width="0.8" stroke-dasharray="3,2"/>
-        <text x="82" y="113" font-size="5.5" fill="rgba(77,216,232,0.4)" font-family="monospace">SCRIPT · SOS · AI COACH</text>
+        <!-- left bubble -->
+        <rect x="8"  y="22" width="66" height="44" rx="8" fill="rgba(77,216,232,0.07)" stroke="rgba(77,216,232,0.24)" stroke-width="0.9"/>
+        <polygon points="16,66 8,78 30,66" fill="rgba(77,216,232,0.07)" stroke="rgba(77,216,232,0.24)" stroke-width="0.9"/>
+        <rect x="15" y="31" width="52" height="5.5" rx="2.5" fill="rgba(77,216,232,0.28)"/>
+        <rect x="15" y="41" width="40" height="4.5" rx="2"   fill="rgba(77,216,232,0.16)"/>
+        <rect x="15" y="50" width="28" height="4.5" rx="2"   fill="rgba(77,216,232,0.09)"/>
+        <!-- right bubble -->
+        <rect x="86" y="14" width="66" height="48" rx="8"
+          fill="rgba(77,216,232,0.12)" stroke="rgba(77,216,232,0.5)" stroke-width="1" filter="url(#g5s)"/>
+        <polygon points="144,62 152,76 130,62" fill="rgba(77,216,232,0.12)" stroke="rgba(77,216,232,0.5)" stroke-width="0.9"/>
+        <rect x="93" y="23" width="52" height="6" rx="3"   fill="rgba(77,216,232,0.5)"/>
+        <rect x="93" y="34" width="40" height="4.5" rx="2" fill="rgba(77,216,232,0.28)"/>
+        <rect x="93" y="43" width="28" height="4.5" rx="2" fill="rgba(77,216,232,0.16)"/>
+        <rect x="93" y="52" width="18" height="4.5" rx="2" fill="rgba(77,216,232,0.09)"/>
+        <!-- SOS -->
+        <circle cx="80" cy="96" r="20" fill="rgba(255,80,60,0.07)" stroke="rgba(255,100,80,0.4)" stroke-width="1.2" filter="url(#g5s)"/>
+        <circle cx="80" cy="96" r="13" fill="rgba(255,80,60,0.05)" stroke="rgba(255,100,80,0.2)" stroke-width="0.8"/>
+        <circle cx="80" cy="96" r="7"  fill="rgba(255,80,60,0.1)"  stroke="rgba(255,120,80,0.28)" stroke-width="0.7"/>
+        <text x="76" y="101" font-size="11" fill="rgba(255,140,100,0.9)" font-family="monospace" font-weight="bold">!</text>
+        <text x="66" y="117" font-size="5.5" fill="rgba(255,140,100,0.45)" font-family="monospace" letter-spacing="3">SOS</text>
+        <line x1="40" y1="80" x2="60"  y2="90" stroke="rgba(77,216,232,0.2)" stroke-width="0.8" stroke-dasharray="3,2"/>
+        <line x1="120" y1="78" x2="100" y2="88" stroke="rgba(77,216,232,0.2)" stroke-width="0.8" stroke-dasharray="3,2"/>
+        <text x="28" y="112" font-size="5.5" fill="rgba(77,216,232,0.35)" font-family="monospace">SCRIPT · SOS · COACH</text>
       </svg>
     </div>
     <div class="cb">
-      <div class="ctag">溝通策略</div>
+      <div class="ctag">S5 · 溝通策略</div>
       <div class="cname">話術教材庫</div>
-      <div class="cdesc">話術應對・對話模型・SOS 異議處理・情境演練腳本</div>
+      <div class="cdesc">話術應對・對話模型・SOS 異議・情境演練</div>
     </div>
     <div class="s5btns">
       <a class="s5btn" href="https://richtime90117277-alt.github.io/futime-crm/LIB.html" target="_blank">
@@ -705,86 +534,73 @@ footer {
       </a>
       <a class="s5btn" href="https://richtime90117277-alt.github.io/futime-crm/zhiwei-ai-coach.html" target="_blank">
         <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-        AI 顧問跟進報告<div class="s5dot"></div>
+        AI 顧問報告<div class="s5dot"></div>
       </a>
       <a class="s5btn" href="https://richtime90117277-alt.github.io/futime-crm/sos-v2.html" target="_blank">
         <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-        SOS 異議處理寶典<div class="s5dot"></div>
+        SOS 異議處理<div class="s5dot"></div>
       </a>
     </div>
   </div>
 
-  <!-- S6 · 物件展廳 · 城市天際線 -->
+  <!-- S6 · 物件展廳 -->
   <a class="card" href="https://www.notion.so/68f46f920de14f07bc4161d221a83995" target="_blank">
     <div class="ill">
       <div class="nbadge">06</div>
       <svg class="scene" viewBox="0 0 160 120" preserveAspectRatio="xMidYMid meet">
         <defs>
-          <filter id="fg6"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-          <filter id="fg6s"><feGaussianBlur stdDeviation="1.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-          <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+          <filter id="g6"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="g6s"><feGaussianBlur stdDeviation="1.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <linearGradient id="sky6" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stop-color="#4dd8e8" stop-opacity="0.18"/>
             <stop offset="100%" stop-color="#4dd8e8" stop-opacity="0"/>
           </linearGradient>
         </defs>
-        <!-- ground -->
-        <line x1="10" y1="95" x2="150" y2="95" stroke="rgba(77,216,232,0.2)" stroke-width="0.8"/>
-        <!-- reflection -->
-        <line x1="10" y1="97" x2="150" y2="97" stroke="rgba(77,216,232,0.06)" stroke-width="0.6"/>
-
-        <!-- building far left — short -->
-        <rect x="12" y="72" width="18" height="23" fill="rgba(77,216,232,0.05)" stroke="rgba(77,216,232,0.18)" stroke-width="0.7"/>
-        <rect x="15" y="76" width="4" height="5" fill="rgba(77,216,232,0.15)" stroke="rgba(77,216,232,0.3)" stroke-width="0.4"/>
-        <rect x="22" y="76" width="4" height="5" fill="rgba(77,216,232,0.1)"  stroke="rgba(77,216,232,0.25)" stroke-width="0.4"/>
-        <rect x="15" y="84" width="4" height="5" fill="rgba(77,216,232,0.08)" stroke="rgba(77,216,232,0.2)"  stroke-width="0.4"/>
-
-        <!-- building 2 -->
-        <rect x="34" y="58" width="22" height="37" fill="rgba(77,216,232,0.07)" stroke="rgba(77,216,232,0.22)" stroke-width="0.7"/>
-        <rect x="37" y="63" width="5" height="6" fill="rgba(77,216,232,0.2)"  stroke="rgba(77,216,232,0.35)" stroke-width="0.4"/>
-        <rect x="45" y="63" width="5" height="6" fill="rgba(77,216,232,0.12)" stroke="rgba(77,216,232,0.28)" stroke-width="0.4"/>
-        <rect x="37" y="73" width="5" height="6" fill="rgba(77,216,232,0.15)" stroke="rgba(77,216,232,0.3)"  stroke-width="0.4"/>
-        <rect x="45" y="73" width="5" height="6" fill="rgba(77,216,232,0.1)"  stroke="rgba(77,216,232,0.25)" stroke-width="0.4"/>
-        <rect x="37" y="83" width="5" height="6" fill="rgba(77,216,232,0.08)" stroke="rgba(77,216,232,0.2)"  stroke-width="0.4"/>
-
-        <!-- HERO building — tallest, glowing -->
-        <rect x="62" y="22" width="36" height="73" fill="rgba(77,216,232,0.09)" stroke="rgba(77,216,232,0.5)" stroke-width="1.2" filter="url(#fg6s)"/>
-        <!-- sky fill above hero -->
-        <rect x="62" y="22" width="36" height="73" fill="url(#sky)"/>
-        <!-- hero windows 3 cols × 4 rows -->
-        <rect x="66" y="28" width="7" height="8" rx="1" fill="rgba(77,216,232,0.38)" stroke="rgba(77,216,232,0.6)" stroke-width="0.5"/>
-        <rect x="77" y="28" width="7" height="8" rx="1" fill="rgba(77,216,232,0.25)" stroke="rgba(77,216,232,0.45)" stroke-width="0.5"/>
-        <rect x="88" y="28" width="7" height="8" rx="1" fill="rgba(77,216,232,0.38)" stroke="rgba(77,216,232,0.6)" stroke-width="0.5"/>
-        <rect x="66" y="40" width="7" height="8" rx="1" fill="rgba(77,216,232,0.2)"  stroke="rgba(77,216,232,0.38)" stroke-width="0.5"/>
-        <rect x="77" y="40" width="7" height="8" rx="1" fill="rgba(77,216,232,0.45)" stroke="rgba(77,216,232,0.7)" stroke-width="0.5" filter="url(#fg6s)"/>
-        <rect x="88" y="40" width="7" height="8" rx="1" fill="rgba(77,216,232,0.18)" stroke="rgba(77,216,232,0.32)" stroke-width="0.5"/>
-        <rect x="66" y="52" width="7" height="8" rx="1" fill="rgba(77,216,232,0.28)" stroke="rgba(77,216,232,0.45)" stroke-width="0.5"/>
-        <rect x="77" y="52" width="7" height="8" rx="1" fill="rgba(77,216,232,0.15)" stroke="rgba(77,216,232,0.3)"  stroke-width="0.5"/>
-        <rect x="88" y="52" width="7" height="8" rx="1" fill="rgba(77,216,232,0.32)" stroke="rgba(77,216,232,0.5)" stroke-width="0.5"/>
-        <rect x="66" y="64" width="7" height="8" rx="1" fill="rgba(77,216,232,0.12)" stroke="rgba(77,216,232,0.25)" stroke-width="0.5"/>
-        <rect x="77" y="64" width="7" height="8" rx="1" fill="rgba(77,216,232,0.22)" stroke="rgba(77,216,232,0.38)" stroke-width="0.5"/>
-        <rect x="88" y="64" width="7" height="8" rx="1" fill="rgba(77,216,232,0.35)" stroke="rgba(77,216,232,0.55)" stroke-width="0.5"/>
-        <!-- door -->
-        <rect x="74" y="80" width="12" height="15" rx="1.5" fill="rgba(77,216,232,0.2)" stroke="rgba(77,216,232,0.45)" stroke-width="0.7"/>
-        <!-- glow top beam -->
-        <ellipse cx="80" cy="22" rx="20" ry="5" fill="rgba(77,216,232,0.2)" filter="url(#fg6)"/>
-        <!-- antenna -->
-        <line x1="80" y1="12" x2="80" y2="22" stroke="rgba(77,216,232,0.6)" stroke-width="1" filter="url(#fg6s)"/>
-        <circle cx="80" cy="11" r="2" fill="rgba(77,216,232,0.9)" filter="url(#fg6)"/>
-
+        <line x1="8"  y1="98" x2="152" y2="98" stroke="rgba(77,216,232,0.2)"  stroke-width="0.8"/>
+        <line x1="8"  y1="100" x2="152" y2="100" stroke="rgba(77,216,232,0.06)" stroke-width="0.6"/>
+        <!-- far-left -->
+        <rect x="10" y="78" width="16" height="20" fill="rgba(77,216,232,0.05)" stroke="rgba(77,216,232,0.16)" stroke-width="0.7"/>
+        <rect x="13" y="82" width="4" height="5" fill="rgba(77,216,232,0.14)" stroke="rgba(77,216,232,0.28)" stroke-width="0.4"/>
+        <rect x="20" y="82" width="4" height="5" fill="rgba(77,216,232,0.09)" stroke="rgba(77,216,232,0.22)" stroke-width="0.4"/>
+        <!-- mid-left -->
+        <rect x="30" y="62" width="22" height="36" fill="rgba(77,216,232,0.07)" stroke="rgba(77,216,232,0.2)" stroke-width="0.7"/>
+        <rect x="34" y="68" width="5" height="6" fill="rgba(77,216,232,0.2)"  stroke="rgba(77,216,232,0.35)" stroke-width="0.4"/>
+        <rect x="43" y="68" width="5" height="6" fill="rgba(77,216,232,0.12)" stroke="rgba(77,216,232,0.27)" stroke-width="0.4"/>
+        <rect x="34" y="79" width="5" height="6" fill="rgba(77,216,232,0.14)" stroke="rgba(77,216,232,0.28)" stroke-width="0.4"/>
+        <rect x="43" y="79" width="5" height="6" fill="rgba(77,216,232,0.09)" stroke="rgba(77,216,232,0.22)" stroke-width="0.4"/>
+        <!-- HERO building -->
+        <rect x="60" y="22" width="32" height="76" fill="rgba(77,216,232,0.1)" stroke="rgba(77,216,232,0.52)" stroke-width="1.2" filter="url(#g6s)"/>
+        <rect x="60" y="22" width="32" height="76" fill="url(#sky6)"/>
+        <!-- windows 3×4 -->
+        <rect x="64" y="28" width="6" height="7" rx="1" fill="rgba(77,216,232,0.34)" stroke="rgba(77,216,232,0.58)" stroke-width="0.5"/>
+        <rect x="74" y="28" width="6" height="7" rx="1" fill="rgba(77,216,232,0.2)"  stroke="rgba(77,216,232,0.42)" stroke-width="0.5"/>
+        <rect x="84" y="28" width="6" height="7" rx="1" fill="rgba(77,216,232,0.36)" stroke="rgba(77,216,232,0.6)"  stroke-width="0.5"/>
+        <rect x="64" y="40" width="6" height="7" rx="1" fill="rgba(77,216,232,0.18)" stroke="rgba(77,216,232,0.36)" stroke-width="0.5"/>
+        <rect x="74" y="40" width="6" height="7" rx="1" fill="rgba(77,216,232,0.44)" stroke="rgba(77,216,232,0.7)"  stroke-width="0.5" filter="url(#g6s)"/>
+        <rect x="84" y="40" width="6" height="7" rx="1" fill="rgba(77,216,232,0.15)" stroke="rgba(77,216,232,0.3)"  stroke-width="0.5"/>
+        <rect x="64" y="52" width="6" height="7" rx="1" fill="rgba(77,216,232,0.26)" stroke="rgba(77,216,232,0.46)" stroke-width="0.5"/>
+        <rect x="74" y="52" width="6" height="7" rx="1" fill="rgba(77,216,232,0.13)" stroke="rgba(77,216,232,0.28)" stroke-width="0.5"/>
+        <rect x="84" y="52" width="6" height="7" rx="1" fill="rgba(77,216,232,0.3)"  stroke="rgba(77,216,232,0.5)"  stroke-width="0.5"/>
+        <rect x="64" y="64" width="6" height="7" rx="1" fill="rgba(77,216,232,0.11)" stroke="rgba(77,216,232,0.24)" stroke-width="0.5"/>
+        <rect x="74" y="64" width="6" height="7" rx="1" fill="rgba(77,216,232,0.2)"  stroke="rgba(77,216,232,0.36)" stroke-width="0.5"/>
+        <rect x="84" y="64" width="6" height="7" rx="1" fill="rgba(77,216,232,0.32)" stroke="rgba(77,216,232,0.52)" stroke-width="0.5"/>
+        <rect x="70" y="82" width="12" height="16" rx="1.5" fill="rgba(77,216,232,0.18)" stroke="rgba(77,216,232,0.42)" stroke-width="0.7"/>
+        <ellipse cx="76" cy="22" rx="18" ry="5" fill="rgba(77,216,232,0.2)" filter="url(#g6)"/>
+        <line x1="76" y1="12" x2="76" y2="22" stroke="rgba(77,216,232,0.65)" stroke-width="1.1" filter="url(#g6s)"/>
+        <circle cx="76" cy="10" r="3" fill="rgba(77,216,232,0.95)" filter="url(#g6)"/>
         <!-- right buildings -->
-        <rect x="102" y="48" width="24" height="47" fill="rgba(77,216,232,0.07)" stroke="rgba(77,216,232,0.22)" stroke-width="0.8"/>
-        <rect x="106" y="54" width="5" height="6" fill="rgba(77,216,232,0.18)" stroke="rgba(77,216,232,0.32)" stroke-width="0.4"/>
-        <rect x="115" y="54" width="5" height="6" fill="rgba(77,216,232,0.12)" stroke="rgba(77,216,232,0.25)" stroke-width="0.4"/>
-        <rect x="106" y="64" width="5" height="6" fill="rgba(77,216,232,0.1)"  stroke="rgba(77,216,232,0.2)"  stroke-width="0.4"/>
-        <rect x="115" y="64" width="5" height="6" fill="rgba(77,216,232,0.15)" stroke="rgba(77,216,232,0.28)" stroke-width="0.4"/>
-        <rect x="130" y="66" width="18" height="29" fill="rgba(77,216,232,0.05)" stroke="rgba(77,216,232,0.16)" stroke-width="0.7"/>
-        <rect x="133" y="70" width="4" height="5" fill="rgba(77,216,232,0.1)"  stroke="rgba(77,216,232,0.2)"  stroke-width="0.4"/>
-        <rect x="140" y="70" width="4" height="5" fill="rgba(77,216,232,0.07)" stroke="rgba(77,216,232,0.15)" stroke-width="0.4"/>
-        <text x="44" y="112" font-size="5.5" fill="rgba(77,216,232,0.38)" font-family="monospace">PREMIUM PROPERTIES</text>
+        <rect x="96"  y="46" width="22" height="52" fill="rgba(77,216,232,0.07)" stroke="rgba(77,216,232,0.2)"  stroke-width="0.8"/>
+        <rect x="100" y="52" width="5" height="6"   fill="rgba(77,216,232,0.16)" stroke="rgba(77,216,232,0.3)"  stroke-width="0.4"/>
+        <rect x="109" y="52" width="5" height="6"   fill="rgba(77,216,232,0.11)" stroke="rgba(77,216,232,0.23)" stroke-width="0.4"/>
+        <rect x="100" y="63" width="5" height="6"   fill="rgba(77,216,232,0.09)" stroke="rgba(77,216,232,0.2)"  stroke-width="0.4"/>
+        <rect x="122" y="62" width="18" height="36" fill="rgba(77,216,232,0.05)" stroke="rgba(77,216,232,0.14)" stroke-width="0.7"/>
+        <rect x="126" y="67" width="4" height="5"   fill="rgba(77,216,232,0.09)" stroke="rgba(77,216,232,0.18)" stroke-width="0.4"/>
+        <rect x="134" y="67" width="4" height="5"   fill="rgba(77,216,232,0.07)" stroke="rgba(77,216,232,0.14)" stroke-width="0.4"/>
+        <text x="38" y="113" font-size="5.5" fill="rgba(77,216,232,0.38)" font-family="monospace">PREMIUM PROPERTIES</text>
       </svg>
     </div>
     <div class="cb">
-      <div class="ctag">精選物件</div>
+      <div class="ctag">S6 · 精選物件</div>
       <div class="cname">頂級物件展廳</div>
       <div class="cdesc">精選物件・文華新站・精準配對客戶需求</div>
     </div>
@@ -802,78 +618,32 @@ footer {
   <div class="fr">AI DECISION ENGINE · V1.4</div>
 </footer>
 
-</div><!-- wrap -->
+</div>
 
 <script>
-/* ── Neural network canvas animation on Hero ── */
-const canvas = document.getElementById('heroCanvas');
-const ctx = canvas.getContext('2d');
-let W, H, nodes = [], anim;
-
-function resize() {
-  const rect = canvas.parentElement.getBoundingClientRect();
-  W = canvas.width  = rect.width;
-  H = canvas.height = rect.height;
-  initNodes();
+const cv = document.getElementById('c1');
+const cx2 = cv.getContext('2d');
+let W,H,N=[],raf;
+function resize(){
+  const r=cv.parentElement.getBoundingClientRect();
+  W=cv.width=r.width; H=cv.height=r.height; N=[];
+  const n=Math.min(Math.floor(W*H/5000),28);
+  for(let i=0;i<n;i++) N.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:Math.random()*1.4+0.6});
 }
-
-function initNodes() {
-  nodes = [];
-  const count = Math.min(Math.floor(W * H / 8000), 28);
-  for (let i = 0; i < count; i++) {
-    nodes.push({
-      x: Math.random() * W,
-      y: Math.random() * H,
-      vx: (Math.random() - 0.5) * 0.25,
-      vy: (Math.random() - 0.5) * 0.25,
-      r: Math.random() * 1.5 + 0.8,
-    });
+function draw(){
+  cx2.clearRect(0,0,W,H);
+  N.forEach(n=>{n.x+=n.vx;n.y+=n.vy;if(n.x<0||n.x>W)n.vx*=-1;if(n.y<0||n.y>H)n.vy*=-1;});
+  for(let i=0;i<N.length;i++) for(let j=i+1;j<N.length;j++){
+    const dx=N[i].x-N[j].x,dy=N[i].y-N[j].y,d=Math.sqrt(dx*dx+dy*dy);
+    if(d<120){cx2.beginPath();cx2.moveTo(N[i].x,N[i].y);cx2.lineTo(N[j].x,N[j].y);
+      cx2.strokeStyle=`rgba(77,216,232,${(1-d/120)*0.2})`;cx2.lineWidth=0.6;cx2.stroke();}
   }
+  N.forEach(n=>{cx2.beginPath();cx2.arc(n.x,n.y,n.r,0,Math.PI*2);
+    cx2.fillStyle='rgba(77,216,232,0.55)';cx2.shadowColor='#4dd8e8';cx2.shadowBlur=5;cx2.fill();cx2.shadowBlur=0;});
+  raf=requestAnimationFrame(draw);
 }
-
-function draw(t) {
-  ctx.clearRect(0, 0, W, H);
-  const dist = 130;
-
-  nodes.forEach(n => {
-    n.x += n.vx; n.y += n.vy;
-    if (n.x < 0 || n.x > W) n.vx *= -1;
-    if (n.y < 0 || n.y > H) n.vy *= -1;
-  });
-
-  for (let i = 0; i < nodes.length; i++) {
-    for (let j = i + 1; j < nodes.length; j++) {
-      const dx = nodes[i].x - nodes[j].x;
-      const dy = nodes[i].y - nodes[j].y;
-      const d  = Math.sqrt(dx*dx + dy*dy);
-      if (d < dist) {
-        const alpha = (1 - d / dist) * 0.22;
-        ctx.beginPath();
-        ctx.moveTo(nodes[i].x, nodes[i].y);
-        ctx.lineTo(nodes[j].x, nodes[j].y);
-        ctx.strokeStyle = `rgba(77,216,232,${alpha})`;
-        ctx.lineWidth = 0.7;
-        ctx.stroke();
-      }
-    }
-  }
-
-  nodes.forEach(n => {
-    ctx.beginPath();
-    ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(77,216,232,0.55)';
-    ctx.shadowColor = '#4dd8e8';
-    ctx.shadowBlur = 6;
-    ctx.fill();
-    ctx.shadowBlur = 0;
-  });
-
-  anim = requestAnimationFrame(draw);
-}
-
-window.addEventListener('resize', () => { cancelAnimationFrame(anim); resize(); draw(); });
-resize();
-draw();
+window.addEventListener('resize',()=>{cancelAnimationFrame(raf);resize();draw();});
+resize(); draw();
 </script>
 </body>
 </html>
