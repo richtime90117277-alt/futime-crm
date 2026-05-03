@@ -3,534 +3,877 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>富時代 六大系統 · Richtime Integrated Intelligence Platform</title>
+<title>富時代 · AI 決策引擎</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  :root {
-    --accent: #4dd8e8;
-    --accent-dim: rgba(77,216,232,0.35);
-    --bg: #080d12;
-    --bg-card: rgba(10,18,26,0.97);
-    --bg-card-hover: rgba(18,32,46,0.99);
-    --text-primary: #ddeef5;
-    --text-secondary: rgba(160,200,220,0.55);
-    --text-label: rgba(77,216,232,0.4);
-    --border: rgba(100,200,220,0.1);
-    --border-card: rgba(100,200,220,0.09);
-  }
+:root {
+  --c: #4dd8e8;
+  --c2: #38b6f5;
+  --bg: #060a0f;
+  --card: #0b1520;
+  --card2: #0d1825;
+  --t: #d8eef6;
+  --td: rgba(160,205,220,0.52);
+  --tm: rgba(90,160,185,0.32);
+}
 
-  html, body {
-    min-height: 100vh;
-    background: var(--bg);
-    font-family: 'Noto Sans TC', sans-serif;
-    color: var(--text-primary);
-    overflow-x: hidden;
-  }
+html, body {
+  background: var(--bg);
+  font-family: 'Noto Sans TC', sans-serif;
+  color: var(--t);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
 
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 55% 45% at 15% 15%, rgba(0,180,180,0.05) 0%, transparent 65%),
-      radial-gradient(ellipse 40% 35% at 85% 85%, rgba(0,140,200,0.05) 0%, transparent 60%);
-    pointer-events: none;
-    z-index: 0;
-  }
+/* ── global bg layers ── */
+.bg-layer {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+}
+.bg-layer-1 {
+  background:
+    radial-gradient(ellipse 70% 50% at 0% 0%, rgba(0,190,210,0.08) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 45% at 100% 100%, rgba(0,130,220,0.07) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 30% at 50% 50%, rgba(4,20,35,0.9) 0%, transparent 80%);
+}
+.bg-layer-2 {
+  background-image: radial-gradient(rgba(77,216,232,0.055) 1px, transparent 1px);
+  background-size: 26px 26px;
+  opacity: 0.8;
+}
 
-  body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: radial-gradient(rgba(100,180,200,0.055) 1px, transparent 1px);
-    background-size: 32px 32px;
-    pointer-events: none;
-    z-index: 0;
-  }
+.wrap {
+  position: relative; z-index: 1;
+  max-width: 1400px; margin: 0 auto;
+  padding-bottom: 48px;
+}
 
-  .wrap {
-    position: relative;
-    z-index: 1;
-    max-width: 1440px;
-    margin: 0 auto;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
+/* ══════════════════════════
+   HEADER
+══════════════════════════ */
+header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 30px 44px 24px;
+  border-bottom: 1px solid rgba(77,216,232,0.08);
+  position: relative;
+  animation: fadeDown .6s ease both;
+}
+header::after {
+  content: '';
+  position: absolute; bottom: -1px; left: 44px; width: 120px; height: 1px;
+  background: linear-gradient(90deg, var(--c), transparent);
+}
 
-  header {
-    padding: 36px 48px 28px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    animation: fadeDown 0.6s ease both;
-  }
+.hl { display: flex; align-items: center; gap: 16px; }
 
-  .header-meta {
-    font-size: 10px;
-    letter-spacing: 0.22em;
-    color: rgba(77,216,232,0.4);
-    margin-bottom: 10px;
-    font-weight: 300;
-  }
+.logo {
+  width: 46px; height: 46px; border-radius: 12px; flex-shrink: 0;
+  background: linear-gradient(135deg, rgba(77,216,232,0.12), rgba(56,182,245,0.06));
+  border: 1px solid rgba(77,216,232,0.28);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 20px rgba(77,216,232,0.1), inset 0 1px 0 rgba(255,255,255,0.07);
+}
+.logo svg { width: 22px; height: 22px; stroke: var(--c); fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 
-  h1 {
-    font-size: clamp(36px, 5vw, 56px);
-    font-weight: 700;
-    color: #e8f4f8;
-    letter-spacing: -0.01em;
-    line-height: 1;
-    margin-bottom: 10px;
-  }
+.ht-sup { font-size: 8.5px; letter-spacing: 0.28em; color: rgba(77,216,232,0.38); font-weight: 300; margin-bottom: 5px; }
+.ht-h1  { font-size: clamp(22px,2.8vw,34px); font-weight: 900; letter-spacing: -0.015em; color: #eaf5fa; line-height: 1; }
+.ht-h1 em { font-style: normal; color: var(--c); }
+.ht-sub { font-size: 8px; letter-spacing: 0.2em; color: rgba(100,190,215,0.28); margin-top: 4px; font-weight: 300; }
 
-  h1 em { font-style: normal; color: var(--accent); }
+.hr { display: flex; align-items: center; gap: 14px; }
+.badge {
+  font-size: 8.5px; letter-spacing: 0.16em; color: rgba(77,216,232,0.32);
+  border: 1px solid rgba(77,216,232,0.12); padding: 5px 13px; border-radius: 4px;
+}
+.bignum {
+  font-size: clamp(44px,5.5vw,64px); font-weight: 900; letter-spacing: -0.06em; line-height: 1;
+  color: rgba(77,216,232,0.07);
+  border: 1px solid rgba(77,216,232,0.05); border-radius: 8px;
+  padding: 4px 14px;
+  text-shadow: 0 0 30px rgba(77,216,232,0.12);
+}
 
-  .header-sub {
-    font-size: 10px;
-    letter-spacing: 0.22em;
-    color: rgba(100,200,220,0.35);
-    font-weight: 300;
-  }
+/* ══════════════════════════
+   HERO CARD (S1)
+══════════════════════════ */
+.hero-wrap { padding: 28px 44px 0; animation: fadeUp .6s .1s ease both; }
 
-  .header-right {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    flex-shrink: 0;
-  }
+.hero {
+  position: relative; overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid rgba(77,216,232,0.18);
+  background: linear-gradient(145deg, #0e1e2e 0%, #0a1520 40%, #0c1822 100%);
+  display: flex; align-items: stretch;
+  min-height: 190px;
+  text-decoration: none; color: inherit;
+  transition: border-color .35s, box-shadow .35s;
+  box-shadow: 0 4px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04);
+}
+.hero:hover {
+  border-color: rgba(77,216,232,0.38);
+  box-shadow: 0 4px 60px rgba(0,0,0,0.6), 0 0 40px rgba(77,216,232,0.1), inset 0 1px 0 rgba(255,255,255,0.06);
+}
 
-  .badge {
-    font-size: 9px;
-    letter-spacing: 0.15em;
-    color: rgba(77,216,232,0.35);
-    border: 1px solid rgba(77,216,232,0.14);
-    padding: 5px 12px;
-    border-radius: 2px;
-    font-weight: 300;
-  }
+/* gradient border top */
+.hero::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(77,216,232,0.5) 40%, rgba(56,182,245,0.3) 70%, transparent 100%);
+}
 
-  .counter-box {
-    font-size: clamp(52px, 6vw, 72px);
-    font-weight: 700;
-    color: rgba(77,216,232,0.07);
-    letter-spacing: -0.04em;
-    line-height: 1;
-    border: 1px solid rgba(77,216,232,0.05);
-    padding: 6px 16px;
-    border-radius: 4px;
-  }
+/* canvas for neural network */
+#heroCanvas {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  pointer-events: none; opacity: 0.55;
+}
 
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    gap: 1px;
-    background: var(--border-card);
-    margin: 28px 48px;
-    border-radius: 10px;
-    overflow: hidden;
-    border: 1px solid rgba(100,200,220,0.11);
-    flex: 1;
-  }
+/* left visual panel */
+.hero-vis {
+  flex-shrink: 0; width: 220px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; z-index: 2; padding: 32px 24px;
+}
 
-  .card {
-    background: var(--bg-card);
-    padding: 26px 22px 22px;
-    display: flex;
-    flex-direction: column;
-    transition: background 0.25s ease;
-    position: relative;
-    min-height: 260px;
-    text-decoration: none;
-    color: inherit;
-  }
+/* 3D cube icon */
+.cube-wrap {
+  width: 100px; height: 100px;
+  position: relative; display: flex; align-items: center; justify-content: center;
+}
+.cube-ring {
+  position: absolute; inset: 0; border-radius: 50%;
+  border: 1px solid rgba(77,216,232,0.22);
+  animation: spin 14s linear infinite;
+}
+.cube-ring::before {
+  content: ''; position: absolute; top: -4px; left: 50%; transform: translateX(-50%);
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--c); box-shadow: 0 0 14px var(--c), 0 0 28px rgba(77,216,232,0.5);
+}
+.cube-ring2 {
+  position: absolute; inset: 16px; border-radius: 50%;
+  border: 1px solid rgba(77,216,232,0.12);
+  animation: spin 9s linear infinite reverse;
+}
+.cube-ring2::before {
+  content: ''; position: absolute; bottom: -3px; left: 50%; transform: translateX(-50%);
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--c2); box-shadow: 0 0 10px var(--c2);
+}
+.cube-core {
+  width: 56px; height: 56px; border-radius: 14px; position: relative; z-index: 2;
+  background: linear-gradient(145deg, rgba(77,216,232,0.18) 0%, rgba(56,182,245,0.08) 100%);
+  border: 1px solid rgba(77,216,232,0.38);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 30px rgba(77,216,232,0.2), 0 0 60px rgba(77,216,232,0.08), inset 0 1px 0 rgba(255,255,255,0.12);
+}
+.cube-core svg { width: 26px; height: 26px; stroke: var(--c); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 
-  .card:hover { background: var(--bg-card-hover); }
+/* hero text */
+.hero-body { flex: 1; padding: 34px 40px 34px 0; position: relative; z-index: 2; }
+.h-eyebrow { font-size: 8.5px; letter-spacing: 0.28em; color: rgba(77,216,232,0.48); font-weight: 300; margin-bottom: 5px; }
+.h-sub     { font-size: 9.5px; letter-spacing: 0.16em; color: rgba(77,216,232,0.28); font-weight: 300; margin-bottom: 10px; }
+.h-title   { font-size: clamp(26px,3vw,40px); font-weight: 900; letter-spacing: -0.01em; color: #eef8fc; line-height: 1.05; margin-bottom: 12px; }
+.h-desc    { font-size: 12px; color: var(--td); line-height: 1.85; margin-bottom: 20px; max-width: 460px; }
+.h-chips   { display: flex; gap: 8px; flex-wrap: wrap; }
+.h-chip {
+  font-size: 9.5px; letter-spacing: 0.08em; color: rgba(77,216,232,0.72);
+  background: rgba(77,216,232,0.07); border: 1px solid rgba(77,216,232,0.2);
+  padding: 5px 13px; border-radius: 100px;
+  transition: all .2s;
+}
+.hero:hover .h-chip { background: rgba(77,216,232,0.12); border-color: rgba(77,216,232,0.35); }
 
-  .card-line {
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: transparent;
-    transition: background 0.3s ease;
-  }
+.hero-arr { flex-shrink: 0; width: 72px; display: flex; align-items: center; justify-content: center; position: relative; z-index: 2; }
+.arr-btn {
+  width: 42px; height: 42px; border-radius: 50%;
+  border: 1px solid rgba(77,216,232,0.2);
+  display: flex; align-items: center; justify-content: center;
+  transition: all .25s;
+}
+.hero:hover .arr-btn { border-color: rgba(77,216,232,0.55); background: rgba(77,216,232,0.09); box-shadow: 0 0 20px rgba(77,216,232,0.15); }
+.arr-btn svg { width: 15px; height: 15px; stroke: rgba(77,216,232,0.45); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: stroke .2s; }
+.hero:hover .arr-btn svg { stroke: var(--c); }
 
-  .card:hover .card-line { background: rgba(77,216,232,0.28); }
+/* ══════════════════════════
+   SECTION DIVIDER
+══════════════════════════ */
+.divider {
+  padding: 22px 44px 14px;
+  display: flex; align-items: center; gap: 14px;
+  animation: fadeUp .5s .18s ease both;
+}
+.div-text { font-size: 8.5px; letter-spacing: 0.28em; color: var(--tm); white-space: nowrap; font-weight: 300; }
+.div-line { flex: 1; height: 1px; background: linear-gradient(90deg, rgba(77,216,232,0.1) 0%, transparent 100%); }
 
-  .card { animation: fadeUp 0.55s ease both; }
-  .card:nth-child(1) { animation-delay: 0.08s; }
-  .card:nth-child(2) { animation-delay: 0.14s; }
-  .card:nth-child(3) { animation-delay: 0.20s; }
-  .card:nth-child(4) { animation-delay: 0.26s; }
-  .card:nth-child(5) { animation-delay: 0.32s; }
-  .card:nth-child(6) { animation-delay: 0.38s; }
+/* ══════════════════════════
+   CARDS GRID
+══════════════════════════ */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px; padding: 0 44px;
+  animation: fadeUp .55s .22s ease both;
+}
+.card-s5 { grid-column: span 2; }
 
-  .card-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 18px;
-  }
+/* ── base card ── */
+.card {
+  position: relative; overflow: hidden;
+  border-radius: 14px;
+  background: var(--card);
+  border: 1px solid rgba(255,255,255,0.055);
+  display: flex; flex-direction: column;
+  text-decoration: none; color: inherit;
+  transition: transform .22s ease, box-shadow .28s ease, border-color .28s ease;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.03);
+}
+.card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(77,216,232,0.22);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.55), 0 0 30px rgba(77,216,232,0.07), inset 0 1px 0 rgba(255,255,255,0.06);
+}
 
-  .icon {
-    width: 40px;
-    height: 40px;
-    border: 1px solid rgba(77,216,232,0.18);
-    border-radius: 7px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(77,216,232,0.04);
-    flex-shrink: 0;
-  }
+/* gradient top border */
+.card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(77,216,232,0.45) 50%, transparent 100%);
+  opacity: 0; transition: opacity .3s;
+}
+.card:hover::before { opacity: 1; }
 
-  .icon svg {
-    width: 18px;
-    height: 18px;
-    stroke: var(--accent);
-    fill: none;
-    stroke-width: 1.5;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
+/* inner glow on hover */
+.card::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse 70% 40% at 50% 0%, rgba(77,216,232,0.06) 0%, transparent 70%);
+  opacity: 0; transition: opacity .3s;
+}
+.card:hover::after { opacity: 1; }
 
-  .card-num {
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    color: rgba(100,200,220,0.2);
-  }
+/* ── ILLUSTRATION AREA ── */
+.ill {
+  position: relative; width: 100%;
+  aspect-ratio: 4 / 3;   /* more square = more space for scene */
+  overflow: hidden; flex-shrink: 0;
+  background: #07101a;
+  border-bottom: 1px solid rgba(77,216,232,0.07);
+}
 
-  .card-tag {
-    font-size: 9px;
-    letter-spacing: 0.2em;
-    color: var(--text-label);
-    margin-bottom: 8px;
-    font-weight: 300;
-  }
+/* shared dot grid */
+.ill::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: radial-gradient(rgba(77,216,232,0.1) 1px, transparent 1px);
+  background-size: 18px 18px;
+  z-index: 0;
+}
 
-  .card-name {
-    font-size: 17px;
-    font-weight: 700;
-    color: var(--text-primary);
-    line-height: 1.35;
-    margin-bottom: 12px;
-  }
+/* bottom fade into card */
+.ill::after {
+  content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background: linear-gradient(to bottom, transparent 50%, #07101a 100%);
+}
 
-  .card-desc {
-    font-size: 11.5px;
-    color: var(--text-secondary);
-    line-height: 1.7;
-    flex: 1;
-  }
+.ill svg.scene { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; overflow: visible; }
 
-  .card-cta {
-    margin-top: 20px;
-    font-size: 10px;
-    letter-spacing: 0.14em;
-    color: var(--accent-dim);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: color 0.2s ease;
-    border-top: 1px solid rgba(77,216,232,0.07);
-    padding-top: 14px;
-  }
+/* num badge */
+.nbadge {
+  position: absolute; top: 10px; left: 12px; z-index: 10;
+  font-size: 9px; letter-spacing: 0.08em; font-weight: 700;
+  color: rgba(77,216,232,0.5);
+  background: rgba(6,14,22,0.7);
+  border: 1px solid rgba(77,216,232,0.14);
+  padding: 3px 8px; border-radius: 4px;
+  backdrop-filter: blur(8px);
+}
 
-  .card-cta::after { content: '↗'; font-size: 11px; }
-  .card:hover .card-cta { color: var(--accent); }
+/* ── CARD BODY ── */
+.cb { padding: 16px 18px 0; flex: 1; display: flex; flex-direction: column; }
+.ctag { font-size: 8px; letter-spacing: 0.22em; color: rgba(77,216,232,0.42); margin-bottom: 6px; font-weight: 300; }
+.cname { font-size: 15px; font-weight: 700; color: var(--t); line-height: 1.25; margin-bottom: 7px; }
+.cdesc { font-size: 11px; color: var(--td); line-height: 1.75; flex: 1; }
 
-  /* S5 雙按鈕 */
-  .s5-btns {
-    margin-top: 20px;
-    border-top: 1px solid rgba(77,216,232,0.07);
-    padding-top: 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
+.cfoot {
+  margin-top: 14px; padding: 11px 18px 16px;
+  border-top: 1px solid rgba(255,255,255,0.04);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.ccta { font-size: 9px; letter-spacing: 0.14em; color: rgba(77,216,232,0.38); transition: color .2s; }
+.card:hover .ccta { color: var(--c); }
+.carrow {
+  width: 24px; height: 24px; border-radius: 50%;
+  border: 1px solid rgba(77,216,232,0.12);
+  display: flex; align-items: center; justify-content: center;
+  transition: all .2s;
+}
+.card:hover .carrow { border-color: rgba(77,216,232,0.4); background: rgba(77,216,232,0.08); box-shadow: 0 0 12px rgba(77,216,232,0.15); }
+.carrow svg { width: 10px; height: 10px; stroke: rgba(77,216,232,0.38); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: stroke .2s; }
+.card:hover .carrow svg { stroke: var(--c); }
 
-  .s5-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 9px 14px;
-    border: 1px solid rgba(77,216,232,0.2);
-    border-radius: 5px;
-    background: rgba(77,216,232,0.05);
-    color: #4dd8e8;
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    text-decoration: none;
-    transition: background 0.2s, border-color 0.2s;
-  }
+/* ── S5 buttons ── */
+.s5btns { display: flex; flex-direction: column; gap: 8px; padding: 12px 18px 16px; border-top: 1px solid rgba(255,255,255,0.04); margin-top: 14px; }
+.s5btn {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; border-radius: 8px;
+  border: 1px solid rgba(77,216,232,0.13);
+  background: rgba(77,216,232,0.04);
+  text-decoration: none; color: rgba(200,232,242,0.72);
+  font-size: 11px; letter-spacing: 0.04em;
+  transition: all .2s;
+  position: relative; overflow: hidden;
+}
+.s5btn::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, rgba(77,216,232,0.06) 0%, transparent 100%);
+  opacity: 0; transition: opacity .2s;
+}
+.s5btn:hover { border-color: rgba(77,216,232,0.35); color: var(--c); background: rgba(77,216,232,0.08); }
+.s5btn:hover::before { opacity: 1; }
+.s5btn svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; opacity: 0.65; transition: opacity .2s; }
+.s5btn:hover svg { opacity: 1; }
+.s5dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(77,216,232,0.28); margin-left: auto; flex-shrink: 0; transition: all .2s; }
+.s5btn:hover .s5dot { background: var(--c); box-shadow: 0 0 8px var(--c); }
 
-  .s5-btn:hover {
-    background: rgba(77,216,232,0.13);
-    border-color: rgba(77,216,232,0.45);
-  }
+/* ══════════════════════════
+   FOOTER
+══════════════════════════ */
+footer {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 18px 44px; margin-top: 32px;
+  border-top: 1px solid rgba(77,216,232,0.06);
+  animation: fadeUp .5s .35s ease both;
+}
+.fl, .fr { font-size: 8.5px; letter-spacing: 0.16em; color: rgba(90,170,195,0.18); }
 
-  .s5-btn svg {
-    width: 13px;
-    height: 13px;
-    stroke: currentColor;
-    fill: none;
-    stroke-width: 1.8;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    flex-shrink: 0;
-  }
+/* ══════════════════════════
+   ANIMATIONS
+══════════════════════════ */
+@keyframes fadeDown { from { opacity:0; transform:translateY(-12px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeUp   { from { opacity:0; transform:translateY(18px);  } to { opacity:1; transform:translateY(0); } }
+@keyframes spin     { to { transform: rotate(360deg); } }
+@keyframes pulse    { 0%,100%{ opacity:.4; } 50%{ opacity:1; } }
 
-  footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px 48px;
-    border-top: 1px solid var(--border);
-    animation: fadeUp 0.5s 0.5s ease both;
-  }
+/* ══════════════════════════
+   RESPONSIVE
+══════════════════════════ */
+@media (max-width: 1100px) {
+  .grid { grid-template-columns: repeat(3,1fr); padding: 0 28px; }
+  .card-s5 { grid-column: span 1; }
+  .hero-wrap, .divider { padding-left: 28px; padding-right: 28px; }
+  header, footer { padding-left: 28px; padding-right: 28px; }
+  header::after { left: 28px; }
+}
 
-  .footer-l { font-size: 9.5px; letter-spacing: 0.12em; color: rgba(100,200,220,0.22); }
-  .footer-r { font-size: 9.5px; letter-spacing: 0.16em; color: rgba(77,216,232,0.18); }
+@media (max-width: 680px) {
+  html, body { overflow-y: auto; }
 
-  @keyframes fadeDown {
-    from { opacity: 0; transform: translateY(-12px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
+  header { padding: 12px 14px; }
+  header::after { left: 14px; }
+  .logo { width: 36px; height: 36px; border-radius: 9px; }
+  .logo svg { width: 18px; height: 18px; }
+  .ht-sup { font-size: 7.5px; margin-bottom: 3px; }
+  .ht-h1  { font-size: 21px; }
+  .ht-sub { display: none; }
+  .badge  { display: none; }
+  .bignum { font-size: 38px; padding: 3px 10px; }
 
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(14px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
+  .hero-wrap { padding: 10px 12px 0; }
+  .hero { border-radius: 12px; min-height: unset; }
+  .hero-vis { width: 76px; padding: 14px 12px; }
+  .cube-wrap { width: 52px; height: 52px; }
+  .cube-core { width: 34px; height: 34px; border-radius: 9px; }
+  .cube-core svg { width: 17px; height: 17px; }
+  .hero-body { padding: 14px 14px 14px 0; }
+  .h-eyebrow { font-size: 7px; margin-bottom: 2px; }
+  .h-sub { font-size: 8px; margin-bottom: 6px; }
+  .h-title { font-size: 17px; margin-bottom: 6px; }
+  .h-desc { font-size: 10px; line-height: 1.65; margin-bottom: 10px; }
+  .h-chip { font-size: 8px; padding: 3px 9px; }
+  .hero-arr { width: 40px; }
+  .arr-btn { width: 30px; height: 30px; }
+  .arr-btn svg { width: 12px; height: 12px; }
 
-  @media (max-width: 1100px) {
-    .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 24px 32px; }
-    header { padding: 28px 32px 22px; }
-    footer { padding: 14px 32px; }
-  }
+  .divider { padding: 14px 12px 8px; }
+  .div-text { font-size: 7.5px; }
 
-  @media (max-width: 680px) {
-    html, body { height: 100%; overflow: hidden; }
+  .grid { grid-template-columns: repeat(3,1fr); gap: 8px; padding: 0 12px; }
+  .card-s5 { grid-column: span 2; }
+  .card { border-radius: 10px; }
+  .card:hover { transform: none; }
 
-    .wrap {
-      height: 100dvh;
-      min-height: unset;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
+  .ill { aspect-ratio: 4/3; }
+  .ill::before { background-size: 14px 14px; }
+  .nbadge { font-size: 7.5px; top: 7px; left: 8px; padding: 2px 6px; }
 
-    header {
-      padding: 12px 16px 10px;
-      flex-direction: row;
-      align-items: center;
-      gap: 8px;
-      flex-shrink: 0;
-    }
+  .cb { padding: 10px 12px 0; }
+  .ctag { font-size: 7px; margin-bottom: 3px; }
+  .cname { font-size: 11.5px; margin-bottom: 4px; }
+  .cdesc { font-size: 9px; line-height: 1.6; }
 
-    .header-meta { font-size: 8px; margin-bottom: 4px; letter-spacing: 0.15em; }
+  .cfoot { margin-top: 8px; padding: 8px 12px 12px; }
+  .ccta { font-size: 8px; }
+  .carrow { width: 20px; height: 20px; }
+  .carrow svg { width: 9px; height: 9px; }
 
-    h1 { font-size: 26px; margin-bottom: 4px; }
+  .s5btns { gap: 6px; padding: 8px 12px 12px; margin-top: 8px; }
+  .s5btn { padding: 7px 10px; font-size: 9.5px; border-radius: 6px; gap: 7px; }
+  .s5btn svg { width: 11px; height: 11px; }
+  .s5dot { width: 4px; height: 4px; }
 
-    .header-sub { font-size: 8px; letter-spacing: 0.12em; }
-
-    .badge { display: none; }
-
-    .counter-box {
-      font-size: 36px;
-      padding: 4px 10px;
-    }
-
-    .grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      margin: 6px 10px;
-      flex: 1;
-      min-height: 0;
-    }
-
-    .card {
-      padding: 10px 10px 8px;
-      min-height: unset;
-    }
-
-    .card-top { margin-bottom: 6px; }
-
-    .icon {
-      width: 28px;
-      height: 28px;
-      border-radius: 5px;
-    }
-
-    .icon svg { width: 13px; height: 13px; }
-
-    .card-num { font-size: 8px; }
-
-    .card-tag { font-size: 8px; margin-bottom: 3px; letter-spacing: 0.12em; }
-
-    .card-name { font-size: 12px; margin-bottom: 4px; line-height: 1.2; }
-
-    .card-desc { font-size: 9.5px; line-height: 1.5; }
-
-    .card-cta {
-      margin-top: 8px;
-      padding-top: 7px;
-      font-size: 8.5px;
-    }
-
-    .s5-btns {
-      margin-top: 8px;
-      padding-top: 7px;
-      gap: 5px;
-    }
-
-    .s5-btn {
-      padding: 6px 8px;
-      font-size: 9px;
-      gap: 5px;
-    }
-
-    .s5-btn svg { width: 10px; height: 10px; }
-
-    footer {
-      padding: 7px 16px;
-      flex-direction: row;
-      gap: 0;
-      flex-shrink: 0;
-    }
-
-    .footer-l, .footer-r { font-size: 8px; }
-  }
+  footer { padding: 10px 14px; margin-top: 14px; }
+  .fl, .fr { font-size: 7.5px; }
+}
 </style>
 </head>
 <body>
+
+<div class="bg-layer bg-layer-1"></div>
+<div class="bg-layer bg-layer-2"></div>
+
 <div class="wrap">
 
-  <header>
+<!-- HEADER -->
+<header>
+  <div class="hl">
+    <div class="logo">
+      <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+    </div>
     <div>
-      <div class="header-meta">RICHTIME · INTEGRATED INTELLIGENCE PLATFORM</div>
-      <h1>富時代 <em>六大</em>系統</h1>
-      <div class="header-sub">SIX CORE SYSTEMS · AI-DRIVEN · REAL ESTATE EXCELLENCE</div>
+      <div class="ht-sup">RICHTIME INTERNAL PORTAL</div>
+      <h1 class="ht-h1">富時代 <em>AI</em> 決策引擎</h1>
+      <div class="ht-sub">SIX CORE SYSTEMS · AI-DRIVEN · REAL ESTATE EXCELLENCE</div>
     </div>
-    <div class="header-right">
-      <div class="badge">V1.4 · 2026</div>
-      <div class="counter-box">06</div>
-    </div>
-  </header>
+  </div>
+  <div class="hr">
+    <div class="badge">V1.4 · 2026</div>
+    <div class="bignum">06</div>
+  </div>
+</header>
 
-  <div class="grid">
-
-    <!-- S1 -->
-    <a class="card" href="https://richtime90117277-alt.github.io/futime-crm/crm_cloud_v19.html" target="_blank">
-      <div class="card-line"></div>
-      <div class="card-top">
-        <div class="icon">
+<!-- HERO S1 -->
+<div class="hero-wrap">
+  <a class="hero" href="https://richtime90117277-alt.github.io/futime-crm/crm_cloud_v19.html" target="_blank">
+    <canvas id="heroCanvas"></canvas>
+    <div class="hero-vis">
+      <div class="cube-wrap">
+        <div class="cube-ring"></div>
+        <div class="cube-ring2"></div>
+        <div class="cube-core">
           <svg viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>
         </div>
-        <div class="card-num">S1</div>
-      </div>
-      <div class="card-tag">核心系統</div>
-      <div class="card-name">顧問決策系統</div>
-      <div class="card-desc">客戶分析・決策節點・即時顧問支援・CRM 全流程</div>
-      <div class="card-cta">進入系統</div>
-    </a>
-
-    <!-- S2 -->
-    <a class="card" href="https://richtime90117277-alt.github.io/futime-crm/asset-planner.html" target="_blank">
-      <div class="card-line"></div>
-      <div class="card-top">
-        <div class="icon">
-          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-        </div>
-        <div class="card-num">S2</div>
-      </div>
-      <div class="card-tag">規劃工具</div>
-      <div class="card-name">AI 資產規劃報告</div>
-      <div class="card-desc">ROI 分析・多策略比較・AI 自動生成個案報告</div>
-      <div class="card-cta">開啟工具</div>
-    </a>
-
-    <!-- S3 -->
-    <a class="card" href="https://www.notion.so/625809993b2746b7842e022bd0279fe7" target="_blank">
-      <div class="card-line"></div>
-      <div class="card-top">
-        <div class="icon">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
-        </div>
-        <div class="card-num">S3</div>
-      </div>
-      <div class="card-tag">品牌・行銷</div>
-      <div class="card-name">官網與近期活動</div>
-      <div class="card-desc">富時代官網・精美活動入口・提升品牌形象與報名質量</div>
-      <div class="card-cta">開啟頁面</div>
-    </a>
-
-    <!-- S4 -->
-    <a class="card" href="https://www.notion.so/059972580dae4a54b07a57fd410b3090" target="_blank">
-      <div class="card-line"></div>
-      <div class="card-top">
-        <div class="icon">
-          <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
-        </div>
-        <div class="card-num">S4</div>
-      </div>
-      <div class="card-tag">知識中樞</div>
-      <div class="card-name">知識中樞系統</div>
-      <div class="card-desc">話術庫・培訓系統・決策邏輯・持續優化顧問能力</div>
-      <div class="card-cta">進入 NOTION</div>
-    </a>
-
-    <!-- S5 雙入口 -->
-    <div class="card">
-      <div class="card-line"></div>
-      <div class="card-top">
-        <div class="icon">
-          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-        </div>
-        <div class="card-num">S5</div>
-      </div>
-      <div class="card-tag">溝通策略</div>
-      <div class="card-name">話術教材庫</div>
-      <div class="card-desc">話術應對・對話模型・SOS 異議處理・情境演練腳本</div>
-      <div class="s5-btns">
-        <a class="s5-btn" href="https://richtime90117277-alt.github.io/futime-crm/LIB.html" target="_blank">
-          <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
-          AI 對話陪練系統
-        </a>
-        <a class="s5-btn" href="https://richtime90117277-alt.github.io/futime-crm/zhiwei-ai-coach.html" target="_blank">
-          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-          AI 顧問跟進報告
-        </a>
-        <a class="s5-btn" href="https://richtime90117277-alt.github.io/futime-crm/sos-v2.html" target="_blank">
-          <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          SOS 異議處理寶典
-        </a>
       </div>
     </div>
-
-    <!-- S6 -->
-    <a class="card" href="https://www.notion.so/68f46f920de14f07bc4161d221a83995" target="_blank">
-      <div class="card-line"></div>
-      <div class="card-top">
-        <div class="icon">
-          <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        </div>
-        <div class="card-num">S6</div>
+    <div class="hero-body">
+      <div class="h-eyebrow">CONSULTANT DECISION SYSTEM · S1</div>
+      <div class="h-sub">核心系統 · 進入工具入口</div>
+      <div class="h-title">顧問決策系統</div>
+      <div class="h-desc">客戶狀態評估 · 需求分析模型 · 決策節點預判 · 即時顧問支援</div>
+      <div class="h-chips">
+        <span class="h-chip">決策節點</span>
+        <span class="h-chip">客戶分析</span>
+        <span class="h-chip">情境應對</span>
+        <span class="h-chip">決策路圖</span>
       </div>
-      <div class="card-tag">精選物件</div>
-      <div class="card-name">頂級物件展廳</div>
-      <div class="card-desc">公司精選物件・文華新站・精準配對客戶需求</div>
-      <div class="card-cta">查看物件</div>
-    </a>
+    </div>
+    <div class="hero-arr">
+      <div class="arr-btn">
+        <svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+      </div>
+    </div>
+  </a>
+</div>
 
+<!-- DIVIDER -->
+<div class="divider">
+  <div class="div-text">延伸工具入口 · 05 SYSTEMS</div>
+  <div class="div-line"></div>
+</div>
+
+<!-- GRID -->
+<div class="grid">
+
+  <!-- S2 · AI資產規劃 · 折線+柱狀圖場景 -->
+  <a class="card" href="https://richtime90117277-alt.github.io/futime-crm/asset-planner.html" target="_blank">
+    <div class="ill">
+      <div class="nbadge">02</div>
+      <svg class="scene" viewBox="0 0 160 120" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <linearGradient id="bar-g" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#4dd8e8" stop-opacity="0.6"/>
+            <stop offset="100%" stop-color="#4dd8e8" stop-opacity="0.05"/>
+          </linearGradient>
+          <linearGradient id="area-g" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#4dd8e8" stop-opacity="0.3"/>
+            <stop offset="100%" stop-color="#4dd8e8" stop-opacity="0"/>
+          </linearGradient>
+          <filter id="fg2"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="fg2s"><feGaussianBlur stdDeviation="1" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <!-- grid lines -->
+        <line x1="24" y1="30" x2="148" y2="30" stroke="rgba(77,216,232,0.07)" stroke-width="0.6"/>
+        <line x1="24" y1="50" x2="148" y2="50" stroke="rgba(77,216,232,0.07)" stroke-width="0.6"/>
+        <line x1="24" y1="70" x2="148" y2="70" stroke="rgba(77,216,232,0.07)" stroke-width="0.6"/>
+        <line x1="24" y1="90" x2="148" y2="90" stroke="rgba(77,216,232,0.12)" stroke-width="0.8"/>
+        <!-- bars -->
+        <rect x="28"  y="72" width="13" height="18" rx="2" fill="url(#bar-g)" stroke="rgba(77,216,232,0.22)" stroke-width="0.6"/>
+        <rect x="46"  y="60" width="13" height="30" rx="2" fill="url(#bar-g)" stroke="rgba(77,216,232,0.25)" stroke-width="0.6"/>
+        <rect x="64"  y="48" width="13" height="42" rx="2" fill="url(#bar-g)" stroke="rgba(77,216,232,0.28)" stroke-width="0.6"/>
+        <rect x="82"  y="55" width="13" height="35" rx="2" fill="url(#bar-g)" stroke="rgba(77,216,232,0.25)" stroke-width="0.6"/>
+        <rect x="100" y="38" width="13" height="52" rx="2" fill="url(#bar-g)" stroke="rgba(77,216,232,0.32)" stroke-width="0.6"/>
+        <rect x="118" y="26" width="13" height="64" rx="2" fill="rgba(77,216,232,0.22)" stroke="rgba(77,216,232,0.5)" stroke-width="0.8" filter="url(#fg2s)"/>
+        <!-- area fill -->
+        <polygon points="34,73 52,61 70,49 88,56 106,39 124,27 124,90 34,90" fill="url(#area-g)"/>
+        <!-- trend line -->
+        <polyline points="34,73 52,61 70,49 88,56 106,39 124,27"
+          fill="none" stroke="#4dd8e8" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round" filter="url(#fg2)"/>
+        <!-- dots -->
+        <circle cx="34"  cy="73" r="2.5" fill="#0d1825" stroke="#4dd8e8" stroke-width="1.2"/>
+        <circle cx="70"  cy="49" r="2.5" fill="#0d1825" stroke="#4dd8e8" stroke-width="1.2"/>
+        <circle cx="106" cy="39" r="2.5" fill="#0d1825" stroke="#4dd8e8" stroke-width="1.2"/>
+        <!-- highlight last dot -->
+        <circle cx="124" cy="27" r="4"   fill="#4dd8e8" filter="url(#fg2)"/>
+        <circle cx="124" cy="27" r="2"   fill="#fff"/>
+        <!-- label -->
+        <rect x="108" y="14" width="36" height="10" rx="2" fill="rgba(77,216,232,0.12)" stroke="rgba(77,216,232,0.3)" stroke-width="0.6"/>
+        <text x="113" y="21.5" font-size="6" fill="#4dd8e8" font-family="monospace">+ROI ↑</text>
+        <!-- y-axis labels -->
+        <text x="14" y="32"  font-size="5.5" fill="rgba(77,216,232,0.3)" font-family="monospace">80</text>
+        <text x="14" y="52"  font-size="5.5" fill="rgba(77,216,232,0.3)" font-family="monospace">60</text>
+        <text x="14" y="72"  font-size="5.5" fill="rgba(77,216,232,0.3)" font-family="monospace">40</text>
+      </svg>
+    </div>
+    <div class="cb">
+      <div class="ctag">規劃工具</div>
+      <div class="cname">AI 資產規劃報告</div>
+      <div class="cdesc">ROI 分析・多策略比較・AI 自動生成個案報告</div>
+    </div>
+    <div class="cfoot">
+      <div class="ccta">開啟工具</div>
+      <div class="carrow"><svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
+    </div>
+  </a>
+
+  <!-- S3 · 品牌活動 · 鑽石 + 光環場景 -->
+  <a class="card" href="https://www.notion.so/625809993b2746b7842e022bd0279fe7" target="_blank">
+    <div class="ill">
+      <div class="nbadge">03</div>
+      <svg class="scene" viewBox="0 0 160 120" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <filter id="fg3"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="fg3s"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <radialGradient id="rg3" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#4dd8e8" stop-opacity="0.2"/>
+            <stop offset="100%" stop-color="#4dd8e8" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <!-- glow bg -->
+        <ellipse cx="80" cy="60" rx="40" ry="32" fill="url(#rg3)"/>
+        <!-- outer circles -->
+        <circle cx="80" cy="60" r="50" fill="none" stroke="rgba(77,216,232,0.06)" stroke-width="0.8"/>
+        <circle cx="80" cy="60" r="38" fill="none" stroke="rgba(77,216,232,0.1)"  stroke-width="0.8"/>
+        <circle cx="80" cy="60" r="26" fill="none" stroke="rgba(77,216,232,0.16)" stroke-width="0.8"/>
+        <!-- orbit dot -->
+        <circle cx="80" cy="22" r="3.5" fill="rgba(77,216,232,0.8)" filter="url(#fg3s)"/>
+        <circle cx="118" cy="60" r="2.5" fill="rgba(77,216,232,0.5)" filter="url(#fg3s)"/>
+        <circle cx="60" cy="96" r="2" fill="rgba(77,216,232,0.4)"/>
+        <!-- diamond shape -->
+        <polygon points="80,34 100,54 80,78 60,54"
+          fill="rgba(77,216,232,0.08)" stroke="rgba(77,216,232,0.45)" stroke-width="1"
+          filter="url(#fg3s)"/>
+        <!-- diamond facets -->
+        <line x1="80" y1="34" x2="80" y2="78" stroke="rgba(77,216,232,0.2)" stroke-width="0.6"/>
+        <line x1="60" y1="54" x2="100" y2="54" stroke="rgba(77,216,232,0.2)" stroke-width="0.6"/>
+        <polygon points="80,34 100,54 80,54" fill="rgba(77,216,232,0.12)"/>
+        <polygon points="80,34 60,54 80,54"  fill="rgba(77,216,232,0.07)"/>
+        <polygon points="80,78 60,54 80,54"  fill="rgba(77,216,232,0.14)"/>
+        <!-- center gem -->
+        <circle cx="80" cy="54" r="5" fill="rgba(77,216,232,0.25)" stroke="rgba(77,216,232,0.7)" stroke-width="0.8" filter="url(#fg3)"/>
+        <circle cx="80" cy="54" r="2" fill="#4dd8e8"/>
+        <!-- sparkles -->
+        <line x1="80" y1="11" x2="80" y2="17" stroke="#4dd8e8" stroke-width="1" opacity="0.7"/>
+        <line x1="77" y1="14" x2="83" y2="14" stroke="#4dd8e8" stroke-width="1" opacity="0.7"/>
+        <line x1="130" y1="30" x2="130" y2="34" stroke="#4dd8e8" stroke-width="0.8" opacity="0.5"/>
+        <line x1="128" y1="32" x2="132" y2="32" stroke="#4dd8e8" stroke-width="0.8" opacity="0.5"/>
+        <text x="56" y="112" font-size="5.5" fill="rgba(77,216,232,0.4)" font-family="monospace">BRAND · EVENT</text>
+      </svg>
+    </div>
+    <div class="cb">
+      <div class="ctag">品牌・行銷</div>
+      <div class="cname">官網與近期活動</div>
+      <div class="cdesc">富時代官網・精美活動入口・提升品牌形象</div>
+    </div>
+    <div class="cfoot">
+      <div class="ccta">開啟頁面</div>
+      <div class="carrow"><svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
+    </div>
+  </a>
+
+  <!-- S4 · 知識中樞 · 等距3D層疊書冊 -->
+  <a class="card" href="https://www.notion.so/059972580dae4a54b07a57fd410b3090" target="_blank">
+    <div class="ill">
+      <div class="nbadge">04</div>
+      <svg class="scene" viewBox="0 0 160 120" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <filter id="fg4"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="fg4s"><feGaussianBlur stdDeviation="1" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <!-- Layer 3 bottom -->
+        <polygon points="80,96 116,80 80,64 44,80" fill="rgba(77,216,232,0.05)" stroke="rgba(77,216,232,0.18)" stroke-width="0.8"/>
+        <polygon points="80,64 116,80 116,76 80,60" fill="rgba(20,50,70,0.6)" stroke="rgba(77,216,232,0.12)" stroke-width="0.5"/>
+        <polygon points="80,64 44,80  44,76  80,60" fill="rgba(77,216,232,0.06)" stroke="rgba(77,216,232,0.12)" stroke-width="0.5"/>
+        <!-- layer 3 text lines -->
+        <line x1="56" y1="78" x2="104" y2="62" stroke="rgba(77,216,232,0.12)" stroke-width="0.8"/>
+        <line x1="56" y1="82" x2="90"  y2="69" stroke="rgba(77,216,232,0.08)" stroke-width="0.6"/>
+
+        <!-- Layer 2 mid -->
+        <polygon points="80,78 116,62 80,46 44,62" fill="rgba(77,216,232,0.09)" stroke="rgba(77,216,232,0.28)" stroke-width="0.9"/>
+        <polygon points="80,46 116,62 116,58 80,42" fill="rgba(20,50,70,0.7)" stroke="rgba(77,216,232,0.2)" stroke-width="0.6"/>
+        <polygon points="80,46 44,62  44,58  80,42" fill="rgba(77,216,232,0.1)" stroke="rgba(77,216,232,0.2)" stroke-width="0.6"/>
+        <line x1="56" y1="60" x2="104" y2="44" stroke="rgba(77,216,232,0.2)" stroke-width="0.8"/>
+        <line x1="56" y1="64" x2="90"  y2="51" stroke="rgba(77,216,232,0.12)" stroke-width="0.6"/>
+
+        <!-- Layer 1 top — brightest -->
+        <polygon points="80,60 116,44 80,28 44,44"
+          fill="rgba(77,216,232,0.16)" stroke="rgba(77,216,232,0.55)" stroke-width="1.2"
+          filter="url(#fg4s)"/>
+        <polygon points="80,28 116,44 116,40 80,24" fill="rgba(30,70,90,0.8)"  stroke="rgba(77,216,232,0.32)" stroke-width="0.8"/>
+        <polygon points="80,28 44,44  44,40  80,24" fill="rgba(77,216,232,0.18)" stroke="rgba(77,216,232,0.38)" stroke-width="0.8"/>
+        <!-- top face lines -->
+        <line x1="56" y1="42" x2="104" y2="26" stroke="rgba(77,216,232,0.35)" stroke-width="1"/>
+        <line x1="56" y1="46" x2="90"  y2="33" stroke="rgba(77,216,232,0.22)" stroke-width="0.8"/>
+        <!-- glow on top -->
+        <ellipse cx="80" cy="44" rx="22" ry="9" fill="rgba(77,216,232,0.18)" filter="url(#fg4)"/>
+        <text x="52" y="112" font-size="5.5" fill="rgba(77,216,232,0.4)" font-family="monospace">KNOWLEDGE HUB</text>
+      </svg>
+    </div>
+    <div class="cb">
+      <div class="ctag">知識中樞</div>
+      <div class="cname">知識中樞系統</div>
+      <div class="cdesc">話術庫・培訓系統・決策邏輯・持續優化</div>
+    </div>
+    <div class="cfoot">
+      <div class="ccta">進入 NOTION</div>
+      <div class="carrow"><svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
+    </div>
+  </a>
+
+  <!-- S5 · 話術庫 · 對話場景 + 三入口 -->
+  <div class="card card-s5">
+    <div class="ill">
+      <div class="nbadge">05</div>
+      <svg class="scene" viewBox="0 0 320 120" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <filter id="fg5"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="fg5s"><feGaussianBlur stdDeviation="1" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <!-- left chat bubble -->
+        <rect x="18" y="34" width="110" height="44" rx="10" fill="rgba(77,216,232,0.06)" stroke="rgba(77,216,232,0.22)" stroke-width="0.9"/>
+        <polygon points="28,78 18,92 44,78" fill="rgba(77,216,232,0.06)" stroke="rgba(77,216,232,0.22)" stroke-width="0.9"/>
+        <!-- lines in left bubble -->
+        <rect x="28" y="44" width="90" height="6" rx="3" fill="rgba(77,216,232,0.2)"/>
+        <rect x="28" y="55" width="70" height="4" rx="2" fill="rgba(77,216,232,0.12)"/>
+        <rect x="28" y="64" width="50" height="4" rx="2" fill="rgba(77,216,232,0.08)"/>
+        <!-- right chat bubble — highlighted -->
+        <rect x="192" y="20" width="110" height="50" rx="10"
+          fill="rgba(77,216,232,0.11)" stroke="rgba(77,216,232,0.45)" stroke-width="1"
+          filter="url(#fg5s)"/>
+        <polygon points="294,70 302,86 278,70" fill="rgba(77,216,232,0.11)" stroke="rgba(77,216,232,0.45)" stroke-width="0.9"/>
+        <!-- lines in right bubble -->
+        <rect x="202" y="30" width="90" height="6" rx="3" fill="rgba(77,216,232,0.4)"/>
+        <rect x="202" y="41" width="72" height="4" rx="2" fill="rgba(77,216,232,0.25)"/>
+        <rect x="202" y="51" width="55" height="4" rx="2" fill="rgba(77,216,232,0.15)"/>
+        <!-- SOS badge centre -->
+        <circle cx="160" cy="60" r="22" fill="rgba(255,80,60,0.06)" stroke="rgba(255,100,80,0.35)" stroke-width="1.2" filter="url(#fg5s)"/>
+        <circle cx="160" cy="60" r="15" fill="rgba(255,80,60,0.04)" stroke="rgba(255,100,80,0.2)" stroke-width="0.8"/>
+        <text x="152" y="65" font-size="14" fill="rgba(255,140,110,0.85)" font-family="monospace" font-weight="bold">!</text>
+        <text x="136" y="97" font-size="5.5" fill="rgba(255,140,100,0.45)" font-family="monospace">SOS</text>
+        <!-- connector lines -->
+        <line x1="128" y1="56" x2="138" y2="56" stroke="rgba(77,216,232,0.2)" stroke-width="0.8" stroke-dasharray="3,2"/>
+        <line x1="182" y1="56" x2="192" y2="56" stroke="rgba(77,216,232,0.2)" stroke-width="0.8" stroke-dasharray="3,2"/>
+        <text x="82" y="113" font-size="5.5" fill="rgba(77,216,232,0.4)" font-family="monospace">SCRIPT · SOS · AI COACH</text>
+      </svg>
+    </div>
+    <div class="cb">
+      <div class="ctag">溝通策略</div>
+      <div class="cname">話術教材庫</div>
+      <div class="cdesc">話術應對・對話模型・SOS 異議處理・情境演練腳本</div>
+    </div>
+    <div class="s5btns">
+      <a class="s5btn" href="https://richtime90117277-alt.github.io/futime-crm/LIB.html" target="_blank">
+        <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+        話術教材庫<div class="s5dot"></div>
+      </a>
+      <a class="s5btn" href="https://richtime90117277-alt.github.io/futime-crm/zhiwei-ai-coach.html" target="_blank">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        AI 顧問跟進報告<div class="s5dot"></div>
+      </a>
+      <a class="s5btn" href="https://richtime90117277-alt.github.io/futime-crm/sos-v2.html" target="_blank">
+        <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        SOS 異議處理寶典<div class="s5dot"></div>
+      </a>
+    </div>
   </div>
 
-  <footer>
-    <div class="footer-l">Richtime © 2026 ｜ 內部版僅供團隊使用</div>
-    <div class="footer-r">AI DECISION ENGINE · V1.4</div>
-  </footer>
+  <!-- S6 · 物件展廳 · 城市天際線 -->
+  <a class="card" href="https://www.notion.so/68f46f920de14f07bc4161d221a83995" target="_blank">
+    <div class="ill">
+      <div class="nbadge">06</div>
+      <svg class="scene" viewBox="0 0 160 120" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <filter id="fg6"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="fg6s"><feGaussianBlur stdDeviation="1.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#4dd8e8" stop-opacity="0.18"/>
+            <stop offset="100%" stop-color="#4dd8e8" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <!-- ground -->
+        <line x1="10" y1="95" x2="150" y2="95" stroke="rgba(77,216,232,0.2)" stroke-width="0.8"/>
+        <!-- reflection -->
+        <line x1="10" y1="97" x2="150" y2="97" stroke="rgba(77,216,232,0.06)" stroke-width="0.6"/>
+
+        <!-- building far left — short -->
+        <rect x="12" y="72" width="18" height="23" fill="rgba(77,216,232,0.05)" stroke="rgba(77,216,232,0.18)" stroke-width="0.7"/>
+        <rect x="15" y="76" width="4" height="5" fill="rgba(77,216,232,0.15)" stroke="rgba(77,216,232,0.3)" stroke-width="0.4"/>
+        <rect x="22" y="76" width="4" height="5" fill="rgba(77,216,232,0.1)"  stroke="rgba(77,216,232,0.25)" stroke-width="0.4"/>
+        <rect x="15" y="84" width="4" height="5" fill="rgba(77,216,232,0.08)" stroke="rgba(77,216,232,0.2)"  stroke-width="0.4"/>
+
+        <!-- building 2 -->
+        <rect x="34" y="58" width="22" height="37" fill="rgba(77,216,232,0.07)" stroke="rgba(77,216,232,0.22)" stroke-width="0.7"/>
+        <rect x="37" y="63" width="5" height="6" fill="rgba(77,216,232,0.2)"  stroke="rgba(77,216,232,0.35)" stroke-width="0.4"/>
+        <rect x="45" y="63" width="5" height="6" fill="rgba(77,216,232,0.12)" stroke="rgba(77,216,232,0.28)" stroke-width="0.4"/>
+        <rect x="37" y="73" width="5" height="6" fill="rgba(77,216,232,0.15)" stroke="rgba(77,216,232,0.3)"  stroke-width="0.4"/>
+        <rect x="45" y="73" width="5" height="6" fill="rgba(77,216,232,0.1)"  stroke="rgba(77,216,232,0.25)" stroke-width="0.4"/>
+        <rect x="37" y="83" width="5" height="6" fill="rgba(77,216,232,0.08)" stroke="rgba(77,216,232,0.2)"  stroke-width="0.4"/>
+
+        <!-- HERO building — tallest, glowing -->
+        <rect x="62" y="22" width="36" height="73" fill="rgba(77,216,232,0.09)" stroke="rgba(77,216,232,0.5)" stroke-width="1.2" filter="url(#fg6s)"/>
+        <!-- sky fill above hero -->
+        <rect x="62" y="22" width="36" height="73" fill="url(#sky)"/>
+        <!-- hero windows 3 cols × 4 rows -->
+        <rect x="66" y="28" width="7" height="8" rx="1" fill="rgba(77,216,232,0.38)" stroke="rgba(77,216,232,0.6)" stroke-width="0.5"/>
+        <rect x="77" y="28" width="7" height="8" rx="1" fill="rgba(77,216,232,0.25)" stroke="rgba(77,216,232,0.45)" stroke-width="0.5"/>
+        <rect x="88" y="28" width="7" height="8" rx="1" fill="rgba(77,216,232,0.38)" stroke="rgba(77,216,232,0.6)" stroke-width="0.5"/>
+        <rect x="66" y="40" width="7" height="8" rx="1" fill="rgba(77,216,232,0.2)"  stroke="rgba(77,216,232,0.38)" stroke-width="0.5"/>
+        <rect x="77" y="40" width="7" height="8" rx="1" fill="rgba(77,216,232,0.45)" stroke="rgba(77,216,232,0.7)" stroke-width="0.5" filter="url(#fg6s)"/>
+        <rect x="88" y="40" width="7" height="8" rx="1" fill="rgba(77,216,232,0.18)" stroke="rgba(77,216,232,0.32)" stroke-width="0.5"/>
+        <rect x="66" y="52" width="7" height="8" rx="1" fill="rgba(77,216,232,0.28)" stroke="rgba(77,216,232,0.45)" stroke-width="0.5"/>
+        <rect x="77" y="52" width="7" height="8" rx="1" fill="rgba(77,216,232,0.15)" stroke="rgba(77,216,232,0.3)"  stroke-width="0.5"/>
+        <rect x="88" y="52" width="7" height="8" rx="1" fill="rgba(77,216,232,0.32)" stroke="rgba(77,216,232,0.5)" stroke-width="0.5"/>
+        <rect x="66" y="64" width="7" height="8" rx="1" fill="rgba(77,216,232,0.12)" stroke="rgba(77,216,232,0.25)" stroke-width="0.5"/>
+        <rect x="77" y="64" width="7" height="8" rx="1" fill="rgba(77,216,232,0.22)" stroke="rgba(77,216,232,0.38)" stroke-width="0.5"/>
+        <rect x="88" y="64" width="7" height="8" rx="1" fill="rgba(77,216,232,0.35)" stroke="rgba(77,216,232,0.55)" stroke-width="0.5"/>
+        <!-- door -->
+        <rect x="74" y="80" width="12" height="15" rx="1.5" fill="rgba(77,216,232,0.2)" stroke="rgba(77,216,232,0.45)" stroke-width="0.7"/>
+        <!-- glow top beam -->
+        <ellipse cx="80" cy="22" rx="20" ry="5" fill="rgba(77,216,232,0.2)" filter="url(#fg6)"/>
+        <!-- antenna -->
+        <line x1="80" y1="12" x2="80" y2="22" stroke="rgba(77,216,232,0.6)" stroke-width="1" filter="url(#fg6s)"/>
+        <circle cx="80" cy="11" r="2" fill="rgba(77,216,232,0.9)" filter="url(#fg6)"/>
+
+        <!-- right buildings -->
+        <rect x="102" y="48" width="24" height="47" fill="rgba(77,216,232,0.07)" stroke="rgba(77,216,232,0.22)" stroke-width="0.8"/>
+        <rect x="106" y="54" width="5" height="6" fill="rgba(77,216,232,0.18)" stroke="rgba(77,216,232,0.32)" stroke-width="0.4"/>
+        <rect x="115" y="54" width="5" height="6" fill="rgba(77,216,232,0.12)" stroke="rgba(77,216,232,0.25)" stroke-width="0.4"/>
+        <rect x="106" y="64" width="5" height="6" fill="rgba(77,216,232,0.1)"  stroke="rgba(77,216,232,0.2)"  stroke-width="0.4"/>
+        <rect x="115" y="64" width="5" height="6" fill="rgba(77,216,232,0.15)" stroke="rgba(77,216,232,0.28)" stroke-width="0.4"/>
+        <rect x="130" y="66" width="18" height="29" fill="rgba(77,216,232,0.05)" stroke="rgba(77,216,232,0.16)" stroke-width="0.7"/>
+        <rect x="133" y="70" width="4" height="5" fill="rgba(77,216,232,0.1)"  stroke="rgba(77,216,232,0.2)"  stroke-width="0.4"/>
+        <rect x="140" y="70" width="4" height="5" fill="rgba(77,216,232,0.07)" stroke="rgba(77,216,232,0.15)" stroke-width="0.4"/>
+        <text x="44" y="112" font-size="5.5" fill="rgba(77,216,232,0.38)" font-family="monospace">PREMIUM PROPERTIES</text>
+      </svg>
+    </div>
+    <div class="cb">
+      <div class="ctag">精選物件</div>
+      <div class="cname">頂級物件展廳</div>
+      <div class="cdesc">精選物件・文華新站・精準配對客戶需求</div>
+    </div>
+    <div class="cfoot">
+      <div class="ccta">查看物件</div>
+      <div class="carrow"><svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
+    </div>
+  </a>
 
 </div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="fl">Richtime © 2026 ｜ 內部版僅供團隊使用</div>
+  <div class="fr">AI DECISION ENGINE · V1.4</div>
+</footer>
+
+</div><!-- wrap -->
+
+<script>
+/* ── Neural network canvas animation on Hero ── */
+const canvas = document.getElementById('heroCanvas');
+const ctx = canvas.getContext('2d');
+let W, H, nodes = [], anim;
+
+function resize() {
+  const rect = canvas.parentElement.getBoundingClientRect();
+  W = canvas.width  = rect.width;
+  H = canvas.height = rect.height;
+  initNodes();
+}
+
+function initNodes() {
+  nodes = [];
+  const count = Math.min(Math.floor(W * H / 8000), 28);
+  for (let i = 0; i < count; i++) {
+    nodes.push({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      vx: (Math.random() - 0.5) * 0.25,
+      vy: (Math.random() - 0.5) * 0.25,
+      r: Math.random() * 1.5 + 0.8,
+    });
+  }
+}
+
+function draw(t) {
+  ctx.clearRect(0, 0, W, H);
+  const dist = 130;
+
+  nodes.forEach(n => {
+    n.x += n.vx; n.y += n.vy;
+    if (n.x < 0 || n.x > W) n.vx *= -1;
+    if (n.y < 0 || n.y > H) n.vy *= -1;
+  });
+
+  for (let i = 0; i < nodes.length; i++) {
+    for (let j = i + 1; j < nodes.length; j++) {
+      const dx = nodes[i].x - nodes[j].x;
+      const dy = nodes[i].y - nodes[j].y;
+      const d  = Math.sqrt(dx*dx + dy*dy);
+      if (d < dist) {
+        const alpha = (1 - d / dist) * 0.22;
+        ctx.beginPath();
+        ctx.moveTo(nodes[i].x, nodes[i].y);
+        ctx.lineTo(nodes[j].x, nodes[j].y);
+        ctx.strokeStyle = `rgba(77,216,232,${alpha})`;
+        ctx.lineWidth = 0.7;
+        ctx.stroke();
+      }
+    }
+  }
+
+  nodes.forEach(n => {
+    ctx.beginPath();
+    ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(77,216,232,0.55)';
+    ctx.shadowColor = '#4dd8e8';
+    ctx.shadowBlur = 6;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+  });
+
+  anim = requestAnimationFrame(draw);
+}
+
+window.addEventListener('resize', () => { cancelAnimationFrame(anim); resize(); draw(); });
+resize();
+draw();
+</script>
 </body>
 </html>
