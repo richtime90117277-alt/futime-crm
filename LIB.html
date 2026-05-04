@@ -161,11 +161,13 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
   .topbar-right { gap: 6px; }
   .count-badge { display: none; } /* 手機不顯示筆數 */
   .mode-toggle { border-radius: 16px; }
-  .mode-btn { font-size: 11px; padding: 4px 10px; }
-
-  /* 搜尋列手機版縮短 */
-  .search-wrap { max-width: 160px; }
-  .search-input { width: 120px; font-size: 13px; }
+  .mode-btn { font-size: 11px; padding: 4px 8px; }
+  /* 手機版：搜尋框縮短，模式切換縮小 */
+  .search-wrap { max-width: 130px; }
+  .search-input { width: 100px; font-size: 12px; }
+  .mode-btn span, .mode-btn { font-size: 10px; padding: 3px 7px; }
+  /* AI顧問按鈕縮短顯示 */
+  .ai-btn { padding: 5px 10px; font-size: 11px; }
 
   /* ── Hamburger 按鈕 ── */
   .hamburger {
@@ -611,6 +613,21 @@ function hlText(escaped, q) {
 }
 
 init();
+
+// 從 CRM 跳過來時自動帶入客戶並開啟 AI Modal
+(function() {
+  try {
+    var raw = sessionStorage.getItem('crm_launch_customer');
+    if (!raw) return;
+    sessionStorage.removeItem('crm_launch_customer');
+    var c = JSON.parse(raw);
+    openAiModal();
+    setTimeout(function() {
+      _crmPickerTarget = 'futime';
+      selectCrmCustomer(JSON.stringify(c));
+    }, 300);
+  } catch(e) {}
+})();
 
 // ══════════════════════════════════════
 // AI 顧問 Modal 邏輯
