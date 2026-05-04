@@ -891,6 +891,7 @@ body{
     <button class="tab on" id="tI" onclick="sw('I')">輸入</button>
     <button class="tab" id="tR" onclick="doGen()">報告</button>
     <button class="tab" id="tF" onclick="sw('F')">等待代價</button>
+    <button class="tab" id="tT" onclick="sw('T')" style="border-color:rgba(139,92,246,.35);color:rgba(167,139,250,.7)">傳承風險</button>
   </div>
 </div>
 
@@ -2274,6 +2275,384 @@ body{
   <button class="bbk" style="width:100%;margin-bottom:14px" onclick="sw('I')">← 回輸入頁</button>
 </div>
 
+<!-- ══ 傳承風險頁 vT ══════════════════════════════════════════════════ -->
+<div id="vT" style="display:none;max-width:580px;margin:0 auto;padding:16px 14px 80px">
+
+  <!-- 頁首 Hero -->
+  <div style="background:linear-gradient(155deg,#0e0820,#1a1040,#120828);border:none;border-radius:20px;padding:24px 20px;margin-bottom:16px;box-shadow:0 12px 48px rgba(0,0,0,.4);position:relative;overflow:hidden">
+    <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(139,92,246,.8),rgba(167,139,250,.5),transparent)"></div>
+    <div style="position:absolute;bottom:-40px;right:-30px;width:180px;height:180px;background:radial-gradient(circle,rgba(139,92,246,.08) 0%,transparent 70%);pointer-events:none"></div>
+    <div style="font-size:9px;letter-spacing:5px;color:rgba(167,139,250,.8);margin-bottom:10px;font-family:'DM Mono',Menlo,Consolas,monospace;font-weight:bold">INHERITANCE RISK — 傳承風險</div>
+    <div style="font-size:22px;font-weight:900;color:#e2d9c8;margin-bottom:10px;line-height:1.3">你的資產，<br>身後會變成什麼狀況？</div>
+    <div style="font-size:12px;color:rgba(167,139,250,.75);line-height:1.9">很多人花了一輩子累積資產，<br>卻從未認真想過：<strong style="color:rgba(196,181,253,.9)">不規劃，孩子會為了財產打架。</strong><br>這個工具，讓你先看見風險，再決定要不要行動。</div>
+  </div>
+
+  <!-- ─ BLOCK 1：資產輸入（輕量版，獨立於輸入頁） ─ -->
+  <div class="card" style="border-color:rgba(139,92,246,.15)">
+    <div class="ch" style="background:linear-gradient(90deg,rgba(139,92,246,.07),transparent);border-bottom-color:rgba(139,92,246,.1)">
+      <span class="cn" style="border-color:rgba(139,92,246,.5);color:#a78bfa">01</span>
+      <span class="ct">資產快速估算</span>
+    </div>
+    <div class="cb">
+      <div style="font-size:10px;color:rgba(167,139,250,.7);margin-bottom:12px;line-height:1.7">填入大概數字即可——這是風險評估，不是精確計算。</div>
+      <div class="g2">
+        <div class="fl">
+          <label style="color:rgba(139,92,246,.8)">不動產估值（萬）</label>
+          <input type="number" id="t_realestate" placeholder="0" oninput="calcInheritRisk()" style="border-color:rgba(139,92,246,.2)">
+        </div>
+        <div class="fl">
+          <label style="color:rgba(139,92,246,.8)">現金 / 存款（萬）</label>
+          <input type="number" id="t_cash" placeholder="0" oninput="calcInheritRisk()" style="border-color:rgba(139,92,246,.2)">
+        </div>
+      </div>
+      <div class="g2">
+        <div class="fl">
+          <label style="color:rgba(139,92,246,.8)">投資 / 股票 / 基金（萬）</label>
+          <input type="number" id="t_invest" placeholder="0" oninput="calcInheritRisk()" style="border-color:rgba(139,92,246,.2)">
+        </div>
+        <div class="fl">
+          <label style="color:rgba(139,92,246,.8)">保險 / 其他資產（萬）</label>
+          <input type="number" id="t_insurance" placeholder="0" oninput="calcInheritRisk()" style="border-color:rgba(139,92,246,.2)">
+        </div>
+      </div>
+
+      <!-- 繼承人數 -->
+      <div class="fl" style="margin-top:6px">
+        <label style="color:rgba(139,92,246,.8)">法定繼承人數（包含配偶）</label>
+        <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap">
+          <button class="seg-btn t-heir-btn" id="th1" onclick="setHeirs(1)" style="border-color:rgba(139,92,246,.2);min-width:52px;padding:8px 4px;font-size:12px">1人</button>
+          <button class="seg-btn t-heir-btn on" id="th2" onclick="setHeirs(2)" style="border-color:rgba(139,92,246,.45);background:rgba(139,92,246,.1);color:#a78bfa;min-width:52px;padding:8px 4px;font-size:12px">2人</button>
+          <button class="seg-btn t-heir-btn" id="th3" onclick="setHeirs(3)" style="border-color:rgba(139,92,246,.2);min-width:52px;padding:8px 4px;font-size:12px">3人</button>
+          <button class="seg-btn t-heir-btn" id="th4" onclick="setHeirs(4)" style="border-color:rgba(139,92,246,.2);min-width:52px;padding:8px 4px;font-size:12px">4人以上</button>
+        </div>
+      </div>
+
+      <!-- 資產總覽 bar -->
+      <div id="t_totalBar" style="display:none;margin-top:12px;display:flex;justify-content:space-between;align-items:center;background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.2);border-radius:8px;padding:10px 14px">
+        <span style="font-size:10px;color:rgba(167,139,250,.8);font-weight:bold;letter-spacing:1px">估算資產總值</span>
+        <span style="font-size:18px;color:#c4b5fd;font-weight:900;font-family:'DM Mono',Menlo,Consolas,monospace" id="t_totalVal">—</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─ BLOCK 2：傳承風險快照 ─ -->
+  <div id="t_riskBlock" style="display:none">
+
+    <!-- 風險雷達：三大地雷 -->
+    <div class="card" style="border-color:rgba(139,92,246,.15)">
+      <div class="ch" style="background:linear-gradient(90deg,rgba(139,92,246,.07),transparent);border-bottom-color:rgba(139,92,246,.1)">
+        <span class="cn" style="border-color:rgba(139,92,246,.5);color:#a78bfa">02</span>
+        <span class="ct">傳承三大地雷</span>
+      </div>
+      <div class="cb" style="gap:10px">
+
+        <!-- 地雷 1：遺產稅 -->
+        <div id="t_mine1" style="border-radius:12px;padding:16px;border:1px solid rgba(239,68,68,.2);background:rgba(239,68,68,.05);position:relative;overflow:hidden">
+          <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(239,68,68,.6),transparent)"></div>
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+            <div>
+              <div style="font-size:11px;font-weight:bold;color:#f87171;letter-spacing:.5px">💣 地雷一：遺產稅試算</div>
+              <div style="font-size:10px;color:rgba(226,217,200,.7);margin-top:3px">超過免稅額，後代要繳稅才能繼承</div>
+            </div>
+            <div id="t_estateRisk" style="font-size:10px;padding:3px 8px;border-radius:20px;font-weight:bold;white-space:nowrap">—</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div style="background:rgba(255,255,255,.04);border-radius:8px;padding:10px;text-align:center">
+              <div style="font-size:9px;color:rgba(226,217,200,.6);letter-spacing:1px;margin-bottom:4px">免稅額（現行）</div>
+              <div style="font-size:16px;font-weight:bold;color:#e2d9c8;font-family:'DM Mono',Menlo,Consolas,monospace">1,333萬</div>
+            </div>
+            <div style="background:rgba(255,255,255,.04);border-radius:8px;padding:10px;text-align:center">
+              <div style="font-size:9px;color:rgba(226,217,200,.6);letter-spacing:1px;margin-bottom:4px">估計應稅遺產</div>
+              <div style="font-size:16px;font-weight:bold;color:#f87171;font-family:'DM Mono',Menlo,Consolas,monospace" id="t_taxableEstate">—</div>
+            </div>
+          </div>
+          <div style="margin-top:10px;background:rgba(239,68,68,.06);border-radius:8px;padding:10px 12px">
+            <div style="font-size:9px;color:#f87171;letter-spacing:1px;font-weight:bold;margin-bottom:4px">⚡ 估計遺產稅</div>
+            <div style="font-size:24px;font-weight:900;color:#f87171;font-family:'DM Mono',Menlo,Consolas,monospace" id="t_estateTax">—</div>
+            <div style="font-size:10px;color:rgba(248,113,113,.7);margin-top:4px" id="t_estateTaxNote">—</div>
+          </div>
+        </div>
+
+        <!-- 地雷 2：不動產共有問題 -->
+        <div id="t_mine2" style="border-radius:12px;padding:16px;border:1px solid rgba(234,179,8,.2);background:rgba(234,179,8,.04);position:relative;overflow:hidden">
+          <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(234,179,8,.6),transparent)"></div>
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+            <div>
+              <div style="font-size:11px;font-weight:bold;color:#fbbf24;letter-spacing:.5px">💣 地雷二：不動產共有糾紛</div>
+              <div style="font-size:10px;color:rgba(226,217,200,.7);margin-top:3px">共有後難賣難管，兄弟變仇人</div>
+            </div>
+            <div id="t_propertyRisk" style="font-size:10px;padding:3px 8px;border-radius:20px;font-weight:bold;white-space:nowrap">—</div>
+          </div>
+          <div style="font-size:12px;color:#e2d9c8;line-height:1.8" id="t_propertyRiskText">—</div>
+          <div style="margin-top:10px;font-size:11px;color:rgba(251,191,36,.8);line-height:1.7;padding:8px 10px;background:rgba(234,179,8,.05);border-radius:8px;border-left:3px solid rgba(234,179,8,.4)">
+            <strong>常見地雷：</strong>土地無法分割、繼承後須一致同意才能出售、稅負分攤不均、一人不同意全部卡住。
+          </div>
+        </div>
+
+        <!-- 地雷 3：房地合一稅 -->
+        <div id="t_mine3" style="border-radius:12px;padding:16px;border:1px solid rgba(59,130,246,.2);background:rgba(59,130,246,.04);position:relative;overflow:hidden">
+          <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(59,130,246,.6),transparent)"></div>
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+            <div>
+              <div style="font-size:11px;font-weight:bold;color:#60a5fa;letter-spacing:.5px">💣 地雷三：房地合一稅制陷阱</div>
+              <div style="font-size:10px;color:rgba(226,217,200,.7);margin-top:3px">繼承後若賣屋，可能被高稅率課稅</div>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+            <div style="background:rgba(255,255,255,.04);border-radius:8px;padding:10px;text-align:center">
+              <div style="font-size:9px;color:rgba(226,217,200,.6);letter-spacing:1px;margin-bottom:4px">新制（2016後取得）</div>
+              <div style="font-size:15px;font-weight:bold;color:#f87171;font-family:'DM Mono',Menlo,Consolas,monospace">45%</div>
+              <div style="font-size:9px;color:rgba(226,217,200,.5);margin-top:2px">持有≤2年稅率</div>
+            </div>
+            <div style="background:rgba(255,255,255,.04);border-radius:8px;padding:10px;text-align:center">
+              <div style="font-size:9px;color:rgba(226,217,200,.6);letter-spacing:1px;margin-bottom:4px">舊制（2016前取得）</div>
+              <div style="font-size:15px;font-weight:bold;color:#34d399;font-family:'DM Mono',Menlo,Consolas,monospace">土增稅</div>
+              <div style="font-size:9px;color:rgba(226,217,200,.5);margin-top:2px">相對有利</div>
+            </div>
+          </div>
+          <div style="font-size:11px;color:rgba(96,165,250,.8);line-height:1.7;padding:8px 10px;background:rgba(59,130,246,.05);border-radius:8px;border-left:3px solid rgba(59,130,246,.35)">
+            繼承後的持有年限<strong>重新計算</strong>，若短期內出售，繼承人須按新制高稅率繳稅。提前規劃可大幅降低稅負。
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ─ BLOCK 3：風險等級結論 ─ -->
+    <div id="t_verdictBlock" style="border-radius:16px;padding:20px;margin-bottom:14px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px" id="t_verdictLine"></div>
+      <div style="font-size:9px;letter-spacing:4px;margin-bottom:12px;font-family:'DM Mono',Menlo,Consolas,monospace" id="t_verdictLabel">RISK LEVEL</div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+        <div style="font-size:40px" id="t_verdictIcon">—</div>
+        <div>
+          <div style="font-size:18px;font-weight:900;margin-bottom:4px" id="t_verdictTitle">—</div>
+          <div style="font-size:12px;line-height:1.8" id="t_verdictDesc">—</div>
+        </div>
+      </div>
+      <div style="font-size:12px;line-height:1.9;font-style:italic;padding:12px 14px;border-radius:10px" id="t_verdictScript">—</div>
+    </div>
+
+    <!-- ─ BLOCK 4：建議下一步行動 ─ -->
+    <div class="card" style="border-color:rgba(139,92,246,.15)">
+      <div class="ch" style="background:linear-gradient(90deg,rgba(139,92,246,.07),transparent);border-bottom-color:rgba(139,92,246,.1)">
+        <span class="cn" style="border-color:rgba(139,92,246,.5);color:#a78bfa">03</span>
+        <span class="ct">建議下一步行動</span>
+      </div>
+      <div class="cb" style="gap:10px">
+
+        <div style="font-size:11px;color:rgba(167,139,250,.7);margin-bottom:4px;line-height:1.7">以下行動建議僅供參考，具體規劃請洽專業代書或律師。</div>
+
+        <div id="t_actionList">
+          <!-- 動態產生 -->
+        </div>
+
+        <!-- 免責聲明 -->
+        <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:12px;margin-top:6px">
+          <div style="font-size:9px;color:rgba(226,217,200,.4);line-height:1.7;letter-spacing:.3px">
+            ※ 本分析為概算參考，遺產稅依實際資產結構、扣除額及稅務申報情況而異。正式規劃請洽地政士、稅務師或律師。遺產稅免稅額1,333萬為現行規定，實際以申報時有效法規為準。
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- end t_riskBlock -->
+
+  <!-- 尚未輸入提示 -->
+  <div id="t_placeholder" style="text-align:center;padding:32px 20px;color:rgba(226,217,200,.4);font-size:13px;line-height:2">
+    <div style="font-size:32px;margin-bottom:12px">🏛️</div>
+    填入資產數字，<br>立刻看到傳承風險分析
+  </div>
+
+  <button class="bbk" style="width:100%;margin-bottom:14px" onclick="sw('I')">← 回輸入頁</button>
+</div>
+
+<script>
+// ══ 傳承風險計算 ══════════════════════════════════════
+var T_HEIRS = 2;
+
+function setHeirs(n) {
+  T_HEIRS = n;
+  [1,2,3,4].forEach(function(i){
+    var el = g('th'+i);
+    if (!el) return;
+    var isOn = i === n;
+    el.className = 'seg-btn t-heir-btn' + (isOn ? ' on' : '');
+    el.style.borderColor = isOn ? 'rgba(139,92,246,.45)' : 'rgba(139,92,246,.2)';
+    el.style.background = isOn ? 'rgba(139,92,246,.1)' : '';
+    el.style.color = isOn ? '#a78bfa' : '';
+  });
+  calcInheritRisk();
+}
+
+function calcInheritRisk() {
+  var re   = parseFloat(g('t_realestate').value) || 0;
+  var cash = parseFloat(g('t_cash').value) || 0;
+  var inv  = parseFloat(g('t_invest').value) || 0;
+  var ins  = parseFloat(g('t_insurance').value) || 0;
+  var total = re + cash + inv + ins;
+
+  // Total bar
+  var bar = g('t_totalBar');
+  var valEl = g('t_totalVal');
+  if (total > 0) {
+    bar.style.display = 'flex';
+    valEl.textContent = total.toLocaleString('zh-TW') + ' 萬';
+  } else {
+    bar.style.display = 'none';
+  }
+
+  var block = g('t_riskBlock');
+  var placeholder = g('t_placeholder');
+
+  if (total <= 0) {
+    block.style.display = 'none';
+    placeholder.style.display = 'block';
+    return;
+  }
+
+  block.style.display = 'block';
+  placeholder.style.display = 'none';
+
+  // ── 遺產稅試算（簡化版）──
+  // 台灣現行：免稅額1,333萬，稅率10%（5,000萬以下）、15%、20%
+  var exemption = 1333;
+  // 扣除額概算：喪葬費123萬 + 配偶扣除額493萬（如有）+ 每位直系血親卑親屬56萬
+  var directDescendants = Math.max(0, T_HEIRS - 1); // 扣掉配偶
+  var deductions = 123 + (T_HEIRS > 1 ? 493 : 0) + directDescendants * 56;
+  var taxableEstate = Math.max(0, total - exemption - deductions);
+  var estateTax = 0;
+  if (taxableEstate > 0) {
+    if (taxableEstate <= 5000) {
+      estateTax = taxableEstate * 0.10;
+    } else if (taxableEstate <= 10000) {
+      estateTax = 500 + (taxableEstate - 5000) * 0.15;
+    } else {
+      estateTax = 500 + 750 + (taxableEstate - 10000) * 0.20;
+    }
+  }
+
+  var taxableEl = g('t_taxableEstate');
+  var taxEl = g('t_estateTax');
+  var taxNoteEl = g('t_estateTaxNote');
+  var riskEl = g('t_estateRisk');
+
+  if (taxableEl) taxableEl.textContent = Math.round(taxableEstate).toLocaleString('zh-TW') + ' 萬';
+  if (taxEl) taxEl.textContent = Math.round(estateTax).toLocaleString('zh-TW') + ' 萬';
+
+  if (estateTax > 0) {
+    if (taxNoteEl) taxNoteEl.textContent = '繼承人須在被繼承人過世後6個月內申報，否則加徵滯納金';
+    if (riskEl) { riskEl.textContent = '需規劃'; riskEl.style.background = 'rgba(239,68,68,.15)'; riskEl.style.color = '#f87171'; riskEl.style.border = '1px solid rgba(239,68,68,.3)'; }
+  } else {
+    if (taxNoteEl) taxNoteEl.textContent = '目前估算低於免稅額，但資產增值後仍需定期檢視';
+    if (riskEl) { riskEl.textContent = '目前安全'; riskEl.style.background = 'rgba(52,211,153,.12)'; riskEl.style.color = '#34d399'; riskEl.style.border = '1px solid rgba(52,211,153,.25)'; }
+  }
+
+  // ── 不動產共有風險 ──
+  var propRiskEl = g('t_propertyRisk');
+  var propTextEl = g('t_propertyRiskText');
+  var propRiskPct = re / total;
+  if (propRiskEl && propTextEl) {
+    if (re > 0 && T_HEIRS >= 3) {
+      propRiskEl.textContent = '高風險';
+      propRiskEl.style.background = 'rgba(239,68,68,.15)';
+      propRiskEl.style.color = '#f87171';
+      propRiskEl.style.border = '1px solid rgba(239,68,68,.3)';
+      propTextEl.textContent = '不動產估值 ' + re.toLocaleString('zh-TW') + ' 萬，占總資產 ' + Math.round(propRiskPct*100) + '%，且繼承人' + T_HEIRS + '人以上。共有後極可能產生糾紛，建議提前規劃分配方式。';
+    } else if (re > 0 && T_HEIRS === 2) {
+      propRiskEl.textContent = '中等風險';
+      propRiskEl.style.background = 'rgba(234,179,8,.12)';
+      propRiskEl.style.color = '#fbbf24';
+      propRiskEl.style.border = '1px solid rgba(234,179,8,.3)';
+      propTextEl.textContent = '不動產估值 ' + re.toLocaleString('zh-TW') + ' 萬，2人繼承相對可控，但仍建議明確約定取得方式，避免未來爭議。';
+    } else if (re <= 0) {
+      propRiskEl.textContent = '不適用';
+      propRiskEl.style.background = 'rgba(255,255,255,.04)';
+      propRiskEl.style.color = 'rgba(226,217,200,.5)';
+      propRiskEl.style.border = '1px solid rgba(255,255,255,.08)';
+      propTextEl.textContent = '目前未填寫不動產，若未來持有土地或房屋，建議重新評估。';
+    } else {
+      propRiskEl.textContent = '低風險';
+      propRiskEl.style.background = 'rgba(52,211,153,.12)';
+      propRiskEl.style.color = '#34d399';
+      propRiskEl.style.border = '1px solid rgba(52,211,153,.25)';
+      propTextEl.textContent = '不動產估值 ' + re.toLocaleString('zh-TW') + ' 萬，繼承人少，風險相對可控。';
+    }
+  }
+
+  // ── 整體風險等級 ──
+  var score = 0;
+  if (estateTax > 100) score += 3;
+  else if (estateTax > 0) score += 1;
+  if (re > 0 && T_HEIRS >= 3) score += 3;
+  else if (re > 0 && T_HEIRS >= 2) score += 1;
+  if (total > 3000) score += 2;
+  if (total > 8000) score += 1;
+
+  var verdictBlock = g('t_verdictBlock');
+  var verdictLine = g('t_verdictLine');
+  var verdictLabel = g('t_verdictLabel');
+  var verdictIcon = g('t_verdictIcon');
+  var verdictTitle = g('t_verdictTitle');
+  var verdictDesc = g('t_verdictDesc');
+  var verdictScript = g('t_verdictScript');
+
+  if (score >= 5) {
+    verdictBlock.style.background = 'linear-gradient(135deg,rgba(239,68,68,.1),rgba(239,68,68,.04))';
+    verdictBlock.style.border = '1px solid rgba(239,68,68,.2)';
+    if (verdictLine) verdictLine.style.background = 'linear-gradient(90deg,transparent,rgba(239,68,68,.7),transparent)';
+    if (verdictLabel) { verdictLabel.textContent = 'RISK LEVEL — 高度風險'; verdictLabel.style.color = '#f87171'; }
+    if (verdictIcon) verdictIcon.textContent = '🚨';
+    if (verdictTitle) { verdictTitle.textContent = '現在就該規劃了'; verdictTitle.style.color = '#f87171'; }
+    if (verdictDesc) { verdictDesc.textContent = '資產規模大、繼承人多，未規劃的代價可能超過百萬。'; verdictDesc.style.color = 'rgba(248,113,113,.8)'; }
+    if (verdictScript) { verdictScript.textContent = '您的資產結構需要提前規劃。如果現在不做，將來孩子要花多少時間與金錢來收拾？我認識幾位專業代書，可以幫您做一個完整的傳承規劃，費用比稅務損失少得多。'; verdictScript.style.background = 'rgba(239,68,68,.06)'; verdictScript.style.borderLeft = '3px solid rgba(239,68,68,.4)'; verdictScript.style.color = 'rgba(248,113,113,.9)'; }
+  } else if (score >= 2) {
+    verdictBlock.style.background = 'linear-gradient(135deg,rgba(234,179,8,.08),rgba(234,179,8,.03))';
+    verdictBlock.style.border = '1px solid rgba(234,179,8,.18)';
+    if (verdictLine) verdictLine.style.background = 'linear-gradient(90deg,transparent,rgba(234,179,8,.7),transparent)';
+    if (verdictLabel) { verdictLabel.textContent = 'RISK LEVEL — 中度風險'; verdictLabel.style.color = '#fbbf24'; }
+    if (verdictIcon) verdictIcon.textContent = '⚠️';
+    if (verdictTitle) { verdictTitle.textContent = '值得認真了解一下'; verdictTitle.style.color = '#fbbf24'; }
+    if (verdictDesc) { verdictDesc.textContent = '有幾個潛在風險點，及早了解可以省去很多麻煩。'; verdictDesc.style.color = 'rgba(251,191,36,.8)'; }
+    if (verdictScript) { verdictScript.textContent = '您的狀況還不算緊急，但提前了解傳承規劃，會讓您和家人未來少很多困擾。這不是複雜的事，只需要一次完整的盤點。'; verdictScript.style.background = 'rgba(234,179,8,.05)'; verdictScript.style.borderLeft = '3px solid rgba(234,179,8,.4)'; verdictScript.style.color = 'rgba(251,191,36,.9)'; }
+  } else {
+    verdictBlock.style.background = 'linear-gradient(135deg,rgba(52,211,153,.08),rgba(52,211,153,.03))';
+    verdictBlock.style.border = '1px solid rgba(52,211,153,.15)';
+    if (verdictLine) verdictLine.style.background = 'linear-gradient(90deg,transparent,rgba(52,211,153,.7),transparent)';
+    if (verdictLabel) { verdictLabel.textContent = 'RISK LEVEL — 低度風險'; verdictLabel.style.color = '#34d399'; }
+    if (verdictIcon) verdictIcon.textContent = '✅';
+    if (verdictTitle) { verdictTitle.textContent = '目前風險相對可控'; verdictTitle.style.color = '#34d399'; }
+    if (verdictDesc) { verdictDesc.textContent = '資產規模與繼承結構目前風險不高，但仍建議定期檢視。'; verdictDesc.style.color = 'rgba(52,211,153,.8)'; }
+    if (verdictScript) { verdictScript.textContent = '您目前的狀況相對安全，但隨著資產增值，建議每3至5年做一次傳承規劃檢視，確保家人不需要為財產煩惱。'; verdictScript.style.background = 'rgba(52,211,153,.05)'; verdictScript.style.borderLeft = '3px solid rgba(52,211,153,.35)'; verdictScript.style.color = 'rgba(52,211,153,.9)'; }
+  }
+
+  // ── 建議行動 ──
+  var actions = [];
+
+  if (estateTax > 0) {
+    actions.push({ icon:'💰', color:'rgba(239,68,68,.15)', border:'rgba(239,68,68,.25)', textColor:'#f87171', title:'遺產稅規劃', desc:'估計遺產稅 ' + Math.round(estateTax).toLocaleString('zh-TW') + ' 萬，建議提前了解合法節稅方式（如壽險運用、提前贈與等），並諮詢稅務師。' });
+  }
+  if (re > 0) {
+    actions.push({ icon:'🏠', color:'rgba(234,179,8,.1)', border:'rgba(234,179,8,.2)', textColor:'#fbbf24', title:'不動產分配規劃', desc:'不動產建議提前以遺囑或信託方式明確分配，避免共有糾紛。土地若有農地或舊制房屋，更應優先規劃。' });
+  }
+  if (total > 1000) {
+    actions.push({ icon:'📋', color:'rgba(139,92,246,.1)', border:'rgba(139,92,246,.2)', textColor:'#a78bfa', title:'立遺囑', desc:'遺囑是最直接保護家人的方式。建議找地政士或律師協助訂立，確保意願被完整執行。' });
+  }
+  actions.push({ icon:'🔍', color:'rgba(56,189,248,.08)', border:'rgba(56,189,248,.15)', textColor:'#38bdf8', title:'每年定期盤點', desc:'資產結構改變（購房、贈與、保險）時，應重新評估傳承計畫，確保規劃與現況一致。' });
+
+  var actionList = g('t_actionList');
+  if (actionList) {
+    actionList.innerHTML = actions.map(function(a, idx) {
+      return '<div style="border-radius:10px;padding:14px;border:1px solid '+a.border+';background:'+a.color+';display:flex;align-items:flex-start;gap:12px">' +
+        '<div style="font-size:20px;flex-shrink:0;margin-top:1px">'+a.icon+'</div>' +
+        '<div><div style="font-size:12px;font-weight:bold;color:'+a.textColor+';margin-bottom:4px">'+a.title+'</div>' +
+        '<div style="font-size:11px;color:rgba(226,217,200,.8);line-height:1.7">'+a.desc+'</div></div></div>';
+    }).join('');
+  }
+}
+// ══════════════════════════════════════════════════════
+</script>
+
 <script>
 var SK=[false,false,false,false,false,false],SEG=-1,MORTGAGE_MODE='ready';
 var FN_BITS=[false,false,false,false,false,false]; // 六大功能多選狀態
@@ -2638,14 +3017,16 @@ function sw(m){
       },20);
     }
   }
-  var isI=m==='I', isR=m==='R', isF=m==='F';
+  var isI=m==='I', isR=m==='R', isF=m==='F', isT=m==='T';
   g('vI').style.display=isI?'block':'none';
   g('vR').style.display=isR?'block':'none';
   if(g('vF')) g('vF').style.display=isF?'block':'none';
+  if(g('vT')) g('vT').style.display=isT?'block':'none';
   g('gbar').style.display=isI?'flex':'none';
   g('tI').className='tab'+(isI?' on':'');
   g('tR').className='tab'+(isR?' on':'');
   if(g('tF')) g('tF').className='tab'+(isF?' on':'');
+  if(g('tT')) { g('tT').className='tab'+(isT?' on':''); if(isT){ g('tT').style.borderColor='rgba(139,92,246,.8)'; g('tT').style.color='#a78bfa'; } else { g('tT').style.borderColor='rgba(139,92,246,.35)'; g('tT').style.color='rgba(167,139,250,.7)'; } }
   if(isF) initFund();
   window.scrollTo(0,0);
 }
