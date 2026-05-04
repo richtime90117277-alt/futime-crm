@@ -736,6 +736,14 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('objInput').addEventListener('keydown', e => {
     if (e.key === 'Enter' && e.metaKey) handleSOS();
   });
+  // 從 CRM 跳過來自動帶入客戶
+  try {
+    var raw = sessionStorage.getItem('crm_launch_customer');
+    if (!raw) return;
+    sessionStorage.removeItem('crm_launch_customer');
+    var c = JSON.parse(raw);
+    pickSosCustomer(JSON.stringify(c));
+  } catch(e) {}
 });
 </script>
 <!-- CRM 選客戶 Modal -->
