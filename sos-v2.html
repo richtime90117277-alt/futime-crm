@@ -194,6 +194,12 @@
 
   <!-- SEARCH MODE -->
   <div id="searchMode">
+    <!-- CRM 快速帶入 -->
+    <button onclick="openCrmPicker()" style="width:100%;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.3);border-radius:10px;padding:10px 14px;color:var(--gold);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;text-align:left;margin-bottom:14px">
+      📋 從 CRM 選客戶，自動帶入異議描述
+    </button>
+    <div id="crmInfoBar" style="display:none;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--gold);margin-bottom:12px"></div>
+
     <div class="section-label">常見異議快選</div>
     <div class="quick-grid">
       <button class="quick-btn" onclick="quickSelect(this, '我再想想看，晚點再決定')">我再想想</button>
@@ -731,6 +737,98 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'Enter' && e.metaKey) handleSOS();
   });
 });
+</script>
+<!-- CRM 選客戶 Modal -->
+<div id="crmPickerBg" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:700;align-items:center;justify-content:center;padding:16px" onclick="if(event.target===this)closeCrmPicker()">
+  <div style="background:#111;border:1px solid rgba(201,168,76,.25);border-radius:14px;width:100%;max-width:500px;max-height:86vh;display:flex;flex-direction:column;overflow:hidden">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0">
+      <span style="font-size:14px;font-weight:700;color:var(--text)">📋 從 CRM 選客戶</span>
+      <button onclick="closeCrmPicker()" style="background:none;border:none;color:var(--text-dim);font-size:18px;cursor:pointer">✕</button>
+    </div>
+    <div style="padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.04);flex-shrink:0">
+      <input id="crmSearchInput" type="text" placeholder="搜尋姓名或業務..." oninput="filterCrmList()" style="width:100%;background:#0a0a0a;border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text);font-size:13px;outline:none;font-family:inherit">
+    </div>
+    <div id="crmPickerList" style="overflow-y:auto;flex:1;padding:8px"></div>
+  </div>
+</div>
+
+<script>
+const CRM_API_URL = 'https://script.google.com/macros/s/AKfycbxPExuVTXkz8ucGXscubiypyrWL_qqu53mlp8U_ggyz4kHUT1-bf29IVAFLEmlwnP85/exec';
+let _crmCustomers = [];
+
+function crmCall(payload, cb) {
+  var tp = new Promise((_,rej) => setTimeout(()=>rej(new Error('連線逾時')),14000));
+  var req = fetch(CRM_API_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload)}).then(r=>r.json());
+  Promise.race([req,tp]).then(cb).catch(e=>cb({success:false,error:e.message}));
+}
+
+function openCrmPicker() {
+  document.getElementById('crmPickerBg').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  document.getElementById('crmSearchInput').value = '';
+  const list = document.getElementById('crmPickerList');
+  list.innerHTML = '<div style="text-align:center;padding:32px;color:var(--text-dim);font-size:13px">⏳ 載入中...</div>';
+  crmCall({action:'getAll',role:'manager',user:'ai_tool'}, function(res) {
+    if (res.success && res.customers) {
+      _crmCustomers = res.customers.filter(c => c.customerActive==='進行中' || !c.customerActive);
+      renderCrmList(_crmCustomers);
+    } else {
+      list.innerHTML = '<div style="text-align:center;padding:32px;color:#c0392b;font-size:13px">❌ ' + (res.error||'無法連線 CRM') + '</div>';
+    }
+  });
+}
+
+function closeCrmPicker() {
+  document.getElementById('crmPickerBg').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function filterCrmList() {
+  const q = document.getElementById('crmSearchInput').value.trim().toLowerCase();
+  renderCrmList(q ? _crmCustomers.filter(c=>(c.customerName||'').toLowerCase().includes(q)||(c.salesPerson||'').toLowerCase().includes(q)) : _crmCustomers);
+}
+
+function renderCrmList(list) {
+  const el = document.getElementById('crmPickerList');
+  if (!list.length) { el.innerHTML = '<div style="text-align:center;padding:24px;color:var(--text-dim);font-size:13px">找不到客戶</div>'; return; }
+  el.innerHTML = list.slice(0,80).map(c => {
+    return `<div onclick='pickSosCustomer(${JSON.stringify(JSON.stringify(c))})' style="padding:10px 12px;border-radius:8px;margin-bottom:4px;cursor:pointer;border:1px solid rgba(255,255,255,.05);background:#0d0d0d" onmouseover="this.style.background='#181818'" onmouseout="this.style.background='#0d0d0d'">
+      <div style="font-size:13px;font-weight:700;color:var(--text)">${c.customerName||'（無名稱）'}</div>
+      <div style="font-size:11px;color:var(--text-dim);margin-top:2px">${c.salesPerson||''}${c.blueprintCompletion?' ｜ '+c.blueprintCompletion:''}</div>
+    </div>`;
+  }).join('');
+}
+
+function pickSosCustomer(jsonStr) {
+  const c = JSON.parse(jsonStr);
+  closeCrmPicker();
+
+  // 將客戶的異議/卡關填入搜尋框
+  const objText = c.objections || c.whyNotBought || c.painPointsNote || '';
+  if (objText) {
+    document.getElementById('objInput').value = objText;
+  }
+
+  // 自動選背景 ctx pills
+  document.querySelectorAll('.ctx-pill').forEach(p => p.classList.remove('active'));
+  selectedContexts = [];
+  const seg = (c.clientSegment || c.clientType || '').toLowerCase();
+  const pain = (c.painPointsNote || '').toLowerCase();
+  const ctxMap = { '有股票':['股票'], '投資型客戶':['投資'], '首購族':['首購'], '父母反對':['媽媽','父母','反對'], '50歲以上':['50','退休'] };
+  document.querySelectorAll('.ctx-pill').forEach(p => {
+    const label = p.textContent.trim();
+    const keys = ctxMap[label] || [label];
+    if (keys.some(k => seg.includes(k) || pain.includes(k))) {
+      p.classList.add('active');
+      selectedContexts.push(label);
+    }
+  });
+
+  // 顯示 info bar
+  const bar = document.getElementById('crmInfoBar');
+  bar.style.display = 'block';
+  bar.textContent = '👤 ' + c.customerName + '｜' + (c.salesPerson||'') + (c.blueprintCompletion ? '｜' + c.blueprintCompletion : '') + (objText ? '' : '（無異議記錄，請手動輸入）');
+}
 </script>
 </body>
 </html>
