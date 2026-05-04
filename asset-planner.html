@@ -2094,6 +2094,8 @@ body{
     <button class="btn-save" onclick="printPDF()" style="flex:1;background:linear-gradient(135deg,#1e5799,#2980b9)">🖨️ 匯出 PDF</button>
     <!-- ★ 同步至 CRM 按鈕 -->
     <button class="btn-save" onclick="showSyncModal()" style="flex:1;background:linear-gradient(135deg,#1a6b3a,#27ae60)">🔗 同步至 CRM</button>
+    <!-- ★ 儲存報告至雲端 -->
+    <button class="btn-save" onclick="showSaveReportModal()" style="flex:1;background:linear-gradient(135deg,#7c3aed,#5b21b6)">💾 儲存報告</button>
     <button class="bbk" style="width:100%" onclick="sw('I')">← 修改</button>
   </div>
 
@@ -2125,7 +2127,31 @@ body{
 </div>
 </div>
 
-<!-- ══ 等待代價 PANEL ══════════════════════════════ -->
+<!-- ══ 儲存報告 Modal ══════════════════════════════ -->
+<div id="saveReportModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:999;align-items:center;justify-content:center">
+  <div style="background:#161c28;border:1px solid rgba(139,92,246,.35);border-radius:16px;padding:24px;max-width:400px;width:92%;margin:0 auto">
+    <div style="font-size:15px;font-weight:bold;color:#a78bfa;margin-bottom:8px">💾 儲存規劃報告</div>
+    <div style="font-size:12px;color:rgba(226,217,200,.5);margin-bottom:16px">存入雲端，CRM 可查看歷史記錄</div>
+    <!-- 客戶 ID（從 URL 帶入或手填，選填）-->
+    <div style="margin-bottom:10px">
+      <label style="font-size:11px;color:rgba(139,92,246,.7);display:block;margin-bottom:4px">關聯客戶 ID（選填，來自 CRM）</label>
+      <input id="srCustomerId" type="text" placeholder="例：42（留空則以姓名辨識）"
+        style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(139,92,246,.25);border-radius:8px;padding:8px 10px;color:#e2d9c8;font-size:13px">
+    </div>
+    <!-- 本次摘要 -->
+    <div style="margin-bottom:14px">
+      <label style="font-size:11px;color:rgba(139,92,246,.7);display:block;margin-bottom:4px">本次諮詢摘要（選填）</label>
+      <textarea id="srSummary" rows="3" placeholder="例：首購自住，目標 1200 萬，月結餘 18,000，建議預售 30 年還款方案"
+        style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(139,92,246,.25);border-radius:8px;padding:8px 10px;color:#e2d9c8;font-size:13px;resize:vertical;font-family:sans-serif"></textarea>
+    </div>
+    <div id="srMsg" style="font-size:12px;margin-bottom:10px;min-height:18px"></div>
+    <div style="display:flex;gap:8px">
+      <button onclick="closeSaveReportModal()" style="flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.15);border-radius:8px;padding:10px;color:rgba(139,92,246,.7);font-size:13px;cursor:pointer">取消</button>
+      <button onclick="doSaveReport()" id="srConfirmBtn" style="flex:2;background:linear-gradient(135deg,#7c3aed,#5b21b6);border:none;border-radius:8px;padding:10px;color:#fff;font-size:13px;font-weight:bold;cursor:pointer">💾 確認儲存</button>
+    </div>
+  </div>
+</div>
+
 <div id="vF" style="display:none;max-width:580px;margin:0 auto;padding:16px 14px 80px">
 
   <!-- 頁首說明 -->
@@ -5477,9 +5503,154 @@ function lsClear(){
 // v35：頁面載入，直接等待點擊進入
 window.addEventListener('DOMContentLoaded',function(){
   // 無需預載顧問，點擊後 lsLoad 會自動恢復所有資料
+
+  // ── 從 CRM 帶入 URL 參數自動填欄位 ──────────────────────────
+  (function applyUrlParams() {
+    var params = new URLSearchParams(window.location.search);
+    var map = {
+      crmId:    '_crmCustomerId', // 隱藏用，存 customerId
+      name:     'iName',
+      advisor:  'iAdv',
+      budget:   'iDwn',          // 自有資金→自備款
+      purpose:  null,            // 購屋目的→觸發 fn 按鈕
+      area:     'iProp'          // 偏好區域→目標物件（近似）
+    };
+
+    // 姓名、顧問、自備款、偏好區域
+    ['name','advisor','budget','area'].forEach(function(key) {
+      var val = params.get(key);
+      if (val && map[key]) {
+        var el = g(map[key]);
+        if (el) el.value = decodeURIComponent(val);
+      }
+    });
+
+    // 儲存 CRM ID 供存檔用
+    var crmId = params.get('crmId');
+    if (crmId) window._crmCustomerId = crmId;
+
+    // 購屋目的 → 對應六大功能按鈕
+    var purpose = params.get('purpose');
+    if (purpose) {
+      var fnMap = {
+        '自住': 0, '投資': 2, '自住兼投資': [0,2],
+        '以租養房': 2, '退休安置': 3, '傳承規劃': 5
+      };
+      var decoded = decodeURIComponent(purpose);
+      var matched = null;
+      Object.keys(fnMap).forEach(function(k) {
+        if (decoded.indexOf(k) !== -1) matched = fnMap[k];
+      });
+      if (matched !== null) {
+        var ids = Array.isArray(matched) ? matched : [matched];
+        ids.forEach(function(idx) {
+          var btn = g('fn' + idx);
+          if (btn && !btn.classList.contains('active')) btn.click();
+        });
+      }
+    }
+
+    // 若有帶參數，提示業務
+    if (params.get('name')) {
+      var hint = document.createElement('div');
+      hint.style.cssText = 'position:fixed;bottom:72px;left:50%;transform:translateX(-50%);background:#7c3aed;color:#fff;border-radius:8px;padding:8px 16px;font-size:12px;z-index:9999;box-shadow:0 4px 12px rgba(0,0,0,.4)';
+      hint.textContent = '✅ 已從 CRM 帶入客戶資料';
+      document.body.appendChild(hint);
+      setTimeout(function(){ hint.remove(); }, 3000);
+    }
+  })();
 });
 
 
+
+// ══ 儲存報告至雲端 ═══════════════════════════════
+var GAS_URL_REPORT = 'https://script.google.com/macros/s/AKfycbxPExuVTXkz8ucGXscubiypyrWL_qqu53mlp8U_ggyz4kHUT1-bf29IVAFLEmlwnP85/exec';
+
+function showSaveReportModal() {
+  var nm = (g('iName') || {}).value || '';
+  if (!nm) { alert('請先填寫客戶姓名再儲存報告'); return; }
+  // 若 URL 帶了 crmId，自動填入
+  var el = g('srCustomerId');
+  if (el && window._crmCustomerId) el.value = window._crmCustomerId;
+  g('srMsg').textContent = '';
+  g('saveReportModal').style.display = 'flex';
+}
+
+function closeSaveReportModal() {
+  g('saveReportModal').style.display = 'none';
+}
+
+/** 組裝報告資料並送 GAS 存檔 */
+function doSaveReport() {
+  var C   = window._C || {};
+  var nm  = (g('iName') || {}).value || '未命名客戶';
+  var adv = (g('iAdv')  || {}).value || '';
+  var cid = (g('srCustomerId') || {}).value || (window._crmCustomerId || '');
+  var summary = (g('srSummary') || {}).value || '';
+  var btn = g('srConfirmBtn');
+
+  if (!C.inc) { g('srMsg').style.color='#f87171'; g('srMsg').textContent='⚠️ 請先產生報告再儲存'; return; }
+
+  // 關鍵數字快照（供 CRM 顯示用）
+  var rem = Math.round(C.inc + (C.ts||0) - C.exp - C.effMn);
+  var reportData = {
+    income:      Math.round(C.inc || 0),
+    expense:     Math.round(C.exp || 0),
+    downPayment: Math.round((C.dw || 0) / 10000),
+    totalPrice:  Math.round((C.pr || 0) / 10000),
+    monthlyPay:  Math.round(C.effMn || 0),
+    surplus:     rem,
+    loanRatio:   Math.round(C.ratio || 0),
+    purpose:     getActiveFnLabels().join('、'),
+    property:    (g('iProp') || {}).value || '',
+    roi:         window._roi ? { profit: window._roi.profit, ann: window._roi.ann } : {}
+  };
+
+  btn.disabled = true;
+  btn.textContent = '⏳ 儲存中...';
+
+  var today = new Date();
+  var dateStr = today.getFullYear() + '/' +
+    String(today.getMonth()+1).padStart(2,'0') + '/' +
+    String(today.getDate()).padStart(2,'0') + ' ' +
+    String(today.getHours()).padStart(2,'0') + ':' +
+    String(today.getMinutes()).padStart(2,'0');
+
+  fetch(GAS_URL_REPORT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({
+      action: 'saveAssetReport',
+      report: {
+        customerId:   cid,
+        customerName: nm,
+        advisorName:  adv,
+        date:         dateStr,
+        summary:      summary || (nm + ' 的資產規劃報告'),
+        reportData:   reportData
+      }
+    })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(res) {
+    btn.disabled = false;
+    btn.textContent = '💾 確認儲存';
+    if (res && res.success) {
+      g('srMsg').style.color = '#34d399';
+      g('srMsg').textContent = '✅ 報告已儲存！報告編號：' + res.reportId;
+      setTimeout(closeSaveReportModal, 2500);
+    } else {
+      g('srMsg').style.color = '#f87171';
+      g('srMsg').textContent = '❌ 儲存失敗：' + (res && res.error ? res.error : '請稍後再試');
+    }
+  })
+  .catch(function(e) {
+    btn.disabled = false;
+    btn.textContent = '💾 確認儲存';
+    g('srMsg').style.color = '#f87171';
+    g('srMsg').textContent = '❌ 網路錯誤，請重試';
+  });
+}
 
 // ══ Asset Planner → CRM 同步功能 ══════════════════
 // 顯示同步確認 modal，並預覽要同步的資料
