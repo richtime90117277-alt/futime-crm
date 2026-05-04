@@ -5494,13 +5494,13 @@ function showDetail(id) {
   }).join('');
   actionsDiv.appendChild(toolBar);
 
-  // 📋 生成接談劇本按鈕（所有人都能用）
-  var scriptBtn = document.createElement('button');
-  scriptBtn.className = 'btn btn-primary';
-  scriptBtn.style.cssText = 'flex:2;margin-top:0;background:linear-gradient(135deg,#07192d,#1a3c5e);box-shadow:0 4px 16px rgba(7,25,45,.3)';
-  scriptBtn.innerHTML = '📋 生成接談劇本';
-  scriptBtn.addEventListener('click', (function(id){ return function(){ openFullScript(id); }; })(sid));
-  actionsDiv.appendChild(scriptBtn);
+  // 📊 開啟資產規劃報告（帶客戶資料參數）
+  var assetBtn = document.createElement('button');
+  assetBtn.className = 'btn btn-primary';
+  assetBtn.style.cssText = 'flex:2;margin-top:0;background:linear-gradient(135deg,#7c3aed,#5b21b6);box-shadow:0 4px 16px rgba(124,58,237,.3)';
+  assetBtn.innerHTML = '📊 開啟資產規劃報告';
+  assetBtn.addEventListener('click', (function(customer){ return function(){ openAssetPlanner(customer); }; })(c));
+  actionsDiv.appendChild(assetBtn);
 
   if (canEdit) {
     var editBtn = document.createElement('button');
@@ -5518,6 +5518,18 @@ function showDetail(id) {
     delBtn.addEventListener('click', function(){ confirmDelete(sid); });
     actionsDiv.appendChild(delBtn);
   }
+
+  // ── 歷史資產報告區塊（異步載入）──
+  var reportsSection = document.createElement('div');
+  reportsSection.id = 'assetReportsSection';
+  reportsSection.style.cssText = 'margin-top:8px;padding:12px 0 0';
+  reportsSection.innerHTML = '<div style="font-size:11px;color:var(--text-muted);letter-spacing:.05em;margin-bottom:6px">📁 歷史資產規劃報告</div>'
+    + '<div id="assetReportsList" style="font-size:12px;color:var(--text-soft)">載入中…</div>';
+  actionsDiv.appendChild(reportsSection);
+
+  // 異步拉取歷史報告
+  loadAssetReports(sid, c.customerName);
+
   document.getElementById('detailModal').classList.add('active');
 }
 
@@ -6133,145 +6145,72 @@ function showManualCopy(txt) {
 var _rescueCustomerId = null;
 
 // ══════════════════════════════════════════════
-// 📋 接談劇本生成系統
+// 📊 資產規劃報告連動
 // ══════════════════════════════════════════════
-var _fullScriptCustomerId = null;
 
-function openFullScript(customerId) {
-  _fullScriptCustomerId = customerId;
-  var c = customers.find(function(x){ return x.id && x.id.toString() === customerId.toString(); });
+// 資產規劃報告的 GitHub Pages URL（需與實際部署路徑一致）
+var ASSET_PLANNER_URL = 'https://richtime90117277-alt.github.io/futime-crm/asset-planner-v38.html';
 
-  // 設定客戶標籤
-  var tag = document.getElementById('fullScriptCustomerTag');
-  if (c) {
-    tag.innerHTML = '👤 ' + (c.customerName||'未命名') + '　｜　' + (c.clientSegment||'未分類') + '　｜　' + (c.salesPerson||'');
-  } else {
-    tag.innerHTML = '👤 未選擇客戶';
-  }
+/**
+ * 帶客戶參數開啟資產規劃報告
+ * 傳遞：crmId, name, advisor, budget, purpose, area
+ */
+function openAssetPlanner(c) {
+  var params = new URLSearchParams();
+  params.set('crmId',   c.id || '');
+  params.set('name',    c.customerName || '');
+  params.set('advisor', c.salesPerson  || '');
+  // 自有資金（只取數字部分，萬為單位）
+  var budgetVal = (c.budget || '').toString().replace(/[^0-9.]/g, '');
+  if (budgetVal) params.set('budget', budgetVal);
+  // 購屋目的（去掉 emoji）
+  var purpose = (c.purchasePurpose || '').replace(/[\u{1F300}-\u{1FFFF}]/gu, '').trim();
+  if (purpose) params.set('purpose', purpose);
+  // 偏好區域
+  if (c.preferredArea) params.set('area', c.preferredArea);
 
-  // 重置狀態
-  document.getElementById('fullScriptLoading').style.display = 'none';
-  document.getElementById('fullScriptGenArea').style.display = 'block';
-  document.getElementById('fullScriptResult').style.display = 'none';
-  document.getElementById('fullScriptContent').textContent = '';
-  document.getElementById('fullScriptGenBtn').disabled = false;
-  document.getElementById('fullScriptGenBtn').textContent = '📋 開始生成接談劇本';
-
-  document.getElementById('fullScriptModal').classList.add('active');
+  window.open(ASSET_PLANNER_URL + '?' + params.toString(), '_blank');
 }
 
-function closeFullScript() {
-  document.getElementById('fullScriptModal').classList.remove('active');
-}
+/**
+ * 從 GAS 撈取該客戶的歷史報告，顯示在詳情頁
+ */
+function loadAssetReports(customerId, customerName) {
+  var listEl = document.getElementById('assetReportsList');
+  if (!listEl) return;
 
-function runFullScript() {
-  var btn = document.getElementById('fullScriptGenBtn');
-  btn.disabled = true;
-  btn.textContent = '⏳ 生成中...';
-
-  document.getElementById('fullScriptGenArea').style.display = 'none';
-  document.getElementById('fullScriptLoading').style.display = 'block';
-  document.getElementById('fullScriptResult').style.display = 'none';
-
-  var customerObj = null;
-  if (_fullScriptCustomerId) {
-    customerObj = customers.find(function(x){ return x.id && x.id.toString() === _fullScriptCustomerId.toString(); }) || null;
-  }
-
-  callAPI({ action: 'generateFullScript', customer: customerObj }, function(res) {
-    document.getElementById('fullScriptLoading').style.display = 'none';
-    document.getElementById('fullScriptGenArea').style.display = 'none';
-
-    if (!res.success) {
-      showToast('❌ ' + (res.error || '生成失敗，請重試'));
-      document.getElementById('fullScriptGenArea').style.display = 'block';
-      btn.disabled = false;
-      btn.textContent = '📋 開始生成接談劇本';
+  callAPI({ action: 'getAssetReports', customerId: customerId.toString() }, function(res) {
+    if (!listEl) return; // modal 可能已關閉
+    if (!res || !res.success) {
+      listEl.textContent = '無法載入報告';
       return;
     }
-
-    // 取出文字內容（非 JSON，直接純文字輸出）
-    var text = '';
-    if (res.text) {
-      text = res.text;
-    } else if (res.content && Array.isArray(res.content)) {
-      text = res.content.map(function(b){ return b.text || ''; }).join('');
+    var reports = res.reports || [];
+    if (reports.length === 0) {
+      listEl.innerHTML = '<span style="color:var(--text-muted);font-size:12px">尚無歷史報告</span>';
+      return;
     }
-
-    document.getElementById('fullScriptContent').textContent = text;
-    document.getElementById('fullScriptResult').style.display = 'block';
-    document.getElementById('fullScriptContent').scrollTop = 0;
+    // 顯示最近 5 筆
+    var html = reports.slice(0, 5).map(function(r) {
+      var surplusColor = r.surplus >= 0 ? '#1e6b42' : '#b02a20';
+      var surplusText  = (r.surplus >= 0 ? '+' : '') + Math.round(r.surplus).toLocaleString();
+      return '<div style="background:var(--cream2);border-radius:8px;padding:8px 10px;margin-bottom:6px">'
+        + '<div style="display:flex;justify-content:space-between;align-items:center">'
+        + '<span style="font-size:12px;font-weight:700;color:var(--navy)">' + (r.date || '').substring(0, 10) + '</span>'
+        + '<span style="font-size:11px;color:var(--text-muted)">' + (r.advisorName || '') + '</span>'
+        + '</div>'
+        + (r.summary ? '<div style="font-size:11px;color:var(--text-soft);margin-top:3px">' + r.summary + '</div>' : '')
+        + '<div style="display:flex;gap:8px;margin-top:4px;font-size:11px">'
+        + (r.totalPrice  ? '<span>總價 <b>' + r.totalPrice  + '萬</b></span>' : '')
+        + (r.downPayment ? '<span>頭期 <b>' + r.downPayment + '萬</b></span>' : '')
+        + (r.surplus     ? '<span>月結餘 <b style="color:' + surplusColor + '">' + surplusText + '</b></span>' : '')
+        + '</div></div>';
+    }).join('');
+    listEl.innerHTML = html;
   });
 }
 
-function regenFullScript() {
-  document.getElementById('fullScriptResult').style.display = 'none';
-  document.getElementById('fullScriptGenArea').style.display = 'block';
-  document.getElementById('fullScriptGenBtn').disabled = false;
-  document.getElementById('fullScriptGenBtn').textContent = '📋 開始生成接談劇本';
-}
 
-function saveScriptToNotion() {
-  var text = document.getElementById('fullScriptContent').textContent;
-  if (!text) { showToast('沒有內容可存'); return; }
-
-  var btn = document.getElementById('notionSaveBtn');
-  var status = document.getElementById('notionSaveStatus');
-  btn.disabled = true;
-  btn.textContent = '⏳ 儲存中...';
-  status.textContent = '';
-
-  // 取得客戶資料
-  var customer = null;
-  if (_fullScriptCustomerId) {
-    customer = customers.find(function(x){ return x.id && x.id.toString() === _fullScriptCustomerId.toString(); }) || null;
-  }
-
-  var today = new Date();
-  var dateStr = today.getFullYear() + ('0'+(today.getMonth()+1)).slice(-2) + ('0'+today.getDate()).slice(-2);
-  var customerName = customer ? (customer.customerName || '未命名') : '未命名';
-  var segment = customer ? (customer.clientSegment || '') : '';
-  var salesPerson = customer ? (customer.salesPerson || '') : '';
-  var pageTitle = dateStr + '｜' + customerName + (segment ? '｜'+segment : '') + '｜完整接談劇本';
-
-  callAPI({
-    action: 'saveToNotion',
-    title: pageTitle,
-    content: text,
-    salesPerson: salesPerson,
-    customerName: customerName
-  }, function(res) {
-    btn.disabled = false;
-    btn.textContent = '📤 存到 Notion';
-    if (res.success) {
-      status.innerHTML = '✅ 已存到 Notion！<a href="' + (res.pageUrl||'#') + '" target="_blank" style="color:var(--navy);font-weight:700;margin-left:.3rem">開啟頁面 →</a>';
-      showToast('✅ 報告已存到 Notion');
-    } else {
-      var errMsg = res.error || '儲存失敗';
-      if (errMsg.indexOf('NOTION_TOKEN') >= 0) {
-        status.innerHTML = '❌ 請先在 Apps Script 設定 NOTION_TOKEN（設定方式詳見說明）';
-      } else {
-        status.textContent = '❌ ' + errMsg;
-      }
-    }
-  });
-}
-
-function copyFullScript() {
-  var text = document.getElementById('fullScriptContent').textContent;
-  if (!text) { showToast('沒有內容可複製'); return; }
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(text).then(function(){ showToast('✅ 已複製到剪貼簿'); });
-  } else {
-    var ta = document.createElement('textarea');
-    ta.value = text;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    showToast('✅ 已複製到剪貼簿');
-  }
-}
 
 function openRescue(customerId) {
   _rescueCustomerId = customerId || null;
@@ -6842,49 +6781,6 @@ function showToast(msg) {
 </div>
 
 <!-- 📋 接談劇本生成 Modal -->
-<div class="modal-overlay" id="fullScriptModal" style="z-index:3000">
-  <div style="background:#fff;border-radius:20px;max-width:560px;width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.4);animation:loginSlide .4s cubic-bezier(.22,.68,0,1.2)">
-    <!-- Header -->
-    <div style="background:linear-gradient(135deg,#07192d,#1a3c5e);padding:1.25rem 1.5rem;border-radius:20px 20px 0 0;display:flex;justify-content:space-between;align-items:center">
-      <div>
-        <div style="color:var(--gold);font-size:11px;font-weight:700;letter-spacing:.12em;margin-bottom:.25rem">📋 智偉哥分身AI</div>
-        <div style="color:#fff;font-size:16px;font-weight:800">接談劇本生成</div>
-      </div>
-      <button onclick="closeFullScript()" style="background:rgba(255,255,255,.1);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer">✕</button>
-    </div>
-
-    <!-- Customer Tag -->
-    <div id="fullScriptCustomerTag" style="padding:.75rem 1.5rem;background:var(--cream2);font-size:13px;color:var(--navy);font-weight:700;border-bottom:1px solid #e8e0d0"></div>
-
-    <!-- Loading State -->
-    <div id="fullScriptLoading" style="display:none;padding:3rem 1.5rem;text-align:center">
-      <div style="font-size:32px;margin-bottom:1rem">⏳</div>
-      <div style="font-size:14px;font-weight:700;color:var(--navy);margin-bottom:.5rem">智偉哥分析中...</div>
-      <div style="font-size:12px;color:var(--text-soft)">正在生成完整接談劇本，約需 20-30 秒</div>
-    </div>
-
-    <!-- Generate Button -->
-    <div id="fullScriptGenArea" style="padding:1.5rem">
-      <div style="background:linear-gradient(135deg,#fffbf0,#fff8e7);border:1.5px solid var(--gold-light);border-radius:12px;padding:1rem;margin-bottom:1.25rem;font-size:13px;color:var(--text-soft);line-height:1.8">
-        🧠 <b>智偉哥分身AI</b> 會根據這位客戶的完整資料，生成包含話術庫對應、核心策略、完整話術、財務破洞在內的 9 區塊完整接談劇本。
-      </div>
-      <button id="fullScriptGenBtn" onclick="runFullScript()" style="width:100%;padding:1rem;background:linear-gradient(135deg,#07192d,#1a3c5e);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;letter-spacing:.05em">
-        📋 開始生成接談劇本
-      </button>
-    </div>
-
-    <!-- Result Area -->
-    <div id="fullScriptResult" style="display:none;padding:0 1.5rem 1.5rem">
-      <div style="display:flex;gap:.5rem;margin-bottom:.6rem;flex-wrap:wrap">
-        <button onclick="saveScriptToNotion()" id="notionSaveBtn" style="flex:2;min-width:140px;padding:.65rem;background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">📤 存到 Notion</button>
-        <button onclick="copyFullScript()" style="flex:1;padding:.65rem;background:var(--cream2);color:var(--navy);border:2px solid #dde3ea;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">📋 複製</button>
-        <button onclick="regenFullScript()" style="flex:1;padding:.65rem;background:var(--cream2);color:var(--navy);border:2px solid #dde3ea;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">🔄 重產</button>
-      </div>
-      <div id="notionSaveStatus" style="font-size:12px;color:var(--text-soft);margin-bottom:.75rem;min-height:1.2em"></div>
-      <div id="fullScriptContent" style="background:#f8f9fa;border-radius:12px;padding:1.25rem;font-size:13px;line-height:1.9;color:#1a1a2e;white-space:pre-wrap;word-break:break-word;max-height:55vh;overflow-y:auto;border:1.5px solid #e0d8c8"></div>
-    </div>
-  </div>
-</div>
 
 <!-- 登入後預警彈窗 -->
 <div class="rescue-alert-overlay" id="rescueAlertOverlay">
