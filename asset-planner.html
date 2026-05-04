@@ -1819,51 +1819,22 @@ body{
       </div>
     </div>
 
-        <!-- ⑤ 等待代價 -->
-    <div id="waitCostSection" style="background:linear-gradient(155deg,#1a0802,#2c0c06);border:none;border-radius:18px;padding:20px;margin-bottom:14px;box-shadow:0 8px 32px rgba(0,0,0,.2);position:relative;overflow:hidden">
-      <div style="font-size:8px;letter-spacing:5px;color:#f87171;margin-bottom:6px;font-weight:bold;font-family:'DM Mono',monospace">THE COST OF WAITING — 等待的代價</div>
-      <div style="font-size:12px;color:rgba(255,200,180,.7);line-height:1.8;margin-bottom:14px" id="waitSubtitle">—</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
-        <div style="text-align:center;padding:16px;background:rgba(255,255,255,.06);border:1px solid rgba(176,48,16,.3);border-radius:10px">
-          <div style="font-size:9px;letter-spacing:1px;color:rgba(255,160,130,.7);margin-bottom:6px;font-weight:bold">每月等待損失</div>
-          <div style="font-size:30px;font-weight:900;color:#f87171;font-family:'DM Mono',Menlo,Consolas,monospace" id="waitMonthly">—</div>
-          <div style="font-size:10px;color:rgba(255,160,130,.5);margin-top:4px">物件市值月增幅</div>
-        </div>
-        <div style="text-align:center;padding:16px;background:rgba(255,255,255,.06);border:1px solid rgba(176,48,16,.3);border-radius:10px">
-          <div style="font-size:9px;letter-spacing:1px;color:rgba(255,160,130,.7);margin-bottom:6px;font-weight:bold">每天睜眼損失</div>
-          <div style="font-size:30px;font-weight:900;color:#f87171;font-family:'DM Mono',Menlo,Consolas,monospace" id="waitDaily">—</div>
-          <div style="font-size:10px;color:rgba(255,160,130,.5);margin-top:4px">元／天</div>
-        </div>
-      </div>
-      <!-- 等待年份損失橫排 -->
-      <div style="background:rgba(255,255,255,.06);border:1px solid rgba(176,48,16,.25);border-radius:10px;padding:12px 16px">
-        <div style="font-size:9px;letter-spacing:2px;color:rgba(255,120,80,.8);margin-bottom:10px;font-weight:bold">你已經等了多久？</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center">
-          <div>
-            <div style="font-size:9px;color:rgba(255,160,130,.6);margin-bottom:4px">再等半年</div>
-            <div style="font-size:18px;font-weight:bold;color:#f87171;font-family:'DM Mono',Menlo,Consolas,monospace" id="lost6m">—</div>
-          </div>
-          <div style="border-left:1px solid rgba(0,0,0,.08);border-right:1px solid rgba(0,0,0,.08)">
-            <div style="font-size:9px;color:rgba(255,160,130,.6);margin-bottom:4px">再等一年</div>
-            <div style="font-size:22px;font-weight:900;color:#f87171;font-family:'DM Mono',Menlo,Consolas,monospace" id="lost1y">—</div>
-          </div>
-          <div>
-            <div style="font-size:9px;color:rgba(255,160,130,.6);margin-bottom:4px">再等兩年</div>
-            <div style="font-size:18px;font-weight:bold;color:#f87171;font-family:'DM Mono',Menlo,Consolas,monospace" id="lost2y">—</div>
-          </div>
-        </div>
-        <div style="font-size:11px;color:rgba(255,160,130,.5);margin-top:10px;font-style:italic;text-align:center">這些錢，是你等待的學費。</div>
-      </div>
-      <!-- 隱藏元素供 JS 相容 -->
-      <span id="waitYearly" style="display:none">—</span>
-      <span id="buy10" style="display:none">—</span>
-      <span id="nobuy10" style="display:none">—</span>
-      <span id="buy5" style="display:none">—</span>
-      <span id="nobuy5" style="display:none">—</span>
-      <span id="projDiff" style="display:none">—</span>
-      <span id="projDiffSub" style="display:none">—</span>
-      <span id="vbBox" style="display:none">—</span>
-    </div>
+        <!-- ⑤ 等待代價：已移至「等待代價」tab，報告頁僅保留 JS 相容隱藏元素 -->
+    <span id="waitCostSection" style="display:none"></span>
+    <span id="waitSubtitle" style="display:none">—</span>
+    <span id="waitMonthly" style="display:none">—</span>
+    <span id="waitDaily" style="display:none">—</span>
+    <span id="lost6m" style="display:none">—</span>
+    <span id="lost1y" style="display:none">—</span>
+    <span id="lost2y" style="display:none">—</span>
+    <span id="waitYearly" style="display:none">—</span>
+    <span id="buy10" style="display:none">—</span>
+    <span id="nobuy10" style="display:none">—</span>
+    <span id="buy5" style="display:none">—</span>
+    <span id="nobuy5" style="display:none">—</span>
+    <span id="projDiff" style="display:none">—</span>
+    <span id="projDiffSub" style="display:none">—</span>
+    <span id="vbBox" style="display:none">—</span>
 
 <!-- ⑥ 你能做到（收支 + 負擔比 + verdict） -->
     <div id="youCanDoThis" style="background:#161c28;border:1px solid rgba(56,189,248,.1);border-radius:14px;padding:18px;margin-bottom:14px;box-shadow:0 4px 24px rgba(0,0,0,.3)">
@@ -1958,10 +1929,132 @@ body{
         </div>
       </div>
       <!-- 算法說明 -->
-      <div style="background:rgba(160,100,10,.04);border-radius:8px;padding:12px;font-size:12px;color:rgba(52,211,153,.75);line-height:1.9" id="roiFormula">—</div>
+      <div style="background:rgba(10,20,15,.5);border:1px solid rgba(52,211,153,.12);border-radius:8px;padding:14px;font-size:12px;color:#e2d9c8;line-height:1.9" id="roiFormula">—</div>
     </div>
 
     <!-- 房貸風控摘要已移除 --><div id="mortgageSection" style="display:none"></div>
+
+    <!-- ⑦-B 風險下限分析 -->
+    <div id="riskFloorSection" style="display:none;background:#161c28;border:1px solid rgba(248,113,113,.15);border-radius:14px;padding:20px;margin-bottom:14px;box-shadow:0 4px 24px rgba(0,0,0,.3)">
+      <div style="font-size:8px;letter-spacing:5px;color:rgba(248,113,113,.7);margin-bottom:16px;font-weight:bold;font-family:'DM Mono',monospace">RISK FLOOR — 最壞情況我虧多少？</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px;text-align:center">
+        <div style="background:rgba(248,113,113,.05);border:1px solid rgba(248,113,113,.15);border-radius:12px;padding:14px">
+          <div style="font-size:9px;color:rgba(248,113,113,.7);margin-bottom:6px;letter-spacing:1px;font-family:'DM Mono',monospace">跌 10%</div>
+          <div style="font-size:18px;font-weight:900;color:#fca5a5;font-family:'DM Mono',Menlo,Consolas,monospace" id="riskDrop10">—</div>
+          <div style="font-size:9px;color:rgba(226,217,200,.5);margin-top:4px" id="riskDrop10Note">—</div>
+        </div>
+        <div style="background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);border-radius:12px;padding:14px">
+          <div style="font-size:9px;color:rgba(248,113,113,.7);margin-bottom:6px;letter-spacing:1px;font-family:'DM Mono',monospace">跌 20%</div>
+          <div style="font-size:20px;font-weight:900;color:#f87171;font-family:'DM Mono',Menlo,Consolas,monospace" id="riskDrop20">—</div>
+          <div style="font-size:9px;color:rgba(226,217,200,.5);margin-top:4px" id="riskDrop20Note">—</div>
+        </div>
+        <div style="background:rgba(248,113,113,.04);border:1px solid rgba(248,113,113,.12);border-radius:12px;padding:14px">
+          <div style="font-size:9px;color:rgba(248,113,113,.7);margin-bottom:6px;letter-spacing:1px;font-family:'DM Mono',monospace">跌 30%</div>
+          <div style="font-size:18px;font-weight:900;color:#fca5a5;font-family:'DM Mono',Menlo,Consolas,monospace" id="riskDrop30">—</div>
+          <div style="font-size:9px;color:rgba(226,217,200,.5);margin-top:4px" id="riskDrop30Note">—</div>
+        </div>
+      </div>
+      <div id="riskFloorNote" style="font-size:12px;color:rgba(226,217,200,.75);line-height:2;padding:10px 14px;background:rgba(255,255,255,.03);border-left:3px solid rgba(248,113,113,.3);border-radius:0 8px 8px 0"></div>
+    </div>
+
+    <!-- ⑦-C 報酬對比基準 -->
+    <div id="benchmarkSection" style="display:none;background:#161c28;border:1px solid rgba(56,189,248,.1);border-radius:14px;padding:20px;margin-bottom:14px;box-shadow:0 4px 24px rgba(0,0,0,.3)">
+      <div style="font-size:8px;letter-spacing:5px;color:rgba(56,189,248,.6);margin-bottom:16px;font-weight:bold;font-family:'DM Mono',monospace">BENCHMARK — 跟別的選擇比，怎麼樣？</div>
+      <div style="font-size:11px;color:rgba(226,217,200,.6);margin-bottom:12px">同樣的自備款 <span id="bmkPrincipal" style="color:#e8b84b;font-weight:bold">—</span>，放在不同地方，10年後：</div>
+      <div id="benchmarkBars" style="display:flex;flex-direction:column;gap:10px"></div>
+      <div style="font-size:10px;color:rgba(226,217,200,.4);margin-top:12px;text-align:right">※ 定存/債券以近5年均值估算；股票以大盤長期平均估算</div>
+    </div>
+
+    <!-- ⑦-D 真實案例佐證 -->
+    <div style="background:#161c28;border:1px solid rgba(201,146,43,.2);border-radius:14px;padding:20px;margin-bottom:14px;box-shadow:0 4px 24px rgba(0,0,0,.3)">
+      <div style="font-size:8px;letter-spacing:5px;color:rgba(201,146,43,.7);margin-bottom:6px;font-weight:bold;font-family:'DM Mono',monospace">REAL CASES — 真實發生過的故事</div>
+      <div style="font-size:11px;color:rgba(226,217,200,.5);margin-bottom:16px">這不是預測。這些是我們客戶的真實數字。</div>
+
+      <!-- 案例一：八德雲湧 -->
+      <div style="background:rgba(52,211,153,.05);border:1px solid rgba(52,211,153,.15);border-radius:12px;padding:16px;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <div style="font-size:18px">🏠</div>
+          <div>
+            <div style="font-size:12px;font-weight:bold;color:#e2d9c8">八德雲湧｜桑大哥</div>
+            <div style="font-size:10px;color:rgba(226,217,200,.5)">股市老手轉戰房地產</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px;text-align:center">
+          <div style="background:rgba(255,255,255,.04);border-radius:8px;padding:10px 6px">
+            <div style="font-size:9px;color:rgba(226,217,200,.5);margin-bottom:3px">自備款</div>
+            <div style="font-size:16px;font-weight:900;color:#e8b84b;font-family:'DM Mono',monospace">100萬</div>
+          </div>
+          <div style="background:rgba(52,211,153,.08);border-radius:8px;padding:10px 6px">
+            <div style="font-size:9px;color:rgba(226,217,200,.5);margin-bottom:3px">5年後獲利</div>
+            <div style="font-size:16px;font-weight:900;color:#34d399;font-family:'DM Mono',monospace">+400萬</div>
+          </div>
+          <div style="background:rgba(201,146,43,.08);border-radius:8px;padding:10px 6px">
+            <div style="font-size:9px;color:rgba(226,217,200,.5);margin-bottom:3px">報酬倍數</div>
+            <div style="font-size:16px;font-weight:900;color:#e8b84b;font-family:'DM Mono',monospace">5倍</div>
+          </div>
+        </div>
+        <div style="font-size:11px;color:rgba(226,217,200,.65);line-height:1.8;border-left:3px solid rgba(52,211,153,.4);padding-left:10px">
+          坪價 19萬 → 38萬，5年翻倍。<br>
+          <span style="color:rgba(52,211,153,.8);font-style:italic">「買了就吃飯、休息、睡覺，五年後準備領錢。」</span>
+        </div>
+      </div>
+
+      <!-- 案例二：學姐 -->
+      <div style="background:rgba(93,173,226,.05);border:1px solid rgba(93,173,226,.15);border-radius:12px;padding:16px;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <div style="font-size:18px">👩‍👧</div>
+          <div>
+            <div style="font-size:12px;font-weight:bold;color:#e2d9c8">學姐案例｜家族槓桿</div>
+            <div style="font-size:10px;color:rgba(226,217,200,.5)">善用父母無貸款房產</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px;text-align:center">
+          <div style="background:rgba(255,255,255,.04);border-radius:8px;padding:10px 6px">
+            <div style="font-size:9px;color:rgba(226,217,200,.5);margin-bottom:3px">起步</div>
+            <div style="font-size:16px;font-weight:900;color:#e8b84b;font-family:'DM Mono',monospace">168萬</div>
+          </div>
+          <div style="background:rgba(52,211,153,.08);border-radius:8px;padding:10px 6px">
+            <div style="font-size:9px;color:rgba(226,217,200,.5);margin-bottom:3px">現在</div>
+            <div style="font-size:16px;font-weight:900;color:#34d399;font-family:'DM Mono',monospace">1,300萬</div>
+          </div>
+          <div style="background:rgba(93,173,226,.08);border-radius:8px;padding:10px 6px">
+            <div style="font-size:9px;color:rgba(226,217,200,.5);margin-bottom:3px">仍保留備用金</div>
+            <div style="font-size:16px;font-weight:900;color:#5dade2;font-family:'DM Mono',monospace">590萬</div>
+          </div>
+        </div>
+        <div style="font-size:11px;color:rgba(226,217,200,.65);line-height:1.8;border-left:3px solid rgba(93,173,226,.4);padding-left:10px">
+          家族房產貸出990萬 → 買兩間房只用400萬，590萬備用金完整保留。<br>
+          <span style="color:rgba(93,173,226,.8);font-style:italic">槓桿放大，風險仍在控制內。</span>
+        </div>
+      </div>
+
+      <!-- 案例三：Judy -->
+      <div style="background:rgba(248,191,75,.05);border:1px solid rgba(248,191,75,.15);border-radius:12px;padding:16px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <div style="font-size:18px">💪</div>
+          <div>
+            <div style="font-size:12px;font-weight:bold;color:#e2d9c8">Judy 案例｜小資起步</div>
+            <div style="font-size:10px;color:rgba(226,217,200,.5)">不需要先很有錢</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;text-align:center">
+          <div style="background:rgba(255,255,255,.04);border-radius:8px;padding:10px 6px">
+            <div style="font-size:9px;color:rgba(226,217,200,.5);margin-bottom:3px">第一間自備款</div>
+            <div style="font-size:20px;font-weight:900;color:#e8b84b;font-family:'DM Mono',monospace">35萬</div>
+          </div>
+          <div style="background:rgba(248,191,75,.08);border-radius:8px;padding:10px 6px">
+            <div style="font-size:9px;color:rgba(226,217,200,.5);margin-bottom:3px">現在擁有</div>
+            <div style="font-size:20px;font-weight:900;color:#fbbf24;font-family:'DM Mono',monospace">三間房</div>
+          </div>
+        </div>
+        <div style="font-size:11px;color:rgba(226,217,200,.65);line-height:1.8;border-left:3px solid rgba(248,191,75,.4);padding-left:10px">
+          <span style="color:rgba(248,191,75,.9);font-style:italic">「等到準備好了才上車，早就被通膨吃掉了。」</span><br>
+          第一步不需要完美，只需要開始。
+        </div>
+      </div>
+
+      <div style="font-size:10px;color:rgba(226,217,200,.3);margin-top:12px;text-align:center">以上為富時代內部真實客戶案例，數字已獲當事人同意分享</div>
+    </div>
 
     <!-- ⑨-0 家族財力支援摘要（有保證人且有資料時才顯示） -->
     <div id="familySupportBox" style="display:none;background:linear-gradient(160deg,#f0f8ff,#e8f4fd);border:1.5px solid rgba(93,173,226,.35);border-radius:14px;padding:20px;margin-bottom:14px;box-shadow:0 3px 16px rgba(93,173,226,.1)">
@@ -1983,12 +2076,14 @@ body{
 
     <div class="sh"><div class="shl">💬 建議收尾話術（顧問參考）</div><div class="sht" id="shT">—</div></div>
 
-    <div id="dynQBox" style="display:none;background:#161c28;border:1px solid rgba(56,189,248,.1);border-radius:14px;padding:20px;margin-bottom:14px">
-      <div style="font-size:8px;letter-spacing:5px;color:rgba(56,189,248,.6);margin-bottom:12px;font-weight:bold;font-family:'DM Mono',monospace">NEXT QUESTIONS — 顧問接下來問</div>
-      <div style="font-size:11px;color:rgba(226,217,200,.8);margin-bottom:14px" id="dynQSub">根據客戶狀況，系統建議以下三個問句引導到成交</div>
-      <div id="dynQ1" style="background:rgba(201,146,43,.08);border-left:3px solid #c9922b;border-radius:0 8px 8px 0;padding:12px 14px;margin-bottom:10px;font-size:13px;color:#e2d9c8;line-height:1.7"></div>
-      <div id="dynQ2" style="background:rgba(201,146,43,.06);border-left:3px solid rgba(201,146,43,.5);border-radius:0 8px 8px 0;padding:12px 14px;margin-bottom:10px;font-size:13px;color:#e2d9c8;line-height:1.7"></div>
-      <div id="dynQ3" style="background:rgba(201,146,43,.04);border-left:3px solid rgba(201,146,43,.3);border-radius:0 8px 8px 0;padding:12px 14px;font-size:13px;color:#e2d9c8;line-height:1.7"></div>
+    <!-- 動態問句已移至顧問內部參考，不顯示於客戶報告 -->
+    <span style="display:none"><div id="dynQBox"></div><span id="dynQSub"></span><div id="dynQ1"></div><div id="dynQ2"></div><div id="dynQ3"></div></span>
+
+    <!-- ⑩ 下一步行動 -->
+    <div id="nextStepsBox" style="display:none;background:linear-gradient(155deg,#0d1f14,#0a1a1e);border:1px solid rgba(52,211,153,.2);border-radius:18px;padding:24px 20px;margin-bottom:14px;box-shadow:0 8px 32px rgba(0,0,0,.3)">
+      <div style="font-size:8px;letter-spacing:5px;color:rgba(52,211,153,.7);margin-bottom:6px;font-weight:bold;font-family:'DM Mono',monospace">NEXT STEPS — 現在，你可以做這些</div>
+      <div style="font-size:12px;color:rgba(226,217,200,.6);margin-bottom:16px" id="nextStepsSub">報告已完成。以下是建議的下一步。</div>
+      <div style="display:flex;flex-direction:column;gap:10px" id="nextStepsList"></div>
     </div>
 
   </div>
@@ -2102,7 +2197,7 @@ body{
       </div>
 
       <!-- 輸入：打算等幾年 -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:8px">
         <div class="fl">
           <label style="color:#7a1800">打算再等幾年</label>
           <input type="number" id="waitYears" placeholder="1" min="0.5" max="10" step="0.5" value="1" oninput="calcWaitCost()">
@@ -2111,6 +2206,9 @@ body{
           <label style="color:#7a1800">月租金（若有租屋）</label>
           <input type="number" id="waitRentInput" placeholder="20000" oninput="calcWaitCost()">
         </div>
+      </div>
+      <div style="font-size:10px;color:rgba(255,160,130,.6);margin-bottom:14px;padding:6px 10px;background:rgba(255,255,255,.03);border-radius:6px">
+        📐 房價漲幅以輸入頁「預估年增值率」為準（目前：<span id="waitGrowthDisplay">4</span>%）。可至輸入頁第05欄調整。
       </div>
 
       <!-- 結果輸出 -->
@@ -2620,7 +2718,9 @@ function doGen(){
       if(_remWan>=0){
         countUpFloat(_heroNum, _remWan, 1, 900, ' 萬');
         _heroNum.style.color='#e8b84b';
-        _heroSub.textContent='數字說話了。你的條件，站得住。';
+        var _tsNote = C.ts > 0 ? '（含建議節流 '+fmt(C.ts)+' /月）' : '';
+        _heroSub.textContent='數字說話了。你的條件，站得住。' + (_tsNote ? '　' + _tsNote : '');
+        _heroSub.style.color = C.ts > 0 ? 'rgba(226,217,200,.55)' : 'rgba(226,217,200,.8)';
       } else {
         _heroNum.textContent=_remWan.toFixed(1)+' 萬';
         _heroNum.style.color='#ff8a70';
@@ -3520,18 +3620,22 @@ function doGen(){
     if(g('roiYrsLabel'))  g('roiYrsLabel').textContent=_roiYrs+'年增值獲利';
     if(g('roiAnn'))       g('roiAnn').textContent=_roiPerYr.toFixed(1)+'%/年';
     if(g('roiFormula')){
+      // 判斷是否有租金收入（決定利息說明文字）
+      var _rentNote = C.rent > 0
+        ? '<div style="font-size:11px;color:rgba(52,211,153,.9);margin-top:10px;padding:8px 10px;background:rgba(46,204,113,.08);border-left:3px solid #34d399;border-radius:0 6px 6px 0">✅ 租金每月 '+fmt(C.rent)+'，已抵扣貸款利息，此為實質報酬率。</div>'
+        : '<div style="font-size:11px;color:rgba(226,217,200,.55);margin-top:10px;padding:8px 10px;background:rgba(255,255,255,.03);border-left:3px solid rgba(226,217,200,.2);border-radius:0 6px 6px 0">※ 此為毛報酬率，未扣貸款利息；實際淨報酬請洽顧問試算。</div>';
       g('roiFormula').innerHTML=
-        '<div style="margin-bottom:8px;font-size:11px;color:rgba(226,217,200,.7)">📐 數字怎麼來的？</div>'+
-        '<div style="background:rgba(160,100,10,.07);border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:12px;color:#3a2010;line-height:2.1">'+
-        '現在房屋市值：<strong>'+Math.round(C.pr/10000)+'萬</strong><br>'+
-        Math.round(_roiYrs)+'年後市值（年增 '+Math.round(parseFloat(g('iGrowth').value)*10)/10+'%）：<strong style="color:#34d399">'+Math.round(_houseVal10/10000)+'萬</strong><br>'+
-        '房屋增值：'+Math.round(_houseVal10/10000)+' － '+Math.round(C.pr/10000)+' ＝ <strong style="color:#34d399">+'+_houseProfit+'萬</strong><br>'+
-        '<span style="font-size:11px;color:rgba(226,217,200,.8)">月均獲利：'+_houseProfit+'萬 ÷ '+_roiYrs+'年 ÷ 12月 ＝ <strong style="color:#fbbf24">'+_mnProfit+'萬／月</strong></span>'+
+        '<div style="margin-bottom:8px;font-size:11px;color:#e2d9c8;font-weight:bold">📐 數字怎麼來的？</div>'+
+        '<div style="background:rgba(20,30,20,.6);border:1px solid rgba(52,211,153,.15);border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:12px;color:#e2d9c8;line-height:2.2">'+
+        '現在房屋市值：<strong style="color:#e2d9c8">'+Math.round(C.pr/10000)+'萬</strong><br>'+
+        Math.round(_roiYrs)+'年後市值（年增 <strong style="color:#e8b84b">'+Math.round(parseFloat(g('iGrowth').value)*10)/10+'%</strong>，可於輸入頁調整）：<strong style="color:#34d399">'+Math.round(_houseVal10/10000)+'萬</strong><br>'+
+        '房屋累計增值：'+Math.round(_houseVal10/10000)+' － '+Math.round(C.pr/10000)+' ＝ <strong style="color:#34d399">+'+_houseProfit+'萬</strong>'+
         '</div>'+
-        '<div style="font-size:12px;color:rgba(226,217,200,.7);line-height:2">'+
-        '你只付 <strong style="color:#e8b84b">'+_dwWan+'萬</strong> 自備款，卻控制了 <strong style="color:#e8b84b">'+Math.round(C.pr/10000)+'萬</strong> 的資產——槓桿倍數 <strong>'+Math.round(C.pr/10000/_dwWan*10)/10+'倍</strong>。<br>'+
-        '年化投報率 ＝ '+_houseProfit+'萬（增值）÷ '+_dwWan+'萬（自備）÷ '+_roiYrs+'年 ＝ <strong style="color:#34d399;font-size:14px">'+_roiPerYr.toFixed(1)+'% /年</strong>'+
-        '</div>';
+        '<div style="font-size:12px;color:#e2d9c8;line-height:2.1">'+
+        '你只付 <strong style="color:#e8b84b">'+_dwWan+'萬</strong> 自備款，卻控制了 <strong style="color:#e8b84b">'+Math.round(C.pr/10000)+'萬</strong> 的資產——槓桿倍數 <strong style="color:#e2d9c8">'+Math.round(C.pr/10000/_dwWan*10)/10+'倍</strong>。<br>'+
+        '年化投報率 ＝ '+_houseProfit+'萬（增值）÷ '+_dwWan+'萬（自備）÷ '+_roiYrs+'年 ＝ <strong style="color:#34d399;font-size:15px">'+_roiPerYr.toFixed(1)+'% /年</strong>'+
+        '</div>'+
+        _rentNote;
     }
   } else {
     if(_roiSec) _roiSec.style.display='none';
@@ -3581,6 +3685,109 @@ function doGen(){
     } else {
       _fl.innerHTML=nm+'，方向是對的。<br><span style="font-size:13px;color:#e8b84b">讓我們調整一下數字，找到讓你安心的方案。</span>';
     }
+  }
+
+  // ── ⑦-B 風險下限分析 ────────────────────────────────
+  var _riskSec = g('riskFloorSection');
+  if(_riskSec && C.pr > 0 && C.dw > 0){
+    _riskSec.style.display = 'block';
+    var _prWan = Math.round(C.pr/10000);
+    var _dwWanR = Math.round(C.dw/10000);
+    var _lnWan  = Math.round(C.ln/10000);
+    // 各跌幅下：帳面損失 = 總價×跌幅 - 自備款已付（帳面仍欠貸款）
+    // 真實損失 = 賣房所得 - 尚欠貸款 - 自備款 = -(跌幅×總價)
+    // 但自備款槓桿效果：損失放大
+    [10,20,30].forEach(function(pct){
+      var _priceAfter = Math.round(_prWan*(1-pct/100));
+      var _loss = _prWan - _priceAfter; // 絕對跌幅（萬）
+      var _netLoss = _loss; // 最終虧損 = 房價跌幅（對應到自備款）
+      var _pctOfDw = Math.round(_netLoss/_dwWanR*100);
+      var el = g('riskDrop'+pct);
+      var elNote = g('riskDrop'+pct+'Note');
+      if(el) el.textContent = '-'+_loss+'萬';
+      if(elNote){
+        if(_loss >= _dwWanR){
+          elNote.textContent = '自備款全數虧損';
+          elNote.style.color = '#f87171';
+        } else {
+          elNote.textContent = '自備款損失 '+_pctOfDw+'%';
+          elNote.style.color = _pctOfDw>50?'#fca5a5':'rgba(226,217,200,.6)';
+        }
+      }
+    });
+    var _riskNote = g('riskFloorNote');
+    if(_riskNote){
+      var _drop20Loss = Math.round(_prWan*0.2);
+      var _drop20PctDw = Math.round(_drop20Loss/_dwWanR*100);
+      _riskNote.innerHTML =
+        '台灣房市歷史上最大單年跌幅約 15%（2015-2016 年）。<br>'+
+        '即使跌 20%，你的帳面損失為 <strong style="color:#f87171">'+_drop20Loss+'萬</strong>，為自備款的 '+_drop20PctDw+'%。<br>'+
+        '<span style="color:rgba(52,211,153,.8)">✅ 只要不在低點賣出，帳面虧損不等於實現虧損。持有期間仍持續還本，淨值逐年回升。</span>';
+    }
+  } else if(_riskSec){ _riskSec.style.display='none'; }
+
+  // ── ⑦-C 報酬對比基準 ────────────────────────────────
+  var _bmkSec = g('benchmarkSection');
+  if(_bmkSec && C.pr > 0 && C.dw > 0 && window._roi && window._roi.profit > 0){
+    _bmkSec.style.display = 'block';
+    var _roi3 = window._roi;
+    var _bmkPrin = _roi3.principal; // 自備款（萬）
+    if(g('bmkPrincipal')) g('bmkPrincipal').textContent = _bmkPrin+'萬';
+    // 各基準10年後金額
+    var _bmkItems = [
+      { label:'🏠 本物件（槓桿投資）', rate: _roi3.ann, result: _bmkPrin + _roi3.profit, color:'#34d399', highlight:true },
+      { label:'📈 台股大盤（長期年化 ~8%）', rate:8, result: Math.round(_bmkPrin*Math.pow(1.08,10)), color:'#e8b84b', highlight:false },
+      { label:'🏦 債券基金（年化 ~4%）', rate:4, result: Math.round(_bmkPrin*Math.pow(1.04,10)), color:'#5dade2', highlight:false },
+      { label:'💰 定存（年化 ~1.5%）', rate:1.5, result: Math.round(_bmkPrin*Math.pow(1.015,10)), color:'rgba(226,217,200,.5)', highlight:false },
+    ];
+    var _maxResult = Math.max.apply(null, _bmkItems.map(function(i){ return i.result; }));
+    var _bars = g('benchmarkBars');
+    if(_bars){
+      _bars.innerHTML = _bmkItems.map(function(item){
+        var _pct = Math.round(item.result/_maxResult*100);
+        return '<div style="display:flex;align-items:center;gap:10px">'+
+          '<div style="font-size:11px;color:rgba(226,217,200,.8);min-width:170px;flex-shrink:0">'+item.label+'</div>'+
+          '<div style="flex:1;background:rgba(255,255,255,.05);border-radius:4px;height:20px;overflow:hidden">'+
+            '<div style="width:'+_pct+'%;height:100%;background:'+item.color+';border-radius:4px;transition:width .6s ease;display:flex;align-items:center;padding-left:6px">'+
+              (item.highlight?'<span style="font-size:10px;font-weight:bold;color:#0d1117;white-space:nowrap">'+item.result+'萬</span>':'')+'</div>'+
+          '</div>'+
+          (!item.highlight?'<div style="font-size:11px;font-weight:bold;color:'+item.color+';min-width:48px;text-align:right">'+item.result+'萬</div>':'')+
+        '</div>';
+      }).join('');
+    }
+  } else if(_bmkSec){ _bmkSec.style.display='none'; }
+
+  // ── ⑩ 下一步行動 ────────────────────────────────────
+  var _nsBox = g('nextStepsBox');
+  var _nsList = g('nextStepsList');
+  if(_nsBox && _nsList){
+    _nsBox.style.display = 'block';
+    var _steps = [];
+    // 根據狀況動態產生步驟
+    if(rem >= 0){
+      if(isPresale){
+        _steps.push({ icon:'📅', title:'確認工程款繳付時間軸', desc:'對照預售合約，逐期確認資金準備節奏' });
+        _steps.push({ icon:'🏦', title:'預先申請銀行貸款資格', desc:'建議於交屋前3~6個月開始送件，避免臨時卡關' });
+      } else {
+        _steps.push({ icon:'🏦', title:'預約銀行估貸', desc:'持本報告數據與顧問確認最終貸款條件與利率' });
+        _steps.push({ icon:'🏠', title:'實地看屋確認', desc:'針對'+((g('iProp')||{value:'目標物件'}).value||'目標物件')+'安排現場確認' });
+      }
+      _steps.push({ icon:'✍️', title:'確認合約條款', desc:'簽約前請確認付款條件、違約條款與交屋保障' });
+    } else {
+      _steps.push({ icon:'🔄', title:'調整方案再試算', desc:'可提高自備款、延長貸款年限或增加收入來源' });
+      _steps.push({ icon:'💬', title:'與顧問再次討論', desc:'讓我們找到最適合你當下狀況的進場方式' });
+    }
+    _steps.push({ icon:'📊', title:'儲存並傳送本報告', desc:'將這份數字留存，作為後續決策的依據' });
+    _nsList.innerHTML = _steps.map(function(s, i){
+      return '<div style="display:flex;align-items:flex-start;gap:12px;padding:14px 16px;background:rgba(52,211,153,.05);border:1px solid rgba(52,211,153,.12);border-radius:12px">'+
+        '<div style="font-size:22px;flex-shrink:0;margin-top:1px">'+s.icon+'</div>'+
+        '<div>'+
+          '<div style="font-size:13px;font-weight:bold;color:#e2d9c8;margin-bottom:3px">STEP '+(i+1)+'　'+s.title+'</div>'+
+          '<div style="font-size:11px;color:rgba(226,217,200,.6);line-height:1.7">'+s.desc+'</div>'+
+        '</div>'+
+      '</div>';
+    }).join('');
+    if(g('nextStepsSub')) g('nextStepsSub').textContent = nm+'，報告已完成。接下來建議這 '+_steps.length+' 個動作：';
   }
 
   // ── ★ 家族財力支援摘要（成屋模式才渲染；預售已整合進 csSolvedBox）
@@ -4621,6 +4828,8 @@ function calcWaitCost() {
 
   // 房價漲幅（用選定的成長率）
   var growth = parseFloat((g('iGrowth') || {value: '4'}).value) / 100;
+  // 同步顯示增值率
+  if(g('waitGrowthDisplay')) g('waitGrowthDisplay').textContent = Math.round(growth*1000)/10;
   var prWan = Math.round(pr / 10000);
   var prAfter = Math.round(prWan * Math.pow(1 + growth, waitYrs));
   var priceRise = prAfter - prWan;
@@ -4914,15 +5123,18 @@ function showSyncModal() {
   var _roi = window._roi || {};
   var roiStr = _roi.profit > 0 ? '+' + _roi.profit + '萬（年化 ' + _roi.ann + '%）' : '—';
 
-  // 預覽內容
+  // 預覽內容（讓業務確認）
+  var _roiPrev = window._roi || {};
   var prevLines = [
-    '客戶：' + nm,
-    '購房動機：' + segName,
-    '目標物件：' + (prop || '—'),
-    '顧問：' + (adv || '—'),
-    '月結餘：' + (rem >= 0 ? '+' : '') + Math.round(rem).toLocaleString() + ' 元',
-    '10年房屋增值：' + roiStr,
-    '名單來源：顧問諮詢'
+    '👤 客戶：' + nm,
+    '📋 購房動機：' + segName,
+    '🏠 目標物件：' + (prop || '—'),
+    '👔 負責顧問：' + (adv || '—'),
+    '💰 月結餘：' + (rem >= 0 ? '+' : '') + Math.round(rem).toLocaleString() + ' 元',
+    '📈 10年增值：' + (_roiPrev.profit > 0 ? '+'+_roiPrev.profit+'萬（年化 '+_roiPrev.ann+'%）' : '—'),
+    '🏦 自備款：' + (C.dw > 0 ? Math.round(C.dw/10000)+'萬' : '—'),
+    '📅 同步日期：' + todayStr,
+    '📌 來源：Asset Planner 財富規劃報告'
   ];
   g('syncPreview').style.whiteSpace = 'pre-line';
   g('syncPreview').textContent = prevLines.join('\n');
@@ -4989,7 +5201,32 @@ function doSyncCRM() {
   btn.textContent = '⏳ 同步中...';
   g('syncMsg').textContent = '';
 
-  var apiUrl = 'https://script.google.com/macros/s/AKfycbyt8tcy6pORzZ1nc0HP4YVLV-AY1tOuahJWjhmWQ2VBTSZPLZe2qgBzZgczbDQTVsPI/exec';
+  // ★ CRM Apps Script 正式網址（與 crm_cloud_v22 同一後端）
+  var apiUrl = 'https://script.google.com/macros/s/AKfycbxPExuVTXkz8ucGXscubiypyrWL_qqu53mlp8U_ggyz4kHUT1-bf29IVAFLEmlwnP85/exec';
+
+  // 補齊更多欄位讓 CRM 資料更完整
+  var _roi4 = window._roi || {};
+  var productAdv = [];
+  if(_roi4.profit > 0) productAdv.push('10年增值 +'+_roi4.profit+'萬，年化 '+_roi4.ann+'%');
+  if(rem > 0) productAdv.push('交屋後月結餘 '+Math.round(rem).toLocaleString()+' 元');
+  if(C.pr > 0) productAdv.push('目標總價 '+Math.round(C.pr/10000)+'萬，自備款 '+Math.round((C.dw||0)/10000)+'萬');
+
+  var fnLabels2 = getActiveFnLabels();
+  var clientNote2 = (g('iClientNote')||{}).value || '';
+
+  // 完整 customer payload — 對應 CRM 所有欄位
+  customer.purchasePurpose   = fnLabels2.join('、') || '';
+  customer.painPointsNote    = clientNote2;
+  customer.recommendedProperty = prop || '';
+  customer.productAdvantages = productAdv.join('；');
+  customer.budget            = C.dw > 0 ? Math.round(C.dw/10000)+'萬（自備款）' : '';
+  customer.monthlyPayment    = C.effMn > 0 ? Math.round(C.effMn).toLocaleString()+'元/月' : '';
+  customer.contractStatus    = '洽談中';
+  customer.customerActive    = '進行中';
+  customer.acquisitionMethod = '現場活動';
+  customer.leadSource        = '顧問諮詢';
+  customer.leadSourceDetail  = 'Asset Planner 財富規劃報告同步';
+
   fetch(apiUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -5001,8 +5238,8 @@ function doSyncCRM() {
     btn.textContent = '✅ 確認同步';
     if (res && res.success) {
       g('syncMsg').style.color = '#27ae60';
-      g('syncMsg').textContent = '✅ 已成功同步至 CRM！';
-      setTimeout(closeSyncModal, 1800);
+      g('syncMsg').textContent = '✅ 已成功同步至 CRM！客戶資料已建立。';
+      setTimeout(closeSyncModal, 2000);
     } else {
       g('syncMsg').style.color = '#e05c4a';
       g('syncMsg').textContent = '❌ 同步失敗：' + (res && res.error ? res.error : '請稍後再試');
