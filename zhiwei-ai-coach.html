@@ -886,7 +886,20 @@
   }
 
   // 頁面載入時初始化 key 狀態
-  document.addEventListener('DOMContentLoaded', renderKeyStatus);
+  document.addEventListener('DOMContentLoaded', function() {
+    renderKeyStatus();
+    // 從 CRM 跳過來自動帶入客戶
+    try {
+      var raw = sessionStorage.getItem('crm_launch_customer');
+      if (!raw) return;
+      sessionStorage.removeItem('crm_launch_customer');
+      var c = JSON.parse(raw);
+      // 直接帶入，不開 picker
+      _crmSelectedId = c.id;
+      _crmSelectedName = c.customerName || '';
+      pickCustomer(JSON.stringify(c));
+    } catch(e) {}
+  });
 
   function buildPrompt({ name, age, group, pain, status, keyman, support, finance, lastResult, target, extra }) {
     return `你是富時代地產創辦人阮智偉。現在是早會時間，業務向你報告客戶狀況，你要用早會現場的方式，給出「可直接照做」的完整跟進策略。
