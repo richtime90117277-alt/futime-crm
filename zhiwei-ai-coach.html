@@ -594,22 +594,9 @@
     <p class="subtitle">填寫客況，一鍵生成完整跟進話術報告<br>早會前兩分鐘完成，出門就有劇本</p>
   </div>
 
-  <!-- Gemini Key Setup -->
-  <div id="keySetupCard" style="background:var(--card);border:1px solid #c89a20;border-radius:16px;padding:24px 28px;margin-bottom:24px;display:none">
-    <div style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:16px">⚙️ 設定 Gemini API Key</div>
-    <p style="font-size:13px;color:var(--text-dim);line-height:1.7;margin-bottom:14px">
-      請至 <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--gold)">Google AI Studio</a> 免費申請 API Key，貼入下方後儲存即可。Key 只存在你的瀏覽器，不會上傳。
-    </p>
-    <div style="display:flex;gap:8px">
-      <input type="password" id="geminiKeyInput" placeholder="AIza..." style="flex:1;background:var(--input-bg);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:14px;outline:none;font-family:inherit">
-      <button onclick="saveGeminiKey()" style="background:var(--gold);color:#000;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">儲存</button>
-    </div>
-  </div>
-
-  <!-- Key status bar -->
-  <div id="keyStatusBar" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 16px;margin-bottom:16px;font-size:12px;color:var(--text-dim);display:flex;align-items:center;justify-content:space-between">
-    <span id="keyStatusText">✅ Gemini API Key 已設定</span>
-    <button onclick="clearGeminiKey()" style="background:none;border:none;color:#e85555;font-size:12px;cursor:pointer;font-family:inherit">清除</button>
+  <!-- AI 狀態列 -->
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 16px;margin-bottom:16px;font-size:12px;color:var(--text-dim);display:flex;align-items:center;">
+    <span>✅ AI 引擎已就緒（Claude）</span>
   </div>
 
   <!-- Form -->
@@ -805,31 +792,18 @@
     animateSteps();
 
     try {
-      const geminiKey = getGeminiKey();
-      if (!geminiKey) {
-        document.getElementById('loadingCard').classList.remove('show');
-        document.getElementById('formCard').style.display = 'block';
-        document.getElementById('submitBtn').disabled = false;
-        document.getElementById('keySetupCard').style.display = 'block';
-        showError('請先設定 Gemini API Key（頁面上方）');
-        return;
-      }
-
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`,
+        'https://zhiwei-coach-api.richtime90117277.workers.dev',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: { maxOutputTokens: 4000, temperature: 0.7 }
-          })
+          body: JSON.stringify({ prompt })
         }
       );
 
       const data = await response.json();
-      if (data.error) throw new Error(data.error.message || 'Gemini API 錯誤');
-      const text = data.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('') || '';
+      if (data.error) throw new Error(data.error);
+      const text = data.text || '';
 
       if (!text) throw new Error('回應為空，請再試一次');
 
@@ -850,40 +824,8 @@
     }
   }
 
-  // ── Gemini Key 管理 ──
-  const GEMINI_KEY_NAME = 'futime_gemini_key';
-
-  function getGeminiKey() {
-    try { return localStorage.getItem(GEMINI_KEY_NAME) || ''; } catch(e) { return ''; }
-  }
-
-  function saveGeminiKey() {
-    const val = document.getElementById('geminiKeyInput').value.trim();
-    if (!val || !val.startsWith('AIza')) { alert('Key 格式不對，請確認是以 AIza 開頭'); return; }
-    try { localStorage.setItem(GEMINI_KEY_NAME, val); } catch(e) {}
-    document.getElementById('keySetupCard').style.display = 'none';
-    renderKeyStatus();
-  }
-
-  function clearGeminiKey() {
-    if (!confirm('確定清除 Gemini API Key？')) return;
-    try { localStorage.removeItem(GEMINI_KEY_NAME); } catch(e) {}
-    renderKeyStatus();
-  }
-
-  function renderKeyStatus() {
-    const key = getGeminiKey();
-    const bar = document.getElementById('keyStatusBar');
-    const setup = document.getElementById('keySetupCard');
-    if (key) {
-      bar.style.display = 'flex';
-      setup.style.display = 'none';
-      document.getElementById('keyStatusText').textContent = '✅ Gemini API Key 已設定（免費版）';
-    } else {
-      bar.style.display = 'none';
-      setup.style.display = 'block';
-    }
-  }
+  // ── Key 管理（由 Cloudflare Worker 處理，前端無需設定）──
+  function renderKeyStatus() {}
 
   // 頁面載入時初始化 key 狀態
   document.addEventListener('DOMContentLoaded', function() {
