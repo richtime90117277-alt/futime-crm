@@ -558,6 +558,7 @@ function card(s, hl='') {
       <div class="script-actions">
         <button class="action-btn primary" onclick="copyScript('${s.id}')">📋 複製話術</button>
         <button class="action-btn" onclick="copyTrig('${s.id}')">💬 複製觸發句</button>
+        <button class="action-btn" onclick="openDrillModal('${s.id}')" style="background:rgba(138,43,226,.15);border-color:rgba(138,43,226,.4);color:#b06eff">🎭 豆包演練</button>
       </div>
     </div>
   </div>`;
@@ -934,6 +935,203 @@ function selectCrmCustomer(jsonStr) {
 function setVal(id, val) {
   const el = document.getElementById(id);
   if (el) { el.value = val; }
+}
+</script>
+<!-- ═══ 豆包演練 Prompt 產生器 Modal ═══ -->
+<div id="drillBg" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:800;align-items:center;justify-content:center;padding:16px" onclick="if(event.target===this)closeDrill()">
+  <div style="background:#111;border:1px solid rgba(138,43,226,.35);border-radius:16px;width:100%;max-width:540px;max-height:92vh;display:flex;flex-direction:column;overflow:hidden">
+
+    <!-- Header -->
+    <div style="background:linear-gradient(135deg,#1a0a2e,#2d1060);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+      <div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:.15em;color:#b06eff;margin-bottom:4px">🎭 豆包語音演練</div>
+        <div style="font-size:15px;font-weight:800;color:#fff" id="drillScriptTitle">話術演練</div>
+      </div>
+      <button onclick="closeDrill()" style="background:rgba(255,255,255,.1);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer">✕</button>
+    </div>
+
+    <div style="overflow-y:auto;flex:1;padding:20px">
+
+      <!-- 客戶設定 -->
+      <div style="font-size:11px;font-weight:700;letter-spacing:.12em;color:#b06eff;margin-bottom:10px">👤 客戶設定（從 AI 顧問帶入或手動填）</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+        <div>
+          <div style="font-size:11px;color:#888;margin-bottom:4px">族群</div>
+          <input id="drill-族群" type="text" placeholder="例：雙薪家庭" style="width:100%;background:#0d0d0d;border:1px solid #2a2a2a;border-radius:6px;padding:7px 10px;color:#f0ece4;font-size:13px;outline:none;font-family:inherit">
+        </div>
+        <div>
+          <div style="font-size:11px;color:#888;margin-bottom:4px">年齡</div>
+          <input id="drill-年齡" type="text" placeholder="例：45 歲" style="width:100%;background:#0d0d0d;border:1px solid #2a2a2a;border-radius:6px;padding:7px 10px;color:#f0ece4;font-size:13px;outline:none;font-family:inherit">
+        </div>
+        <div style="grid-column:1/-1">
+          <div style="font-size:11px;color:#888;margin-bottom:4px">主要卡關 / 異議</div>
+          <input id="drill-卡關" type="text" placeholder="例：說股票還沒賣，現在不想動" style="width:100%;background:#0d0d0d;border:1px solid #2a2a2a;border-radius:6px;padding:7px 10px;color:#f0ece4;font-size:13px;outline:none;font-family:inherit">
+        </div>
+        <div>
+          <div style="font-size:11px;color:#888;margin-bottom:4px">Keyman</div>
+          <input id="drill-keyman" type="text" placeholder="例：本人、另一半" style="width:100%;background:#0d0d0d;border:1px solid #2a2a2a;border-radius:6px;padding:7px 10px;color:#f0ece4;font-size:13px;outline:none;font-family:inherit">
+        </div>
+        <div>
+          <div style="font-size:11px;color:#888;margin-bottom:4px">家人態度</div>
+          <input id="drill-家人" type="text" placeholder="例：另一半保守" style="width:100%;background:#0d0d0d;border:1px solid #2a2a2a;border-radius:6px;padding:7px 10px;color:#f0ece4;font-size:13px;outline:none;font-family:inherit">
+        </div>
+      </div>
+
+      <!-- 難度選擇 -->
+      <div style="font-size:11px;font-weight:700;letter-spacing:.12em;color:#b06eff;margin-bottom:10px">⚡ 客戶難度</div>
+      <div style="display:flex;gap:8px;margin-bottom:16px" id="drillDiffBtns">
+        <button onclick="selectDiff(this,'normal')" data-diff="normal" class="diff-btn" style="flex:1;padding:8px 4px;font-size:12px;font-weight:700;border-radius:8px;cursor:pointer;border:2px solid #2a2a2a;background:#0d0d0d;color:#888;font-family:inherit;transition:all .2s">😊<br>普通客戶</button>
+        <button onclick="selectDiff(this,'tough')" data-diff="tough" class="diff-btn" style="flex:1;padding:8px 4px;font-size:12px;font-weight:700;border-radius:8px;cursor:pointer;border:2px solid #2a2a2a;background:#0d0d0d;color:#888;font-family:inherit;transition:all .2s">😤<br>比較機車</button>
+        <button onclick="selectDiff(this,'brutal')" data-diff="brutal" class="diff-btn" style="flex:1;padding:8px 4px;font-size:12px;font-weight:700;border-radius:8px;cursor:pointer;border:2px solid #c0392b;background:rgba(192,57,43,.12);color:#e88888;font-family:inherit;transition:all .2s">🔥<br>超刁鑽</button>
+      </div>
+
+      <!-- 產生按鈕 -->
+      <button onclick="generateDrillPrompt()" style="width:100%;padding:12px;background:linear-gradient(135deg,#4a0e8f,#7b2fff);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;margin-bottom:16px">
+        ✨ 產生豆包演練 Prompt
+      </button>
+
+      <!-- 結果區 -->
+      <div id="drillResult" style="display:none">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.12em;color:#b06eff;margin-bottom:8px">📋 複製以下內容，開豆包語音貼上即可開始</div>
+        <div id="drillPromptText" style="background:#0a0a0a;border:1px solid #2a2a2a;border-radius:10px;padding:14px;font-size:12px;color:#ccc;line-height:1.8;white-space:pre-wrap;word-break:break-word;max-height:280px;overflow-y:auto;margin-bottom:10px"></div>
+        <div style="display:flex;gap:8px">
+          <button onclick="copyDrillPrompt()" style="flex:2;padding:10px;background:rgba(138,43,226,.2);border:1px solid rgba(138,43,226,.5);border-radius:8px;color:#b06eff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">📋 複製 Prompt</button>
+          <a href="https://www.doubao.com" target="_blank" style="flex:1;padding:10px;background:#0d0d0d;border:1px solid #2a2a2a;border-radius:8px;color:#888;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;text-decoration:none;display:flex;align-items:center;justify-content:center">開豆包 →</a>
+        </div>
+        <div id="drillCopyMsg" style="text-align:center;font-size:12px;color:#55c882;margin-top:8px;display:none">✅ 已複製！開豆包語音貼上開始練習</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// 豆包演練 Prompt 產生器
+// ═══════════════════════════════════════
+let _drillScriptId = null;
+let _drillDiff = 'tough';
+
+function openDrillModal(scriptId) {
+  _drillScriptId = scriptId;
+  _drillDiff = 'tough';
+
+  const s = SCRIPTS.find(x => x.id === scriptId);
+  document.getElementById('drillScriptTitle').textContent = s ? s.title : '話術演練';
+
+  // 從 AI 顧問欄位帶入（如果有填的話）
+  const getAI = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+  document.getElementById('drill-族群').value = getAI('ai-族群');
+  document.getElementById('drill-年齡').value = getAI('ai-年齡');
+  document.getElementById('drill-卡關').value = getAI('ai-卡關');
+  document.getElementById('drill-keyman').value = getAI('ai-keyman');
+  document.getElementById('drill-家人').value = getAI('ai-家人');
+
+  // 預設選「比較機車」
+  document.querySelectorAll('.diff-btn').forEach(b => {
+    const isSel = b.dataset.diff === 'tough';
+    b.style.borderColor = isSel ? 'rgba(138,43,226,.8)' : '#2a2a2a';
+    b.style.background = isSel ? 'rgba(138,43,226,.2)' : '#0d0d0d';
+    b.style.color = isSel ? '#b06eff' : '#888';
+  });
+
+  document.getElementById('drillResult').style.display = 'none';
+  document.getElementById('drillBg').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDrill() {
+  document.getElementById('drillBg').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function selectDiff(btn, diff) {
+  _drillDiff = diff;
+  document.querySelectorAll('.diff-btn').forEach(b => {
+    const isSel = b.dataset.diff === diff;
+    b.style.borderColor = isSel ? 'rgba(138,43,226,.8)' : '#2a2a2a';
+    b.style.background = isSel ? 'rgba(138,43,226,.2)' : '#0d0d0d';
+    b.style.color = isSel ? '#b06eff' : '#888';
+  });
+}
+
+function generateDrillPrompt() {
+  const s = SCRIPTS.find(x => x.id === _drillScriptId);
+  if (!s) return;
+
+  const 族群 = document.getElementById('drill-族群').value.trim() || '一般客戶';
+  const 年齡 = document.getElementById('drill-年齡').value.trim() || '40 歲左右';
+  const 卡關 = document.getElementById('drill-卡關').value.trim() || s.trigger || '還在猶豫';
+  const keyman = document.getElementById('drill-keyman').value.trim() || '本人';
+  const 家人 = document.getElementById('drill-家人').value.trim() || '';
+
+  const diffMap = {
+    normal: {
+      label: '普通',
+      desc: '你個性溫和但有點猶豫，業務說得有道理你會認同，但還是需要被推一把才會下決定。',
+      rule: '每次回應 1-2 句，偶爾提出一個小疑問，被說服後自然接受。'
+    },
+    tough: {
+      label: '機車',
+      desc: '你有點防備心，說話直接，聽到業務說話會挑毛病，喜歡用反問讓業務接不下去。',
+      rule: '每次回應要帶一個反駁或質疑。不要輕易被說服，至少要業務講到第 2-3 個有力點才稍微軟化。'
+    },
+    brutal: {
+      label: '超刁鑽',
+      desc: '你是最難搞的那種客戶：冷漠、懷疑一切、說話犀利，對業務有天然的不信任感，甚至有點不耐煩。你有主見，不喜歡被推銷。',
+      rule: '每次回應要主動提出新的反對理由，不給業務喘息空間。被說服的門檻極高，至少要業務講出非常具體的數據或個案才會動搖一點點。偶爾可以直接說「你說的我聽不懂」或「這聽起來跟所有業務說的一樣」。'
+    }
+  };
+
+  const diff = diffMap[_drillDiff];
+  const 家人段 = 家人 ? `\n- 家庭狀況：${家人}，這個因素也讓你更謹慎。` : '';
+
+  const prompt = `【角色扮演：請你扮演一位房地產潛在客戶】
+
+━━━ 你的身份 ━━━
+- 族群：${族群}
+- 年齡：${年齡}
+- Keyman：${keyman}${家人段}
+- 目前狀況：${卡關}
+
+━━━ 你的個性（${diff.label}模式）━━━
+${diff.desc}
+
+━━━ 對話規則 ━━━
+${diff.rule}
+- 全程用自然的繁體中文口語回應，不要太書面。
+- 不要主動結束對話，讓業務持續練習。
+- 每次只回應 1-3 句話，像真實對話節奏。
+
+━━━ 今天的情境 ━━━
+業務要用這個話術切入：「${s.trigger}」
+對應的主題是：${s.title}
+
+━━━ 開始 ━━━
+準備好了嗎？我會先開口，你用客戶身份回應。
+如果你是語音模式，直接等我說話後用客戶語氣回覆。`;
+
+  document.getElementById('drillPromptText').textContent = prompt;
+  document.getElementById('drillResult').style.display = 'block';
+  document.getElementById('drillCopyMsg').style.display = 'none';
+  document.getElementById('drillPromptText').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function copyDrillPrompt() {
+  const text = document.getElementById('drillPromptText').textContent;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => {
+      document.getElementById('drillCopyMsg').style.display = 'block';
+      setTimeout(() => document.getElementById('drillCopyMsg').style.display = 'none', 3000);
+    });
+  } else {
+    // fallback
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+    document.getElementById('drillCopyMsg').style.display = 'block';
+    setTimeout(() => document.getElementById('drillCopyMsg').style.display = 'none', 3000);
+  }
 }
 </script>
 </body>
