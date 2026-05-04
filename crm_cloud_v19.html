@@ -906,7 +906,7 @@ function claimSeminarLead() {}
   </nav>
 
   <!-- 浮動按鈕（已停用） -->
-  <button id="floatRescueBtn" style="display:none">🆘</button>
+  <button id="floatRescueBtn" style="display:none!important">🆘</button>
 
   <div class="container">
 
@@ -2437,7 +2437,7 @@ function login() {
       // ── 連線失敗：判斷是不是 API URL 過期 ──
       var isNetworkErr = /Load failed|Failed to fetch|NetworkError|連線逾時|404|not found/i.test(errMsg);
       if (isNetworkErr) {
-        showErr('🔌 連線失敗，請更新雲端網址');
+        showErr('⚠️ 網路不穩或 GAS 需要暖機，請稍後再試或換 4G/WiFi 重試');
         // 自動展開重設網址面板
         var box = document.getElementById('resetUrlBox');
         if (box) box.style.display = 'block';
@@ -2454,7 +2454,7 @@ function login() {
 function enterApp() {
   document.getElementById('loginPage').style.display = 'none';
   document.getElementById('mainApp').classList.add('active');
-  var fb=document.getElementById('floatRescueBtn'); if(fb) fb.style.display='flex';
+  // floatRescueBtn 已由詳情頁內工具列取代，不顯示
   document.getElementById('userName').textContent = currentUser;
   initApp();
   fetchCustomers();
@@ -5421,6 +5421,27 @@ function renderCustomers() {
 }
 
 // ── 詳情彈窗（檢視模式）──
+// ══════════════════════════════════════════════
+// 工具快捷開啟（帶入客戶資料）
+// ══════════════════════════════════════════════
+var TOOL_URLS = {
+  futime: 'futime-scripts-lib-crm.html',
+  coach:  'zhiwei-ai-coach-crm.html',
+  sos:    'sos-v2-crm.html'
+};
+
+function openTool(tool, customerId) {
+  var c = customers.find(function(x){ return x.id && x.id.toString() === customerId.toString(); });
+  if (!c) { alert('找不到客戶資料'); return; }
+
+  // 把客戶資料存到 sessionStorage，讓工具頁讀取
+  try { sessionStorage.setItem('crm_launch_customer', JSON.stringify(c)); } catch(e) {}
+
+  var url = TOOL_URLS[tool];
+  if (!url) { alert('找不到工具網址，請確認三個工具 HTML 與 CRM 在同一個資料夾'); return; }
+  window.open(url, '_blank');
+}
+
 function showDetail(id) {
   var sid = id.toString();
   var c = customers.find(function(x){ return x.id && x.id.toString()===sid; });
@@ -5460,6 +5481,18 @@ function showDetail(id) {
   var canEdit = currentRole==='manager' || c.salesPerson===currentUser;
   var actionsDiv = document.getElementById('modalActions');
   actionsDiv.innerHTML = '';
+
+  // ── 工具快捷列（話術庫 / AI跟進 / SOS）──
+  var toolBar = document.createElement('div');
+  toolBar.style.cssText = 'width:100%;display:flex;gap:6px;margin-bottom:4px';
+  toolBar.innerHTML = [
+    { icon:'📚', label:'話術庫',  fn:'openTool("futime","' },
+    { icon:'🤖', label:'AI 跟進', fn:'openTool("coach","' },
+    { icon:'🆘', label:'SOS 救援',fn:'openTool("sos","'   }
+  ].map(function(t){
+    return '<button onclick=\''+t.fn+sid+'")\' style="flex:1;padding:8px 4px;font-size:12px;font-weight:700;background:rgba(7,25,45,.06);border:1px solid #c9c0b0;border-radius:8px;cursor:pointer;color:#374151;font-family:inherit">'+t.icon+'<br>'+t.label+'</button>';
+  }).join('');
+  actionsDiv.appendChild(toolBar);
 
   // 📋 生成接談劇本按鈕（所有人都能用）
   var scriptBtn = document.createElement('button');
@@ -6680,7 +6713,7 @@ function showToast(msg) {
       if (isTimeout) {
         apiStatusEl.textContent = '⏱ 連線逾時，請確認網路後重試';
       } else {
-        apiStatusEl.textContent = '❌ 無法連線 GAS（' + errMsg + '）';
+        apiStatusEl.textContent = '⚠️ 首次連線較慢或網路不穩，請直接輸入密碼登入試試';
       }
       apiStatusEl.style.color = '#b02a20';
       var box = document.getElementById('resetUrlBox');
@@ -6698,8 +6731,8 @@ function showToast(msg) {
   <div id="quickCommandList" style="display:none"></div>
   <div id="previewLabel" style="display:none"></div>
 
-<!-- ══ 異議救援 Modal ══ -->
-<div class="rescue-overlay" id="rescueOverlay">
+<!-- ══ 異議救援 Modal（已由 sos-v2-crm.html 取代，保留程式碼避免 JS 錯誤）══ -->
+<div class="rescue-overlay" id="rescueOverlay" style="display:none!important">
   <div class="rescue-modal">
     <div class="rescue-head">
       <div>
