@@ -594,10 +594,35 @@
     <p class="subtitle">填寫客況，一鍵生成完整跟進話術報告<br>早會前兩分鐘完成，出門就有劇本</p>
   </div>
 
+  <!-- Gemini Key Setup -->
+  <div id="keySetupCard" style="background:var(--card);border:1px solid #c89a20;border-radius:16px;padding:24px 28px;margin-bottom:24px;display:none">
+    <div style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:16px">⚙️ 設定 Gemini API Key</div>
+    <p style="font-size:13px;color:var(--text-dim);line-height:1.7;margin-bottom:14px">
+      請至 <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--gold)">Google AI Studio</a> 免費申請 API Key，貼入下方後儲存即可。Key 只存在你的瀏覽器，不會上傳。
+    </p>
+    <div style="display:flex;gap:8px">
+      <input type="password" id="geminiKeyInput" placeholder="AIza..." style="flex:1;background:var(--input-bg);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text);font-size:14px;outline:none;font-family:inherit">
+      <button onclick="saveGeminiKey()" style="background:var(--gold);color:#000;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap">儲存</button>
+    </div>
+  </div>
+
+  <!-- Key status bar -->
+  <div id="keyStatusBar" style="display:none;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 16px;margin-bottom:16px;font-size:12px;color:var(--text-dim);display:flex;align-items:center;justify-content:space-between">
+    <span id="keyStatusText">✅ Gemini API Key 已設定</span>
+    <button onclick="clearGeminiKey()" style="background:none;border:none;color:#e85555;font-size:12px;cursor:pointer;font-family:inherit">清除</button>
+  </div>
+
   <!-- Form -->
   <div class="form-card" id="formCard">
 
     <div class="section-label">客戶基本資料</div>
+
+    <!-- CRM 快速帶入 -->
+    <div style="margin-bottom:20px">
+      <button onclick="openCrmPicker('coach')" style="width:100%;background:rgba(240,192,64,.1);border:1px solid rgba(240,192,64,.35);border-radius:10px;padding:11px 16px;color:var(--gold);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;text-align:left;transition:background .2s" onmouseover="this.style.background='rgba(240,192,64,.18)'" onmouseout="this.style.background='rgba(240,192,64,.1)'">
+        📋 從 CRM 選客戶，自動帶入資料
+      </button>
+    </div>
 
     <div class="field-grid">
       <div class="field">
@@ -711,6 +736,7 @@
         <div class="result-meta" id="resultMeta"></div>
         <div class="result-actions">
           <button class="action-btn" onclick="copyResult()">📋 複製全文</button>
+          <button class="action-btn primary" onclick="saveToCRM()">☁️ 存回 CRM</button>
         </div>
       </div>
     </div>
@@ -727,6 +753,8 @@
   let supportValue = '';
   let selectedChips = [];
   let resultText = '';
+  let _crmSelectedId = null;
+  let _crmSelectedName = '';
 
   function toggleChip(el) {
     el.classList.toggle('active');
@@ -777,18 +805,31 @@
     animateSteps();
 
     try {
-      const response = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 4000,
-          messages: [{ role: 'user', content: prompt }]
-        })
-      });
+      const geminiKey = getGeminiKey();
+      if (!geminiKey) {
+        document.getElementById('loadingCard').classList.remove('show');
+        document.getElementById('formCard').style.display = 'block';
+        document.getElementById('submitBtn').disabled = false;
+        document.getElementById('keySetupCard').style.display = 'block';
+        showError('請先設定 Gemini API Key（頁面上方）');
+        return;
+      }
+
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { maxOutputTokens: 4000, temperature: 0.7 }
+          })
+        }
+      );
 
       const data = await response.json();
-      const text = data.content?.map(b => b.text || '').join('') || '';
+      if (data.error) throw new Error(data.error.message || 'Gemini API 錯誤');
+      const text = data.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('') || '';
 
       if (!text) throw new Error('回應為空，請再試一次');
 
@@ -808,6 +849,44 @@
       showError('生成失敗：' + err.message + '。請確認網路連線後再試。');
     }
   }
+
+  // ── Gemini Key 管理 ──
+  const GEMINI_KEY_NAME = 'futime_gemini_key';
+
+  function getGeminiKey() {
+    try { return localStorage.getItem(GEMINI_KEY_NAME) || ''; } catch(e) { return ''; }
+  }
+
+  function saveGeminiKey() {
+    const val = document.getElementById('geminiKeyInput').value.trim();
+    if (!val || !val.startsWith('AIza')) { alert('Key 格式不對，請確認是以 AIza 開頭'); return; }
+    try { localStorage.setItem(GEMINI_KEY_NAME, val); } catch(e) {}
+    document.getElementById('keySetupCard').style.display = 'none';
+    renderKeyStatus();
+  }
+
+  function clearGeminiKey() {
+    if (!confirm('確定清除 Gemini API Key？')) return;
+    try { localStorage.removeItem(GEMINI_KEY_NAME); } catch(e) {}
+    renderKeyStatus();
+  }
+
+  function renderKeyStatus() {
+    const key = getGeminiKey();
+    const bar = document.getElementById('keyStatusBar');
+    const setup = document.getElementById('keySetupCard');
+    if (key) {
+      bar.style.display = 'flex';
+      setup.style.display = 'none';
+      document.getElementById('keyStatusText').textContent = '✅ Gemini API Key 已設定（免費版）';
+    } else {
+      bar.style.display = 'none';
+      setup.style.display = 'block';
+    }
+  }
+
+  // 頁面載入時初始化 key 狀態
+  document.addEventListener('DOMContentLoaded', renderKeyStatus);
 
   function buildPrompt({ name, age, group, pain, status, keyman, support, finance, lastResult, target, extra }) {
     return `你是富時代地產創辦人阮智偉。現在是早會時間，業務向你報告客戶狀況，你要用早會現場的方式，給出「可直接照做」的完整跟進策略。
@@ -948,6 +1027,128 @@ ${target.includes('諮詢') || target.includes('收訂') ? `
     });
     window.scrollTo({top:0, behavior:'smooth'});
   }
+</script>
+<!-- CRM 選客戶 Modal -->
+<div id="crmPickerBg" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:700;align-items:center;justify-content:center;padding:16px" onclick="if(event.target===this)closeCrmPicker()">
+  <div style="background:#141417;border:1px solid #2a2a32;border-radius:14px;width:100%;max-width:520px;max-height:86vh;display:flex;flex-direction:column;overflow:hidden">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #2a2a32;flex-shrink:0">
+      <span style="font-size:14px;font-weight:700;color:var(--text)">📋 從 CRM 選客戶</span>
+      <button onclick="closeCrmPicker()" style="background:none;border:none;color:var(--text-dim);font-size:18px;cursor:pointer">✕</button>
+    </div>
+    <div style="padding:12px 16px;border-bottom:1px solid #1e1e22;flex-shrink:0">
+      <input id="crmSearchInput" type="text" placeholder="搜尋姓名或業務..." oninput="filterCrmList()" style="width:100%;background:var(--input-bg);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text);font-size:13px;outline:none;font-family:inherit">
+    </div>
+    <div id="crmPickerList" style="overflow-y:auto;flex:1;padding:8px"></div>
+  </div>
+</div>
+
+<script>
+const CRM_API_URL = 'https://script.google.com/macros/s/AKfycbxPExuVTXkz8ucGXscubiypyrWL_qqu53mlp8U_ggyz4kHUT1-bf29IVAFLEmlwnP85/exec';
+let _crmCustomers = [];
+
+function crmCall(payload, cb) {
+  var tp = new Promise((_,rej) => setTimeout(() => rej(new Error('連線逾時')), 14000));
+  var req = fetch(CRM_API_URL, { method:'POST', headers:{'Content-Type':'text/plain'}, body:JSON.stringify(payload) }).then(r=>r.json());
+  Promise.race([req,tp]).then(cb).catch(e => cb({success:false, error:e.message}));
+}
+
+function openCrmPicker() {
+  const bg = document.getElementById('crmPickerBg');
+  bg.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  document.getElementById('crmSearchInput').value = '';
+  const list = document.getElementById('crmPickerList');
+  list.innerHTML = '<div style="text-align:center;padding:32px;color:var(--text-dim);font-size:13px">⏳ 載入中...</div>';
+  crmCall({ action:'getAll', role:'manager', user:'ai_tool' }, function(res) {
+    if (res.success && res.customers) {
+      _crmCustomers = res.customers.filter(c => c.customerActive === '進行中' || !c.customerActive);
+      renderCrmList(_crmCustomers);
+    } else {
+      list.innerHTML = '<div style="text-align:center;padding:32px;color:#e85555;font-size:13px">❌ ' + (res.error||'無法連線 CRM') + '</div>';
+    }
+  });
+}
+
+function closeCrmPicker() {
+  document.getElementById('crmPickerBg').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function filterCrmList() {
+  const q = document.getElementById('crmSearchInput').value.trim().toLowerCase();
+  renderCrmList(q ? _crmCustomers.filter(c => (c.customerName||'').toLowerCase().includes(q)||(c.salesPerson||'').toLowerCase().includes(q)) : _crmCustomers);
+}
+
+function renderCrmList(list) {
+  const el = document.getElementById('crmPickerList');
+  if (!list.length) { el.innerHTML = '<div style="text-align:center;padding:24px;color:var(--text-dim);font-size:13px">找不到客戶</div>'; return; }
+  el.innerHTML = list.slice(0,80).map(c => {
+    return `<div onclick='pickCustomer(${JSON.stringify(JSON.stringify(c))})' style="padding:10px 12px;border-radius:8px;margin-bottom:4px;cursor:pointer;border:1px solid var(--border);background:var(--input-bg)" onmouseover="this.style.background='#1a1a1f'" onmouseout="this.style.background='var(--input-bg)'">
+      <div style="font-size:13px;font-weight:700;color:var(--text)">${c.customerName||'（無名稱）'}</div>
+      <div style="font-size:11px;color:var(--text-dim);margin-top:2px">${c.salesPerson||''}${c.blueprintCompletion ? ' ｜ ' + c.blueprintCompletion : ''}</div>
+    </div>`;
+  }).join('');
+}
+
+function pickCustomer(jsonStr) {
+  const c = JSON.parse(jsonStr);
+  closeCrmPicker();
+  _crmSelectedId = c.id;
+  _crmSelectedName = c.customerName || '';
+
+  // 帶入表單
+  const sv = (id, val) => { const el = document.getElementById(id); if(el && val) el.value = val; };
+  sv('name', c.customerName);
+  sv('age', c.customerAge);
+
+  // 族群 chip（清除再選）
+  document.querySelectorAll('#groupChips .chip').forEach(ch => ch.classList.remove('selected'));
+  const seg = c.clientSegment || c.clientType || '';
+  if (seg) {
+    document.querySelectorAll('#groupChips .chip').forEach(ch => { if(ch.textContent.trim() === seg) ch.classList.add('selected'); });
+  }
+
+  // 支持度 chip
+  document.querySelectorAll('#supportChips .chip').forEach(ch => ch.classList.remove('selected'));
+  const sup = c.familySupport || '';
+  if (sup) {
+    document.querySelectorAll('#supportChips .chip').forEach(ch => { if(ch.textContent.trim() === sup) ch.classList.add('selected'); });
+  }
+
+  sv('status', c.currentStatus || c.blueprintCompletion || '');
+  sv('keyman', c.keyMan || '');
+  sv('finance', c.budget ? '自有資金 ' + c.budget : '');
+  sv('pain', c.painPointsNote || c.objections || '');
+  sv('lastResult', c.notes ? c.notes.split('\n')[0] : '');
+
+  showError_coach('✅ 已帶入 ' + c.customerName + ' 的資料（請確認後再送出）', true);
+}
+
+function showError_coach(msg, isSuccess) {
+  const el = document.getElementById('errorMsg');
+  el.textContent = msg;
+  el.style.background = isSuccess ? 'rgba(85,200,130,.1)' : 'rgba(232,85,85,.1)';
+  el.style.borderColor = isSuccess ? 'rgba(85,200,130,.3)' : 'rgba(232,85,85,.3)';
+  el.style.color = isSuccess ? '#55c882' : '#e88888';
+  el.classList.add('show');
+  if (isSuccess) setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+function saveToCRM() {
+  if (!_crmSelectedId) {
+    alert('本次結果不是從 CRM 選入的客戶，請先從 CRM 選擇客戶後再產生報告，才能存回。');
+    return;
+  }
+  const today = new Date().toLocaleDateString('zh-TW');
+  const note = `【AI 跟進報告 ${today}】\n` + resultText.slice(0, 2000);
+  const btn = document.querySelector('.action-btn.primary');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ 儲存中...'; }
+  crmCall({ action:'update', customer:{ id: _crmSelectedId, notes: note } }, function(res) {
+    if (btn) { btn.disabled = false; btn.textContent = '☁️ 存回 CRM'; }
+    if (res.success) { alert('✅ 已成功存回 CRM！'); }
+    else { alert('❌ 存回失敗：' + (res.error||'未知錯誤')); }
+  });
+}
 </script>
 </body>
 </html>
