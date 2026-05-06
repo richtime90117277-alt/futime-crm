@@ -5527,8 +5527,23 @@ function showDetail(id) {
     + '<div id="assetReportsList" style="font-size:12px;color:var(--text-soft)">載入中…</div>';
   actionsDiv.appendChild(reportsSection);
 
-  // 異步拉取歷史報告
+  // 異步拉取歷史資產報告
   loadAssetReports(sid, c.customerName);
+
+  // ── AI跟進報告區塊 ──
+  var aiReportsSection = document.createElement('div');
+  aiReportsSection.id = 'aiCoachReportsSection';
+  aiReportsSection.style.cssText = 'margin-top:12px;padding:12px 0 0;border-top:1px solid rgba(201,168,76,0.15)';
+  aiReportsSection.innerHTML = ''
+    + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">'
+    + '<div style="font-size:11px;font-weight:700;color:#c9a84c;letter-spacing:.08em">🤖 歷史AI跟進報告</div>'
+    + '<div id="aiCoachReportsCount" style="font-size:11px;color:#888;background:#f5f0e8;border-radius:10px;padding:1px 8px"></div>'
+    + '</div>'
+    + '<div id="aiCoachReportsList" style="font-size:12px;color:var(--text-soft)">載入中…</div>';
+  actionsDiv.appendChild(aiReportsSection);
+
+  // 異步載入AI跟進報告
+  loadAiCoachReports(c);
 
   document.getElementById('detailModal').classList.add('active');
 }
@@ -6170,6 +6185,97 @@ function openAssetPlanner(c) {
   if (c.preferredArea) params.set('area', c.preferredArea);
 
   window.open(ASSET_PLANNER_URL + '?' + params.toString(), '_blank');
+}
+
+/**
+ * 載入並渲染 AI 跟進報告（從客戶的 aiCoachReports 欄位讀取）
+ */
+function loadAiCoachReports(customer) {
+  var listEl   = document.getElementById('aiCoachReportsList');
+  var countEl  = document.getElementById('aiCoachReportsCount');
+  if (!listEl) return;
+
+  // aiCoachReports 已隨 getAllCustomers 一起拉回來，直接用
+  var reports = [];
+  if (customer.aiCoachReports) {
+    try { reports = JSON.parse(customer.aiCoachReports); } catch(e) { reports = []; }
+    if (!Array.isArray(reports)) reports = [];
+  }
+
+  if (countEl) countEl.textContent = reports.length ? reports.length + ' 筆' : '尚無';
+
+  if (reports.length === 0) {
+    listEl.innerHTML = '<div style="background:#f9f6ef;border-radius:8px;padding:10px 12px;font-size:12px;color:#999;text-align:center">'
+      + '尚無AI跟進報告<br><span style="font-size:11px;color:#bbb">使用「AI 跟進」工具產生報告後按「存回 CRM」</span></div>';
+    return;
+  }
+
+  listEl.innerHTML = reports.map(function(r, idx) {
+    var isFirst  = idx === 0;
+    var preview  = (r.content || '').replace(/\n/g,' ').slice(0, 100);
+    var fullId   = 'aiRptFull_' + idx;
+    var btnId    = 'aiRptBtn_' + idx;
+    var borderColor = isFirst ? 'rgba(201,168,76,0.4)' : '#e8e2d8';
+    var bgColor     = isFirst ? 'rgba(201,168,76,0.06)' : '#f9f6ef';
+    return '<div style="border:1px solid ' + borderColor + ';border-radius:8px;margin-bottom:6px;overflow:hidden">'
+      // 標題列
+      + '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:' + bgColor + ';cursor:pointer" onclick="toggleAiRpt(\'' + fullId + '\',\'' + btnId + '\')">'
+      +   '<div style="display:flex;align-items:center;gap:6px">'
+      +     (isFirst ? '<span style="font-size:9px;background:#c9a84c;color:#fff;border-radius:4px;padding:1px 5px;font-weight:700">最新</span>' : '')
+      +     '<span style="font-size:12px;font-weight:' + (isFirst?'700':'400') + ';color:' + (isFirst?'#8a6d1e':'#555') + '">' + (r.date||'') + '</span>'
+      +     (r.target ? '<span style="font-size:11px;color:#aaa;border-left:1px solid #ddd;padding-left:6px">節點：' + r.target + '</span>' : '')
+      +   '</div>'
+      +   '<span id="' + btnId + '" style="font-size:10px;color:#aaa">▼ 展開</span>'
+      + '</div>'
+      // 摘要預覽
+      + '<div style="padding:6px 10px;font-size:11px;color:#888;border-bottom:1px solid #f0ebe0">'
+      + preview + (r.content && r.content.length > 100 ? '…' : '')
+      + '</div>'
+      // 完整內容（收起）
+      + '<div id="' + fullId + '" style="display:none;padding:12px 10px;background:#fff">'
+      +   '<div style="font-size:12px;color:#374151;line-height:1.85;white-space:pre-wrap;word-break:break-word;max-height:360px;overflow-y:auto">' + escHtml(r.content||'') + '</div>'
+      +   '<div style="margin-top:8px">'
+      +     '<button onclick="copyAiRpt(' + idx + ')" style="padding:5px 12px;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.35);border-radius:6px;color:#8a6d1e;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">📋 複製報告</button>'
+      +   '</div>'
+      + '</div>'
+      + '</div>';
+  }).join('');
+
+  // 存供複製用
+  window._aiCoachReportsData = reports;
+}
+
+function toggleAiRpt(fullId, btnId) {
+  var el  = document.getElementById(fullId);
+  var btn = document.getElementById(btnId);
+  if (!el) return;
+  var open = el.style.display !== 'none';
+  el.style.display  = open ? 'none' : 'block';
+  if (btn) btn.textContent = open ? '▼ 展開' : '▲ 收起';
+}
+
+function copyAiRpt(idx) {
+  var reports = window._aiCoachReportsData || [];
+  var r = reports[idx];
+  if (!r) return;
+  var text = '【AI跟進報告】' + (r.date||'') + (r.target ? '  節點：'+r.target : '') + '\n\n' + (r.content||'');
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(function(){ showToast && showToast('✅ 已複製報告'); }).catch(function(){ fallbackCopy(text); });
+  } else { fallbackCopy(text); }
+}
+
+function fallbackCopy(text) {
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); showToast && showToast('✅ 已複製報告'); } catch(e) {}
+  document.body.removeChild(ta);
+}
+
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 /**
