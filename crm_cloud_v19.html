@@ -258,8 +258,9 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
   .logout-btn { font-size:12px; padding:.375rem .75rem; }
 
   /* ── Nav：手機只顯示 emoji，2行排列 ── */
+  /* top 不需偏移：app 是 flex-column，header 自然在上，nav sticky top:0 即正確 */
   .nav-tabs {
-    top: 52px !important;
+    top: 0 !important;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 0;
@@ -278,8 +279,8 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
   .nav-label { font-size: 9px; display: block; color: inherit; }
 
   /* ── Container ── */
+  /* padding-top 已移除：header+nav 在 flex column 中已佔位，不需額外撐開 */
   .container { padding: .625rem .625rem 5rem; }
-  .app.active { padding-top: 96px !important; }
 
   /* ── 週報 header 卡片 ── */
   #weeklyReportCard {
@@ -2155,6 +2156,8 @@ var PASSWORDS = {}; // 保留空物件避免舊代碼報錯
 var STAGE_NAMES = ['','客戶開發','初步接觸','需求分析','產品匹配','異議處理','成交締結','售後服務','轉介紹'];
 var STAFF_KEY = 'futime_sales_list';
 var PASSWORDS_KEY = 'futime_passwords';
+// ── 登入狀態持久化（解決安卓下拉頁面重渲染導致登出問題）──
+var SESSION_KEY = 'futime_session_v1';
 
 // ── 密碼管理（v13+：密碼移至後端，不在前端存明文）──
 function loadPasswords() { /* 已棄用，密碼由後端 verifyPassword 驗證 */ }
@@ -2431,6 +2434,10 @@ function login() {
     if (res && res.success) {
       currentUser = u;
       currentRole = res.role;
+      // ── 儲存登入狀態到 localStorage（安卓下拉不會登出）──
+      try {
+        localStorage.setItem(SESSION_KEY, JSON.stringify({ user: u, role: res.role, ts: Date.now() }));
+      } catch(e) {}
       enterApp();
     } else {
       var errMsg = res && res.error ? res.error : '帳號或密碼錯誤';
@@ -2464,6 +2471,8 @@ function enterApp() {
 function logout() {
   currentUser = null; currentRole = null; customers = [];
   _rescueAlertShownThisSession = false;
+  // ── 清除持久化登入狀態 ──
+  try { localStorage.removeItem(SESSION_KEY); } catch(e) {}
 
   // ── 重置所有篩選器，防止下一個人登入後看到空畫面 ──
   var resetIds = ['filterSales','filterStage','filterTimeline','filterViewing','filterSeminar','filterTrust','searchInput'];
@@ -6730,6 +6739,27 @@ function showToast(msg) {
 (function(){
   loadSalesList();
   rebuildSalesSelects();
+
+  // ── 安卓下拉重整：嘗試從 localStorage 恢復登入狀態 ──
+  // session 有效期：24小時（86400000ms）
+  var SESSION_MAX_AGE = 86400000;
+  try {
+    var raw = localStorage.getItem(SESSION_KEY);
+    if (raw) {
+      var sess = JSON.parse(raw);
+      var age  = Date.now() - (sess.ts || 0);
+      if (sess.user && sess.role && age < SESSION_MAX_AGE) {
+        // 直接恢復，不重新打 API（避免安卓每次下拉都要重新驗證）
+        currentUser = sess.user;
+        currentRole = sess.role;
+        enterApp();
+        return; // 跳過登入頁 ping，直接進 App
+      } else {
+        // session 過期，清除
+        localStorage.removeItem(SESSION_KEY);
+      }
+    }
+  } catch(e) {}
 
   // ── 自動測試連線（v22：每次載入都驗證，失敗自動展開設定面板）──
   var apiStatusEl = document.getElementById('apiStatus');
