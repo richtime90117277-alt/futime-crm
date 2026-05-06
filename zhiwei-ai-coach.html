@@ -1094,14 +1094,40 @@ function saveToCRM() {
     alert('本次結果不是從 CRM 選入的客戶，請先從 CRM 選擇客戶後再產生報告，才能存回。');
     return;
   }
-  const today = new Date().toLocaleDateString('zh-TW');
-  const note = `【AI 跟進報告 ${today}】\n` + resultText.slice(0, 2000);
+
   const btn = document.querySelector('.action-btn.primary');
   if (btn) { btn.disabled = true; btn.textContent = '⏳ 儲存中...'; }
-  crmCall({ action:'update', customer:{ id: _crmSelectedId, notes: note } }, function(res) {
-    if (btn) { btn.disabled = false; btn.textContent = '☁️ 存回 CRM'; }
-    if (res.success) { alert('✅ 已成功存回 CRM！'); }
-    else { alert('❌ 存回失敗：' + (res.error||'未知錯誤')); }
+
+  // 先讀取現有的 aiCoachReports
+  crmCall({ action: 'getOne', id: _crmSelectedId }, function(res) {
+    let existingReports = [];
+    if (res.success && res.customer && res.customer.aiCoachReports) {
+      try { existingReports = JSON.parse(res.customer.aiCoachReports); } catch(e) { existingReports = []; }
+      if (!Array.isArray(existingReports)) existingReports = [];
+    }
+
+    // 新增這筆報告
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('zh-TW') + ' ' + now.toLocaleTimeString('zh-TW', {hour:'2-digit', minute:'2-digit'});
+    const newReport = {
+      date: dateStr,
+      target: document.getElementById('target') ? document.getElementById('target').value.trim() : '',
+      content: resultText.slice(0, 4000)
+    };
+    existingReports.unshift(newReport); // 最新的放最前面
+    if (existingReports.length > 20) existingReports = existingReports.slice(0, 20); // 最多保留20筆
+
+    crmCall({
+      action: 'update',
+      customer: {
+        id: _crmSelectedId,
+        aiCoachReports: JSON.stringify(existingReports)
+      }
+    }, function(res2) {
+      if (btn) { btn.disabled = false; btn.textContent = '☁️ 存回 CRM'; }
+      if (res2.success) { alert('✅ 已成功存回 CRM！\n（可在 CRM 客戶資料的「歷史AI跟進報告」區塊查看）'); }
+      else { alert('❌ 存回失敗：' + (res2.error || '未知錯誤')); }
+    });
   });
 }
 </script>
