@@ -687,6 +687,16 @@
         <label>補充說明（可空白）</label>
         <input type="text" id="extra" placeholder="例：她媽媽特別在意建商信譽 / 下週要出國，這週是最後機會…" />
       </div>
+      <div class="field span2">
+        <label>業務與客戶熟悉度</label>
+        <div class="chip-group" id="familiarityChips">
+          <div class="chip" onclick="toggleFamiliarity(this)" data-value="第一次見面">🆕 第一次見面</div>
+          <div class="chip" onclick="toggleFamiliarity(this)" data-value="認識1個月內">🌱 認識1個月內</div>
+          <div class="chip" onclick="toggleFamiliarity(this)" data-value="認識3-6個月，有互動">🤝 認識3-6個月</div>
+          <div class="chip" onclick="toggleFamiliarity(this)" data-value="認識超過半年，關係穩定">💪 認識超過半年</div>
+          <div class="chip" onclick="toggleFamiliarity(this)" data-value="熟識，像朋友一樣">👫 熟識如朋友</div>
+        </div>
+      </div>
     </div>
 
     <div class="submit-wrap">
@@ -757,7 +767,15 @@
     supportValue = val;
   }
 
-  async function generate() {
+  async let selectedFamiliarity = '';
+
+function toggleFamiliarity(el) {
+  document.querySelectorAll('#familiarityChips .chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedFamiliarity = el.dataset.value || el.textContent.trim();
+}
+
+function generate() {
     const name = document.getElementById('name').value.trim();
     const age = document.getElementById('age').value.trim();
     const groupOther = document.getElementById('groupOther').value.trim();
@@ -778,7 +796,8 @@
     if (!target) { showError('請選擇本次要成交的節點'); return; }
 
     // Build prompt
-    const prompt = buildPrompt({ name, age, group, pain, status, keyman, support: supportValue, finance, lastResult, target, extra });
+    const familiarity = selectedFamiliarity || '未填';
+    const prompt = buildPrompt({ name, age, group, pain, status, keyman, support: supportValue, finance, lastResult, target, extra, familiarity });
 
     // Show loading
     document.getElementById('formCard').style.display = 'none';
@@ -929,10 +948,11 @@
     return { realBlock, financeInsight, gateWarnings, signals, seminarAngle };
   }
 
-  function buildPrompt({ name, age, group, pain, status, keyman, support, finance, lastResult, target, extra }) {
+  function buildPrompt({ name, age, group, pain, status, keyman, support, finance, lastResult, target, extra, familiarity }) {
     const { realBlock, financeInsight, gateWarnings, signals, seminarAngle } = preProcess({
       name, age, group, pain, status, finance, target, extra, support, keyman, lastResult
     });
+    const familiarityStr = familiarity || '未填';
 
     return `你是富時代地產創辦人阮智偉。你的身份是「資產顧問」，不是「房屋仲介」。
 現在是早會時間，業務向你報告客戶狀況，你要用早會現場的方式，給出「可直接照做」的完整跟進策略。
@@ -1000,14 +1020,28 @@
 #### 【4. 客戶長相（必出）】
 這個人的心理模型、卡點、需要什麼感受才會動
 
-#### 【5. 這次諮詢劇本（必出）】
-三段式：開場（最多 6 句）/ 中段（最多 6 句）/ 後段（最多 6 句）
-每句用 1–6 編號，提問句加（停頓，等回答），陳述句加（確認）
+#### 【5. 分叉聊天地圖（必出）】
+⚠️ 這不是單線劇本，是「他說什麼你接什麼」的地圖，業務根據對方說的話選路走，不要照順序念。
 
-⚠️ 劇本硬規則：
-- 中段目標是「幫客戶釐清決策」，不是「推銷物件或市場行情」
-- 禁止用行情漲幅、稀缺性、搶手程度當說服工具
-- 陳述句的目的是幫客戶「看清楚自己的需求」，不是「讓他覺得現在不買很可惜」
+**開場暖身**（1-2句，根據熟悉度調整——第一次見面先閒聊建立感，熟識的直接切）：
+
+**第一刀**（第一個丟出去的問題，要讓他說出今天最想搞清楚的事）：
+
+**分叉一**：他說「比較想＿＿」→ 你接：
+**分叉二**：他說「但是＿＿」（提出顧慮）→ 你接：
+**分叉三**：他說「再看看 / 都好 / 要回去想」→ 你接：
+**分叉四**：他提到家人 / 另一半 / 第三方 → 你接：
+
+**資訊沒收齊，不出招**（留下次的收尾句）：
+「這樣，今天你給我一個答案就好——＿＿。」
+
+**時機到了，出招**（口語，問流程不問要不要）：
+
+---
+
+#### 【6. 單線完整話術（最多25句，可直接照念）】
+提問句加（停頓，等回答），陳述句加（確認）
+⚠️ 這是分叉地圖的「主線版本」，實際對話要根據客戶反應靈活調整
 
 #### 【6. 完整話術（最多 25 句，可直接照念）】
 提問句加（停頓，等回答），陳述句加（確認）
@@ -1070,6 +1104,7 @@ ${target.includes('研討會') ? `
 - 財務狀況：${finance || '未填'}
 - 上次跟進結果：${lastResult || '未填'}
 - 本次節點：${target}
+- 業務與客戶熟悉度：${familiarityStr}（影響開場方式：第一次見面要先暖身建立信任；熟識的可以直接切入）
 ${extra ? `- 補充說明（最高優先級）：${extra}` : ''}
 
 #### ⚡ 智偉哥預判（自動推導，報告必須用這個框架）
