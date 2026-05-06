@@ -2464,6 +2464,14 @@ function enterApp() {
 function logout() {
   currentUser = null; currentRole = null; customers = [];
   _rescueAlertShownThisSession = false;
+
+  // ── 重置所有篩選器，防止下一個人登入後看到空畫面 ──
+  var resetIds = ['filterSales','filterStage','filterTimeline','filterViewing','filterSeminar','filterTrust','searchInput'];
+  resetIds.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+
   document.getElementById('loginPage').style.display = 'flex';
   document.getElementById('mainApp').classList.remove('active');
   document.getElementById('userSelect').value = '';
@@ -5378,6 +5386,8 @@ function clearForm() {
 
 // ── 客戶列表 ──
 function renderCustomers() {
+  // 資料還沒回來時，顯示載入中，不要顯示「沒有客戶」
+  if (!currentUser) return;
   var mc = customers.slice();
   var fs = document.getElementById('filterSales').value || '';
   var fst = document.getElementById('filterStage').value || '';
