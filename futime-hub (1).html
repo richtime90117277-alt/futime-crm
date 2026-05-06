@@ -3,645 +3,1041 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>富時代 · AI 決策引擎</title>
+<title>富時代 · 決策引擎</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Noto+Sans+TC:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
-:root {
-  --c: #4dd8e8;
-  --c2: #38b6f5;
-  --bg: #060a0f;
-  --card: #0b1520;
-  --t: #d8eef6;
-  --td: rgba(160,205,220,0.55);
-  --tm: rgba(90,160,185,0.30);
+:root{
+  --ink:    #1C2B22;
+  --ink2:   #2F4237;
+  --moss:   #3D5A47;
+  --sage:   #6A8F78;
+  --mist:   #9ABFAA;
+  --foam:   #E8F2EC;
+  --cream:  #F7F3EA;
+  --paper:  #FDFAF5;
+  --gold:   #B8882E;
+  --gold2:  #DEB86A;
+  --amber:  #E8A020;
+  --rose:   #D45A3A;
+  --border: rgba(58,86,68,0.10);
+  --shadow: rgba(26,40,32,0.07);
 }
 
-/* ── lock to viewport ── */
-html, body {
-  width: 100%; height: 100%;
-  overflow: hidden;
-  background: var(--bg);
-  font-family: 'Noto Sans TC', sans-serif;
-  color: var(--t);
-  -webkit-font-smoothing: antialiased;
-}
+html,body{width:100%;height:100%;overflow:hidden;background:#F7F3EA;font-family:'Noto Sans TC',sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;}
 
-.bg1 { position:fixed;inset:0;z-index:0;pointer-events:none;
+/* warm linen bg */
+.bg-paper{position:fixed;inset:0;z-index:0;pointer-events:none;
   background:
-    radial-gradient(ellipse 65% 45% at 0% 0%,   rgba(0,190,210,0.09) 0%,transparent 55%),
-    radial-gradient(ellipse 55% 40% at 100% 100%,rgba(0,130,220,0.07) 0%,transparent 55%); }
-.bg2 { position:fixed;inset:0;z-index:0;pointer-events:none;
-  background-image:radial-gradient(rgba(77,216,232,0.055) 1px,transparent 1px);
-  background-size:26px 26px; }
+    radial-gradient(ellipse 80% 50% at 5% 0%,   rgba(232,160,32,0.10) 0%,transparent 55%),
+    radial-gradient(ellipse 65% 50% at 95% 100%,  rgba(61,90,71,0.08)  0%,transparent 55%),
+    radial-gradient(ellipse 60% 60% at 50% 45%,  rgba(255,252,244,0.7) 0%,transparent 80%);}
+.bg-linen{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.22;
+  background-image:
+    repeating-linear-gradient(0deg,  transparent,transparent 4px,rgba(58,86,68,0.018) 4px,rgba(58,86,68,0.018) 5px),
+    repeating-linear-gradient(90deg, transparent,transparent 4px,rgba(58,86,68,0.012) 4px,rgba(58,86,68,0.012) 5px);}
 
-/* ── full-viewport flex column ── */
-.wrap {
-  position: relative; z-index: 1;
-  width: 100%; height: 100dvh;
-  display: flex; flex-direction: column;
-  padding: 0;
-  overflow: hidden;
+.wrap{position:relative;z-index:1;width:100%;height:100dvh;display:flex;flex-direction:column;overflow:hidden;background:#F7F3EA;}
+
+/* ══ HEADER — full bright ══ */
+header{
+  flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 36px 13px;
+  position:relative;
+  background:linear-gradient(135deg,#FFFDF7 0%,#FFF8EC 50%,#F9F4E8 100%);
+  border-bottom:1px solid rgba(184,136,46,0.18);
+  box-shadow:0 2px 20px rgba(26,40,32,0.06);
 }
+.h-rule{position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent 0%,var(--amber) 25%,var(--gold2) 50%,var(--amber) 75%,transparent 100%);}
 
-/* ══ HEADER ══ */
-header {
-  flex-shrink: 0;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 16px 32px 12px;
-  border-bottom: 1px solid rgba(77,216,232,0.08);
-  position: relative;
-}
-header::after { content:'';position:absolute;bottom:-1px;left:32px;width:80px;height:1px;
-  background:linear-gradient(90deg,var(--c),transparent); }
-
-.hl { display:flex;align-items:center;gap:12px; }
-.logo { width:38px;height:38px;border-radius:9px;flex-shrink:0;
-  background:linear-gradient(135deg,rgba(77,216,232,0.13),rgba(56,182,245,0.06));
-  border:1px solid rgba(77,216,232,0.28);
+.logo-area{display:flex;align-items:center;gap:14px;}
+.logo-mark{
+  width:46px;height:46px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(140deg,#3D5A47 0%,#1C2B22 100%);
   display:flex;align-items:center;justify-content:center;
-  box-shadow:0 0 16px rgba(77,216,232,0.1),inset 0 1px 0 rgba(255,255,255,0.07); }
-.logo svg { width:18px;height:18px;stroke:var(--c);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round; }
-.ht-sup { font-size:7px;letter-spacing:0.26em;color:rgba(77,216,232,0.35);font-weight:300;margin-bottom:3px; }
-.ht-h1  { font-size:22px;font-weight:900;color:#eaf5fa;line-height:1;letter-spacing:-0.01em; }
-.ht-h1 em { font-style:normal;color:var(--c); }
-.hr { display:flex;align-items:center;gap:10px; }
-.badge { font-size:7.5px;letter-spacing:0.14em;color:rgba(77,216,232,0.3);border:1px solid rgba(77,216,232,0.12);padding:3px 10px;border-radius:4px; }
-.bignum { font-size:44px;font-weight:900;letter-spacing:-0.06em;color:rgba(77,216,232,0.07);
-  border:1px solid rgba(77,216,232,0.05);border-radius:6px;padding:3px 12px; }
+  position:relative;
+  box-shadow:0 3px 14px rgba(29,43,34,0.25),0 0 0 2.5px rgba(184,136,46,0.35);}
+.logo-mark::after{content:'';position:absolute;inset:4px;border-radius:50%;border:1px solid rgba(222,184,106,0.35);}
+.logo-kanji{font-family:'Playfair Display',serif;font-size:17px;color:#F0D880;line-height:1;position:relative;z-index:1;font-weight:700;}
 
-/* ══ SECTION LABEL ══ */
-.sec-label { flex-shrink:0;padding:8px 32px 6px;display:flex;align-items:center;gap:12px; }
-.sec-text  { font-size:9px;letter-spacing:0.26em;color:var(--tm);white-space:nowrap;font-weight:300; }
-.sec-line  { flex:1;height:1px;background:linear-gradient(90deg,rgba(77,216,232,0.1),transparent); }
+.brand-col{display:flex;flex-direction:column;gap:3px;}
+.brand-sup{font-size:7.5px;letter-spacing:0.3em;color:var(--sage);font-weight:300;text-transform:uppercase;}
+.brand-name{display:flex;align-items:baseline;gap:6px;line-height:1;}
 
-/* ══ GRID: 6 equal columns, fills remaining space ══ */
-.grid {
-  flex: 1;
-  min-height: 0;          /* allow shrinking */
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  grid-template-rows: 1fr; /* single row, fills height */
-  gap: 10px;
-  padding: 0 32px 14px;
+/* ── vivid title on light bg ── */
+.brand-cn{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(20px,2.2vw,30px);font-weight:900;
+  color:var(--ink);letter-spacing:0.04em;position:relative;
 }
+.brand-cn::after{
+  content:'';position:absolute;bottom:-2px;left:0;right:0;height:2.5px;
+  background:linear-gradient(90deg,var(--rose),var(--amber));border-radius:2px;}
+.brand-ai{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(18px,2vw,27px);font-weight:700;font-style:italic;
+  background:linear-gradient(135deg,#D43A20 0%,#E87020 50%,#D4A020 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.brand-suffix{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(20px,2.2vw,30px);font-weight:900;
+  color:var(--moss);letter-spacing:0.02em;
+}
+
+.h-right{display:flex;align-items:center;gap:14px;}
+.h-pill{display:flex;align-items:center;gap:6px;padding:5px 13px;border-radius:100px;background:var(--foam);border:1px solid rgba(58,86,68,0.18);}
+.h-dot{width:5px;height:5px;border-radius:50%;background:#4BB870;flex-shrink:0;animation:pulse 2.5s ease infinite;}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(75,184,112,0.45)}50%{opacity:.85;box-shadow:0 0 0 5px rgba(75,184,112,0)}}
+.h-pill-text{font-size:9px;letter-spacing:0.1em;color:var(--moss);font-weight:500;}
+.h-meta{text-align:right;}
+.h-meta-top{font-size:7.5px;letter-spacing:0.2em;color:var(--mist);font-weight:300;}
+.h-bignum{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,3vw,42px);color:rgba(58,86,68,0.08);letter-spacing:-0.04em;font-weight:300;line-height:1;}
+
+/* ══ DIVIDER ══ */
+.divider{flex-shrink:0;display:flex;align-items:center;gap:12px;padding:7px 36px 6px;background:#F7F3EA;}
+.div-ornament{font-size:9px;color:var(--amber);opacity:0.9;flex-shrink:0;}
+.div-label{font-size:9px;letter-spacing:0.22em;color:var(--moss);white-space:nowrap;font-weight:500;text-transform:uppercase;}
+.div-line{flex:1;height:1px;background:linear-gradient(90deg,rgba(58,86,68,0.2),transparent);}
+
+/* ══ GRID ══ */
+.grid{flex:1;min-height:0;display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:1fr;gap:10px;padding:0 36px 14px;background:#F7F3EA;}
 
 /* ══ CARD ══ */
-.card {
-  position:relative;overflow:hidden;
-  border-radius:14px;
-  background:var(--card);
-  border:1px solid rgba(255,255,255,0.055);
-  display:flex;flex-direction:column;
-  text-decoration:none;color:inherit;
-  min-height: 0;   /* allow flex shrink */
-  transition:transform .2s,box-shadow .25s,border-color .25s;
-  box-shadow:0 2px 16px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.03);
+.card{
+  position:relative;overflow:hidden;border-radius:16px;
+  background:var(--paper);border:1px solid rgba(58,86,68,0.08);
+  display:flex;flex-direction:column;text-decoration:none;color:inherit;min-height:0;
+  transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .28s,border-color .28s;
+  box-shadow:0 1px 0 rgba(255,255,255,0.9) inset,0 2px 12px var(--shadow);
 }
-.card:hover {
-  transform:translateY(-2px);
-  border-color:rgba(77,216,232,0.24);
-  box-shadow:0 8px 36px rgba(0,0,0,0.5),0 0 24px rgba(77,216,232,0.08);
-}
-.card::before { content:'';position:absolute;top:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(77,216,232,0.55),transparent);
-  opacity:0;transition:opacity .3s; }
-.card:hover::before { opacity:1; }
-.card::after { content:'';position:absolute;inset:0;pointer-events:none;
-  background:radial-gradient(ellipse 80% 40% at 50% 0%,rgba(77,216,232,0.05) 0%,transparent 70%);
-  opacity:0;transition:opacity .3s; }
-.card:hover::after { opacity:1; }
+.card:hover{transform:translateY(-4px) scale(1.007);border-color:rgba(184,136,46,0.3);
+  box-shadow:0 1px 0 rgba(255,255,255,0.9) inset,0 16px 44px rgba(26,40,32,0.12),0 0 0 1px rgba(184,136,46,0.15);}
 
-/* ══ ILLUSTRATION ══ */
-.ill {
-  position:relative;
-  width:100%;
-  flex: 0 0 52%;   /* fixed 52% of card height, no grow/shrink */
-  min-height: 0;
-  overflow:hidden;
-  background:#060e18;
-  border-bottom:1px solid rgba(77,216,232,0.07);
-}
-.ill::before { content:'';position:absolute;inset:0;z-index:0;
-  background-image:radial-gradient(rgba(77,216,232,0.09) 1px,transparent 1px);
-  background-size:18px 18px; }
-.ill::after { content:'';position:absolute;inset:0;z-index:2;pointer-events:none;
-  background:linear-gradient(to bottom,transparent 52%,#060e18 100%); }
-.ill svg.scene { position:absolute;inset:0;width:100%;height:100%;z-index:1;overflow:visible; }
-#c1 { position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0.4;z-index:1; }
+.c-accent{position:absolute;top:0;left:0;right:0;height:2px;border-radius:16px 16px 0 0;opacity:0;transition:opacity .3s;}
+.card:hover .c-accent{opacity:1;}
+.ca-green{background:linear-gradient(90deg,transparent,#3D5A47,#7BAA88,transparent);}
+.ca-gold {background:linear-gradient(90deg,transparent,var(--amber),var(--gold2),transparent);}
+.ca-rose {background:linear-gradient(90deg,transparent,var(--rose),var(--amber),transparent);}
+.ca-teal {background:linear-gradient(90deg,transparent,#2E7A6A,#5AA890,transparent);}
 
-.nbadge {
-  position:absolute;top:8px;left:10px;z-index:10;
-  font-size:9.5px;letter-spacing:0.1em;font-weight:700;
-  color:rgba(77,216,232,0.5);
-  background:rgba(4,10,18,0.78);
-  border:1px solid rgba(77,216,232,0.15);
-  padding:2px 7px;border-radius:3px;
-  backdrop-filter:blur(6px);
-}
+/* ══ ILL ══ */
+.ill{flex:0 0 50%;min-height:0;overflow:hidden;position:relative;border-radius:16px 16px 0 0;}
+.ill-bg{position:absolute;inset:0;transition:transform .4s ease;}
+.card:hover .ill-bg{transform:scale(1.04);}
+.ill-fade{position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(to bottom,transparent 45%,var(--paper) 100%);}
+.ill svg{position:absolute;inset:0;width:100%;height:100%;}
+.num-badge{position:absolute;top:10px;left:12px;z-index:10;
+  font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:0.06em;font-weight:600;
+  color:var(--ink);background:rgba(253,250,245,0.88);
+  border:1px solid rgba(58,86,68,0.18);padding:3px 9px;border-radius:4px;backdrop-filter:blur(8px);}
+
+/* ILL BGs — all warm bright */
+.s1-bg{background:linear-gradient(145deg,#E8F5EE 0%,#D8EEE2 100%);}
+.s2-bg{background:linear-gradient(145deg,#FFF8EE 0%,#F5EDDC 100%);}
+.s3-bg{background:linear-gradient(145deg,#FFF5F0 0%,#FDEADE 100%);}
+.s4-bg{background:linear-gradient(145deg,#FFFAEE 0%,#F8F0DC 100%);}
+.s5-bg{background:linear-gradient(145deg,#F0F8F4 0%,#E2F0E8 100%);}
+.s6-bg{background:linear-gradient(145deg,#F2F8FF 0%,#E4EEF8 100%);}
 
 /* ══ CARD BODY ══ */
-.cb { padding:12px 14px 0;flex:1;display:flex;flex-direction:column;min-height:0; }
-.ctag  { font-size:9px;letter-spacing:0.2em;color:rgba(77,216,232,0.42);margin-bottom:4px;font-weight:300; }
-.cname { font-size:15px;font-weight:700;color:var(--t);line-height:1.25;margin-bottom:5px; }
-.cdesc { font-size:11px;color:var(--td);line-height:1.65;flex:1;overflow:hidden;
-  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical; }
+.cb{padding:11px 14px 0;flex:1;display:flex;flex-direction:column;min-height:0;}
+.c-eyebrow{font-size:8px;letter-spacing:0.24em;color:var(--sage);margin-bottom:4px;font-weight:300;text-transform:uppercase;}
+.c-title{font-family:'Playfair Display',serif;font-size:clamp(13px,1.2vw,16px);color:var(--ink);line-height:1.28;margin-bottom:5px;font-weight:700;}
+.c-desc{font-size:clamp(9px,0.78vw,11px);color:#6A8070;line-height:1.68;flex:1;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;}
+.chips{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px;}
+.chip{font-size:8px;color:var(--moss);background:var(--foam);border:1px solid rgba(58,86,68,0.14);padding:2px 9px;border-radius:100px;white-space:nowrap;transition:all .2s;}
+.card:hover .chip{background:rgba(58,86,68,0.09);border-color:rgba(58,86,68,0.28);}
 
-/* chips S1 */
-.chips { display:flex;gap:5px;flex-wrap:wrap;margin-top:8px; }
-.chip  { font-size:9px;letter-spacing:0.06em;color:rgba(77,216,232,0.7);
-  background:rgba(77,216,232,0.07);border:1px solid rgba(77,216,232,0.18);
-  padding:3px 9px;border-radius:100px;transition:all .2s;white-space:nowrap; }
-.card:hover .chip { background:rgba(77,216,232,0.12);border-color:rgba(77,216,232,0.32); }
-
-.cfoot { flex-shrink:0;padding:8px 14px 12px;border-top:1px solid rgba(255,255,255,0.04);
-  display:flex;align-items:center;justify-content:space-between;margin-top:auto; }
-.ccta  { font-size:9.5px;letter-spacing:0.12em;color:rgba(77,216,232,0.38);transition:color .2s; }
-.card:hover .ccta { color:var(--c); }
-.carrow { width:22px;height:22px;border-radius:50%;border:1px solid rgba(77,216,232,0.12);
-  display:flex;align-items:center;justify-content:center;transition:all .2s; }
-.card:hover .carrow { border-color:rgba(77,216,232,0.4);background:rgba(77,216,232,0.08); }
-.carrow svg { width:9px;height:9px;stroke:rgba(77,216,232,0.38);fill:none;stroke-width:2;
-  stroke-linecap:round;stroke-linejoin:round;transition:stroke .2s; }
-.card:hover .carrow svg { stroke:var(--c); }
+/* ══ CARD FOOT ══ */
+.cfoot{flex-shrink:0;padding:8px 14px 12px;display:flex;align-items:center;justify-content:space-between;margin-top:auto;border-top:1px solid rgba(58,86,68,0.05);}
+.cta-label{font-size:8.5px;letter-spacing:0.18em;color:var(--mist);transition:color .2s;text-transform:uppercase;}
+.card:hover .cta-label{color:var(--moss);}
+.arrow-ring{width:26px;height:26px;border-radius:50%;border:1px solid rgba(58,86,68,0.14);display:flex;align-items:center;justify-content:center;background:transparent;transition:all .25s cubic-bezier(.34,1.56,.64,1);}
+.card:hover .arrow-ring{border-color:var(--amber);background:var(--amber);transform:scale(1.12);}
+.arrow-ring svg{width:9px;height:9px;stroke:var(--mist);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:stroke .2s;}
+.card:hover .arrow-ring svg{stroke:#fff;}
 
 /* S5 buttons */
-.s5btns { flex-shrink:0;display:flex;flex-direction:column;gap:5px;
-  padding:8px 14px 12px;border-top:1px solid rgba(255,255,255,0.04);margin-top:auto; }
-.s5btn { display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;
-  border:1px solid rgba(77,216,232,0.13);background:rgba(77,216,232,0.04);
-  text-decoration:none;color:rgba(200,232,242,0.72);font-size:11px;letter-spacing:0.03em;
-  transition:all .2s;position:relative;overflow:hidden;white-space:nowrap; }
-.s5btn::before { content:'';position:absolute;inset:0;
-  background:linear-gradient(90deg,rgba(77,216,232,0.07),transparent);opacity:0;transition:opacity .2s; }
-.s5btn:hover { border-color:rgba(77,216,232,0.35);color:var(--c);background:rgba(77,216,232,0.08); }
-.s5btn:hover::before { opacity:1; }
-.s5btn svg { width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:1.8;
-  stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;opacity:0.65; }
-.s5btn:hover svg { opacity:1; }
-.s5dot { width:4px;height:4px;border-radius:50%;background:rgba(77,216,232,0.28);
-  margin-left:auto;flex-shrink:0;transition:all .2s; }
-.s5btn:hover .s5dot { background:var(--c);box-shadow:0 0 6px var(--c); }
+.s5-btns{flex-shrink:0;display:flex;flex-direction:column;gap:5px;padding:8px 12px 12px;border-top:1px solid rgba(58,86,68,0.05);margin-top:auto;}
+.s5-btn{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;border:1px solid rgba(58,86,68,0.11);background:rgba(58,86,68,0.03);text-decoration:none;color:#587068;font-size:10.5px;transition:all .2s;white-space:nowrap;}
+.s5-btn:hover{border-color:rgba(58,86,68,0.28);color:var(--ink2);background:rgba(58,86,68,0.07);}
+.s5-btn svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;opacity:0.55;}
+.s5-btn:hover svg{opacity:1;}
+.s5-pip{width:4px;height:4px;border-radius:50%;background:rgba(58,86,68,0.18);margin-left:auto;flex-shrink:0;transition:all .2s;}
+.s5-btn:hover .s5-pip{background:var(--amber);box-shadow:0 0 5px rgba(232,160,32,0.5);}
 
-/* ══ FOOTER ══ */
-footer { flex-shrink:0;display:flex;justify-content:space-between;align-items:center;
-  padding:8px 32px;border-top:1px solid rgba(77,216,232,0.05); }
-.fl,.fr { font-size:9px;letter-spacing:0.14em;color:rgba(90,170,195,0.15); }
+/* ══ PAGE FOOTER ══ */
+footer{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:7px 36px;border-top:1px solid var(--border);background:rgba(253,250,245,0.7);}
+.f-left,.f-right{font-size:8.5px;letter-spacing:0.14em;color:var(--mist);}
+.f-gem{color:var(--amber);opacity:0.5;margin:0 8px;}
 
-/* ══ ANIMATIONS ══ */
-@keyframes fadeDown { from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)} }
-@keyframes fadeUp   { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
-header     { animation:fadeDown .45s ease both; }
-.sec-label { animation:fadeUp .45s .07s ease both; }
-.grid      { animation:fadeUp .5s .14s ease both; }
-footer     { animation:fadeUp .45s .24s ease both; }
+/* ══ ANIM ══ */
+@keyframes riseIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+header  {animation:riseIn .45s .00s ease both;}
+.divider{animation:riseIn .45s .08s ease both;}
+.grid   {animation:riseIn .5s  .16s ease both;}
+footer  {animation:riseIn .45s .28s ease both;}
 
-/* ══ MOBILE: 3+3 two compact rows, still fits one screen ══ */
-@media (max-width: 768px) {
-  html, body { overflow: hidden; }
-
-  header { padding: 10px 14px 8px; }
-  header::after { left: 14px; }
-  .logo { width: 32px; height: 32px; border-radius: 7px; }
-  .logo svg { width: 15px; height: 15px; }
-  .ht-sup { font-size: 6.5px; }
-  .ht-h1  { font-size: 17px; }
-  .badge  { display: none; }
-  .bignum { font-size: 28px; padding: 2px 8px; }
-
-  .sec-label { padding: 5px 12px 4px; }
-  .sec-text  { font-size: 7px; }
-
-  /* 3 columns × 2 rows */
-  .grid {
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(2, 1fr);
-    gap: 7px;
-    padding: 0 12px 10px;
-  }
-
-  .card { border-radius: 10px; }
-  .card:hover { transform: none; }
-
-  .nbadge { font-size: 7px; top: 6px; left: 8px; padding: 2px 5px; }
-
-  .cb { padding: 6px 10px 0; }
-  .ctag  { font-size: 6.5px; margin-bottom: 2px; }
-  .cname { font-size: 11px; margin-bottom: 2px; }
-  .cdesc { font-size: 8px; line-height: 1.45; -webkit-line-clamp: 2; overflow: hidden; }
-  .chips { display: none; }
-
-  .cfoot { padding: 6px 10px 9px; }
-  .ccta  { font-size: 7px; }
-  .carrow { width: 18px; height: 18px; }
-  .carrow svg { width: 8px; height: 8px; }
-
-  .s5btns { gap: 4px; padding: 5px 10px 9px; }
-  .s5btn  { padding: 5px 8px; font-size: 8.5px; gap: 6px; border-radius: 5px; }
-  .s5btn svg { width: 9px; height: 9px; }
-  .s5dot { width: 3px; height: 3px; }
-
-  footer { padding: 6px 14px; }
-  .fl,.fr { font-size: 7px; }
+/* ══ MOBILE ══ */
+@media(max-width:768px){
+  html,body{overflow:hidden;}
+  header{padding:10px 16px 9px;}
+  .logo-mark{width:38px;height:38px;}
+  .logo-kanji{font-size:14px;}
+  .brand-cn,.brand-suffix{font-size:18px;}
+  .brand-ai{font-size:16px;}
+  .brand-sup{font-size:7px;}
+  .h-pill,.h-meta{display:none;}
+  .divider{padding:5px 14px 4px;}
+  .grid{grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:8px;padding:0 14px 10px;}
+  .card{border-radius:12px;}
+  .card:hover{transform:none;}
+  .num-badge{font-size:9px;top:8px;left:10px;padding:2px 7px;}
+  .cb{padding:7px 11px 0;}
+  .c-eyebrow{font-size:6.5px;margin-bottom:2px;}
+  .c-title{font-size:11px;margin-bottom:2px;}
+  .c-desc{font-size:8px;line-height:1.5;-webkit-line-clamp:2;}
+  .chips{display:none;}
+  .cfoot{padding:6px 11px 9px;}
+  .cta-label{font-size:7px;}
+  .arrow-ring{width:20px;height:20px;}
+  .arrow-ring svg{width:8px;height:8px;}
+  .s5-btns{gap:4px;padding:5px 11px 9px;}
+  .s5-btn{padding:5px 9px;font-size:8.5px;gap:6px;border-radius:6px;}
+  footer{padding:6px 14px;}
+  .f-left,.f-right{font-size:7.5px;}
 }
 </style>
 </head>
 <body>
-<div class="bg1"></div>
-<div class="bg2"></div>
+<div class="bg-paper"></div>
+<div class="bg-linen"></div>
 <div class="wrap">
 
-<!-- HEADER -->
+<!-- ══ HEADER ══ -->
 <header>
-  <div class="hl">
-    <div class="logo">
-      <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-    </div>
-    <div>
-      <div class="ht-sup">RICHTIME INTERNAL PORTAL</div>
-      <h1 class="ht-h1">富時代 <em>AI</em> 決策引擎</h1>
-    </div>
-  </div>
-  <div class="hr">
-    <div class="badge">V1.4 · 2026</div>
-    <div class="bignum">06</div>
-  </div>
-</header>
-
-<!-- LABEL -->
-<div class="sec-label">
-  <div class="sec-text">SIX CORE SYSTEMS · 核心系統入口</div>
-  <div class="sec-line"></div>
-</div>
-
-<!-- 6-CARD GRID -->
-<div class="grid">
-
-  <!-- S1 · 顧問決策系統 -->
-  <a class="card" href="https://richtime90117277-alt.github.io/futime-crm/crm_cloud_v19.html" target="_blank">
-    <div class="ill">
-      <canvas id="c1"></canvas>
-      <div class="nbadge">01</div>
-      <svg class="scene" viewBox="0 0 160 120" preserveAspectRatio="xMidYMid meet">
-        <defs>
-          <radialGradient id="rg1" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stop-color="#4dd8e8" stop-opacity="0.2"/>
-            <stop offset="100%" stop-color="#4dd8e8" stop-opacity="0"/>
-          </radialGradient>
-          <filter id="g1"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-          <filter id="g1s"><feGaussianBlur stdDeviation="1.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-        </defs>
-        <ellipse cx="80" cy="60" rx="52" ry="44" fill="url(#rg1)"/>
-        <circle cx="80" cy="60" r="46" fill="none" stroke="rgba(77,216,232,0.08)" stroke-width="0.8"/>
-        <circle cx="80" cy="60" r="32" fill="none" stroke="rgba(77,216,232,0.14)" stroke-width="0.8"/>
-        <!-- centre hex -->
-        <polygon points="80,36 98,47 98,69 80,80 62,69 62,47"
-          fill="rgba(77,216,232,0.1)" stroke="rgba(77,216,232,0.5)" stroke-width="1.1" filter="url(#g1s)"/>
-        <circle cx="80" cy="58" r="8" fill="rgba(77,216,232,0.2)" stroke="rgba(77,216,232,0.65)" stroke-width="0.9" filter="url(#g1)"/>
-        <circle cx="80" cy="58" r="3.5" fill="#4dd8e8"/>
-        <!-- orbit dot -->
-        <circle cx="80" cy="14" r="4" fill="rgba(77,216,232,0.85)" filter="url(#g1s)"/>
-        <circle cx="126" cy="60" r="3" fill="rgba(77,216,232,0.55)" filter="url(#g1s)"/>
-        <!-- node left -->
-        <circle cx="30" cy="42" r="6" fill="rgba(77,216,232,0.08)" stroke="rgba(77,216,232,0.3)" stroke-width="0.8"/>
-        <circle cx="30" cy="42" r="2.5" fill="rgba(77,216,232,0.5)"/>
-        <circle cx="28" cy="80" r="5" fill="rgba(77,216,232,0.07)" stroke="rgba(77,216,232,0.25)" stroke-width="0.7"/>
-        <circle cx="28" cy="80" r="2" fill="rgba(77,216,232,0.4)"/>
-        <!-- node right -->
-        <circle cx="130" cy="38" r="6" fill="rgba(77,216,232,0.08)" stroke="rgba(77,216,232,0.3)" stroke-width="0.8"/>
-        <circle cx="130" cy="38" r="2.5" fill="rgba(77,216,232,0.5)"/>
-        <circle cx="132" cy="80" r="5" fill="rgba(77,216,232,0.07)" stroke="rgba(77,216,232,0.25)" stroke-width="0.7"/>
-        <circle cx="132" cy="80" r="2" fill="rgba(77,216,232,0.4)"/>
-        <!-- connectors -->
-        <line x1="36" y1="44" x2="62" y2="52" stroke="rgba(77,216,232,0.18)" stroke-width="0.8" stroke-dasharray="4,3"/>
-        <line x1="33" y1="78" x2="62" y2="64" stroke="rgba(77,216,232,0.15)" stroke-width="0.7" stroke-dasharray="4,3"/>
-        <line x1="124" y1="40" x2="98" y2="52" stroke="rgba(77,216,232,0.18)" stroke-width="0.8" stroke-dasharray="4,3"/>
-        <line x1="127" y1="78" x2="98" y2="64" stroke="rgba(77,216,232,0.15)" stroke-width="0.7" stroke-dasharray="4,3"/>
-        <!-- labels -->
-        <rect x="12" y="30" width="30" height="9" rx="2" fill="rgba(77,216,232,0.1)" stroke="rgba(77,216,232,0.25)" stroke-width="0.5"/>
-        <text x="15" y="36.5" font-size="5.5" fill="rgba(77,216,232,0.7)" font-family="monospace">需求分析</text>
-        <rect x="10" y="86" width="30" height="9" rx="2" fill="rgba(77,216,232,0.08)" stroke="rgba(77,216,232,0.2)" stroke-width="0.5"/>
-        <text x="13" y="92.5" font-size="5.5" fill="rgba(77,216,232,0.55)" font-family="monospace">客戶評估</text>
-        <rect x="118" y="26" width="30" height="9" rx="2" fill="rgba(77,216,232,0.1)" stroke="rgba(77,216,232,0.25)" stroke-width="0.5"/>
-        <text x="121" y="32.5" font-size="5.5" fill="rgba(77,216,232,0.7)" font-family="monospace">決策路圖</text>
-        <rect x="120" y="86" width="30" height="9" rx="2" fill="rgba(77,216,232,0.08)" stroke="rgba(77,216,232,0.2)" stroke-width="0.5"/>
-        <text x="123" y="92.5" font-size="5.5" fill="rgba(77,216,232,0.55)" font-family="monospace">節點預判</text>
-      </svg>
-    </div>
-    <div class="cb">
-      <div class="ctag">S1 · 核心系統</div>
-      <div class="cname">顧問決策系統</div>
-      <div class="cdesc">客戶狀態評估・需求分析・決策節點預判・即時支援</div>
-      <div class="chips">
-        <span class="chip">決策節點</span>
-        <span class="chip">客戶分析</span>
-        <span class="chip">情境應對</span>
+  <div class="logo-area">
+    <div class="logo-mark"><span class="logo-kanji">富</span></div>
+    <div class="brand-col">
+      <div class="brand-sup">Richtime Internal Portal · 2026</div>
+      <div class="brand-name">
+        <span class="brand-cn">富時代</span>
+        <span class="brand-ai">AI</span>
+        <span class="brand-suffix">決策引擎</span>
       </div>
     </div>
-    <div class="cfoot">
-      <div class="ccta">進入系統</div>
-      <div class="carrow"><svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
-    </div>
-  </a>
-
-  <!-- S2 · AI 資產規劃 -->
-  <a class="card" href="https://richtime90117277-alt.github.io/futime-crm/asset-planner.html" target="_blank">
-    <div class="ill">
-      <div class="nbadge">02</div>
-      <svg class="scene" viewBox="0 0 160 120" preserveAspectRatio="xMidYMid meet">
-        <defs>
-          <linearGradient id="bg2" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#4dd8e8" stop-opacity="0.55"/>
-            <stop offset="100%" stop-color="#4dd8e8" stop-opacity="0.04"/>
-          </linearGradient>
-          <linearGradient id="area2" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#4dd8e8" stop-opacity="0.28"/>
-            <stop offset="100%" stop-color="#4dd8e8" stop-opacity="0"/>
-          </linearGradient>
-          <filter id="g2"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-          <filter id="g2s"><feGaussianBlur stdDeviation="1" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-        </defs>
-        <line x1="22" y1="96" x2="148" y2="96" stroke="rgba(77,216,232,0.15)" stroke-width="0.8"/>
-        <line x1="22" y1="36" x2="148" y2="36" stroke="rgba(77,216,232,0.06)" stroke-width="0.5"/>
-        <line x1="22" y1="56" x2="148" y2="56" stroke="rgba(77,216,232,0.06)" stroke-width="0.5"/>
-        <line x1="22" y1="76" x2="148" y2="76" stroke="rgba(77,216,232,0.06)" stroke-width="0.5"/>
-        <text x="8"  y="39" font-size="7" fill="rgba(77,216,232,0.3)" font-family="monospace">80</text>
-        <text x="8"  y="59" font-size="7" fill="rgba(77,216,232,0.3)" font-family="monospace">60</text>
-        <text x="8"  y="79" font-size="7" fill="rgba(77,216,232,0.3)" font-family="monospace">40</text>
-        <rect x="26"  y="78" width="12" height="18" rx="2" fill="url(#bg2)" stroke="rgba(77,216,232,0.22)" stroke-width="0.6"/>
-        <rect x="44"  y="66" width="12" height="30" rx="2" fill="url(#bg2)" stroke="rgba(77,216,232,0.25)" stroke-width="0.6"/>
-        <rect x="62"  y="52" width="12" height="44" rx="2" fill="url(#bg2)" stroke="rgba(77,216,232,0.28)" stroke-width="0.6"/>
-        <rect x="80"  y="60" width="12" height="36" rx="2" fill="url(#bg2)" stroke="rgba(77,216,232,0.26)" stroke-width="0.6"/>
-        <rect x="98"  y="42" width="12" height="54" rx="2" fill="url(#bg2)" stroke="rgba(77,216,232,0.32)" stroke-width="0.6"/>
-        <rect x="116" y="28" width="12" height="68" rx="2" fill="rgba(77,216,232,0.22)" stroke="rgba(77,216,232,0.55)" stroke-width="1" filter="url(#g2s)"/>
-        <polygon points="32,79 50,67 68,53 86,61 104,43 122,29 122,96 32,96" fill="url(#area2)"/>
-        <polyline points="32,79 50,67 68,53 86,61 104,43 122,29" fill="none" stroke="#4dd8e8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" filter="url(#g2)"/>
-        <circle cx="32"  cy="79" r="3.5" fill="#060e18" stroke="#4dd8e8" stroke-width="1.2"/>
-        <circle cx="68"  cy="53" r="3.5" fill="#060e18" stroke="#4dd8e8" stroke-width="1.2"/>
-        <circle cx="104" cy="43" r="3.5" fill="#060e18" stroke="#4dd8e8" stroke-width="1.2"/>
-        <circle cx="122" cy="29" r="5"   fill="#4dd8e8" filter="url(#g2)"/>
-        <circle cx="122" cy="29" r="2.5" fill="#fff"/>
-        <rect x="100" y="16" width="44" height="10" rx="2" fill="rgba(77,216,232,0.12)" stroke="rgba(77,216,232,0.35)" stroke-width="0.6"/>
-        <text x="106" y="23.5" font-size="6.5" fill="#4dd8e8" font-family="monospace">+ROI ↑ 142%</text>
-      </svg>
-    </div>
-    <div class="cb">
-      <div class="ctag">S2 · 規劃工具</div>
-      <div class="cname">AI 資產規劃報告</div>
-      <div class="cdesc">ROI 分析・多策略比較・AI 自動生成個案報告</div>
-    </div>
-    <div class="cfoot">
-      <div class="ccta">開啟工具</div>
-      <div class="carrow"><svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
-    </div>
-  </a>
-
-  <!-- S3 · 品牌活動 -->
-  <a class="card" href="https://www.notion.so/625809993b2746b7842e022bd0279fe7" target="_blank">
-    <div class="ill">
-      <div class="nbadge">03</div>
-      <svg class="scene" viewBox="0 0 160 120" preserveAspectRatio="xMidYMid meet">
-        <defs>
-          <radialGradient id="rg3" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stop-color="#4dd8e8" stop-opacity="0.2"/>
-            <stop offset="100%" stop-color="#4dd8e8" stop-opacity="0"/>
-          </radialGradient>
-          <filter id="g3"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-          <filter id="g3s"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-        </defs>
-        <ellipse cx="80" cy="60" rx="46" ry="40" fill="url(#rg3)"/>
-        <circle cx="80" cy="60" r="54" fill="none" stroke="rgba(77,216,232,0.05)" stroke-width="0.8"/>
-        <circle cx="80" cy="60" r="42" fill="none" stroke="rgba(77,216,232,0.09)" stroke-width="0.8"/>
-        <circle cx="80" cy="60" r="30" fill="none" stroke="rgba(77,216,232,0.15)" stroke-width="0.8"/>
-        <circle cx="80" cy="18" r="4"   fill="rgba(77,216,232,0.85)" filter="url(#g3s)"/>
-        <circle cx="122" cy="60" r="3"  fill="rgba(77,216,232,0.6)"  filter="url(#g3s)"/>
-        <circle cx="80" cy="102" r="2.5" fill="rgba(77,216,232,0.45)"/>
-        <circle cx="38" cy="60" r="2"   fill="rgba(77,216,232,0.35)"/>
-        <polygon points="80,36 106,56 80,88 54,56"
-          fill="rgba(77,216,232,0.07)" stroke="rgba(77,216,232,0.46)" stroke-width="1.1" filter="url(#g3s)"/>
-        <polygon points="80,36 106,56 80,56" fill="rgba(77,216,232,0.13)"/>
-        <polygon points="80,36  54,56 80,56" fill="rgba(77,216,232,0.07)"/>
-        <polygon points="80,88 106,56 80,56" fill="rgba(77,216,232,0.16)"/>
-        <polygon points="80,88  54,56 80,56" fill="rgba(77,216,232,0.09)"/>
-        <line x1="80" y1="36" x2="80" y2="88" stroke="rgba(77,216,232,0.2)" stroke-width="0.7"/>
-        <line x1="54" y1="56" x2="106" y2="56" stroke="rgba(77,216,232,0.2)" stroke-width="0.7"/>
-        <circle cx="80" cy="56" r="8" fill="rgba(77,216,232,0.25)" stroke="rgba(77,216,232,0.7)" stroke-width="1" filter="url(#g3)"/>
-        <circle cx="80" cy="56" r="3.5" fill="#4dd8e8"/>
-        <line x1="80" y1="5"  x2="80" y2="12" stroke="#4dd8e8" stroke-width="1.5" opacity="0.8"/>
-        <line x1="76" y1="8.5" x2="84" y2="8.5" stroke="#4dd8e8" stroke-width="1.5" opacity="0.8"/>
-        <line x1="136" y1="22" x2="136" y2="28" stroke="#4dd8e8" stroke-width="1" opacity="0.5"/>
-        <line x1="133" y1="25" x2="139" y2="25" stroke="#4dd8e8" stroke-width="1" opacity="0.5"/>
-        <text x="52" y="114" font-size="6" fill="rgba(77,216,232,0.38)" font-family="monospace">BRAND · EVENT</text>
-      </svg>
-    </div>
-    <div class="cb">
-      <div class="ctag">S3 · 品牌・行銷</div>
-      <div class="cname">官網與近期活動</div>
-      <div class="cdesc">富時代官網・精美活動入口・提升品牌形象</div>
-    </div>
-    <div class="cfoot">
-      <div class="ccta">開啟頁面</div>
-      <div class="carrow"><svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
-    </div>
-  </a>
-
-  <!-- S4 · 知識中樞 -->
-  <a class="card" href="https://www.notion.so/059972580dae4a54b07a57fd410b3090" target="_blank">
-    <div class="ill">
-      <div class="nbadge">04</div>
-      <svg class="scene" viewBox="0 0 160 120" preserveAspectRatio="xMidYMid meet">
-        <defs>
-          <filter id="g4"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-          <filter id="g4s"><feGaussianBlur stdDeviation="1" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-        </defs>
-        <polygon points="80,96 116,80 80,64 44,80" fill="rgba(77,216,232,0.04)" stroke="rgba(77,216,232,0.14)" stroke-width="0.7"/>
-        <polygon points="80,64 116,80 116,76 80,60" fill="rgba(77,216,232,0.03)" stroke="rgba(77,216,232,0.09)" stroke-width="0.5"/>
-        <polygon points="80,64  44,80  44,76 80,60" fill="rgba(77,216,232,0.05)" stroke="rgba(77,216,232,0.09)" stroke-width="0.5"/>
-        <polygon points="80,78 116,62 80,46 44,62" fill="rgba(77,216,232,0.09)" stroke="rgba(77,216,232,0.26)" stroke-width="0.8"/>
-        <polygon points="80,46 116,62 116,58 80,42" fill="rgba(77,216,232,0.05)" stroke="rgba(77,216,232,0.16)" stroke-width="0.6"/>
-        <polygon points="80,46  44,62  44,58 80,42" fill="rgba(77,216,232,0.1)"  stroke="rgba(77,216,232,0.18)" stroke-width="0.6"/>
-        <line x1="56" y1="60" x2="104" y2="44" stroke="rgba(77,216,232,0.18)" stroke-width="0.8"/>
-        <polygon points="80,60 116,44 80,28 44,44"
-          fill="rgba(77,216,232,0.17)" stroke="rgba(77,216,232,0.58)" stroke-width="1.2" filter="url(#g4s)"/>
-        <polygon points="80,28 116,44 116,40 80,24" fill="rgba(24,60,80,0.9)"   stroke="rgba(77,216,232,0.32)" stroke-width="0.7"/>
-        <polygon points="80,28  44,44  44,40 80,24" fill="rgba(77,216,232,0.18)" stroke="rgba(77,216,232,0.36)" stroke-width="0.7"/>
-        <line x1="56" y1="42" x2="104" y2="26" stroke="rgba(77,216,232,0.4)" stroke-width="1.1"/>
-        <line x1="56" y1="46" x2="92"  y2="33" stroke="rgba(77,216,232,0.2)" stroke-width="0.8"/>
-        <ellipse cx="80" cy="44" rx="24" ry="9" fill="rgba(77,216,232,0.18)" filter="url(#g4)"/>
-        <rect x="96" y="17" width="40" height="10" rx="2" fill="rgba(77,216,232,0.1)" stroke="rgba(77,216,232,0.3)" stroke-width="0.6"/>
-        <text x="101" y="24" font-size="6" fill="rgba(77,216,232,0.75)" font-family="monospace">LAYER 01/03</text>
-        <text x="42" y="112" font-size="6" fill="rgba(77,216,232,0.38)" font-family="monospace">KNOWLEDGE HUB</text>
-      </svg>
-    </div>
-    <div class="cb">
-      <div class="ctag">S4 · 知識中樞</div>
-      <div class="cname">知識中樞系統</div>
-      <div class="cdesc">話術庫・培訓系統・決策邏輯・持續優化</div>
-    </div>
-    <div class="cfoot">
-      <div class="ccta">進入 NOTION</div>
-      <div class="carrow"><svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
-    </div>
-  </a>
-
-  <!-- S5 · 話術教材庫 -->
-  <div class="card">
-    <div class="ill">
-      <div class="nbadge">05</div>
-      <svg class="scene" viewBox="0 0 160 120" preserveAspectRatio="xMidYMid meet">
-        <defs>
-          <filter id="g5"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-          <filter id="g5s"><feGaussianBlur stdDeviation="1.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-        </defs>
-        <!-- left bubble -->
-        <rect x="8"  y="22" width="66" height="44" rx="8" fill="rgba(77,216,232,0.07)" stroke="rgba(77,216,232,0.24)" stroke-width="0.9"/>
-        <polygon points="16,66 8,78 30,66" fill="rgba(77,216,232,0.07)" stroke="rgba(77,216,232,0.24)" stroke-width="0.9"/>
-        <rect x="15" y="31" width="52" height="5.5" rx="2.5" fill="rgba(77,216,232,0.28)"/>
-        <rect x="15" y="41" width="40" height="4.5" rx="2"   fill="rgba(77,216,232,0.16)"/>
-        <rect x="15" y="50" width="28" height="4.5" rx="2"   fill="rgba(77,216,232,0.09)"/>
-        <!-- right bubble -->
-        <rect x="86" y="14" width="66" height="48" rx="8"
-          fill="rgba(77,216,232,0.12)" stroke="rgba(77,216,232,0.5)" stroke-width="1" filter="url(#g5s)"/>
-        <polygon points="144,62 152,76 130,62" fill="rgba(77,216,232,0.12)" stroke="rgba(77,216,232,0.5)" stroke-width="0.9"/>
-        <rect x="93" y="23" width="52" height="6" rx="3"   fill="rgba(77,216,232,0.5)"/>
-        <rect x="93" y="34" width="40" height="4.5" rx="2" fill="rgba(77,216,232,0.28)"/>
-        <rect x="93" y="43" width="28" height="4.5" rx="2" fill="rgba(77,216,232,0.16)"/>
-        <rect x="93" y="52" width="18" height="4.5" rx="2" fill="rgba(77,216,232,0.09)"/>
-        <!-- SOS -->
-        <circle cx="80" cy="96" r="20" fill="rgba(255,80,60,0.07)" stroke="rgba(255,100,80,0.4)" stroke-width="1.2" filter="url(#g5s)"/>
-        <circle cx="80" cy="96" r="13" fill="rgba(255,80,60,0.05)" stroke="rgba(255,100,80,0.2)" stroke-width="0.8"/>
-        <circle cx="80" cy="96" r="7"  fill="rgba(255,80,60,0.1)"  stroke="rgba(255,120,80,0.28)" stroke-width="0.7"/>
-        <text x="76" y="101" font-size="11" fill="rgba(255,140,100,0.9)" font-family="monospace" font-weight="bold">!</text>
-        <text x="66" y="117" font-size="5.5" fill="rgba(255,140,100,0.45)" font-family="monospace" letter-spacing="3">SOS</text>
-        <line x1="40" y1="80" x2="60"  y2="90" stroke="rgba(77,216,232,0.2)" stroke-width="0.8" stroke-dasharray="3,2"/>
-        <line x1="120" y1="78" x2="100" y2="88" stroke="rgba(77,216,232,0.2)" stroke-width="0.8" stroke-dasharray="3,2"/>
-        <text x="28" y="112" font-size="5.5" fill="rgba(77,216,232,0.35)" font-family="monospace">SCRIPT · SOS · COACH</text>
-      </svg>
-    </div>
-    <div class="cb">
-      <div class="ctag">S5 · 溝通策略</div>
-      <div class="cname">話術教材庫</div>
-      <div class="cdesc">話術應對・對話模型・SOS 異議・情境演練</div>
-    </div>
-    <div class="s5btns">
-      <a class="s5btn" href="https://richtime90117277-alt.github.io/futime-crm/LIB.html" target="_blank">
-        <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
-        話術教材庫<div class="s5dot"></div>
-      </a>
-      <a class="s5btn" href="https://richtime90117277-alt.github.io/futime-crm/zhiwei-ai-coach.html" target="_blank">
-        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-        AI 顧問報告<div class="s5dot"></div>
-      </a>
-      <a class="s5btn" href="https://richtime90117277-alt.github.io/futime-crm/sos-v2.html" target="_blank">
-        <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-        SOS 異議處理<div class="s5dot"></div>
-      </a>
+  </div>
+  <div class="h-right">
+    <div class="h-pill"><div class="h-dot"></div><span class="h-pill-text">系統運行中</span></div>
+    <div class="h-meta">
+      <div class="h-meta-top">V 1.5 · SIX SYSTEMS</div>
+      <div class="h-bignum">06</div>
     </div>
   </div>
+  <div class="h-rule"></div>
+</header>
 
-  <!-- S6 · 物件展廳 -->
-  <a class="card" href="https://www.notion.so/68f46f920de14f07bc4161d221a83995" target="_blank">
-    <div class="ill">
-      <div class="nbadge">06</div>
-      <svg class="scene" viewBox="0 0 160 120" preserveAspectRatio="xMidYMid meet">
-        <defs>
-          <filter id="g6"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-          <filter id="g6s"><feGaussianBlur stdDeviation="1.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-          <linearGradient id="sky6" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#4dd8e8" stop-opacity="0.18"/>
-            <stop offset="100%" stop-color="#4dd8e8" stop-opacity="0"/>
-          </linearGradient>
-        </defs>
-        <line x1="8"  y1="98" x2="152" y2="98" stroke="rgba(77,216,232,0.2)"  stroke-width="0.8"/>
-        <line x1="8"  y1="100" x2="152" y2="100" stroke="rgba(77,216,232,0.06)" stroke-width="0.6"/>
-        <!-- far-left -->
-        <rect x="10" y="78" width="16" height="20" fill="rgba(77,216,232,0.05)" stroke="rgba(77,216,232,0.16)" stroke-width="0.7"/>
-        <rect x="13" y="82" width="4" height="5" fill="rgba(77,216,232,0.14)" stroke="rgba(77,216,232,0.28)" stroke-width="0.4"/>
-        <rect x="20" y="82" width="4" height="5" fill="rgba(77,216,232,0.09)" stroke="rgba(77,216,232,0.22)" stroke-width="0.4"/>
-        <!-- mid-left -->
-        <rect x="30" y="62" width="22" height="36" fill="rgba(77,216,232,0.07)" stroke="rgba(77,216,232,0.2)" stroke-width="0.7"/>
-        <rect x="34" y="68" width="5" height="6" fill="rgba(77,216,232,0.2)"  stroke="rgba(77,216,232,0.35)" stroke-width="0.4"/>
-        <rect x="43" y="68" width="5" height="6" fill="rgba(77,216,232,0.12)" stroke="rgba(77,216,232,0.27)" stroke-width="0.4"/>
-        <rect x="34" y="79" width="5" height="6" fill="rgba(77,216,232,0.14)" stroke="rgba(77,216,232,0.28)" stroke-width="0.4"/>
-        <rect x="43" y="79" width="5" height="6" fill="rgba(77,216,232,0.09)" stroke="rgba(77,216,232,0.22)" stroke-width="0.4"/>
-        <!-- HERO building -->
-        <rect x="60" y="22" width="32" height="76" fill="rgba(77,216,232,0.1)" stroke="rgba(77,216,232,0.52)" stroke-width="1.2" filter="url(#g6s)"/>
-        <rect x="60" y="22" width="32" height="76" fill="url(#sky6)"/>
-        <!-- windows 3×4 -->
-        <rect x="64" y="28" width="6" height="7" rx="1" fill="rgba(77,216,232,0.34)" stroke="rgba(77,216,232,0.58)" stroke-width="0.5"/>
-        <rect x="74" y="28" width="6" height="7" rx="1" fill="rgba(77,216,232,0.2)"  stroke="rgba(77,216,232,0.42)" stroke-width="0.5"/>
-        <rect x="84" y="28" width="6" height="7" rx="1" fill="rgba(77,216,232,0.36)" stroke="rgba(77,216,232,0.6)"  stroke-width="0.5"/>
-        <rect x="64" y="40" width="6" height="7" rx="1" fill="rgba(77,216,232,0.18)" stroke="rgba(77,216,232,0.36)" stroke-width="0.5"/>
-        <rect x="74" y="40" width="6" height="7" rx="1" fill="rgba(77,216,232,0.44)" stroke="rgba(77,216,232,0.7)"  stroke-width="0.5" filter="url(#g6s)"/>
-        <rect x="84" y="40" width="6" height="7" rx="1" fill="rgba(77,216,232,0.15)" stroke="rgba(77,216,232,0.3)"  stroke-width="0.5"/>
-        <rect x="64" y="52" width="6" height="7" rx="1" fill="rgba(77,216,232,0.26)" stroke="rgba(77,216,232,0.46)" stroke-width="0.5"/>
-        <rect x="74" y="52" width="6" height="7" rx="1" fill="rgba(77,216,232,0.13)" stroke="rgba(77,216,232,0.28)" stroke-width="0.5"/>
-        <rect x="84" y="52" width="6" height="7" rx="1" fill="rgba(77,216,232,0.3)"  stroke="rgba(77,216,232,0.5)"  stroke-width="0.5"/>
-        <rect x="64" y="64" width="6" height="7" rx="1" fill="rgba(77,216,232,0.11)" stroke="rgba(77,216,232,0.24)" stroke-width="0.5"/>
-        <rect x="74" y="64" width="6" height="7" rx="1" fill="rgba(77,216,232,0.2)"  stroke="rgba(77,216,232,0.36)" stroke-width="0.5"/>
-        <rect x="84" y="64" width="6" height="7" rx="1" fill="rgba(77,216,232,0.32)" stroke="rgba(77,216,232,0.52)" stroke-width="0.5"/>
-        <rect x="70" y="82" width="12" height="16" rx="1.5" fill="rgba(77,216,232,0.18)" stroke="rgba(77,216,232,0.42)" stroke-width="0.7"/>
-        <ellipse cx="76" cy="22" rx="18" ry="5" fill="rgba(77,216,232,0.2)" filter="url(#g6)"/>
-        <line x1="76" y1="12" x2="76" y2="22" stroke="rgba(77,216,232,0.65)" stroke-width="1.1" filter="url(#g6s)"/>
-        <circle cx="76" cy="10" r="3" fill="rgba(77,216,232,0.95)" filter="url(#g6)"/>
-        <!-- right buildings -->
-        <rect x="96"  y="46" width="22" height="52" fill="rgba(77,216,232,0.07)" stroke="rgba(77,216,232,0.2)"  stroke-width="0.8"/>
-        <rect x="100" y="52" width="5" height="6"   fill="rgba(77,216,232,0.16)" stroke="rgba(77,216,232,0.3)"  stroke-width="0.4"/>
-        <rect x="109" y="52" width="5" height="6"   fill="rgba(77,216,232,0.11)" stroke="rgba(77,216,232,0.23)" stroke-width="0.4"/>
-        <rect x="100" y="63" width="5" height="6"   fill="rgba(77,216,232,0.09)" stroke="rgba(77,216,232,0.2)"  stroke-width="0.4"/>
-        <rect x="122" y="62" width="18" height="36" fill="rgba(77,216,232,0.05)" stroke="rgba(77,216,232,0.14)" stroke-width="0.7"/>
-        <rect x="126" y="67" width="4" height="5"   fill="rgba(77,216,232,0.09)" stroke="rgba(77,216,232,0.18)" stroke-width="0.4"/>
-        <rect x="134" y="67" width="4" height="5"   fill="rgba(77,216,232,0.07)" stroke="rgba(77,216,232,0.14)" stroke-width="0.4"/>
-        <text x="38" y="113" font-size="5.5" fill="rgba(77,216,232,0.38)" font-family="monospace">PREMIUM PROPERTIES</text>
-      </svg>
-    </div>
-    <div class="cb">
-      <div class="ctag">S6 · 精選物件</div>
-      <div class="cname">頂級物件展廳</div>
-      <div class="cdesc">精選物件・文華新站・精準配對客戶需求</div>
-    </div>
-    <div class="cfoot">
-      <div class="ccta">查看物件</div>
-      <div class="carrow"><svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
-    </div>
-  </a>
-
+<!-- ══ DIVIDER ══ -->
+<div class="divider">
+  <div class="div-ornament">◆</div>
+  <div class="div-label">Six Core Systems · 六大核心系統入口</div>
+  <div class="div-line"></div>
 </div>
 
-<!-- FOOTER -->
+<!-- ══ GRID ══ -->
+<div class="grid">
+
+<!-- ─── S1 五邊形 + 清楚標籤 ─── -->
+<a class="card" href="https://richtime90117277-alt.github.io/futime-crm/crm_cloud_v19.html" target="_blank">
+  <div class="c-accent ca-green"></div>
+  <div class="ill">
+    <div class="ill-bg s1-bg"></div>
+    <div class="ill-fade"></div>
+    <div class="num-badge">01</div>
+    <svg viewBox="0 0 200 165" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <radialGradient id="pgFill" cx="40%" cy="30%" r="70%">
+          <stop offset="0%" stop-color="#5A8A6A"/>
+          <stop offset="100%" stop-color="#1E3228"/>
+        </radialGradient>
+        <filter id="gp1"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="gp1s"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <!-- soft glow behind -->
+      <polygon points="100,20 162,58 140,128 60,128 38,58" fill="rgba(61,90,71,0.15)" filter="url(#gp1)"/>
+      <!-- filled pentagon -->
+      <polygon points="100,24 158,60 137,122 63,122 42,60" fill="url(#pgFill)"/>
+      <!-- sheen -->
+      <polygon points="100,24 158,60 140,60 100,30" fill="rgba(255,255,255,0.08)"/>
+      <!-- border -->
+      <polygon points="100,24 158,60 137,122 63,122 42,60" fill="none" stroke="rgba(200,230,210,0.22)" stroke-width="1.2"/>
+      <!-- inner ring -->
+      <polygon points="100,46 136,68 122,106 78,106 64,68" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="0.9"/>
+      <!-- centre -->
+      <circle cx="100" cy="76" r="16" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+      <circle cx="100" cy="76" r="7" fill="rgba(232,160,32,0.9)"/>
+      <circle cx="100" cy="76" r="3" fill="#fff"/>
+      <!-- corner dots -->
+      <circle cx="100" cy="24" r="5" fill="#DEB86A" filter="url(#gp1s)"/>
+      <circle cx="158" cy="60" r="3.5" fill="rgba(255,255,255,0.6)"/>
+      <circle cx="137" cy="122" r="3.5" fill="rgba(255,255,255,0.45)"/>
+      <circle cx="63"  cy="122" r="3.5" fill="rgba(255,255,255,0.45)"/>
+      <circle cx="42"  cy="60"  r="3.5" fill="rgba(255,255,255,0.55)"/>
+      <!-- connector lines -->
+      <line x1="100" y1="60"  x2="100" y2="29"  stroke="rgba(255,255,255,0.2)"  stroke-width="0.9" stroke-dasharray="3 2"/>
+      <line x1="113" y1="69"  x2="153" y2="62"  stroke="rgba(255,255,255,0.16)" stroke-width="0.9" stroke-dasharray="3 2"/>
+      <line x1="111" y1="83"  x2="132" y2="118" stroke="rgba(255,255,255,0.14)" stroke-width="0.9" stroke-dasharray="3 2"/>
+      <line x1="89"  y1="83"  x2="68"  y2="118" stroke="rgba(255,255,255,0.14)" stroke-width="0.9" stroke-dasharray="3 2"/>
+      <line x1="87"  y1="69"  x2="47"  y2="62"  stroke="rgba(255,255,255,0.16)" stroke-width="0.9" stroke-dasharray="3 2"/>
+      <!-- LABELS — outside pentagon, clearly visible on light bg -->
+      <!-- top: 需求分析 -->
+      <rect x="74" y="5" width="52" height="14" rx="4" fill="rgba(232,160,32,0.2)" stroke="rgba(184,136,46,0.6)" stroke-width="0.7"/>
+      <text x="100" y="15" font-size="7.5" fill="#7A5010" text-anchor="middle" font-family="sans-serif" font-weight="600">需求分析</text>
+      <!-- top-right: 決策路圖 -->
+      <rect x="160" y="48" width="36" height="14" rx="4" fill="rgba(61,90,71,0.12)" stroke="rgba(61,90,71,0.4)" stroke-width="0.7"/>
+      <text x="178" y="57.5" font-size="7" fill="#2A4830" text-anchor="middle" font-family="sans-serif" font-weight="600">決策路圖</text>
+      <!-- bot-right: 節點預判 -->
+      <rect x="140" y="126" width="36" height="14" rx="4" fill="rgba(61,90,71,0.10)" stroke="rgba(61,90,71,0.35)" stroke-width="0.7"/>
+      <text x="158" y="135.5" font-size="7" fill="#2A4830" text-anchor="middle" font-family="sans-serif" font-weight="600">節點預判</text>
+      <!-- bot-left: 客戶評估 -->
+      <rect x="24" y="126" width="36" height="14" rx="4" fill="rgba(61,90,71,0.10)" stroke="rgba(61,90,71,0.35)" stroke-width="0.7"/>
+      <text x="42" y="135.5" font-size="7" fill="#2A4830" text-anchor="middle" font-family="sans-serif" font-weight="600">客戶評估</text>
+      <!-- top-left: 情境應對 -->
+      <rect x="4" y="48" width="36" height="14" rx="4" fill="rgba(61,90,71,0.10)" stroke="rgba(61,90,71,0.35)" stroke-width="0.7"/>
+      <text x="22" y="57.5" font-size="7" fill="#2A4830" text-anchor="middle" font-family="sans-serif" font-weight="600">情境應對</text>
+    </svg>
+  </div>
+  <div class="cb">
+    <div class="c-eyebrow">S1 · 核心系統</div>
+    <div class="c-title">顧問決策系統</div>
+    <div class="c-desc">客戶狀態評估・需求分析・決策節點預判・即時支援輔助</div>
+    <div class="chips"><span class="chip">決策節點</span><span class="chip">客戶分析</span><span class="chip">情境應對</span></div>
+  </div>
+  <div class="cfoot">
+    <div class="cta-label">進入系統</div>
+    <div class="arrow-ring"><svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
+  </div>
+</a>
+
+<!-- ─── S2 小屋 ─── -->
+<a class="card" href="https://richtime90117277-alt.github.io/futime-crm/asset-planner.html" target="_blank">
+  <div class="c-accent ca-gold"></div>
+  <div class="ill">
+    <div class="ill-bg s2-bg"></div>
+    <div class="ill-fade"></div>
+    <div class="num-badge">02</div>
+    <svg viewBox="0 0 200 165" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <linearGradient id="roofG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#C8882A"/>
+          <stop offset="100%" stop-color="#8A5A10"/>
+        </linearGradient>
+        <linearGradient id="wallG2" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#5A7850"/>
+          <stop offset="100%" stop-color="#3A5234"/>
+        </linearGradient>
+        <linearGradient id="skyG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#C8E8F8" stop-opacity="0.6"/>
+          <stop offset="100%" stop-color="#E8F4FD" stop-opacity="0.1"/>
+        </linearGradient>
+        <filter id="gh"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <rect x="0" y="0" width="200" height="165" fill="url(#skyG)"/>
+      <!-- clouds -->
+      <ellipse cx="38" cy="28" rx="20" ry="9" fill="rgba(255,255,255,0.7)"/>
+      <ellipse cx="52" cy="23" rx="16" ry="11" fill="rgba(255,255,255,0.75)"/>
+      <ellipse cx="26" cy="26" rx="12" ry="7"  fill="rgba(255,255,255,0.6)"/>
+      <ellipse cx="158" cy="22" rx="17" ry="8"  fill="rgba(255,255,255,0.65)"/>
+      <ellipse cx="170" cy="17" rx="13" ry="9"  fill="rgba(255,255,255,0.7)"/>
+      <!-- sun -->
+      <circle cx="170" cy="32" r="12" fill="rgba(255,220,80,0.55)"/>
+      <circle cx="170" cy="32" r="8"  fill="rgba(255,200,40,0.7)"/>
+      <!-- ground -->
+      <ellipse cx="100" cy="136" rx="78" ry="10" fill="rgba(58,86,68,0.13)" filter="url(#gh)"/>
+      <rect x="18" y="130" width="164" height="8" rx="4" fill="rgba(80,120,60,0.22)"/>
+      <!-- house shadow -->
+      <ellipse cx="102" cy="134" rx="54" ry="7" fill="rgba(26,40,32,0.1)"/>
+      <!-- body -->
+      <rect x="54" y="78" width="92" height="58" rx="3" fill="url(#wallG2)"/>
+      <!-- roof -->
+      <polygon points="44,80 100,28 156,80" fill="url(#roofG)"/>
+      <polygon points="100,28 156,80 148,80 100,34" fill="rgba(255,255,255,0.1)"/>
+      <polygon points="44,80 100,80 100,28" fill="rgba(0,0,0,0.04)"/>
+      <!-- chimney -->
+      <rect x="128" y="42" width="11" height="24" rx="2" fill="#7A5020"/>
+      <rect x="125" y="38" width="17" height="7"  rx="2" fill="#8A6030"/>
+      <!-- smoke puffs -->
+      <circle cx="133" cy="32" r="5"  fill="rgba(200,200,200,0.4)"/>
+      <circle cx="136" cy="24" r="4"  fill="rgba(200,200,200,0.3)"/>
+      <circle cx="132" cy="17" r="3"  fill="rgba(200,200,200,0.2)"/>
+      <!-- door -->
+      <rect x="84" y="100" width="32" height="36" rx="16" fill="#1A2820"/>
+      <rect x="84" y="100" width="32" height="20" rx="0"  fill="#1A2820"/>
+      <rect x="84" y="100" width="32" height="36" rx="5"  fill="none" stroke="rgba(222,184,106,0.55)" stroke-width="1"/>
+      <circle cx="113" cy="118" r="2.2" fill="rgba(222,184,106,0.9)"/>
+      <!-- windows -->
+      <rect x="60" y="87" width="22" height="18" rx="3" fill="rgba(200,230,255,0.65)" stroke="rgba(255,255,255,0.5)" stroke-width="0.8"/>
+      <line x1="71" y1="87" x2="71" y2="105" stroke="rgba(255,255,255,0.5)" stroke-width="0.7"/>
+      <line x1="60" y1="96" x2="82" y2="96"  stroke="rgba(255,255,255,0.5)" stroke-width="0.7"/>
+      <rect x="118" y="87" width="22" height="18" rx="3" fill="rgba(255,210,120,0.55)" stroke="rgba(255,255,255,0.5)" stroke-width="0.8"/>
+      <line x1="129" y1="87" x2="129" y2="105" stroke="rgba(255,255,255,0.5)" stroke-width="0.7"/>
+      <line x1="118" y1="96" x2="140" y2="96"  stroke="rgba(255,255,255,0.5)" stroke-width="0.7"/>
+      <!-- window light glow -->
+      <ellipse cx="129" cy="105" rx="12" ry="5" fill="rgba(255,200,80,0.12)" filter="url(#gh)"/>
+      <!-- ROI tag -->
+      <rect x="136" y="28" width="52" height="15" rx="5" fill="rgba(232,160,32,0.22)" stroke="rgba(184,136,46,0.6)" stroke-width="0.8"/>
+      <text x="162" y="38.5" font-size="8.5" fill="#7A5010" text-anchor="middle" font-family="sans-serif" font-weight="700">+ROI 142%</text>
+      <!-- walkway -->
+      <polygon points="88,136 112,136 116,144 84,144" fill="rgba(180,160,120,0.35)"/>
+      <!-- garden plants -->
+      <circle cx="54" cy="126" r="5" fill="rgba(80,160,80,0.6)"/>
+      <circle cx="48" cy="122" r="4" fill="rgba(100,180,100,0.55)"/>
+      <line x1="54" y1="131" x2="54" y2="138" stroke="rgba(60,100,40,0.55)" stroke-width="1.5"/>
+      <line x1="48" y1="126" x2="48" y2="133" stroke="rgba(60,100,40,0.55)" stroke-width="1.5"/>
+      <circle cx="148" cy="126" r="5" fill="rgba(220,100,100,0.6)"/>
+      <circle cx="154" cy="122" r="4" fill="rgba(240,140,140,0.55)"/>
+      <line x1="148" y1="131" x2="148" y2="138" stroke="rgba(60,100,40,0.55)" stroke-width="1.5"/>
+      <line x1="154" y1="126" x2="154" y2="133" stroke="rgba(60,100,40,0.55)" stroke-width="1.5"/>
+    </svg>
+  </div>
+  <div class="cb">
+    <div class="c-eyebrow">S2 · 規劃工具</div>
+    <div class="c-title">AI 資產規劃報告</div>
+    <div class="c-desc">ROI 分析・多策略比較・AI 自動生成個案報告</div>
+  </div>
+  <div class="cfoot">
+    <div class="cta-label">開啟工具</div>
+    <div class="arrow-ring"><svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
+  </div>
+</a>
+
+<!-- ─── S3 行事曆 ─── -->
+<a class="card" href="https://www.notion.so/625809993b2746b7842e022bd0279fe7" target="_blank">
+  <div class="c-accent ca-rose"></div>
+  <div class="ill">
+    <div class="ill-bg s3-bg"></div>
+    <div class="ill-fade"></div>
+    <div class="num-badge">03</div>
+    <svg viewBox="0 0 200 165" preserveAspectRatio="xMidYMid meet">
+      <defs><filter id="gc"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+      <!-- shadow -->
+      <rect x="32" y="30" width="136" height="112" rx="10" fill="rgba(212,90,58,0.07)" filter="url(#gc)"/>
+      <!-- body -->
+      <rect x="28" y="22" width="144" height="112" rx="9" fill="rgba(255,255,255,0.88)" stroke="rgba(212,90,58,0.2)" stroke-width="0.8"/>
+      <!-- header -->
+      <rect x="28" y="22" width="144" height="30" rx="9" fill="#D45A3A"/>
+      <rect x="28" y="38" width="144" height="14" rx="0" fill="#D45A3A"/>
+      <text x="100" y="41" font-size="10" fill="rgba(255,255,255,0.95)" text-anchor="middle" font-family="sans-serif" font-weight="700" letter-spacing="1">2026 · 品牌活動</text>
+      <!-- ring clips -->
+      <rect x="62"  y="14" width="9" height="16" rx="4.5" fill="#B84030"/>
+      <rect x="130" y="14" width="9" height="16" rx="4.5" fill="#B84030"/>
+      <!-- day headers -->
+      <text x="48"  y="63" font-size="7.5" fill="rgba(61,90,71,0.55)" text-anchor="middle" font-family="sans-serif" font-weight="500">一</text>
+      <text x="68"  y="63" font-size="7.5" fill="rgba(61,90,71,0.55)" text-anchor="middle" font-family="sans-serif" font-weight="500">二</text>
+      <text x="88"  y="63" font-size="7.5" fill="rgba(61,90,71,0.55)" text-anchor="middle" font-family="sans-serif" font-weight="500">三</text>
+      <text x="108" y="63" font-size="7.5" fill="rgba(61,90,71,0.55)" text-anchor="middle" font-family="sans-serif" font-weight="500">四</text>
+      <text x="128" y="63" font-size="7.5" fill="rgba(61,90,71,0.55)" text-anchor="middle" font-family="sans-serif" font-weight="500">五</text>
+      <text x="148" y="63" font-size="7.5" fill="rgba(184,136,46,0.75)" text-anchor="middle" font-family="sans-serif" font-weight="700">六</text>
+      <text x="164" y="63" font-size="7.5" fill="rgba(212,60,40,0.7)"  text-anchor="middle" font-family="sans-serif" font-weight="700">日</text>
+      <line x1="36" y1="66" x2="164" y2="66" stroke="rgba(61,90,71,0.07)" stroke-width="0.7"/>
+      <!-- row 1 -->
+      <text x="48"  y="80" font-size="9" fill="rgba(61,90,71,0.5)" text-anchor="middle" font-family="sans-serif">1</text>
+      <text x="68"  y="80" font-size="9" fill="rgba(61,90,71,0.5)" text-anchor="middle" font-family="sans-serif">2</text>
+      <text x="88"  y="80" font-size="9" fill="rgba(61,90,71,0.5)" text-anchor="middle" font-family="sans-serif">3</text>
+      <rect x="98" y="71" width="20" height="14" rx="5" fill="rgba(184,136,46,0.22)" stroke="rgba(184,136,46,0.55)" stroke-width="0.9"/>
+      <text x="108" y="81" font-size="9" fill="#7A5010" text-anchor="middle" font-family="sans-serif" font-weight="700">4</text>
+      <text x="128" y="80" font-size="9" fill="rgba(61,90,71,0.5)" text-anchor="middle" font-family="sans-serif">5</text>
+      <text x="148" y="80" font-size="9" fill="rgba(184,136,46,0.65)" text-anchor="middle" font-family="sans-serif">6</text>
+      <text x="164" y="80" font-size="9" fill="rgba(212,60,40,0.6)"  text-anchor="middle" font-family="sans-serif">7</text>
+      <!-- row 2 -->
+      <text x="48"  y="97" font-size="9" fill="rgba(61,90,71,0.5)" text-anchor="middle" font-family="sans-serif">8</text>
+      <text x="68"  y="97" font-size="9" fill="rgba(61,90,71,0.5)" text-anchor="middle" font-family="sans-serif">9</text>
+      <rect x="77" y="88" width="76" height="14" rx="5" fill="rgba(212,90,58,0.1)" stroke="rgba(212,90,58,0.3)" stroke-width="0.8"/>
+      <text x="88"  y="97" font-size="9" fill="rgba(180,60,30,0.7)" text-anchor="middle" font-family="sans-serif">10</text>
+      <text x="108" y="97" font-size="9" fill="rgba(180,60,30,0.7)" text-anchor="middle" font-family="sans-serif">11</text>
+      <text x="128" y="97" font-size="9" fill="rgba(180,60,30,0.65)" text-anchor="middle" font-family="sans-serif">12</text>
+      <text x="148" y="97" font-size="9" fill="rgba(184,136,46,0.65)" text-anchor="middle" font-family="sans-serif">13</text>
+      <text x="164" y="97" font-size="9" fill="rgba(212,60,40,0.6)"  text-anchor="middle" font-family="sans-serif">14</text>
+      <!-- row 3: today -->
+      <rect x="37" y="104" width="20" height="14" rx="5" fill="#3D5A47"/>
+      <text x="47"  y="114" font-size="9" fill="#fff" text-anchor="middle" font-family="sans-serif" font-weight="700">15</text>
+      <text x="68"  y="114" font-size="9" fill="rgba(61,90,71,0.5)" text-anchor="middle" font-family="sans-serif">16</text>
+      <text x="88"  y="114" font-size="9" fill="rgba(61,90,71,0.5)" text-anchor="middle" font-family="sans-serif">17</text>
+      <text x="108" y="114" font-size="9" fill="rgba(61,90,71,0.5)" text-anchor="middle" font-family="sans-serif">18</text>
+      <text x="128" y="114" font-size="9" fill="rgba(212,60,40,0.75)" text-anchor="middle" font-family="sans-serif" font-weight="600">19</text>
+      <circle cx="128" cy="118.5" r="2" fill="rgba(212,60,40,0.75)"/>
+      <text x="148" y="114" font-size="9" fill="rgba(184,136,46,0.6)" text-anchor="middle" font-family="sans-serif">20</text>
+      <text x="164" y="114" font-size="9" fill="rgba(212,60,40,0.55)" text-anchor="middle" font-family="sans-serif">21</text>
+      <!-- event label -->
+      <rect x="74" y="122" width="72" height="10" rx="3" fill="rgba(212,90,58,0.15)" stroke="rgba(212,90,58,0.38)" stroke-width="0.6"/>
+      <text x="110" y="129.5" font-size="6" fill="rgba(180,50,30,0.8)" text-anchor="middle" font-family="sans-serif" letter-spacing="1" font-weight="600">品牌發表活動</text>
+    </svg>
+  </div>
+  <div class="cb">
+    <div class="c-eyebrow">S3 · 品牌・行銷</div>
+    <div class="c-title">官網與近期活動</div>
+    <div class="c-desc">富時代官網・精美活動入口・提升品牌形象與市場能見度</div>
+  </div>
+  <div class="cfoot">
+    <div class="cta-label">開啟頁面</div>
+    <div class="arrow-ring"><svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
+  </div>
+</a>
+
+<!-- ─── S4 翻開書本 ─── -->
+<a class="card" href="https://www.notion.so/059972580dae4a54b07a57fd410b3090" target="_blank">
+  <div class="c-accent ca-gold"></div>
+  <div class="ill">
+    <div class="ill-bg s4-bg"></div>
+    <div class="ill-fade"></div>
+    <div class="num-badge">04</div>
+    <svg viewBox="0 0 200 165" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <linearGradient id="skyTree" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#C8E8F8" stop-opacity="0.7"/>
+          <stop offset="100%" stop-color="#E8F5EA" stop-opacity="0.2"/>
+        </linearGradient>
+        <linearGradient id="pageLA" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#F5EDD8"/>
+          <stop offset="100%" stop-color="#FAF4E8"/>
+        </linearGradient>
+        <linearGradient id="pageRA" x1="1" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#FAF4E8"/>
+          <stop offset="100%" stop-color="#F0E6CC"/>
+        </linearGradient>
+        <linearGradient id="trunkG" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#5A3A18"/>
+          <stop offset="50%" stop-color="#8A5C28"/>
+          <stop offset="100%" stop-color="#5A3A18"/>
+        </linearGradient>
+        <radialGradient id="canopyG" cx="50%" cy="60%" r="50%">
+          <stop offset="0%" stop-color="#5EAA60"/>
+          <stop offset="60%" stop-color="#3D8840"/>
+          <stop offset="100%" stop-color="#286030"/>
+        </radialGradient>
+        <radialGradient id="canopy2G" cx="50%" cy="55%" r="50%">
+          <stop offset="0%" stop-color="#72C870"/>
+          <stop offset="100%" stop-color="#3D8840"/>
+        </radialGradient>
+        <filter id="treeGlow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="treeSoft"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="leafBlur"><feGaussianBlur stdDeviation="0.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+
+      <!-- sky bg -->
+      <rect x="0" y="0" width="200" height="165" fill="url(#skyTree)"/>
+      <!-- soft clouds -->
+      <ellipse cx="30"  cy="20" rx="22" ry="10" fill="rgba(255,255,255,0.55)"/>
+      <ellipse cx="46"  cy="14" rx="18" ry="12" fill="rgba(255,255,255,0.6)"/>
+      <ellipse cx="170" cy="18" rx="20" ry="9"  fill="rgba(255,255,255,0.5)"/>
+      <ellipse cx="185" cy="12" rx="14" ry="11" fill="rgba(255,255,255,0.55)"/>
+
+      <!-- ══ OPEN BOOK BASE ══ -->
+      <!-- book stack shadow -->
+      <ellipse cx="100" cy="152" rx="72" ry="8" fill="rgba(60,40,15,0.18)" filter="url(#treeSoft)"/>
+      <!-- bottom book (extra depth) -->
+      <rect x="22" y="138" width="156" height="14" rx="4" fill="#7A5820" stroke="rgba(100,65,20,0.5)" stroke-width="0.8"/>
+      <rect x="22" y="138" width="156" height="5"  rx="4" fill="rgba(160,110,50,0.6)"/>
+      <!-- main book cover base -->
+      <rect x="18" y="128" width="164" height="16" rx="4" fill="#5A3D18" stroke="rgba(80,50,10,0.6)" stroke-width="0.8"/>
+      <rect x="18" y="128" width="164" height="6"  rx="4" fill="rgba(120,80,30,0.5)"/>
+      <!-- spine in middle -->
+      <rect x="96" y="124" width="8" height="20" rx="2" fill="#3A2508"/>
+
+      <!-- LEFT PAGE — swept open to left -->
+      <path d="M96,124 Q70,118 30,112 Q16,110 18,128 Q50,132 94,130 Z" fill="url(#pageLA)" stroke="rgba(160,120,60,0.3)" stroke-width="0.8"/>
+      <!-- left page text lines -->
+      <line x1="28" y1="116" x2="88" y2="114" stroke="rgba(90,65,30,0.2)"  stroke-width="0.9"/>
+      <line x1="28" y1="120" x2="82" y2="118" stroke="rgba(90,65,30,0.15)" stroke-width="0.8"/>
+      <line x1="28" y1="124" x2="78" y2="122" stroke="rgba(90,65,30,0.12)" stroke-width="0.7"/>
+      <!-- left page small text hint -->
+      <rect x="28" y="112" width="30" height="4" rx="1" fill="rgba(232,160,32,0.3)"/>
+      <!-- right page -->
+      <path d="M104,124 Q130,118 170,112 Q184,110 182,128 Q150,132 106,130 Z" fill="url(#pageRA)" stroke="rgba(160,120,60,0.3)" stroke-width="0.8"/>
+      <line x1="112" y1="116" x2="172" y2="114" stroke="rgba(90,65,30,0.2)"  stroke-width="0.9"/>
+      <line x1="112" y1="120" x2="168" y2="118" stroke="rgba(90,65,30,0.15)" stroke-width="0.8"/>
+      <line x1="112" y1="124" x2="162" y2="122" stroke="rgba(90,65,30,0.12)" stroke-width="0.7"/>
+
+      <!-- ══ TREE TRUNK rising from book centre ══ -->
+      <!-- trunk glow -->
+      <ellipse cx="100" cy="125" rx="12" ry="6" fill="rgba(60,150,60,0.25)" filter="url(#treeGlow)"/>
+      <!-- trunk -->
+      <path d="M93,128 Q90,105 88,82 Q89,70 100,62 Q111,70 112,82 Q110,105 107,128 Z" fill="url(#trunkG)"/>
+      <!-- trunk highlight -->
+      <path d="M97,128 Q96,105 95,82 Q96,72 100,65 Q101,72 103,82 Q102,106 101,128 Z" fill="rgba(200,150,80,0.18)"/>
+      <!-- roots -->
+      <path d="M93,128 Q82,130 72,128" fill="none" stroke="#5A3A18" stroke-width="4" stroke-linecap="round"/>
+      <path d="M107,128 Q118,130 128,128" fill="none" stroke="#5A3A18" stroke-width="4" stroke-linecap="round"/>
+      <path d="M95,128 Q88,135 80,136" fill="none" stroke="#5A3A18" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M105,128 Q112,135 120,136" fill="none" stroke="#5A3A18" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- branches -->
+      <path d="M100,80 Q84,70 74,58"  fill="none" stroke="#6A4820" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M100,80 Q116,70 126,58" fill="none" stroke="#6A4820" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M98,92  Q80,84 66,78"   fill="none" stroke="#6A4820" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M102,92 Q120,84 134,78" fill="none" stroke="#6A4820" stroke-width="2.5" stroke-linecap="round"/>
+
+      <!-- ══ CANOPY ══ -->
+      <!-- outer glow halo -->
+      <circle cx="100" cy="46" r="52" fill="rgba(60,140,60,0.12)" filter="url(#treeGlow)"/>
+      <!-- back clusters -->
+      <circle cx="78"  cy="52" r="22" fill="#286030" opacity="0.85"/>
+      <circle cx="122" cy="52" r="22" fill="#286030" opacity="0.85"/>
+      <circle cx="100" cy="40" r="24" fill="#2A6832"/>
+      <!-- mid layer -->
+      <circle cx="82"  cy="44" r="20" fill="#3D8840"/>
+      <circle cx="118" cy="44" r="20" fill="#3D8840"/>
+      <circle cx="100" cy="32" r="22" fill="#448844"/>
+      <!-- front highlights -->
+      <circle cx="88"  cy="38" r="17" fill="url(#canopy2G)"/>
+      <circle cx="112" cy="38" r="17" fill="url(#canopy2G)"/>
+      <circle cx="100" cy="24" r="19" fill="url(#canopyG)"/>
+      <!-- canopy top shine -->
+      <ellipse cx="96" cy="18" rx="10" ry="6" fill="rgba(140,210,130,0.4)"/>
+
+      <!-- ══ FALLING LEAVES ══ -->
+      <ellipse cx="52"  cy="72" rx="5" ry="3" fill="#5EAA50" transform="rotate(-30,52,72)"  filter="url(#leafBlur)"/>
+      <ellipse cx="38"  cy="88" rx="4" ry="2.5" fill="#4A9840" transform="rotate(20,38,88)" filter="url(#leafBlur)"/>
+      <ellipse cx="148" cy="70" rx="5" ry="3" fill="#6ABB55" transform="rotate(40,148,70)" filter="url(#leafBlur)"/>
+      <ellipse cx="162" cy="86" rx="4" ry="2.5" fill="#4A9840" transform="rotate(-15,162,86)" filter="url(#leafBlur)"/>
+      <ellipse cx="60"  cy="55" rx="3.5" ry="2" fill="#72C860" transform="rotate(50,60,55)" filter="url(#leafBlur)"/>
+      <ellipse cx="140" cy="58" rx="3.5" ry="2" fill="#5EAA50" transform="rotate(-40,140,58)" filter="url(#leafBlur)"/>
+      <ellipse cx="44"  cy="110" rx="3" ry="2" fill="#4A9840" transform="rotate(25,44,110)" filter="url(#leafBlur)" opacity="0.7"/>
+      <ellipse cx="156" cy="105" rx="3" ry="2" fill="#5EAA50" transform="rotate(-20,156,105)" filter="url(#leafBlur)" opacity="0.7"/>
+
+      <!-- light rays from canopy -->
+      <line x1="72" y1="60" x2="55" y2="90"  stroke="rgba(180,240,160,0.2)" stroke-width="3"/>
+      <line x1="128" y1="60" x2="145" y2="90" stroke="rgba(180,240,160,0.2)" stroke-width="3"/>
+    </svg>
+  </div>
+  <div class="cb">
+    <div class="c-eyebrow">S4 · 知識中樞</div>
+    <div class="c-title">知識中樞系統</div>
+    <div class="c-desc">話術庫・培訓系統・決策邏輯・持續優化知識庫</div>
+  </div>
+  <div class="cfoot">
+    <div class="cta-label">進入 Notion</div>
+    <div class="arrow-ring"><svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
+  </div>
+</a>
+
+<!-- ─── S5 兩人對話（真臉）─── -->
+<div class="card">
+  <div class="c-accent ca-teal"></div>
+  <div class="ill">
+    <div class="ill-bg s5-bg"></div>
+    <div class="ill-fade"></div>
+    <div class="num-badge">05</div>
+    <svg viewBox="0 0 200 165" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <linearGradient id="deskG5" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#4ABBB8"/>
+          <stop offset="100%" stop-color="#2A9898"/>
+        </linearGradient>
+        <linearGradient id="monitorG5" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#2A6868"/>
+          <stop offset="100%" stop-color="#1A4848"/>
+        </linearGradient>
+        <linearGradient id="screenG5" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#D8EEF0"/>
+          <stop offset="100%" stop-color="#C0E0E4"/>
+        </linearGradient>
+        <linearGradient id="boardG5" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#FFFDF5"/>
+          <stop offset="100%" stop-color="#FFF5E0"/>
+        </linearGradient>
+        <radialGradient id="bgG5" cx="50%" cy="40%" r="60%">
+          <stop offset="0%" stop-color="#E8F8F8"/>
+          <stop offset="100%" stop-color="#D0ECEE"/>
+        </radialGradient>
+        <filter id="g5f"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="g5s"><feGaussianBlur stdDeviation="1" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+
+      <!-- background -->
+      <rect x="0" y="0" width="200" height="165" fill="url(#bgG5)"/>
+      <!-- subtle wave lines bg -->
+      <path d="M0,40 Q50,30 100,40 Q150,50 200,40" fill="none" stroke="rgba(60,180,180,0.12)" stroke-width="1.5"/>
+      <path d="M0,60 Q50,50 100,60 Q150,70 200,60" fill="none" stroke="rgba(60,180,180,0.10)" stroke-width="1.2"/>
+      <path d="M0,80 Q50,70 100,80 Q150,90 200,80" fill="none" stroke="rgba(60,180,180,0.08)" stroke-width="1"/>
+      <!-- dot pattern right -->
+      <circle cx="168" cy="32" r="1.8" fill="rgba(60,180,180,0.3)"/>
+      <circle cx="176" cy="32" r="1.8" fill="rgba(60,180,180,0.3)"/>
+      <circle cx="184" cy="32" r="1.8" fill="rgba(60,180,180,0.3)"/>
+      <circle cx="168" cy="40" r="1.8" fill="rgba(60,180,180,0.25)"/>
+      <circle cx="176" cy="40" r="1.8" fill="rgba(60,180,180,0.25)"/>
+      <circle cx="184" cy="40" r="1.8" fill="rgba(60,180,180,0.25)"/>
+      <circle cx="168" cy="48" r="1.8" fill="rgba(60,180,180,0.2)"/>
+      <circle cx="176" cy="48" r="1.8" fill="rgba(60,180,180,0.2)"/>
+
+      <!-- ══ DESK ══ -->
+      <rect x="0" y="128" width="200" height="37" rx="0" fill="url(#deskG5)"/>
+      <rect x="0" y="128" width="200" height="5"  rx="0" fill="rgba(100,220,220,0.35)"/>
+
+      <!-- ══ MONITOR ══ -->
+      <!-- monitor base -->
+      <rect x="88"  y="138" width="24" height="6"  rx="2" fill="#1A4848"/>
+      <rect x="84"  y="142" width="32" height="4"  rx="2" fill="#1A4848"/>
+      <!-- monitor stand -->
+      <rect x="98"  y="112" width="4"  height="28" rx="2" fill="#1E5050"/>
+      <!-- monitor body -->
+      <rect x="56"  y="42"  width="88" height="72" rx="6" fill="url(#monitorG5)" stroke="rgba(30,80,80,0.8)" stroke-width="1.5"/>
+      <!-- screen -->
+      <rect x="60"  y="46"  width="80" height="62" rx="3" fill="url(#screenG5)"/>
+      <!-- monitor bottom dots -->
+      <circle cx="94" cy="116" r="1.5" fill="rgba(80,200,180,0.6)"/>
+      <circle cx="100" cy="116" r="1.5" fill="rgba(80,200,180,0.8)"/>
+      <circle cx="106" cy="116" r="1.5" fill="rgba(80,200,180,0.6)"/>
+
+      <!-- ══ INSTRUCTOR IN SCREEN ══ -->
+      <!-- instructor bg in screen -->
+      <rect x="60" y="46" width="80" height="62" rx="3" fill="rgba(210,240,240,0.5)"/>
+      <!-- whiteboard/flipchart in screen -->
+      <rect x="96" y="50" width="40" height="50" rx="2" fill="url(#boardG5)" stroke="rgba(220,180,60,0.6)" stroke-width="1"/>
+      <!-- board top bar gold -->
+      <rect x="96" y="50" width="40" height="5" rx="2" fill="rgba(220,180,60,0.8)"/>
+      <!-- bulb drawing on board -->
+      <circle cx="116" cy="70" r="10" fill="rgba(232,160,32,0.2)" stroke="rgba(200,140,20,0.55)" stroke-width="1.2"/>
+      <circle cx="116" cy="68" r="7"  fill="rgba(232,160,32,0.35)"/>
+      <!-- filament -->
+      <path d="M113,72 Q116,68 119,72" fill="none" stroke="rgba(180,120,10,0.7)" stroke-width="1" stroke-linecap="round"/>
+      <!-- bulb base lines -->
+      <line x1="113" y1="78" x2="119" y2="78" stroke="rgba(180,120,10,0.6)" stroke-width="1.2"/>
+      <line x1="114" y1="81" x2="118" y2="81" stroke="rgba(180,120,10,0.5)" stroke-width="1"/>
+      <!-- board text lines -->
+      <line x1="99" y1="87" x2="133" y2="87" stroke="rgba(232,160,32,0.55)" stroke-width="1.2"/>
+      <line x1="99" y1="91" x2="128" y2="91" stroke="rgba(232,160,32,0.4)"  stroke-width="1"/>
+      <line x1="99" y1="95" x2="130" y2="95" stroke="rgba(232,160,32,0.3)"  stroke-width="0.9"/>
+      <!-- instructor body (flat style) -->
+      <!-- torso gold -->
+      <path d="M66,82 Q66,78 74,78 Q82,78 82,82 L84,108 L64,108 Z" fill="rgba(232,160,32,0.85)"/>
+      <!-- white collar inner -->
+      <rect x="69" y="78" width="10" height="8" rx="2" fill="rgba(255,252,245,0.9)"/>
+      <!-- head -->
+      <circle cx="74" cy="68" r="10" fill="#F0C898"/>
+      <!-- hair -->
+      <path d="M64,64 Q64,54 74,52 Q84,54 84,64 Q81,57 74,56 Q67,57 64,64Z" fill="#1A1A1A"/>
+      <!-- eyes -->
+      <circle cx="70" cy="66" r="1.8" fill="#1A1A1A"/>
+      <circle cx="78" cy="66" r="1.8" fill="#1A1A1A"/>
+      <circle cx="70.6" cy="65.4" r="0.6" fill="white"/>
+      <circle cx="78.6" cy="65.4" r="0.6" fill="white"/>
+      <!-- nose -->
+      <path d="M73,69 Q74,71 75,69" fill="none" stroke="rgba(140,90,50,0.5)" stroke-width="0.9" stroke-linecap="round"/>
+      <!-- smile -->
+      <path d="M70,73 Q74,76 78,73" fill="none" stroke="rgba(160,80,60,0.75)" stroke-width="1.2" stroke-linecap="round"/>
+      <!-- arm pointing at board -->
+      <path d="M82,84 Q90,82 96,78" fill="none" stroke="rgba(232,160,32,0.85)" stroke-width="6" stroke-linecap="round"/>
+      <circle cx="97" cy="77" r="4" fill="#F0C898"/>
+      <!-- pointer in hand -->
+      <line x1="98" y1="75" x2="104" y2="68" stroke="rgba(180,60,40,0.7)" stroke-width="1.5" stroke-linecap="round"/>
+      <!-- other arm holding marker -->
+      <path d="M66,86 Q60,92 58,100" fill="none" stroke="rgba(232,160,32,0.85)" stroke-width="6" stroke-linecap="round"/>
+      <circle cx="57" cy="102" r="4" fill="#F0C898"/>
+      <!-- marker in hand -->
+      <rect x="53" y="100" width="3" height="8" rx="1" fill="rgba(180,60,40,0.7)" transform="rotate(-20,55,104)"/>
+
+      <!-- ══ STUDENT LEFT ══ -->
+      <!-- laptop -->
+      <rect x="8"  y="120" width="44" height="30" rx="3" fill="rgba(240,245,245,0.9)" stroke="rgba(180,210,210,0.5)" stroke-width="0.7"/>
+      <rect x="10" y="122" width="40" height="24" rx="2" fill="rgba(200,235,235,0.8)"/>
+      <rect x="6"  y="148" width="48" height="5"  rx="2" fill="rgba(210,230,230,0.8)"/>
+      <circle cx="30" cy="133" r="3" fill="rgba(180,220,220,0.6)" stroke="rgba(120,180,180,0.4)" stroke-width="0.4"/>
+      <!-- student left body -->
+      <path d="M22,108 Q22,104 30,104 Q38,104 38,108 L40,128 L20,128 Z" fill="rgba(60,170,160,0.8)"/>
+      <!-- polo shirt detail -->
+      <circle cx="30" cy="108" r="2.5" fill="rgba(40,140,130,0.6)"/>
+      <line x1="30" y1="110" x2="30" y2="118" stroke="rgba(40,140,130,0.4)" stroke-width="0.8"/>
+      <!-- head L -->
+      <circle cx="30" cy="94" r="11" fill="#E8C088"/>
+      <!-- hair L short -->
+      <path d="M19,90 Q19,79 30,77 Q41,79 41,90 Q38,83 30,82 Q22,83 19,90Z" fill="#1A1A1A"/>
+      <!-- face L -->
+      <circle cx="26" cy="92" r="1.6" fill="#1A1A1A"/>
+      <circle cx="34" cy="92" r="1.6" fill="#1A1A1A"/>
+      <circle cx="26.5" cy="91.5" r="0.5" fill="white"/>
+      <circle cx="34.5" cy="91.5" r="0.5" fill="white"/>
+      <path d="M26,97 Q30,100 34,97" fill="none" stroke="rgba(160,80,60,0.7)" stroke-width="1" stroke-linecap="round"/>
+      <!-- arm on desk -->
+      <path d="M20,110 Q14,116 10,128" fill="none" stroke="rgba(60,170,160,0.8)" stroke-width="7" stroke-linecap="round"/>
+
+      <!-- ══ STUDENT RIGHT ══ -->
+      <!-- laptop R -->
+      <rect x="148" y="120" width="44" height="30" rx="3" fill="rgba(240,245,245,0.9)" stroke="rgba(180,210,210,0.5)" stroke-width="0.7"/>
+      <rect x="150" y="122" width="40" height="24" rx="2" fill="rgba(200,235,235,0.8)"/>
+      <rect x="146" y="148" width="48" height="5"  rx="2" fill="rgba(210,230,230,0.8)"/>
+      <circle cx="170" cy="133" r="3" fill="rgba(180,220,220,0.6)" stroke="rgba(120,180,180,0.4)" stroke-width="0.4"/>
+      <!-- student right body -->
+      <path d="M162,108 Q162,104 170,104 Q178,104 178,108 L180,128 L160,128 Z" fill="rgba(60,170,160,0.8)"/>
+      <!-- head R -->
+      <circle cx="170" cy="94" r="11" fill="#D4A870"/>
+      <!-- hair R long -->
+      <path d="M159,88 Q159,77 170,75 Q181,77 181,88 L181,102 Q178,95 170,94 Q162,95 159,102 Z" fill="#1A1A1A"/>
+      <!-- face R -->
+      <circle cx="166" cy="92" r="1.6" fill="#1A1A1A"/>
+      <circle cx="174" cy="92" r="1.6" fill="#1A1A1A"/>
+      <circle cx="166.5" cy="91.5" r="0.5" fill="white"/>
+      <circle cx="174.5" cy="91.5" r="0.5" fill="white"/>
+      <path d="M166,97 Q170,100 174,97" fill="none" stroke="rgba(160,80,60,0.7)" stroke-width="1" stroke-linecap="round"/>
+      <!-- arm -->
+      <path d="M180,110 Q186,116 190,128" fill="none" stroke="rgba(60,170,160,0.8)" stroke-width="7" stroke-linecap="round"/>
+
+      <!-- small plant on desk between laptops -->
+      <rect x="95" y="140" width="10" height="8"  rx="2" fill="rgba(120,160,200,0.55)"/>
+      <ellipse cx="100" cy="140" rx="9" ry="5" fill="rgba(80,160,80,0.6)"/>
+      <path d="M97,140 Q100,133 103,138" fill="none" stroke="rgba(50,130,50,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M100,140 Q96,132 99,135" fill="none" stroke="rgba(50,130,50,0.5)" stroke-width="1.2" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <div class="cb">
+    <div class="c-eyebrow">S5 · 溝通策略</div>
+    <div class="c-title">話術教材庫</div>
+    <div class="c-desc">話術應對・對話模型・SOS 異議・情境演練</div>
+  </div>
+  <div class="s5-btns">
+    <a class="s5-btn" href="https://richtime90117277-alt.github.io/futime-crm/LIB.html" target="_blank">
+      <svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+      話術教材庫<div class="s5-pip"></div>
+    </a>
+    <a class="s5-btn" href="https://richtime90117277-alt.github.io/futime-crm/zhiwei-ai-coach.html" target="_blank">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      AI 顧問報告<div class="s5-pip"></div>
+    </a>
+    <a class="s5-btn" href="https://richtime90117277-alt.github.io/futime-crm/sos-v2.html" target="_blank">
+      <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      SOS 異議處理<div class="s5-pip"></div>
+    </a>
+  </div>
+</div>
+
+<!-- ─── S6 豪華客廳（有人氣）─── -->
+<a class="card" href="https://www.notion.so/68f46f920de14f07bc4161d221a83995" target="_blank">
+  <div class="c-accent ca-teal"></div>
+  <div class="ill">
+    <div class="ill-bg s6-bg"></div>
+    <div class="ill-fade"></div>
+    <div class="num-badge">06</div>
+    <svg viewBox="0 0 200 165" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <linearGradient id="wallS6" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#F5EDD8"/>
+          <stop offset="55%" stop-color="#EDE2C8"/>
+          <stop offset="100%" stop-color="#E0D0B0"/>
+        </linearGradient>
+        <linearGradient id="floorS6" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#C8A060"/>
+          <stop offset="100%" stop-color="#A07838"/>
+        </linearGradient>
+        <linearGradient id="sofaS6" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#EDE4D0"/>
+          <stop offset="100%" stop-color="#D8CCBA"/>
+        </linearGradient>
+        <linearGradient id="tvWallS6" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#D8C8A8"/>
+          <stop offset="100%" stop-color="#C8B890"/>
+        </linearGradient>
+        <linearGradient id="goldStripe" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#E8C860"/>
+          <stop offset="50%" stop-color="#C8A030"/>
+          <stop offset="100%" stop-color="#E8C860"/>
+        </linearGradient>
+        <linearGradient id="ottomanS6" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#C88040"/>
+          <stop offset="100%" stop-color="#A06020"/>
+        </linearGradient>
+        <linearGradient id="ceilS6" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#FDF8EE"/>
+          <stop offset="100%" stop-color="#F5EDD8"/>
+        </linearGradient>
+        <filter id="s6glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="s6soft"><feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="s6spot"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+
+      <!-- ══ CEILING (light) ══ -->
+      <rect x="0" y="0" width="200" height="38" fill="url(#ceilS6)"/>
+      <!-- coffered ceiling -->
+      <rect x="20" y="5"  width="160" height="26" rx="2" fill="rgba(220,200,160,0.25)" stroke="rgba(200,160,50,0.3)" stroke-width="0.6"/>
+      <rect x="28" y="10" width="144" height="16" rx="1" fill="rgba(200,180,130,0.2)"  stroke="rgba(200,160,50,0.18)" stroke-width="0.5"/>
+      <!-- ceiling lights warm -->
+      <circle cx="60"  cy="6" r="4"  fill="rgba(255,230,150,0.95)" filter="url(#s6glow)"/>
+      <circle cx="100" cy="6" r="4"  fill="rgba(255,230,150,0.95)" filter="url(#s6glow)"/>
+      <circle cx="140" cy="6" r="4"  fill="rgba(255,230,150,0.95)" filter="url(#s6glow)"/>
+      <!-- soft light pools -->
+      <polygon points="52,10 68,10 76,38 44,38"   fill="rgba(255,220,120,0.10)"/>
+      <polygon points="92,10 108,10 116,38 84,38"  fill="rgba(255,220,120,0.12)"/>
+      <polygon points="132,10 148,10 156,38 124,38" fill="rgba(255,220,120,0.10)"/>
+
+      <!-- ══ WALL ══ -->
+      <rect x="0" y="38" width="200" height="80" fill="url(#wallS6)"/>
+
+      <!-- ══ TV FEATURE WALL (centre — lighter wood tone) ══ -->
+      <rect x="52" y="36" width="96" height="82" fill="url(#tvWallS6)" stroke="rgba(180,140,60,0.3)" stroke-width="0.7"/>
+      <!-- gold vertical accent stripes -->
+      <rect x="62"  y="36" width="3"   height="82" fill="url(#goldStripe)" opacity="0.75"/>
+      <rect x="72"  y="36" width="1.5" height="82" fill="url(#goldStripe)" opacity="0.4"/>
+      <rect x="124" y="36" width="3"   height="82" fill="url(#goldStripe)" opacity="0.75"/>
+      <rect x="134" y="36" width="1.5" height="82" fill="url(#goldStripe)" opacity="0.4"/>
+      <!-- TV screen (dark recessed) -->
+      <rect x="75" y="44" width="50" height="36" rx="2" fill="rgba(30,22,12,0.75)" stroke="rgba(180,140,50,0.5)" stroke-width="0.8"/>
+      <rect x="77" y="46" width="46" height="32" rx="1" fill="rgba(20,15,8,0.8)"/>
+      <!-- subtle screen reflection -->
+      <rect x="77" y="46" width="22" height="32" rx="1" fill="rgba(255,255,255,0.03)"/>
+      <circle cx="100" cy="82" r="1.2" fill="rgba(100,180,255,0.6)"/>
+      <!-- decorative mirrors/panels flanking TV -->
+      <rect x="54" y="40" width="20" height="60" rx="1" fill="rgba(230,215,185,0.55)" stroke="rgba(180,140,50,0.4)" stroke-width="0.7"/>
+      <rect x="54" y="40" width="20" height="60" rx="1" fill="rgba(255,240,200,0.15)"/>
+      <!-- subtle reflection lines in mirror -->
+      <line x1="58" y1="44" x2="70" y2="56" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/>
+      <rect x="126" y="40" width="20" height="60" rx="1" fill="rgba(230,215,185,0.55)" stroke="rgba(180,140,50,0.4)" stroke-width="0.7"/>
+      <rect x="126" y="40" width="20" height="60" rx="1" fill="rgba(255,240,200,0.15)"/>
+      <line x1="130" y1="44" x2="142" y2="56" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/>
+
+      <!-- ══ SIDE WALLS ══ -->
+      <rect x="0"   y="38" width="52" height="80" fill="rgba(240,228,205,0.9)"/>
+      <rect x="148" y="38" width="52" height="80" fill="rgba(240,228,205,0.9)"/>
+      <!-- wall panel moulding left -->
+      <rect x="4"  y="42" width="42" height="36" rx="1" fill="none" stroke="rgba(180,145,80,0.35)" stroke-width="0.7"/>
+      <rect x="4"  y="82" width="42" height="32" rx="1" fill="none" stroke="rgba(180,145,80,0.25)" stroke-width="0.6"/>
+      <!-- left abstract painting (warm tones) -->
+      <rect x="8"  y="46" width="34" height="28" rx="1.5" fill="rgba(200,175,130,0.35)" stroke="rgba(180,140,50,0.5)" stroke-width="1"/>
+      <rect x="9"  y="47" width="32" height="26" rx="1" fill="rgba(220,195,150,0.25)"/>
+      <path d="M12,58 Q20,50 28,56 Q36,62 40,54" fill="none" stroke="rgba(180,130,50,0.55)" stroke-width="1.5"/>
+      <ellipse cx="22" cy="60" rx="7" ry="5" fill="rgba(160,110,40,0.3)"/>
+      <ellipse cx="34" cy="55" rx="4" ry="3" fill="rgba(200,150,60,0.25)"/>
+      <!-- right wall panel -->
+      <rect x="154" y="42" width="42" height="64" rx="1" fill="none" stroke="rgba(180,145,80,0.28)" stroke-width="0.6"/>
+      <!-- right abstract painting -->
+      <rect x="158" y="46" width="34" height="28" rx="1.5" fill="rgba(200,175,130,0.35)" stroke="rgba(180,140,50,0.5)" stroke-width="1"/>
+      <rect x="159" y="47" width="32" height="26" rx="1" fill="rgba(215,185,140,0.25)"/>
+      <line x1="162" y1="52" x2="188" y2="70" stroke="rgba(190,140,50,0.4)" stroke-width="1.5"/>
+      <line x1="162" y1="65" x2="185" y2="52" stroke="rgba(160,110,35,0.32)" stroke-width="1"/>
+      <circle cx="174" cy="58" rx="6" ry="5" fill="rgba(200,150,60,0.2)"/>
+
+      <!-- ══ FLOOR (warm wood) ══ -->
+      <rect x="0" y="118" width="200" height="47" fill="url(#floorS6)"/>
+      <line x1="0" y1="124" x2="200" y2="124" stroke="rgba(140,90,20,0.22)" stroke-width="0.8"/>
+      <line x1="0" y1="130" x2="200" y2="130" stroke="rgba(140,90,20,0.18)" stroke-width="0.7"/>
+      <line x1="0" y1="136" x2="200" y2="136" stroke="rgba(140,90,20,0.14)" stroke-width="0.6"/>
+      <line x1="0" y1="142" x2="200" y2="142" stroke="rgba(140,90,20,0.10)" stroke-width="0.5"/>
+      <line x1="0" y1="148" x2="200" y2="148" stroke="rgba(140,90,20,0.08)" stroke-width="0.5"/>
+      <line x1="50"  y1="118" x2="50"  y2="165" stroke="rgba(140,90,20,0.12)" stroke-width="0.5"/>
+      <line x1="100" y1="118" x2="100" y2="165" stroke="rgba(140,90,20,0.12)" stroke-width="0.5"/>
+      <line x1="150" y1="118" x2="150" y2="165" stroke="rgba(140,90,20,0.10)" stroke-width="0.5"/>
+      <!-- area rug (light pattern) -->
+      <ellipse cx="100" cy="138" rx="82" ry="20" fill="rgba(180,155,110,0.22)"/>
+      <ellipse cx="100" cy="138" rx="76" ry="17" fill="none" stroke="rgba(180,145,80,0.28)" stroke-width="0.8"/>
+      <ellipse cx="100" cy="138" rx="68" ry="13" fill="none" stroke="rgba(180,145,80,0.18)" stroke-width="0.5"/>
+      <path d="M40,138 Q70,130 100,138 Q130,146 160,138" fill="none" stroke="rgba(200,165,90,0.15)" stroke-width="1"/>
+
+      <!-- ══ LEFT SOFA (cream) ══ -->
+      <rect x="2"  y="104" width="76" height="24" rx="4" fill="url(#sofaS6)" stroke="rgba(200,180,140,0.4)" stroke-width="0.7"/>
+      <rect x="4"  y="96"  width="22" height="22" rx="4" fill="rgba(248,240,225,0.98)" stroke="rgba(200,175,130,0.35)" stroke-width="0.6"/>
+      <rect x="29" y="96"  width="22" height="22" rx="4" fill="rgba(240,232,215,0.98)" stroke="rgba(200,175,130,0.28)" stroke-width="0.5"/>
+      <rect x="54" y="96"  width="22" height="22" rx="4" fill="rgba(248,240,225,0.98)" stroke="rgba(200,175,130,0.35)" stroke-width="0.6"/>
+      <line x1="15" y1="96" x2="15" y2="118" stroke="rgba(190,165,120,0.3)" stroke-width="0.6"/>
+      <line x1="40" y1="96" x2="40" y2="118" stroke="rgba(190,165,120,0.3)" stroke-width="0.6"/>
+      <line x1="65" y1="96" x2="65" y2="118" stroke="rgba(190,165,120,0.3)" stroke-width="0.6"/>
+      <rect x="0"  y="100" width="6"  height="28" rx="3" fill="rgba(235,220,195,0.98)"/>
+      <rect x="72" y="100" width="6"  height="28" rx="3" fill="rgba(228,212,185,0.98)"/>
+      <rect x="5"  y="126" width="5"  height="10" rx="2" fill="rgba(120,85,30,0.7)"/>
+      <rect x="68" y="126" width="5"  height="10" rx="2" fill="rgba(120,85,30,0.7)"/>
+      <!-- gold cushion accent -->
+      <rect x="56" y="97" width="18" height="16" rx="3" fill="rgba(210,165,50,0.65)" stroke="rgba(225,185,70,0.5)" stroke-width="0.6"/>
+      <line x1="56" y1="105" x2="74" y2="105" stroke="rgba(230,195,90,0.4)" stroke-width="0.7"/>
+
+      <!-- ══ RIGHT SOFA (cream, mirrored) ══ -->
+      <rect x="122" y="104" width="76" height="24" rx="4" fill="url(#sofaS6)" stroke="rgba(200,180,140,0.4)" stroke-width="0.7"/>
+      <rect x="124" y="96"  width="22" height="22" rx="4" fill="rgba(248,240,225,0.98)" stroke="rgba(200,175,130,0.35)" stroke-width="0.6"/>
+      <rect x="149" y="96"  width="22" height="22" rx="4" fill="rgba(240,232,215,0.98)" stroke="rgba(200,175,130,0.28)" stroke-width="0.5"/>
+      <rect x="174" y="96"  width="22" height="22" rx="4" fill="rgba(248,240,225,0.98)" stroke="rgba(200,175,130,0.35)" stroke-width="0.6"/>
+      <line x1="135" y1="96" x2="135" y2="118" stroke="rgba(190,165,120,0.3)" stroke-width="0.6"/>
+      <line x1="160" y1="96" x2="160" y2="118" stroke="rgba(190,165,120,0.3)" stroke-width="0.6"/>
+      <line x1="185" y1="96" x2="185" y2="118" stroke="rgba(190,165,120,0.3)" stroke-width="0.6"/>
+      <rect x="122" y="100" width="6"  height="28" rx="3" fill="rgba(235,220,195,0.98)"/>
+      <rect x="194" y="100" width="6"  height="28" rx="3" fill="rgba(228,212,185,0.98)"/>
+      <rect x="127" y="126" width="5"  height="10" rx="2" fill="rgba(120,85,30,0.7)"/>
+      <rect x="190" y="126" width="5"  height="10" rx="2" fill="rgba(120,85,30,0.7)"/>
+      <rect x="124" y="97" width="18" height="16" rx="3" fill="rgba(210,165,50,0.65)" stroke="rgba(225,185,70,0.5)" stroke-width="0.6"/>
+      <line x1="124" y1="105" x2="142" y2="105" stroke="rgba(230,195,90,0.4)" stroke-width="0.7"/>
+
+      <!-- ══ OTTOMAN (caramel leather) ══ -->
+      <rect x="68" y="118" width="64" height="26" rx="4" fill="url(#ottomanS6)" stroke="rgba(180,120,40,0.55)" stroke-width="0.9"/>
+      <circle cx="84"  cy="125" r="2" fill="rgba(120,65,15,0.55)"/>
+      <circle cx="100" cy="125" r="2" fill="rgba(120,65,15,0.55)"/>
+      <circle cx="116" cy="125" r="2" fill="rgba(120,65,15,0.55)"/>
+      <circle cx="84"  cy="135" r="2" fill="rgba(120,65,15,0.55)"/>
+      <circle cx="100" cy="135" r="2" fill="rgba(120,65,15,0.55)"/>
+      <circle cx="116" cy="135" r="2" fill="rgba(120,65,15,0.55)"/>
+      <line x1="68" y1="130"  x2="132" y2="130" stroke="rgba(130,70,15,0.3)" stroke-width="0.7"/>
+      <line x1="84"  y1="118" x2="84"  y2="144" stroke="rgba(130,70,15,0.22)" stroke-width="0.5"/>
+      <line x1="100" y1="118" x2="100" y2="144" stroke="rgba(130,70,15,0.22)" stroke-width="0.5"/>
+      <line x1="116" y1="118" x2="116" y2="144" stroke="rgba(130,70,15,0.22)" stroke-width="0.5"/>
+      <rect x="68" y="118" width="64" height="5" rx="4" fill="rgba(255,200,120,0.18)"/>
+      <rect x="72"  y="141" width="5" height="8" rx="2" fill="rgba(100,60,15,0.75)"/>
+      <rect x="123" y="141" width="5" height="8" rx="2" fill="rgba(100,60,15,0.75)"/>
+
+      <!-- ══ COFFEE TABLE ══ -->
+      <rect x="76" y="114" width="48" height="8" rx="2" fill="rgba(175,135,65,0.8)" stroke="rgba(200,160,60,0.45)" stroke-width="0.6"/>
+      <rect x="76" y="114" width="48" height="3" rx="2" fill="rgba(255,230,160,0.2)"/>
+      <!-- books -->
+      <rect x="80" y="110" width="12" height="4" rx="0.5" fill="rgba(50,35,12,0.75)"/>
+      <rect x="80" y="107" width="10" height="3" rx="0.5" fill="rgba(75,55,20,0.65)"/>
+      <!-- white rose bouquet -->
+      <path d="M98,114 Q100,106 102,103 Q104,106 106,114Z" fill="rgba(175,135,65,0.75)" stroke="rgba(155,115,45,0.4)" stroke-width="0.4"/>
+      <ellipse cx="102" cy="114" rx="4" ry="2" fill="rgba(150,110,45,0.6)"/>
+      <circle cx="100" cy="101" r="4"   fill="rgba(255,252,248,0.95)"/>
+      <circle cx="104" cy="100" r="3.5" fill="rgba(255,250,245,0.9)"/>
+      <circle cx="98"  cy="100" r="3.5" fill="rgba(252,248,243,0.85)"/>
+      <circle cx="102" cy="97"  r="3"   fill="rgba(255,255,252,0.95)"/>
+      <circle cx="99"  cy="97"  r="2.5" fill="rgba(255,252,248,0.9)"/>
+      <!-- candle -->
+      <rect x="110" y="108" width="5" height="8" rx="0.5" fill="rgba(248,238,218,0.9)"/>
+      <ellipse cx="112" cy="107" rx="2.5" ry="3.5" fill="rgba(255,200,50,0.6)" filter="url(#s6soft)"/>
+      <ellipse cx="112" cy="108" rx="1.1" ry="1.6" fill="rgba(255,235,100,0.95)"/>
+
+      <!-- ══ TABLE LAMPS (warm shades) ══ -->
+      <rect x="34" y="84" width="4" height="30" rx="2" fill="rgba(170,130,55,0.75)"/>
+      <circle cx="36" cy="83" r="3.5" fill="rgba(190,150,65,0.8)"/>
+      <path d="M25,71 L47,71 L45,57 L27,57 Z" fill="rgba(248,232,185,0.88)" stroke="rgba(210,175,95,0.45)" stroke-width="0.6"/>
+      <ellipse cx="36" cy="71" rx="14" ry="6" fill="rgba(255,225,130,0.3)" filter="url(#s6spot)"/>
+      <rect x="162" y="84" width="4" height="30" rx="2" fill="rgba(170,130,55,0.75)"/>
+      <circle cx="164" cy="83" r="3.5" fill="rgba(190,150,65,0.8)"/>
+      <path d="M153,71 L175,71 L173,57 L155,57 Z" fill="rgba(248,232,185,0.88)" stroke="rgba(210,175,95,0.45)" stroke-width="0.6"/>
+      <ellipse cx="164" cy="71" rx="14" ry="6" fill="rgba(255,225,130,0.3)" filter="url(#s6spot)"/>
+
+      <!-- ══ DECORATIVE PLANT ══ -->
+      <rect x="184" y="92" width="12" height="26" rx="3" fill="rgba(120,85,38,0.65)"/>
+      <ellipse cx="190" cy="92" rx="11" ry="6" fill="rgba(60,110,55,0.65)"/>
+      <ellipse cx="185" cy="88" rx="8"  ry="5" fill="rgba(75,130,65,0.6)"/>
+      <ellipse cx="195" cy="88" rx="8"  ry="5" fill="rgba(65,120,55,0.58)"/>
+      <ellipse cx="190" cy="83" rx="9"  ry="6" fill="rgba(80,140,70,0.65)"/>
+
+      <!-- warm ambient overlay to unify everything -->
+      <rect x="0" y="0" width="200" height="165" fill="rgba(240,200,120,0.03)"/>
+    </svg>
+  </div>
+  <div class="cb">
+    <div class="c-eyebrow">S6 · 精選物件</div>
+    <div class="c-title">頂級物件展廳</div>
+    <div class="c-desc">精選物件・文華新站・精準配對客戶需求</div>
+  </div>
+  <div class="cfoot">
+    <div class="cta-label">查看物件</div>
+    <div class="arrow-ring"><svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
+  </div>
+</a>
+
+</div><!-- /grid -->
+
 <footer>
-  <div class="fl">Richtime © 2026 ｜ 內部版僅供團隊使用</div>
-  <div class="fr">AI DECISION ENGINE · V1.4</div>
+  <div class="f-left">Richtime © 2026 <span class="f-gem">◆</span> 內部版僅供團隊使用</div>
+  <div class="f-right">AI DECISION ENGINE · V 1.5</div>
 </footer>
-
 </div>
-
-<script>
-const cv = document.getElementById('c1');
-const cx2 = cv.getContext('2d');
-let W,H,N=[],raf;
-function resize(){
-  const r=cv.parentElement.getBoundingClientRect();
-  W=cv.width=r.width; H=cv.height=r.height; N=[];
-  const n=Math.min(Math.floor(W*H/5000),28);
-  for(let i=0;i<n;i++) N.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:Math.random()*1.4+0.6});
-}
-function draw(){
-  cx2.clearRect(0,0,W,H);
-  N.forEach(n=>{n.x+=n.vx;n.y+=n.vy;if(n.x<0||n.x>W)n.vx*=-1;if(n.y<0||n.y>H)n.vy*=-1;});
-  for(let i=0;i<N.length;i++) for(let j=i+1;j<N.length;j++){
-    const dx=N[i].x-N[j].x,dy=N[i].y-N[j].y,d=Math.sqrt(dx*dx+dy*dy);
-    if(d<120){cx2.beginPath();cx2.moveTo(N[i].x,N[i].y);cx2.lineTo(N[j].x,N[j].y);
-      cx2.strokeStyle=`rgba(77,216,232,${(1-d/120)*0.2})`;cx2.lineWidth=0.6;cx2.stroke();}
-  }
-  N.forEach(n=>{cx2.beginPath();cx2.arc(n.x,n.y,n.r,0,Math.PI*2);
-    cx2.fillStyle='rgba(77,216,232,0.55)';cx2.shadowColor='#4dd8e8';cx2.shadowBlur=5;cx2.fill();cx2.shadowBlur=0;});
-  raf=requestAnimationFrame(draw);
-}
-window.addEventListener('resize',()=>{cancelAnimationFrame(raf);resize();draw();});
-resize(); draw();
-</script>
 </body>
 </html>
