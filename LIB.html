@@ -309,8 +309,14 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
     </div>
     <div class="count-badge">共 <span id="totalCnt">141</span> 筆</div>
     <button class="ai-btn" onclick="openAiModal()">🤖 AI 顧問</button>
+    <button class="ai-btn" id="syncBtn" onclick="syncLibToKV()" style="background:linear-gradient(135deg,#B8943C,#a07d2e);" title="把最新話術庫同步到 AI 系統">☁️ 同步話術庫</button>
   </div>
 </header>
+
+<!-- 同步狀態提示 -->
+<div id="syncToast" style="display:none;position:fixed;bottom:24px;right:24px;z-index:9999;background:#1E1A14;color:#fff;border-radius:10px;padding:12px 20px;font-size:13px;font-family:'Noto Sans TC',sans-serif;box-shadow:0 4px 20px rgba(0,0,0,0.3);transition:opacity .3s;">
+  <span id="syncToastMsg">同步中...</span>
+</div>
 
 <!-- 遮罩層 -->
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
@@ -1138,5 +1144,58 @@ function copyDrillPrompt() {
 </script>
 
 <footer style="text-align:center;padding:20px;font-size:11px;color:#9E9285;letter-spacing:.08em;border-top:1px solid #E0D8CC;margin-top:20px;">Richtime © 2026 &nbsp;◆&nbsp; 內部版僅供團隊使用 &nbsp;◆&nbsp; AI DECISION ENGINE · V 1.5</footer>
+<script>
+// ── 同步話術庫到 KV ──
+const WORKER_URL = 'https://zhiwei-coach-api.richtime90117277.workers.dev';
+const UPDATE_TOKEN = 'richtime_lib_sync_2024'; // 要跟 Worker 環境變數 UPDATE_TOKEN 一致
+
+function showSyncToast(msg, color) {
+  const toast = document.getElementById('syncToast');
+  const msgEl = document.getElementById('syncToastMsg');
+  msgEl.textContent = msg;
+  toast.style.background = color || '#1E1A14';
+  toast.style.display = 'block';
+  toast.style.opacity = '1';
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => { toast.style.display = 'none'; }, 300);
+  }, 3000);
+}
+
+async function syncLibToKV() {
+  const btn = document.getElementById('syncBtn');
+  if (!btn) return;
+
+  // 確認
+  if (!confirm(`確定要把目前 ${SCRIPTS.length} 條話術同步到 AI 系統嗎？`)) return;
+
+  btn.textContent = '⏳ 同步中...';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(WORKER_URL + '/update-lib', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ scripts: SCRIPTS, token: UPDATE_TOKEN })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      showSyncToast(`✅ 成功同步 ${data.count} 條話術到 AI 系統！`, '#3D5A40');
+      btn.textContent = '✅ 已同步';
+    } else {
+      showSyncToast('❌ 同步失敗：' + (data.error || '未知錯誤'), '#C0392B');
+      btn.textContent = '☁️ 同步話術庫';
+    }
+  } catch (err) {
+    showSyncToast('❌ 網路錯誤：' + err.message, '#C0392B');
+    btn.textContent = '☁️ 同步話術庫';
+  } finally {
+    btn.disabled = false;
+    setTimeout(() => {
+      if (btn.textContent === '✅ 已同步') btn.textContent = '☁️ 同步話術庫';
+    }, 5000);
+  }
+}
+</script>
 </body>
 </html>
