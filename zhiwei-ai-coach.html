@@ -708,8 +708,6 @@
 
     <div class="error-msg" id="errorMsg"></div>
 
-  <!-- CRM 偵錯面板：選完客戶後顯示原始欄位，確認後可通知開發者關掉 -->
-  <pre id="crmDebugPanel" style="display:none;margin-top:16px;background:#1E1A14;color:#B8E0A0;font-size:11px;font-family:'DM Mono',monospace;padding:16px;border-radius:10px;overflow-x:auto;white-space:pre-wrap;word-break:break-all;max-height:300px;overflow-y:auto;border:1px solid #3D5A40"></pre>
   </div>
 
   <!-- Loading -->
@@ -778,7 +776,7 @@ function toggleFamiliarity(el) {
   selectedFamiliarity = el.dataset.value || el.textContent.trim();
 }
 
-function generate() {
+async function generate() {
     const name = document.getElementById('name').value.trim();
     const age = document.getElementById('age').value.trim();
     const groupOther = document.getElementById('groupOther').value.trim();
@@ -1271,91 +1269,75 @@ function pickCustomer(jsonStr) {
   _crmSelectedId = c.id;
   _crmSelectedName = c.customerName || '';
 
-  // 偵錯：把完整 CRM 原始欄位印到 console 並顯示偵錯面板
-  console.log('=== CRM 原始欄位 ===', JSON.stringify(c, null, 2));
-  const debugEl = document.getElementById('crmDebugPanel');
-  if (debugEl) {
-    debugEl.style.display = 'block';
-    debugEl.textContent = '【CRM 原始欄位 — 確認 key 後告訴開發者即可關掉此面板】\n' + JSON.stringify(c, null, 2);
-  }
-
-  // 帶入文字欄位（窮舉所有可能 key）
   const sv = (id, val) => { const el = document.getElementById(id); if(el && val) el.value = val; };
-  sv('name', c.customerName || c.name || '');
-  sv('age',  c.customerAge  || c.age  || '');
 
-  // 目前狀況
-  sv('status',
-    c.currentStatus    ||
-    c.seminarStatus    ||
-    c.blueprintCompletion ||
-    c.progressStatus   ||
-    c.stage            || ''
-  );
+  // ── 基本資料 ──
+  sv('name', c.customerName || '');
+  sv('age',  c.customerAge  || '');
 
-  // Keyman
-  sv('keyman', c.keyMan || c.keyman || c.decisionMaker || c.keyPerson || '');
+  // ── 目前狀況：組合研討會、信任度、購買時程 ──
+  const statusParts = [];
+  if (c.seminarAttended)    statusParts.push('研討會：' + c.seminarAttended);
+  if (c.currentStatus)      statusParts.push('信任度：' + c.currentStatus);
+  if (c.buyingTimeline)     statusParts.push('購買時程：' + c.buyingTimeline);
+  if (c.lastFollowupResult) statusParts.push('上次互動：' + c.lastFollowupResult);
+  if (c.livingStatus)       statusParts.push('居住狀況：' + c.livingStatus);
+  if (statusParts.length) { const el = document.getElementById('status'); if(el) el.value = statusParts.join('｜'); }
 
-  // 財務：組合多個欄位
+  // ── Keyman ──
+  sv('keyman', c.keyMan || '');
+
+  // ── 財務：組合預算、月付、居住、購買目的 ──
   const finParts = [];
-  if (c.budget)        finParts.push('自有資金 ' + c.budget);
-  if (c.monthlyIncome) finParts.push('月收入 ' + c.monthlyIncome);
-  if (c.loanStatus)    finParts.push(c.loanStatus);
-  if (c.finance)       finParts.push(c.finance);
-  if (c.financialNote) finParts.push(c.financialNote);
+  if (c.purchasePurpose)   finParts.push('購買目的：' + c.purchasePurpose);
+  if (c.budget)            finParts.push('預算：' + c.budget);
+  if (c.monthlyPayment)    finParts.push('可負擔月付：' + c.monthlyPayment);
+  if (c.mtg_monthlyIncome) finParts.push('月收入：' + c.mtg_monthlyIncome);
+  if (c.livingStatus)      finParts.push('目前居住：' + c.livingStatus);
+  if (c.familyMembers)     finParts.push('家庭成員：' + c.familyMembers);
   if (finParts.length) { const el = document.getElementById('finance'); if(el) el.value = finParts.join('，'); }
 
-  // 痛點
-  sv('pain',
-    c.painPointsNote ||
-    c.painPoints     ||
-    c.objections     ||
-    c.needs          ||
-    c.customerNeeds  ||
-    c.memo           || ''
-  );
+  // ── 痛點：painPointsNote 為主，painPoints 為輔 ──
+  const painVal = [c.painPointsNote, c.painPoints].filter(Boolean).join('；');
+  sv('pain', painVal);
 
-  // 上次跟進結果
-  const notesRaw =
-    c.notes          ||
-    c.followUpNote   ||
-    c.lastFollowUp   ||
-    c.followUpResult ||
-    c.remark         || '';
-  if (notesRaw) {
-    const el = document.getElementById('lastResult');
-    if (el) el.value = notesRaw.split('\n')[0];
-  }
+  // ── 上次跟進結果 ──
+  sv('lastResult', c.lastFollowupResult || '');
 
-  // 族群 chip
+  // ── 補充說明：帶入下次跟進行動 ──
+  sv('extra', c.nextFollowupAction ? c.nextFollowupAction.split('\n')[0] : '');
+
+  // ── 族群 chip（clientSegment 是精準欄位）──
   selectedChips = [];
   document.querySelectorAll('#groupChips .chip').forEach(ch => ch.classList.remove('active'));
-  const seg = c.clientSegment || c.clientType || c.customerType || c.segment || c.group || '';
+  const seg = c.clientSegment || '';
   if (seg) {
+    let matched = false;
     document.querySelectorAll('#groupChips .chip').forEach(ch => {
       if (seg.includes(ch.textContent.trim())) {
         ch.classList.add('active');
         selectedChips.push(ch.textContent.trim());
+        matched = true;
       }
     });
-    if (selectedChips.length === 0) {
+    if (!matched) {
       const other = document.getElementById('groupOther');
       if (other) other.value = seg;
     }
   }
 
-  // 家人支持度
-  const sup = c.familySupport || c.support || c.familyStatus || '';
+  // ── 家人支持度（familySupport 帶有 emoji，用 includes 比對）──
+  const sup = c.familySupport || '';
   if (sup) {
     document.querySelectorAll('#supportToggle .toggle-btn').forEach(btn => {
       const label = btn.textContent.trim();
       if (label.includes('支持') && sup.includes('支持')) setSupport(btn, '支持', 'active-yes');
-      else if (label.includes('反對') && sup.includes('反對'))   setSupport(btn, '反對', 'active-no');
-      else if (label.includes('不清楚') && (sup.includes('不清楚') || sup === '未知')) setSupport(btn, '不清楚', 'active-neutral');
+      else if (label.includes('反對') && sup.includes('反對')) setSupport(btn, '反對', 'active-no');
+      else if (label.includes('不清楚') && (sup.includes('不清楚') || sup.includes('觀望') || sup.includes('未知'))) setSupport(btn, '不清楚', 'active-neutral');
     });
   }
 
-  showError_coach('✅ 已帶入 ' + (c.customerName || '') + ' 的資料（請開啟 F12 Console 確認欄位是否正確）', true);
+  showError_coach('✅ 已帶入 ' + (c.customerName || '') + ' 的資料，請確認後送出', true);
 }
 
 function showError_coach(msg, isSuccess) {
