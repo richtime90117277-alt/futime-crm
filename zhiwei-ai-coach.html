@@ -767,11 +767,11 @@
     supportValue = val;
   }
 
-  async let selectedFamiliarity = '';
+  let selectedFamiliarity = '';
 
 function toggleFamiliarity(el) {
-  document.querySelectorAll('#familiarityChips .chip').forEach(c => c.classList.remove('selected'));
-  el.classList.add('selected');
+  document.querySelectorAll('#familiarityChips .chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
   selectedFamiliarity = el.dataset.value || el.textContent.trim();
 }
 
@@ -1268,32 +1268,51 @@ function pickCustomer(jsonStr) {
   _crmSelectedId = c.id;
   _crmSelectedName = c.customerName || '';
 
-  // 帶入表單
+  // 帶入文字欄位
   const sv = (id, val) => { const el = document.getElementById(id); if(el && val) el.value = val; };
   sv('name', c.customerName);
   sv('age', c.customerAge);
-
-  // 族群 chip（清除再選）
-  document.querySelectorAll('#groupChips .chip').forEach(ch => ch.classList.remove('selected'));
-  const seg = c.clientSegment || c.clientType || '';
-  if (seg) {
-    document.querySelectorAll('#groupChips .chip').forEach(ch => { if(ch.textContent.trim() === seg) ch.classList.add('selected'); });
-  }
-
-  // 支持度 chip
-  document.querySelectorAll('#supportChips .chip').forEach(ch => ch.classList.remove('selected'));
-  const sup = c.familySupport || '';
-  if (sup) {
-    document.querySelectorAll('#supportChips .chip').forEach(ch => { if(ch.textContent.trim() === sup) ch.classList.add('selected'); });
-  }
-
   sv('status', c.currentStatus || c.blueprintCompletion || '');
   sv('keyman', c.keyMan || '');
   sv('finance', c.budget ? '自有資金 ' + c.budget : '');
   sv('pain', c.painPointsNote || c.objections || '');
   sv('lastResult', c.notes ? c.notes.split('\n')[0] : '');
 
-  showError_coach('✅ 已帶入 ' + c.customerName + ' 的資料（請確認後再送出）', true);
+  // 族群 chip（用正確的 'active' class，並同步 selectedChips 陣列）
+  selectedChips = [];
+  document.querySelectorAll('#groupChips .chip').forEach(ch => ch.classList.remove('active'));
+  const seg = c.clientSegment || c.clientType || '';
+  if (seg) {
+    document.querySelectorAll('#groupChips .chip').forEach(ch => {
+      if (ch.textContent.trim() === seg) {
+        ch.classList.add('active');
+        selectedChips.push(ch.textContent.trim());
+      }
+    });
+    // 若找不到對應 chip，填入自訂輸入框
+    if (selectedChips.length === 0) {
+      const other = document.getElementById('groupOther');
+      if (other) other.value = seg;
+    }
+  }
+
+  // 家人支持度（用正確的 setSupport 函數驅動 toggle-btn）
+  const sup = c.familySupport || '';
+  if (sup) {
+    const btns = document.querySelectorAll('#supportToggle .toggle-btn');
+    btns.forEach(btn => {
+      const label = btn.textContent.trim();
+      if (label.includes('支持') && (sup === '支持' || sup.includes('支持'))) {
+        setSupport(btn, '支持', 'active-yes');
+      } else if (label.includes('反對') && (sup === '反對' || sup.includes('反對'))) {
+        setSupport(btn, '反對', 'active-no');
+      } else if (label.includes('不清楚') && (sup === '不清楚' || sup.includes('不清楚') || sup === '未知')) {
+        setSupport(btn, '不清楚', 'active-neutral');
+      }
+    });
+  }
+
+  showError_coach('✅ 已帶入 ' + (c.customerName || '') + ' 的資料（請確認後再送出）', true);
 }
 
 function showError_coach(msg, isSuccess) {
