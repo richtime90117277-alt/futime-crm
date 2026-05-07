@@ -707,6 +707,9 @@
     </div>
 
     <div class="error-msg" id="errorMsg"></div>
+
+  <!-- CRM 偵錯面板：選完客戶後顯示原始欄位，確認後可通知開發者關掉 -->
+  <pre id="crmDebugPanel" style="display:none;margin-top:16px;background:#1E1A14;color:#B8E0A0;font-size:11px;font-family:'DM Mono',monospace;padding:16px;border-radius:10px;overflow-x:auto;white-space:pre-wrap;word-break:break-all;max-height:300px;overflow-y:auto;border:1px solid #3D5A40"></pre>
   </div>
 
   <!-- Loading -->
@@ -1268,51 +1271,91 @@ function pickCustomer(jsonStr) {
   _crmSelectedId = c.id;
   _crmSelectedName = c.customerName || '';
 
-  // 帶入文字欄位
-  const sv = (id, val) => { const el = document.getElementById(id); if(el && val) el.value = val; };
-  sv('name', c.customerName);
-  sv('age', c.customerAge);
-  sv('status', c.currentStatus || c.blueprintCompletion || '');
-  sv('keyman', c.keyMan || '');
-  sv('finance', c.budget ? '自有資金 ' + c.budget : '');
-  sv('pain', c.painPointsNote || c.objections || '');
-  sv('lastResult', c.notes ? c.notes.split('\n')[0] : '');
+  // 偵錯：把完整 CRM 原始欄位印到 console 並顯示偵錯面板
+  console.log('=== CRM 原始欄位 ===', JSON.stringify(c, null, 2));
+  const debugEl = document.getElementById('crmDebugPanel');
+  if (debugEl) {
+    debugEl.style.display = 'block';
+    debugEl.textContent = '【CRM 原始欄位 — 確認 key 後告訴開發者即可關掉此面板】\n' + JSON.stringify(c, null, 2);
+  }
 
-  // 族群 chip（用正確的 'active' class，並同步 selectedChips 陣列）
+  // 帶入文字欄位（窮舉所有可能 key）
+  const sv = (id, val) => { const el = document.getElementById(id); if(el && val) el.value = val; };
+  sv('name', c.customerName || c.name || '');
+  sv('age',  c.customerAge  || c.age  || '');
+
+  // 目前狀況
+  sv('status',
+    c.currentStatus    ||
+    c.seminarStatus    ||
+    c.blueprintCompletion ||
+    c.progressStatus   ||
+    c.stage            || ''
+  );
+
+  // Keyman
+  sv('keyman', c.keyMan || c.keyman || c.decisionMaker || c.keyPerson || '');
+
+  // 財務：組合多個欄位
+  const finParts = [];
+  if (c.budget)        finParts.push('自有資金 ' + c.budget);
+  if (c.monthlyIncome) finParts.push('月收入 ' + c.monthlyIncome);
+  if (c.loanStatus)    finParts.push(c.loanStatus);
+  if (c.finance)       finParts.push(c.finance);
+  if (c.financialNote) finParts.push(c.financialNote);
+  if (finParts.length) { const el = document.getElementById('finance'); if(el) el.value = finParts.join('，'); }
+
+  // 痛點
+  sv('pain',
+    c.painPointsNote ||
+    c.painPoints     ||
+    c.objections     ||
+    c.needs          ||
+    c.customerNeeds  ||
+    c.memo           || ''
+  );
+
+  // 上次跟進結果
+  const notesRaw =
+    c.notes          ||
+    c.followUpNote   ||
+    c.lastFollowUp   ||
+    c.followUpResult ||
+    c.remark         || '';
+  if (notesRaw) {
+    const el = document.getElementById('lastResult');
+    if (el) el.value = notesRaw.split('\n')[0];
+  }
+
+  // 族群 chip
   selectedChips = [];
   document.querySelectorAll('#groupChips .chip').forEach(ch => ch.classList.remove('active'));
-  const seg = c.clientSegment || c.clientType || '';
+  const seg = c.clientSegment || c.clientType || c.customerType || c.segment || c.group || '';
   if (seg) {
     document.querySelectorAll('#groupChips .chip').forEach(ch => {
-      if (ch.textContent.trim() === seg) {
+      if (seg.includes(ch.textContent.trim())) {
         ch.classList.add('active');
         selectedChips.push(ch.textContent.trim());
       }
     });
-    // 若找不到對應 chip，填入自訂輸入框
     if (selectedChips.length === 0) {
       const other = document.getElementById('groupOther');
       if (other) other.value = seg;
     }
   }
 
-  // 家人支持度（用正確的 setSupport 函數驅動 toggle-btn）
-  const sup = c.familySupport || '';
+  // 家人支持度
+  const sup = c.familySupport || c.support || c.familyStatus || '';
   if (sup) {
-    const btns = document.querySelectorAll('#supportToggle .toggle-btn');
-    btns.forEach(btn => {
+    document.querySelectorAll('#supportToggle .toggle-btn').forEach(btn => {
       const label = btn.textContent.trim();
-      if (label.includes('支持') && (sup === '支持' || sup.includes('支持'))) {
-        setSupport(btn, '支持', 'active-yes');
-      } else if (label.includes('反對') && (sup === '反對' || sup.includes('反對'))) {
-        setSupport(btn, '反對', 'active-no');
-      } else if (label.includes('不清楚') && (sup === '不清楚' || sup.includes('不清楚') || sup === '未知')) {
-        setSupport(btn, '不清楚', 'active-neutral');
-      }
+      if (label.includes('支持') && sup.includes('支持')) setSupport(btn, '支持', 'active-yes');
+      else if (label.includes('反對') && sup.includes('反對'))   setSupport(btn, '反對', 'active-no');
+      else if (label.includes('不清楚') && (sup.includes('不清楚') || sup === '未知')) setSupport(btn, '不清楚', 'active-neutral');
     });
   }
 
-  showError_coach('✅ 已帶入 ' + (c.customerName || '') + ' 的資料（請確認後再送出）', true);
+  showError_coach('✅ 已帶入 ' + (c.customerName || '') + ' 的資料（請開啟 F12 Console 確認欄位是否正確）', true);
 }
 
 function showError_coach(msg, isSuccess) {
