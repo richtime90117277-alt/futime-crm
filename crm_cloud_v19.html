@@ -2040,11 +2040,10 @@ function login() {
 function enterApp() {
   document.getElementById('loginPage').style.display = 'none';
   document.getElementById('mainApp').classList.add('active');
-  // floatRescueBtn 已由詳情頁內工具列取代，不顯示
   document.getElementById('userName').textContent = currentUser;
   initApp();
   fetchCustomers();
-  loadBookings(); // 登入後預載入預約資料（供 dashboard 摘要卡片使用）
+  loadBookings();
 }
 
 function logout() {
@@ -2089,7 +2088,7 @@ function initApp() {
     document.getElementById('staffTab').style.display = 'none';
     var histPanel2 = document.getElementById('lbHistoryPanel'); if(histPanel2) histPanel2.style.display = 'none';
   }
-  document.getElementById('creationDate').valueAsDate = new Date();
+  var _cd=document.getElementById('creationDate'); if(_cd) _cd.value=new Date().toISOString().split('T')[0];
   document.getElementById('customerForm').onsubmit = function(e){ e.preventDefault(); saveCustomer(); };
   buildQuickCommands();
   renderStaffList();
@@ -2621,7 +2620,16 @@ function renderLeaderboard() {
 
 function fetchCustomers() {
   console.log('[fetchCustomers] START user:', currentUser, 'role:', currentRole, 'url:', getApiUrl().slice(0,60));
+  // 超時保護：16秒後若還在「載入中」強制顯示錯誤
+  var _fetchTimeout = setTimeout(function() {
+    var con = document.getElementById('customerListContainer');
+    if (con && con.innerHTML.indexOf('載入中') !== -1) {
+      con.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><div style="font-size:14px;margin-bottom:.5rem">連線逾時，請點重新整理</div><button onclick="fetchCustomers()" style="padding:.5rem 1.25rem;border:1.5px solid var(--gold);border-radius:20px;background:none;color:var(--gold);font-size:13px;cursor:pointer;font-family:inherit">🔄 重試</button></div>';
+      var lc = document.getElementById('listCount'); if(lc) lc.textContent = '連線逾時';
+    }
+  }, 16000);
   callAPI({ action: 'getAll', role: currentRole, user: currentUser }, function(res) {
+    clearTimeout(_fetchTimeout);
     console.log('[fetchCustomers] CALLBACK success:', res.success, 'count:', res.customers && res.customers.length, 'error:', res.error);
     if (res.success) {
       customers = res.customers.map(function(c) {
@@ -5047,7 +5055,7 @@ function clearForm() {
   var btn = document.getElementById('saveBtn');
   if (btn) { btn.disabled = false; btn.textContent = '☁️ 儲存並同步'; }
   document.getElementById('customerForm').reset();
-  document.getElementById('creationDate').valueAsDate = new Date();
+  var _cd=document.getElementById('creationDate'); if(_cd) _cd.value=new Date().toISOString().split('T')[0];
   if (currentRole === 'sales') document.getElementById('salesPerson').value = currentUser;
   document.querySelectorAll('.ms-wrap').forEach(function(wrap){
     wrap.querySelectorAll('input[type=checkbox]').forEach(function(el){ el.checked = false; });
@@ -5068,6 +5076,7 @@ function clearForm() {
 function renderCustomers() {
   // 資料還沒回來時，顯示載入中，不要顯示「沒有客戶」
   if (!currentUser) return;
+  // customers陣列存在（即使空的）就代表資料已載入，清掉載入中狀態
   var mc = customers.slice();
   var fs = document.getElementById('filterSales').value || '';
   var fst = document.getElementById('filterStage').value || '';
