@@ -327,8 +327,8 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
     <div class="ai-modal-head">
       <span class="ai-modal-icon">🤖</span>
       <div>
-        <div class="ai-modal-ttl">智偉哥 AI 顧問｜客戶策略分析</div>
-        <div class="ai-modal-sub">填入客戶資料，自動產出分析指令詞，貼入 Claude 即可</div>
+        <div class="ai-modal-ttl">客戶心理解碼｜先讀懂人，再出招</div>
+        <div class="ai-modal-sub">填入你觀察到的行為與說法，AI 先進客戶身體，再設計對話</div>
       </div>
       <button class="ai-modal-close" onclick="closeAiModal()">✕</button>
     </div>
@@ -337,30 +337,30 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
       <button onclick="openCrmPicker('futime')" style="width:100%;background:rgba(61,90,64,0.10);border:1px solid rgba(61,90,64,0.10);border-radius:8px;padding:10px 14px;color:#3D5A40;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:16px;text-align:left">
         📋 從 CRM 選客戶，自動帶入資料
       </button>
-      <div class="ai-section-label">Step 1 — 填入客戶基本資料</div>
+      <div class="ai-section-label">Step 1 — 你觀察到的：客戶說了什麼、做了什麼</div>
       <div class="ai-fields">
         <div class="ai-field">
           <label>客戶族群</label>
-          <input id="ai-族群" type="text" placeholder="例：雙薪家庭、退休族、投資客" oninput="renderPreview()">
+          <input id="ai-族群" type="text" placeholder="例：雙薪無殼、股票族、退休族" oninput="renderPreview()">
         </div>
         <div class="ai-field">
           <label>客戶年齡</label>
           <input id="ai-年齡" type="text" placeholder="例：38 歲" oninput="renderPreview()">
         </div>
         <div class="ai-field wide">
-          <label>卡關描述（客戶說了什麼、做了什麼）</label>
-          <textarea id="ai-卡關" placeholder="例：說要跟老婆討論、已看三次但一直說再想想..." oninput="renderPreview()"></textarea>
+          <label>🔍 客戶說了什麼、做了什麼、重複說了什麼（越具體越好）</label>
+          <textarea id="ai-卡關" placeholder="例：說了三次「這件事我可以做主」、說要跟老婆討論但老婆一直沒出現、已看三次但每次都說再想想、LINE 已讀不回..." oninput="renderPreview()" style="min-height:80px"></textarea>
         </div>
         <div class="ai-field">
-          <label>KEY MAN</label>
-          <input id="ai-keyman" type="text" placeholder="例：本人、另一半、父母" oninput="renderPreview()">
+          <label>真正的決策者（KEY MAN）</label>
+          <input id="ai-keyman" type="text" placeholder="例：本人、另一半、媽媽" oninput="renderPreview()">
         </div>
         <div class="ai-field">
-          <label>家人狀態</label>
-          <input id="ai-家人" type="text" placeholder="例：另一半未出現、父母有投資習慣" oninput="renderPreview()">
+          <label>家人／第三方的狀態</label>
+          <input id="ai-家人" type="text" placeholder="例：另一半還沒出現、媽媽明確反對" oninput="renderPreview()">
         </div>
         <div class="ai-field">
-          <label>目前進度</label>
+          <label>目前在第幾部曲</label>
           <select id="ai-部曲" onchange="renderPreview()">
             <option value="">— 選擇 —</option>
             <option>第一部曲</option><option>第二部曲</option><option>第三部曲</option>
@@ -369,12 +369,12 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
           </select>
         </div>
         <div class="ai-field">
-          <label>業務與客戶熟悉度</label>
-          <input id="ai-熟悉度" type="text" placeholder="例：第一次見面 / 認識半年" oninput="renderPreview()">
+          <label>你跟這個客戶的關係</label>
+          <input id="ai-熟悉度" type="text" placeholder="例：第一次見面 / 認識半年 / 轉介紹" oninput="renderPreview()">
         </div>
         <div class="ai-field wide">
-          <label>這次見面 / 聯絡的目標</label>
-          <input id="ai-目標" type="text" placeholder="例：確認 KEY MAN、推進看屋、收斡旋" oninput="renderPreview()">
+          <label>這次你想弄清楚的事（不是「目標」，是「你想知道什麼」）</label>
+          <input id="ai-目標" type="text" placeholder="例：他到底是不是 KEY MAN、他老婆真正的態度、他有沒有錢" oninput="renderPreview()">
         </div>
       </div>
       <div class="ai-section-label">Step 2 — 預覽指令詞</div>
@@ -391,18 +391,23 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 
 <div class="layout">
   <nav class="sidebar" id="sidebar">
-    <!-- 手機關閉按鈕 -->
     <div class="sidebar-close" onclick="closeSidebar()">✕</div>
-    <div class="sidebar-label">視圖</div>
+
     <div class="sidebar-item active" id="nav-overview" onclick="showOverview();autoCloseSidebar()">
       <span class="s-icon">🏠</span><span class="s-name">總覽</span>
     </div>
+
     <div class="sidebar-divider"></div>
-    <div class="sidebar-label">課程模組</div>
-    <div id="moduleNav"></div>
+    <div class="sidebar-label">👁️ 從客戶進入</div>
+    <div id="personaNav"></div>
+
     <div class="sidebar-divider"></div>
-    <div class="sidebar-label">分類速查</div>
+    <div class="sidebar-label">⚡ 從情境進入</div>
     <div id="catNav"></div>
+
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-label">📚 課程模組</div>
+    <div id="moduleNav"></div>
   </nav>
   <main class="main" id="main"></main>
 </div>
@@ -415,6 +420,191 @@ const MODULES = [{"no":0,"name":"話術系統地圖","icon":"🗺️","desc":"�
 const CAT_ICONS = {"銷售心態":"🧠","信任建立":"🤝","開發策略":"🎯","提問式銷售":"💬","銷售流程":"🔄","異議處理":"🛡️","追蹤技巧":"📡","締結成交":"✍️","市場知識":"📊","真實案例":"📖","投資心理":"💡","轉介紹策略":"🔗","產品介紹":"🏠"};
 const CAT_ORDER = ["銷售心態","信任建立","開發策略","提問式銷售","銷售流程","異議處理","追蹤技巧","締結成交","市場知識","真實案例","投資心理","轉介紹策略","產品介紹"];
 
+const PERSONAS = [
+  // ── 問問族 ──
+  { id:'p01', icon:'🎭', name:'白嫖狗急跳牆型', type:'問問族',
+    tag:'過去白嫖資源，現在有事才找你',
+    surface:'「你們可以幫我嗎？」「我們那麼熟了幫我一下嘛」「所以你的意思是不幫我？」',
+    real:'「我信任你們很專業，但我沒打算付出，先用關係換免費資源再說」',
+    need:'讓她自己說出「只有合作客戶才能用到資源」——結論要從她嘴巴出來，不是你告訴她',
+    fear:'觀音透天違約罰款、房子被建商沒收、錢打水漂、朋友知道她貸款過不了',
+    trap:'給任何一個字的貸款建議＝成為第三次白嫖；傳訊息不打電話',
+    keyman:'本人', mode:'防衛對抗型', cats:['信任建立','異議處理'] },
+
+  { id:'p02', icon:'📵', name:'已讀不回型', type:'問問族',
+    tag:'說可以見面，然後消失',
+    surface:'（已讀不回、不回應）「我最近比較忙」「不太喜歡上課的感覺」',
+    real:'「我有興趣但不急，怕被推銷就躲起來，你越追我越想躲」',
+    need:'丟鉤子不追問，讓他好奇自己回；他一回才收三個情報，再硬拉老婆進來',
+    fear:'被推銷、被洗腦、時間被浪費、老婆不同意',
+    trap:'再提研討會/上課；連續追問；丟一堆資料；單獨談不拉老婆',
+    keyman:'未確認', mode:'防衛對抗型', cats:['開發策略','追蹤技巧'] },
+
+  { id:'p03', icon:'🔧', name:'裝修假議題型', type:'問問族',
+    tag:'用裝修包裝真正問題，連自己也說不清',
+    surface:'「我想先把家裡裝修一下」「其實現在這樣也還好啦」「老公比較不想動」',
+    real:'「我真正想要一個自己的家，但我不敢直說，我也怕老公否決，裝修是我能說出口的最安全版本」',
+    need:'不接裝修假議題，用「小病變大病」讓她自己看到拖延的代價（居住→夫妻關係→小孩）',
+    fear:'老公否決、夫妻為錢吵架、婆媳關係更差、做了又怕做錯',
+    trap:'順著裝修談；接受「我回去跟老公說」；諮詢前沒先打電話確認老公',
+    keyman:'配偶', mode:'拖延觀望型', cats:['提問式銷售','異議處理'] },
+
+  // ── 格局族 ──
+  { id:'p04', icon:'🏚️', name:'多屋月付壓死型', type:'格局族',
+    tag:'表面高資產，實際被月付綁死',
+    surface:'「那汐止那筆怎麼辦？」「店面不要動，那是金雞母」「我再算看看」',
+    real:'「我每月被5萬月付壓死，我不敢再加槓桿，但我也知道不動就是在等死，我需要人幫我把現金流救出來」',
+    need:'把問題從「買不買」拉到「現金流怎麼救」——用店面+台南轉貸整合，讓他看到出路',
+    fear:'現金流被月付壓死、槓桿失控、女兒貸款卡住整盤計畫',
+    trap:'急著推再買一間；建議賣掉店面；聊都更八卦失去主導；對女兒貸款只說「沒辦法」',
+    keyman:'本人', mode:'理性數字腦', cats:['提問式銷售','締結成交'] },
+
+  { id:'p05', icon:'👨‍👩‍👦', name:'家族共治三關未解型', type:'格局族',
+    tag:'以為家人都同意，其實三關都沒解',
+    surface:'「我們家人都同意，可以開始跑了」「我再去問一下我哥」',
+    real:'「我想快點推進，但我沒意識到資金/決策/時間三關都還沒真正確認，我在急自己的焦慮」',
+    need:'讓他停下來，把三關（資金到位時間、老婆態度、姐媽持分）逐一確認後再推進',
+    fear:'房子貸出去「不見了」、老婆不同意、家族失和',
+    trap:'接受「我回去跟家人說」；讓客戶一個人去轉述；沒確認老婆管財這件事',
+    keyman:'家族共治', mode:'家族共治型', cats:['銷售流程','提問式銷售'] },
+
+  // ── 價格族 ──
+  { id:'p06', icon:'💰', name:'教科書殺價型', type:'價格族',
+    tag:'有能力買，但在意「有沒有買貴」',
+    surface:'「隔壁案子比較便宜」「你給我折扣嗎」「我再比較看看」',
+    real:'「我不想吃虧，我想證明自己是精明的買家，「殺到價」比「買到房」更重要」',
+    need:'讓他「贏」一局，但在你設定好的框架內贏；用「資產控制能力」替換「報酬率比較」',
+    fear:'買貴、被當肥羊、隔壁鄰居更便宜',
+    trap:'直接拒絕折扣；讓他拿著你的資料去比較；跟他比報酬率（他贏定了）',
+    keyman:'本人', mode:'拖延觀望型', cats:['異議處理','締結成交'] },
+
+  // ── 投資族 ──
+  { id:'p07', icon:'🧠', name:'怕做錯決策數字腦型', type:'投資族',
+    tag:'財金背景，吃數字不吃雞湯，最怕做錯',
+    surface:'「那如果選了A但其實B比較好？」「裝修費多少？回收期幾年？」「我回去再想想」',
+    real:'「我怕做錯決策，要把所有選項比過才敢動，但我真正的卡點是不知道自己到底要什麼」',
+    need:'用三選一（收益率/風險/麻煩）讓她確認最在意的，再把「感覺題」變成她熟悉的「數字題」',
+    fear:'做錯決策、事後發現應該選另一個、把媽媽的老屋搞壞',
+    trap:'一開始說「老屋不好」；給五個選項讓她選；諮詢變上課；用情緒詞不是數字',
+    keyman:'本人', mode:'理性數字腦', cats:['提問式銷售','締結成交'] },
+
+  { id:'p08', icon:'🔒', name:'隱私防衛退休收租型', type:'投資族',
+    tag:'財務全藏著，用「只是了解」當擋箭牌',
+    surface:'「我只是來了解一下」「這個我再想想」（話少、藏資訊）',
+    real:'「我財務有狀況（立委會直銷、美國房），不想讓人知道，我在觀察你會不會逼我」',
+    need:'用間接問法讓她自己說，讓她感覺「說了也不會被評判」，不要直接問財務數字',
+    fear:'財力細節外流、直銷沒業績沒故事、老屋拖到換不動',
+    trap:'直接問財務；逼她給具體數字；太快進入說服模式',
+    keyman:'本人', mode:'防衛對抗型', cats:['信任建立','提問式銷售'] },
+
+  { id:'p09', icon:'🎭', name:'預售防衛創業夢型', type:'投資族',
+    tag:'對預售有PTSD，但心裡有個創業夢',
+    surface:'「我不買預售，我買精神物（中古）」「這間住得好好的沒要換」「我再想想」',
+    real:'「我怕重蹈媽媽爛尾案，但我真正想做的是創業（飲料店），我在等有人用我懂的成本語言跟我說話」',
+    need:'尊重他「買中古不買預售」的邏輯；用飲料店成本（800萬）vs房地產同一張Excel說服他',
+    fear:'重蹈媽媽爛尾案、飲料店熱潮過去賠光、在媽媽面前丟臉',
+    trap:'在媽媽面前對他施壓；直接推預售屋；批評媽媽當年決定；跳過飲料店夢直接講複製公式',
+    keyman:'母親/父親', mode:'理性數字腦', cats:['提問式銷售','締結成交'] },
+
+  // ── 自住安全感族 ──
+  { id:'p10', icon:'😟', name:'負債逃避型', type:'自住安全感族',
+    tag:'不是沒錢，是不敢面對數字',
+    surface:'「我沒錢啦」「我媽不想買中和」「我之前算過了真的買不起」',
+    real:'「我不是沒錢，是不敢再面對數字，我怕再一次讓媽媽失望，用『沒錢』保護自己不必承認扛不起」',
+    need:'接住情緒，不跟他吵有沒有錢；把「媽媽反對」翻譯成「媽媽擔心」；只成交「60分鐘財務盤點」這一步',
+    fear:'扛不起月付、再次失敗、被家人看不起',
+    trap:'跟他吵「你不是沒錢」；幫他對抗媽媽；直接推中和案子',
+    keyman:'母親/父親', mode:'情緒感受型', cats:['異議處理','信任建立'] },
+
+  { id:'p11', icon:'🔀', name:'自住投資拉扯型', type:'自住安全感族',
+    tag:'嘴上說在拉扯，心裡已有答案',
+    surface:'「我在考慮自住還是投資，另一方面又覺得應該先累積正資產」',
+    real:'「我其實心裡偏投資，但我需要一個獨立於家人的判斷來源，讓我有底氣說出來」',
+    need:'不替他做決定；讓他自己說出傾向；再給一個「理由支撐他的直覺」',
+    fear:'選錯方向、自住投資都做不好、被家人比較',
+    trap:'直接問「你要自住還是投資」（他會更糾結）；替他做決定',
+    keyman:'家族共治', mode:'模仿跟風型', cats:['提問式銷售','異議處理'] },
+
+  { id:'p12', icon:'🏠', name:'首購安全感型', type:'自住安全感族',
+    tag:'什麼都不懂，怕做錯決定',
+    surface:'「我完全不懂」「這樣貸款壓力會不會太大」「我怕買錯地段」',
+    real:'「我需要有人帶著我，讓我覺得這個決定是對的，不用自己扛」',
+    need:'被帶著走，感覺有顧問照顧；把選項收斂到2選1，不給他太多要自己決定的事',
+    fear:'買錯地段、月付壓力睡不著、將來有小孩後負擔不起',
+    trap:'給太多選項讓他自己選（他會更焦慮）；一開始講太多數字',
+    keyman:'配偶', mode:'情緒感受型', cats:['信任建立','締結成交'] },
+
+  // ── 風險族 ──
+  { id:'p13', icon:'⚠️', name:'爛尾沉沒成本混合型', type:'風險族',
+    tag:'被800萬爛尾傷過，但另一筆其實買對了',
+    surface:'「那800萬怎麼辦」「那時候我就是不懂」「預售我真的不敢再下手了」',
+    real:'「我晚上睡不著、偷偷自責，我怕再做錯一次，但我也知道繼續等也在虧，我需要有人承認我不是傻瓜」',
+    need:'先肯定她「那間套房買對了，你是投資人不是傻瓜」；再把800萬圈起來「先走法律，不要自己跟自己動」',
+    fear:'800萬真的沒了、再被騙一次、兒子看她跌倒就放棄投資',
+    trap:'只看到800萬失敗面，忘記她還有一筆成功的20間套房；批評建商或介紹的Sales（她會護）',
+    keyman:'家族共治', mode:'情緒感受型', cats:['信任建立','異議處理'] },
+
+  // ── 退訂邊緣族 ──
+  { id:'p14', icon:'🌫️', name:'觀念未對齊白嫖型', type:'退訂邊緣族',
+    tag:'不是忙，是投資邏輯還沒對齊',
+    surface:'「要真的喜歡才會買」（已讀不回、無回應）',
+    real:'「我不是不想買，是還沒被說服「買房」跟「純感覺喜歡」有什麼關係，你再追我只會更煩」',
+    need:'不追；設觀察窗口2-4週；用輕鉤子讓她主動回；她主動回才確認觀念是否對齊',
+    fear:'買錯、不喜歡、被推銷，怕「答應了就要動」',
+    trap:'繼續主動推物件；主動幫她跑估價貸款（白嫖你資源）；一週丟超過3則訊息',
+    keyman:'未確認', mode:'情緒感受型', cats:['開發策略','信任建立'] },
+
+  // ── 股票族 ──
+  { id:'p15', icon:'📈', name:'合理聽懂但不動型', type:'股票族',
+    tag:'夫妻都聽懂了，但「先拿50-60萬試試」卡在原地',
+    surface:'「先拿個50、60萬試試看就好」「報酬率不一定比股票好吧？」「回去再研究」',
+    real:'「我怕做錯、怕被說服，『50萬試試』是我給自己的防護罩，我其實需要有人幫我算清楚為什麼要多放」',
+    need:'用「佔比」問句破掉「50-60萬試試」的神經鏈；讓先生自己說出「公婆資產不能算」',
+    fear:'怕做錯、怕被說服、怕「不是自己算過的決定」',
+    trap:'跟他們比報酬率（股票他們更熟）；算公婆的錢（先生立刻防衛）；直接推物件',
+    keyman:'配偶', mode:'理性數字腦', cats:['提問式銷售','異議處理'] },
+
+  { id:'p16', icon:'🚀', name:'槓桿放大跳階型', type:'股票族',
+    tag:'高收入、有能力，想跳階不想慢慢爬',
+    surface:'「股票長期8-10%很穩，房地產能贏嗎？」「台灣房地產不是要崩了嗎？」「你自己買了幾間？」',
+    real:'「我怕錯過這個階段的優勢，我的問題不是『要不要』，是『怎麼做』——有沒有人真的懂我的條件？」',
+    need:'先承認他股票做法是對的（解防衛）；把房地產定位成「放大器」不是「替代品」；用600萬控制5000萬破報酬率之爭',
+    fear:'怕錯過這個階段的優勢、怕五年後還在原地',
+    trap:'先講建案坪數建材（他立刻走）；強調安全穩定（外商腦無感）；拿自己當A（他覺得在炫耀）；否定股票',
+    keyman:'本人', mode:'理性數字腦', cats:['提問式銷售','締結成交'] },
+
+  // ── 問媽媽族 ──
+  { id:'p17', icon:'👩‍👧', name:'凡事回家問媽媽型', type:'問媽媽族',
+    tag:'自己有能力買，但需要媽媽點頭',
+    surface:'「我要回家跟我媽討論一下」「我媽說這個區不好」「不然我帶我媽來一次？」',
+    real:'「我其實自己也沒信心，把媽媽搬出來當擋箭牌，我怕買了以後媽媽唸我一輩子」',
+    need:'不批評媽媽；幫他分清媽媽的角色（精神支持/實際出錢/實際反對）；給他一句可以帶回家說的話',
+    fear:'怕媽媽擔心自己扛不起、怕被說「你就是不聽話」',
+    trap:'說「你媽又沒出錢幹嘛問她」（他立刻站媽媽邊）；催他快下訂再溝通（他更退縮）；說教獨立',
+    keyman:'母親/父親', mode:'家族共治型', cats:['異議處理','締結成交'] },
+
+  // ── 無殼族 ──
+  { id:'p18', icon:'🏚️', name:'退休焦慮無殼型', type:'無殼族',
+    tag:'快50還在租房，用直銷收入安慰自己',
+    surface:'「我都快50了還在租房」「葡眾做到珍珠級也差不多7萬」「我存款不到100萬，夠嗎？」',
+    real:'「我其實很焦慮，快50還在租房，錢一進來就不知道花去哪，我需要有人幫我打破「100萬不夠做任何事」的神經鏈」',
+    need:'釘時間壓力（退休幾歲、還幾年）；讓她自己算出退休缺口不夠；用「100萬可控制800萬資產」破神經鏈',
+    fear:'46歲還在租房、退休缺口、變成4個小孩的負擔、通膨',
+    trap:'陪她聊葡眾（她聊半天不回房地產）；接受「我回去想想」；推1722萬物件讓她崩潰',
+    keyman:'本人', mode:'拖延觀望型', cats:['提問式銷售','締結成交'] },
+
+  // ── 合資族 ──
+  { id:'p19', icon:'🤝', name:'姊姊合資資金不確定型', type:'合資族',
+    tag:'自己想定案，但出資方沒在現場',
+    surface:'「我要跟我姊確認一下」「她應該OK」「她比較忙，不一定能來」「下週再說」',
+    real:'「我想快點定案，但我怕姊姊臨時反悔，我不敢一個人承諾，我在等一個永遠不會自動到來的確認」',
+    need:'咖啡只排下一步、不聊細節；三句抓重點（價格/保留/時間）；把姊姊約到現場或電話進線',
+    fear:'姊姊臨時反悔、資金到不了位、在姊姊面前丟臉、決策越拖越亂',
+    trap:'在咖啡店聊案子細節（越聊越亂）；接受「我回去跟姊姊講」；讓她自己算錢；開放問「你哪天方便」',
+    keyman:'家族共治', mode:'拖延觀望型', cats:['銷售流程','締結成交'] },
+];
+
+
 let currentMode = 'learn';
 let expandedCards = new Set();
 
@@ -424,29 +614,115 @@ function init() {
   document.getElementById('searchInput').addEventListener('input', onSearch);
 }
 
+// 精簡後的 6 大情境分類（合併小類）
+const SLIM_CATS = [
+  { key:'異議處理',   icon:'🛡️', label:'異議處理',   merge:['異議處理'] },
+  { key:'提問式銷售', icon:'💬', label:'提問式銷售', merge:['提問式銷售'] },
+  { key:'締結成交',   icon:'✍️', label:'締結成交',   merge:['締結成交','轉介紹策略'] },
+  { key:'追蹤技巧',   icon:'📡', label:'追蹤跟進',   merge:['追蹤技巧'] },
+  { key:'開發策略',   icon:'🎯', label:'開發策略',   merge:['開發策略'] },
+  { key:'信任建立',   icon:'🤝', label:'信任建立',   merge:['信任建立','銷售心態','銷售流程'] },
+];
+
 function buildNav() {
+  // 客戶辨識 nav — 按類型分組
+  const personaEl = document.getElementById('personaNav');
+  const typeOrder = ['問問族','格局族','自住安全感族','投資族','風險族','退訂邊緣族','股票族','問媽媽族','無殼族','合資族','價格族'];
+  typeOrder.forEach(type => {
+    const group = PERSONAS.filter(p => p.type === type);
+    if (!group.length) return;
+    const label = document.createElement('div');
+    label.style.cssText = 'font-size:9px;font-weight:700;letter-spacing:.1em;color:var(--text-dim);padding:8px 16px 2px;text-transform:uppercase';
+    label.textContent = type;
+    personaEl.appendChild(label);
+    group.forEach(p => {
+      const el = document.createElement('div');
+      el.className = 'sidebar-item';
+      el.id = 'nav-persona-' + p.id;
+      el.style.paddingLeft = '20px';
+      el.innerHTML = `<span class="s-icon" style="font-size:13px">${p.icon}</span><span class="s-name" style="font-size:11.5px">${p.name}</span>`;
+      el.onclick = () => { showPersona(p.id); autoCloseSidebar(); };
+      personaEl.appendChild(el);
+    });
+  });
+
+  // 情境分類 nav（精簡版）
+  const catEl = document.getElementById('catNav');
+  SLIM_CATS.forEach(sc => {
+    const cnt = SCRIPTS.filter(s => sc.merge.includes(s.category)).length;
+    const el = document.createElement('div');
+    el.className = 'sidebar-item';
+    el.id = 'nav-slim-' + sc.key;
+    el.innerHTML = `<span class="s-icon">${sc.icon}</span><span class="s-name">${sc.label}</span><span class="s-cnt">${cnt}</span>`;
+    el.onclick = () => { showSlimCat(sc); autoCloseSidebar(); };
+    catEl.appendChild(el);
+  });
+
+  // 課程模組 nav（折疊式，保留但縮小）
   const modEl = document.getElementById('moduleNav');
   MODULES.forEach(m => {
     const cnt = SCRIPTS.filter(s => m.cats.includes(s.category)).length;
     const el = document.createElement('div');
     el.className = 'sidebar-item';
     el.id = 'nav-mod-' + m.no;
-    el.innerHTML = `<span class="s-icon">${m.icon}</span><span class="s-name">M${m.no} ${m.name}</span><span class="s-cnt">${cnt}</span>`;
+    el.style.fontSize = '11px';
+    el.innerHTML = `<span class="s-icon" style="font-size:11px">${m.icon}</span><span class="s-name">M${m.no} ${m.name}</span><span class="s-cnt">${cnt}</span>`;
     el.onclick = () => { showModule(m.no); autoCloseSidebar(); };
     modEl.appendChild(el);
   });
+}
 
-  const catEl = document.getElementById('catNav');
-  CAT_ORDER.forEach(cat => {
-    const cnt = SCRIPTS.filter(s => s.category === cat).length;
-    if (!cnt) return;
-    const el = document.createElement('div');
-    el.className = 'sidebar-item';
-    el.id = 'nav-cat-' + cat;
-    el.innerHTML = `<span class="s-icon">${CAT_ICONS[cat]||'📌'}</span><span class="s-name">${cat}</span><span class="s-cnt">${cnt}</span>`;
-    el.onclick = () => { showCategory(cat); autoCloseSidebar(); };
-    catEl.appendChild(el);
-  });
+// 顯示精簡分類
+function showSlimCat(sc) {
+  const scripts = SCRIPTS.filter(s => sc.merge.includes(s.category));
+  setActive('nav-slim-' + sc.key);
+  setTotal(scripts.length);
+  renderMain(`
+    <div class="view-eyebrow">${sc.icon} 情境速查</div>
+    <div class="view-title">${sc.label}</div>
+    <div class="view-desc">${scripts.length} 筆・點卡片展開</div>
+    <div class="script-list">${scripts.map(s=>card(s)).join('')}</div>
+  `);
+}
+
+// 顯示客戶辨識卡
+function showPersona(id) {
+  const p = PERSONAS.find(x => x.id === id);
+  if (!p) return;
+  setActive('nav-persona-' + id);
+  const related = SCRIPTS.filter(s => p.cats.includes(s.category)).slice(0,12);
+  setTotal(related.length);
+  renderMain(`
+    <div class="view-eyebrow">👁️ 客戶辨識 · ${p.type}</div>
+    <div class="view-title">${p.icon} ${p.name}</div>
+    <div style="display:inline-block;background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:3px 12px;font-size:11px;color:var(--text-dim);margin-bottom:20px">
+      Keyman：${p.keyman} &nbsp;·&nbsp; ${p.mode}
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px">
+        <div style="font-size:9px;font-weight:700;letter-spacing:.12em;color:var(--text-dim);margin-bottom:8px">📢 他說的（表面）</div>
+        <div style="font-size:13px;color:var(--text);line-height:1.7">${p.surface}</div>
+      </div>
+      <div style="background:rgba(184,148,60,0.08);border:1px solid rgba(184,148,60,0.2);border-radius:10px;padding:16px">
+        <div style="font-size:9px;font-weight:700;letter-spacing:.12em;color:var(--gold);margin-bottom:8px">💭 心裡真正在說</div>
+        <div style="font-size:13px;color:var(--text);line-height:1.7">${p.real}</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px">
+      <div style="background:rgba(61,90,64,0.08);border:1px solid rgba(61,90,64,0.2);border-radius:10px;padding:16px">
+        <div style="font-size:9px;font-weight:700;letter-spacing:.12em;color:var(--olive);margin-bottom:8px">✅ 他需要先感受到</div>
+        <div style="font-size:13px;color:var(--text);line-height:1.7">${p.need}</div>
+      </div>
+      <div style="background:rgba(180,50,50,0.06);border:1px solid rgba(180,50,50,0.15);border-radius:10px;padding:16px">
+        <div style="font-size:9px;font-weight:700;letter-spacing:.12em;color:#c0392b;margin-bottom:8px">⚠️ 業務最容易踩的陷阱</div>
+        <div style="font-size:13px;color:var(--text);line-height:1.7">${p.trap}</div>
+      </div>
+    </div>
+
+    <div class="view-eyebrow" style="margin-bottom:12px">📋 相關話術（${related.length} 筆）</div>
+    <div class="script-list">${related.map(s=>card(s)).join('')}</div>
+  `);
 }
 
 function setMode(mode) {
@@ -480,12 +756,35 @@ function showSearch(q) {
 
 function showOverview() {
   setActive('nav-overview');
-  setTotal(150);
+  setTotal(SCRIPTS.length);
   renderMain(`
-    <div class="view-eyebrow">智偉哥話術教材庫</div>
-    <div class="view-title">課程模組總覽</div>
-    <div class="view-desc">共 9 大模組・150 筆話術・點選進入學習</div>
-    <div class="module-grid">${MODULES.map(m=>moduleCard(m)).join('')}</div>
+    <div class="view-eyebrow">富時代話術教材庫</div>
+    <div class="view-title">從哪裡進入？</div>
+    <div class="view-desc" style="margin-bottom:28px">三種入口，選最適合你當下狀況的</div>
+
+    <div style="display:grid;grid-template-columns:1fr;gap:16px;max-width:560px">
+
+      <div style="background:rgba(61,90,64,0.06);border:2px solid rgba(61,90,64,0.25);border-radius:14px;padding:20px;cursor:pointer" onclick="showPersona('p01')">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--olive);margin-bottom:6px">👁️ 從客戶進入（推薦）</div>
+        <div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px">我面對的是什麼樣的人？</div>
+        <div style="font-size:12px;color:var(--text-sub)">先讀懂客戶的心理狀態，再決定怎麼聊。12 種客戶辨識卡，找到這個人的類型。</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px">${PERSONAS.map(p=>`<span style="background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:3px 10px;font-size:11px;color:var(--text-sub)">${p.icon} ${p.name}</span>`).join('')}</div>
+      </div>
+
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:20px;cursor:pointer" onclick="showSlimCat(SLIM_CATS[0])">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--text-dim);margin-bottom:6px">⚡ 從情境進入</div>
+        <div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px">客戶說了什麼、我遇到什麼？</div>
+        <div style="font-size:12px;color:var(--text-sub)">按話術類型快速找。6 大情境分類，${SCRIPTS.length} 筆實戰話術。</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px">${SLIM_CATS.map(sc=>`<span style="background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:3px 10px;font-size:11px;color:var(--text-sub)">${sc.icon} ${sc.label}</span>`).join('')}</div>
+      </div>
+
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:20px;cursor:pointer" onclick="showModule(0)">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--text-dim);margin-bottom:6px">📚 從課程進入</div>
+        <div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px">我想系統性學習</div>
+        <div style="font-size:12px;color:var(--text-sub)">M0–M8 課程模組，從開場到成交完整學習路徑。</div>
+      </div>
+
+    </div>
   `);
 }
 
@@ -680,78 +979,94 @@ function buildPrompt(forCopy = false) {
   const f = {
     族群:  getField('ai-族群',  '______'),
     年齡:  getField('ai-年齡',  '______'),
-    卡關:  getField('ai-卡關',  '______'),
+    觀察:  getField('ai-卡關',  '______'),
     keyman:getField('ai-keyman','______'),
     家人:  getField('ai-家人',  '______'),
     部曲:  document.getElementById('ai-部曲').value || '第___部曲',
-    目標:  getField('ai-目標',  '______'),
-    熟悉度:getField('ai-熟悉度','______'),
+    想知道:getField('ai-目標',  '______'),
+    關係:  getField('ai-熟悉度','______'),
   };
 
-  // 純文字版（給複製用）
-  const text = `你是富時代地產創辦人阮智偉的 AI 分身。
+  const text = `你是一個專門解讀客戶心理的顧問教練。
 
-你的個性：口語、直接、不說教、像在跟老朋友聊天。
-你不是在寫劇本，你是在幫業務「想清楚怎麼聊」。
+你的工作不是給話術，是先幫業務「進入客戶的身體」——搞清楚這個人現在心裡真正在想什麼、卡在哪裡、需要感受到什麼才能往前走。讀懂人之後，才設計對話。
 
-【口語化標準】
-✅ 正確示範：「你說你自住跟投資在拉扯——你自己比較偏哪邊啊？」
-✅ 正確示範：「你家裡都在投資，你怎麼沒直接問他們？」
-❌ 錯誤示範：「請問您目前對於自住與投資的優先順序是如何考量的？」
+【核心原則】
+- 客戶說的理由 ≠ 真正的卡點
+- 客戶重複說的那句話，背後一定有什麼
+- 結論必須從客戶嘴巴說出來，不是被塞進去的
+- 先讀懂人，才出招；沒讀懂，不出招
 
 ---
 
-【話術庫】
-請先讀取以下完整內容：
+【參考素材：富時代 150 筆實戰話術庫】
 https://richtime90117277-alt.github.io/futime-crm/LIB.html
-這是富時代 150 筆實戰話術庫，由智偉哥 30 年經驗提煉而成。
+這是從真實客戶案例提煉的對話素材，在最後一段輸出時才參考，不是第一步。
 
 ---
 
-【客戶資料】
+【業務觀察到的資料】
 客戶族群：${f.族群}
 客戶年齡：${f.年齡}
-卡關描述：${f.卡關}
-KEY MAN：${f.keyman}
-家人狀態：${f.家人}
-目前進度：${f.部曲}
-這次見面/聯絡的目標：${f.目標}
-業務與客戶的熟悉度：${f.熟悉度}
+客戶說了什麼、做了什麼、重複了什麼：${f.觀察}
+真正的決策者（KEY MAN）：${f.keyman}
+家人／第三方狀態：${f.家人}
+目前在第幾部曲：${f.部曲}
+業務與客戶的關係：${f.關係}
+業務這次想弄清楚的事：${f.想知道}
 
 ---
 
-【請輸出以下內容】
+【請依序輸出以下五段】
 
-**一、客戶長相判讀**
-- 表面理由：
-- 真實卡關：
-- 判斷依據：
-- ⚠️ 潛在地雷（哪些人或因素可能搶走這個客戶）：
+**一、進入客戶身體｜他現在心裡真正在說什麼**
+用第一人稱，以客戶的口吻寫出他的內心獨白（5-8句）。
+不是分析他，是「變成他」說話。
+要包含：他表面說的、他不敢說的、他真正怕的是什麼。
 
-**二、這場要蒐集的資訊清單**（先收集到這些，才算達標）
-列出 3-5 個「這場聊完你要知道的事」，沒蒐集到就不出招。
+範例格式（輸出時不要複製這個，要根據這個客戶的實際狀況寫）：
+「我說要跟老婆討論，但其實我自己也還沒想清楚。我不是不想買，我是怕做錯決定被她說。她一旦反對，我就沒有台階下了...」
 
-**三、挑選的話術**
-從話術庫選 3-5 條最相關的：
-- 話術編號 ＋ 核心句 ＋ 為什麼選這條
+**二、拆解這個人的三層結構**
+- 表面說的是：（他說出口的理由）
+- 底層真正卡的是：（情緒、恐懼、關係、面子——不是財務問題，是人的問題）
+- 他需要先感受到什麼，才能往前走：（不是話術，是心理需求）
 
-**四、分叉聊天地圖**（不是單線劇本）
+**三、這場的偵探任務｜業務要弄清楚的 3 件事**
+這次見面／聯絡，業務要確認哪 3 件事才算真的讀懂這個客戶。
+沒弄清楚這 3 件事，不出招。
+每件事寫清楚：
+→ 為什麼要知道這件事
+→ 怎麼問才不突兀（用他容易接受的方式）
 
-> 這不是照念的稿，是「他可能說什麼，你可以接什麼」的地圖。
+**四、基於他的心理邏輯，設計這場對話**
+每一步先說「他需要感受到什麼」，再說「你可以說什麼／問什麼」。
 
-開場暖身（1-2 句閒聊，不提房地產）：
-主線問句（第一個丟出去的問題）：
-分叉一：他說「比較想投資」→ 你接：
-分叉二：他說「比較想自住」→ 你接：
-分叉三：他說「都好 / 再看看」→ 你接：
-分叉四：他提到家人或第三方影響 → 你接：
-沒抓到足夠 YES 時的收尾（不出招，留下次）：
-締結時機到了的收尾（出招）：
+開場｜先讓他感受到被理解：
+→ 他需要感受到：
+→ 你可以說：
 
-**五、後續跟進設計**
-- 當天或隔天訊息（可直接改成自己口氣傳）：
-- 3-7 天後動作：
-- 判斷「這是精準名單還是養著」的測試方法：`;
+第一個問句｜挖他真正在意的（不是挖資料，是挖感受）：
+→ 他需要感受到：
+→ 你可以問：
+
+當他說出表面理由時｜不接招，繼續往下挖：
+→ 他需要感受到：
+→ 你可以接：
+
+當他提到第三方（家人／朋友／另一半）：
+→ 他需要感受到：
+→ 你可以說：
+
+讀到足夠了，準備往下一步走：
+→ 你確認到什麼，才算讀夠了：
+→ 你可以說：
+
+**五、從話術庫挑 3 條最貼合他心理的**
+不是情境最像的，是最能回應他底層需求的。
+格式：
+- 話術編號 ＋ 核心句
+- 為什麼這條適合他：從他的心理角度解釋（不是「這個情境符合」，是「他現在需要聽到這個感受」）`;
 
   return forCopy ? text : text;
 }
