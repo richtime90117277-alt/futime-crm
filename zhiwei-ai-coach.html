@@ -955,7 +955,7 @@ async function generate() {
       realBlock = '表面擔心錢不夠，真正卡的是：沒有把退休缺口算出來。把缺口算清楚，他自己就會行動。';
     } else if (p.includes('自住') && p.includes('投資')) {
       realBlock = '自住和投資在拉扯——他心裡其實已經有傾向，只是需要人認同。先問：「你說『另一方面在考慮』——所以你其實比較偏哪邊？」讓他自己說出來。';
-
+    }
 
     // ── 2. 財務真相 ──
     let financeInsight = '';
@@ -1379,8 +1379,7 @@ function pickCustomer(jsonStr) {
   sv('lastResult', c.lastFollowupResult);
 
   // ── 補充說明（下次跟進行動第一行）──
-  sv('extra', c.nextFollowupAction ? c.nextFollowupAction.split('
-')[0] : '');
+  sv('extra', c.nextFollowupAction ? c.nextFollowupAction.split('\n')[0] : '');
 
   // ── 族群 chip ──
   selectedChips = [];
