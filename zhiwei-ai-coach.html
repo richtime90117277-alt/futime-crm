@@ -585,9 +585,9 @@
 
   <!-- Header -->
   <div class="header">
-    <div class="badge">智偉哥 AI 顧問跟進系統</div>
-    <h1>AI 顧問<span>跟進</span>系統</h1>
-    <p class="subtitle">填寫客況，一鍵生成完整跟進話術報告<br>早會前兩分鐘完成，出門就有劇本</p>
+    <div class="badge">客戶心理解碼 · 跟進系統</div>
+    <h1>先讀懂<span>這個人</span>，再出招</h1>
+    <p class="subtitle">填你觀察到的行為與說法，AI 先進客戶身體讀懂心理<br>再給你對話地圖和跟進劇本</p>
   </div>
 
   <!-- AI 狀態列 -->
@@ -598,7 +598,7 @@
   <!-- Form -->
   <div class="form-card" id="formCard">
 
-    <div class="section-label">客戶基本資料</div>
+    <div class="section-label">Step 1｜你觀察到的：這個客戶是什麼人</div>
 
     <!-- CRM 快速帶入 -->
     <div style="margin-bottom:20px">
@@ -618,34 +618,46 @@
       </div>
       <div class="field span2">
         <label>客戶族群 <span class="req">*</span></label>
+        <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px">選最像的那一個（可複選）</div>
         <div class="chip-group" id="groupChips">
-          <div class="chip" onclick="toggleChip(this)">首購族</div>
-          <div class="chip" onclick="toggleChip(this)">換屋族</div>
-          <div class="chip" onclick="toggleChip(this)">老屋族</div>
-          <div class="chip" onclick="toggleChip(this)">投資族</div>
-          <div class="chip" onclick="toggleChip(this)">新鮮人</div>
-          <div class="chip" onclick="toggleChip(this)">退休族</div>
-          <div class="chip" onclick="toggleChip(this)">高資產</div>
-          <div class="chip" onclick="toggleChip(this)">雙薪夫妻</div>
+          <div class="chip" onclick="toggleChip(this)">🎭 白嫖狗急跳牆型</div>
+          <div class="chip" onclick="toggleChip(this)">📵 已讀不回型</div>
+          <div class="chip" onclick="toggleChip(this)">🔧 裝修假議題型</div>
+          <div class="chip" onclick="toggleChip(this)">🏚️ 多屋月付壓死型</div>
+          <div class="chip" onclick="toggleChip(this)">👨‍👩‍👦 家族共治三關未解型</div>
+          <div class="chip" onclick="toggleChip(this)">💰 教科書殺價型</div>
+          <div class="chip" onclick="toggleChip(this)">🧠 怕做錯決策數字腦型</div>
+          <div class="chip" onclick="toggleChip(this)">🔒 隱私防衛型</div>
+          <div class="chip" onclick="toggleChip(this)">🎭 預售防衛創業夢型</div>
+          <div class="chip" onclick="toggleChip(this)">😟 負債逃避型</div>
+          <div class="chip" onclick="toggleChip(this)">🔀 自住投資拉扯型</div>
+          <div class="chip" onclick="toggleChip(this)">🏠 首購安全感型</div>
+          <div class="chip" onclick="toggleChip(this)">⚠️ 爛尾沉沒成本混合型</div>
+          <div class="chip" onclick="toggleChip(this)">🌫️ 觀念未對齊白嫖型</div>
+          <div class="chip" onclick="toggleChip(this)">📈 合理聽懂但不動型</div>
+          <div class="chip" onclick="toggleChip(this)">🚀 槓桿放大跳階型</div>
+          <div class="chip" onclick="toggleChip(this)">👩‍👧 凡事回家問媽媽型</div>
+          <div class="chip" onclick="toggleChip(this)">🏚️ 退休焦慮無殼型</div>
+          <div class="chip" onclick="toggleChip(this)">🤝 姊姊合資資金不確定型</div>
         </div>
-        <input type="text" id="groupOther" placeholder="或直接輸入（可組合，例：老屋族＋投資族）" style="margin-top:8px;" />
+        <input type="text" id="groupOther" placeholder="或用自己的話描述（例：股票族又怕賣掉）" style="margin-top:8px;" />
       </div>
     </div>
 
-    <div class="section-label" style="margin-top:32px;">客況與痛點</div>
+    <div class="section-label" style="margin-top:32px;">Step 2｜他說了什麼、做了什麼、重複了什麼</div>
 
     <div class="field-grid full">
       <div class="field">
-        <label>主要痛點 <span class="req">*</span></label>
-        <textarea id="pain" placeholder="例：現住老公寓，擔心地震安全問題，有兩個小孩，太太希望換到好學區，但先生擔心貸款壓力…"></textarea>
+        <label>客戶說了什麼、重複說了什麼 <span class="req">*</span></label>
+        <textarea id="pain" placeholder="例：說了三次「我媽反對」；說「再想想」但又主動問了交屋時間；LINE已讀不回但朋友說他有在看房…"></textarea>
       </div>
       <div class="field">
-        <label>目前狀況</label>
-        <textarea id="status" placeholder="例：已參加 3 月研討會，認同六大功能概念，但說要再考慮，上次聯絡是兩週前…"></textarea>
+        <label>做了什麼行為（出現了什麼動作）</label>
+        <textarea id="status" placeholder="例：諮詢過一次說要回去想；上週傳訊息已讀不回；之前說老婆支持但老婆從沒出現過…"></textarea>
       </div>
     </div>
 
-    <div class="section-label" style="margin-top:32px;">關鍵人物與財務</div>
+    <div class="section-label" style="margin-top:32px;">Step 3｜關鍵人物與資源</div>
 
     <div class="field-grid">
       <div class="field">
@@ -662,16 +674,16 @@
       </div>
       <div class="field span2">
         <label>財務狀況（越詳細越好）</label>
-        <textarea id="finance" placeholder="例：雙薪，合計月收約 12 萬，已有一間房貸還在繳，頭期款大概能出 200 萬，對預售屋工程款繳法不熟…" style="min-height:70px;"></textarea>
+        <textarea id="finance" placeholder="例：說存款100萬不到；股票210萬但說「先拿50-60萬試試」；有負債但沒說細項…" style="min-height:70px;"></textarea>
       </div>
     </div>
 
-    <div class="section-label" style="margin-top:32px;">本次目標</div>
+    <div class="section-label" style="margin-top:32px;">Step 4｜這次你想弄清楚什麼</div>
 
     <div class="field-grid">
       <div class="field">
         <label>上次跟進結果</label>
-        <textarea id="lastResult" placeholder="例：已讀不回 / 說需要和家人商量 / 已約好下週諮詢…" style="min-height:60px;"></textarea>
+        <textarea id="lastResult" placeholder="例：說「我再想想」然後消失；傳訊息已讀不回3天；上次見面說要帶老婆來但沒來…" style="min-height:60px;"></textarea>
       </div>
       <div class="field">
         <label>本次要成交的節點 <span class="req">*</span></label>
@@ -684,8 +696,8 @@
         </select>
       </div>
       <div class="field span2">
-        <label>補充說明（可空白）</label>
-        <input type="text" id="extra" placeholder="例：她媽媽特別在意建商信譽 / 下週要出國，這週是最後機會…" />
+        <label>你這次最想弄清楚的事（不是目標，是你想知道什麼）</label>
+        <input type="text" id="extra" placeholder="例：他媽媽說的原話是「不想買中和」；他在LINE說「我已經決定了」但沒行動…" />
       </div>
       <div class="field span2">
         <label>業務與客戶熟悉度</label>
@@ -701,7 +713,7 @@
 
     <div class="submit-wrap">
       <button class="submit-btn" id="submitBtn" onclick="generate()">
-        <span>⚡</span> 生成智偉哥話術報告
+        <span>⚡</span> 進入這個客戶的身體，生成對話地圖
       </button>
       <p class="hint">約需 30–60 秒，請稍候</p>
     </div>
@@ -713,11 +725,11 @@
   <!-- Loading -->
   <div class="loading-card" id="loadingCard">
     <div class="spinner"></div>
-    <div class="loading-text">智偉哥正在分析你的客況…</div>
+    <div class="loading-text">正在進入這個客戶的身體…</div>
     <div class="loading-steps">
-      <div class="step" id="step1"><div class="step-dot"></div>讀取客戶資料</div>
-      <div class="step" id="step2"><div class="step-dot"></div>對應話術庫編號</div>
-      <div class="step" id="step3"><div class="step-dot"></div>生成完整跟進劇本</div>
+      <div class="step" id="step1"><div class="step-dot"></div>解讀客戶行為訊號</div>
+      <div class="step" id="step2"><div class="step-dot"></div>翻譯客戶內心獨白</div>
+      <div class="step" id="step3"><div class="step-dot"></div>設計基於客戶心理的對話地圖</div>
       <div class="step" id="step4"><div class="step-dot"></div>輸出話術報告</div>
     </div>
   </div>
@@ -725,7 +737,7 @@
   <!-- Result -->
   <div class="result-card" id="resultCard">
     <div class="result-header">
-      <div class="result-title">🧠 智偉哥話術報告</div>
+      <div class="result-title">👁️ 客戶心理解碼報告</div>
       <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
         <div class="result-meta" id="resultMeta"></div>
         <div class="result-actions">
@@ -846,16 +858,15 @@ async function generate() {
   // 頁面載入時初始化 key 狀態
   document.addEventListener('DOMContentLoaded', function() {
     renderKeyStatus();
-    // 從 CRM 跳過來自動帶入客戶
+    // 從 CRM 跳過來自動帶入客戶（延遲確保 DOM 完全就緒）
     try {
       var raw = sessionStorage.getItem('crm_launch_customer');
       if (!raw) return;
       sessionStorage.removeItem('crm_launch_customer');
       var c = JSON.parse(raw);
-      // 直接帶入，不開 picker
-      _crmSelectedId = c.id;
-      _crmSelectedName = c.customerName || '';
-      pickCustomer(JSON.stringify(c));
+      setTimeout(function() {
+        pickCustomer(JSON.stringify(c));
+      }, 300);
     } catch(e) {}
   });
 
@@ -868,26 +879,1114 @@ async function generate() {
     const f = (finance || '').toLowerCase();
     const t = (target || '');
 
-    // ── 1. 真正卡點推導 ──
+    // ── 1. 客戶心理翻譯（從客戶身體出發）──
     let realBlock = '';
+    const g_type = (group || '').toLowerCase();
     if (p.includes('前夫') || p.includes('離婚') || p.includes('分居') || p.includes('前妻')) {
-      realBlock = '她表面糾結的是房子，底層真正卡的是：害怕被說自私、害怕孩子怪她。需要一個「這樣做是為了孩子好」的正當理由才能行動——不是錢的問題，是罪惡感的問題。';
-    } else if (p.includes('媽媽反對') || p.includes('家人反對') || p.includes('爸爸不同意')) {
-      realBlock = '表面是家人反對，真正卡的是：他自己還沒確定，用家人當擋箭牌在拖時間。先確認他自己想不想，再處理家人。';
-    } else if (p.includes('股票') || p.includes('etf') || p.includes('不想動')) {
-      realBlock = '表面是資金問題，真正卡的是：不願承認現有配置的天花板，需要看到槓桿邏輯（600萬放股票 vs 控制3000萬資產）才會動。';
-    } else if ((p.includes('租') || p.includes('無殼')) && (g.includes('首購') || g.includes('新鮮'))) {
-      realBlock = '表面覺得錢不夠，真正卡的是：不知道自己其實已經夠了。需要有人把數字算給他看，算清楚了他自己就會動。';
-    } else if (g.includes('換屋') || p.includes('老屋') || p.includes('屋齡') || p.includes('土城')) {
-      realBlock = '表面在找更好的房子，真正卡的是：不確定現在動的時機點對不對，需要被確認「現在動是對的決定」。';
-    } else if (p.includes('家人都在投資') || p.includes('爸爸有買') || p.includes('朋友都買')) {
-      realBlock = '關鍵訊號：家人都在投資，他卻來找業務——代表他和家人的投資邏輯有落差，或需要獨立的判斷來源。必須先搞清楚：你能給他什麼是家人給不了的？';
-    } else if (g.includes('退休') || p.includes('退休') || p.includes('以房養老')) {
-      realBlock = '表面擔心錢不夠，真正卡的是：沒有把退休缺口算出來。把缺口算清楚，他自己就會行動。';
-    } else if (p.includes('自住') && p.includes('投資')) {
-      realBlock = '自住和投資在拉扯——他心裡其實已經有傾向，只是需要人認同。先問：「你說『另一方面在考慮』——所以你其實比較偏哪邊？」讓他自己說出來。';
+      realBlock = '內心獨白：「我不是不想動，我是怕被說自私、怕孩子怪我。我需要一個讓我覺得「這樣做是為了孩子好」的理由，才敢開口。不是錢的問題，是罪惡感的問題。」\n→ 業務不要談數字，先幫她說出那個她說不出口的理由。';
+    } else if (p.includes('媽媽反對') || p.includes('家人反對') || p.includes('爸爸不同意') || g_type.includes('問媽媽')) {
+      realBlock = '內心獨白：「我其實自己也還沒想清楚，把媽媽搬出來是在替自己爭取時間。我怕買了以後媽媽唸我一輩子。但我更怕讓媽媽失望。」\n→ 不批評媽媽，幫他分清楚「媽媽是精神支持還是實際出資者」，讓他自己說出媽媽的真實角色。';
+    } else if (p.includes('股票') || p.includes('etf') || g_type.includes('股票') || g_type.includes('槓桿')) {
+      realBlock = '內心獨白：「我對股票熟，我不熟房地產，你說的道理我聽懂了，但我還是怕「被說服」——我要的是自己算出來的決定，不是被推著做的。」\n→ 不要跟他比報酬率（他贏定了），要比的是「用同樣的錢能控制多大的資產」，讓他自己算出來。';
+    } else if ((p.includes('租') || p.includes('無殼') || g_type.includes('無殼') || g_type.includes('退休焦慮')) && (p.includes('存款') || p.includes('不夠') || p.includes('100萬'))) {
+      realBlock = '內心獨白：「我都快50了還在租房，我知道我焦慮，但我以為100萬不到什麼都做不了，所以我還在等——等到什麼時候我自己也不知道。」\n→ 釘時間壓力，讓她自己算出退休缺口，再用「100萬可以控制800萬資產」破神經鏈。';
+    } else if (g_type.includes('家族') || g_type.includes('合資') || p.includes('姊姊') || p.includes('哥哥') || p.includes('合資')) {
+      realBlock = '內心獨白：「我自己想定案，但我不確定家人/合資方會不會臨時反悔。我表面上說「等一下」，其實是在等一個永遠不會自動到來的確認。」\n→ 不讓客戶回去轉述，把出資方約到現場，三關（資金/決策/時間）逐一確認再推進。';
+    } else if (p.includes('爛尾') || p.includes('虧損') || p.includes('被騙') || g_type.includes('爛尾')) {
+      realBlock = '內心獨白：「我晚上睡不著，我偷偷自責，我怕再做錯一次。但我也知道繼續等也在虧。我需要有人承認我不是傻瓜，而不是急著幫我解套。」\n→ 先肯定她過去買對的那筆，再把沉沒成本圈起來「先停、走法律流程」，把下一步放到新的機會上。';
+    } else if (g_type.includes('負債') || p.includes('沒錢') || p.includes('負債')) {
+      realBlock = '內心獨白：「我說「沒錢」，但其實我不是沒錢，我是不敢面對數字，我怕再一次讓家人失望，用「沒錢」保護自己不必承認扛不起。」\n→ 不跟他吵有沒有錢，先問「你真正想換到的結果是什麼」，再一起把負債結構拆開看。';
+    } else if (p.includes('自住') && p.includes('投資') || g_type.includes('拉扯')) {
+      realBlock = '內心獨白：「我嘴上說在考慮，其實心裡已經有傾向了，我只是需要一個「這樣想是對的」的認可。你直接問我選哪個，我反而說不出來。」\n→ 不替他做決定，讓他自己說出傾向，再給一個「理由支撐他的直覺」。';
+    } else if (p.includes('白嫖') || g_type.includes('白嫖') || p.includes('問問')) {
+      realBlock = '內心獨白：「我信任你們夠專業，但我還沒打算付出什麼，我想先用關係換免費資源，再看看值不值得合作。」\n→ 不給任何免費資源，用反問讓她自己說出「只有合作客戶才能用到這個資源」，結論要從她嘴巴出來。';
+    } else if (p.includes('已讀不回') || p.includes('沒回') || g_type.includes('已讀')) {
+      realBlock = '內心獨白：「我有興趣但不急，你越追我越想躲，你一講研討會我就聯想到被推銷。我在等一個讓我好奇想主動開口的理由。」\n→ 丟鉤子不追問，讓他好奇自己回；他一回才收3個情報，不要問開放式問題。';
+    } else if (p.includes('裝修') || g_type.includes('裝修')) {
+      realBlock = '內心獨白：「我用「裝修」包裝是因為我說不清楚自己真正想要什麼，其實我想要一個自己的家，但我不敢直說，也怕老公否決。」\n→ 不接裝修假議題，用「小病變大病」讓她自己看到拖延的代價（居住→夫妻關係→小孩）。';
     } else {
-      realBlock = '卡點待業務出門前確認——必須先問清楚「你現在最不確定的是哪一塊」，不能靠猜。';
+      realBlock = '卡點需要業務出門前確認——先問「你現在最不確定的是哪一塊」，再問「如果這件事今天解決了，你最想得到什麼答案」。不能靠猜，猜了就是業務視角不是客戶視角。';
+    }
+
+    // ── 2. 財務真相 ──
+    let financeInsight = '';
+    const hasNum = f.match(/(\d+)萬/);
+    if (f.includes('200') || f.includes('300') || f.includes('200萬') || f.includes('300萬')) {
+      financeInsight = '自有200-300萬 → 實際購買力800-1200萬（8成貸款）。如果目標超過這個範圍，必須先處理舊資產（賣舊換新或增貸）。';
+    } else if (f.includes('100萬') || f.includes('100')) {
+      financeInsight = '自有約100萬 → 購買力約500-800萬。需要確認有無其他資源（父母房子、信貸）可以搭配，否則選擇有限。';
+    } else if (f.includes('股票') || f.includes('etf') || f.includes('基金')) {
+      financeInsight = '資金在股票/基金 → 問題是「動不動」不是「有沒有」。用比例問句：「這件事在你人生目標裡值多少比例？」讓他自己說出合理配置。';
+    } else if (f.includes('老屋') || f.includes('繼承') || f.includes('1500') || f.includes('1200')) {
+      financeInsight = '有舊資產可運用 → 真正的槓桿是「以舊換新」。先把舊屋淨值算清楚（市值-貸款=可動資金），再設計換屋路徑。';
+    } else if (!f || f === '未填' || f.length < 3) {
+      financeInsight = '⚠️ 財務資訊完全未填——出門前必須問：①能動用的現金多少？②每月舒適繳款上限多少？這兩個數字不知道，什麼方案都推不了。';
+    } else {
+      financeInsight = '財務資訊需進一步確認可動用現金和每月舒適繳款上限。';
+    }
+
+    // ── 3. Keyman 三關檢查 ──
+    const gateWarnings = [];
+    if (!support || support === '不清楚' || support === '未知') {
+      gateWarnings.push('❌ 關卡1未解：家人支持度未確認。有意願≠可以推流程。不確認這關，簽約後反悔風險極高。');
+    }
+    if (keyman && keyman !== '本人' && keyman !== '自己' && keyman !== '她自己' && keyman !== '他自己') {
+      gateWarnings.push(`❌ 關卡2未解：Keyman 是「${keyman}」還沒進來。Keyman 沒來，談了也沒用——先把他/她拉進局再說。`);
+    }
+    if (!finance || finance === '未填' || finance.length < 5) {
+      gateWarnings.push('❌ 關卡3未解：財務狀況未確認。三關沒過不能推流程，先補這個資訊。');
+    }
+    if (gateWarnings.length === 0) gateWarnings.push('✅ 三關基本已確認，可以推進流程。');
+
+    // ── 4. 語言訊號警報 ──
+    const signals = [];
+    if (p.includes('家人都在投資') || p.includes('爸爸買') || p.includes('朋友都')) {
+      signals.push('⚡ 訊號：「家人/朋友都在投資」→ 立刻轉方向問：「那你為什麼來找我？我能給你什麼是他們給不了的？」');
+    }
+    if (p.includes('再想想') || p.includes('再考慮') || p.includes('再看看')) {
+      signals.push('⚡ 訊號：「再想想/考慮」→ 立刻問：「你現在最不確定的是哪一塊？」不讓他帶著模糊感離開。');
+    }
+    if (p.includes('另一半') || p.includes('老婆') || p.includes('先生') || p.includes('太太')) {
+      signals.push('⚡ 訊號：提到另一半 → 立刻確認：「他/她是支持你來的，還是你還沒跟他/她說？」');
+    }
+
+    // ── 5. 研討會邀約角度 ──
+    let seminarAngle = '';
+    if (t.includes('研討會')) {
+      if (p.includes('前夫') || p.includes('孩子') || p.includes('離婚')) {
+        seminarAngle = '邀約方式：說故事，不介紹研討會。「我之前遇過一個媽媽，跟妳處境很像——她也是這樣卡住。後來她去聽了一場說明會，不是去買房的，就是聽兩個小時。她聽完跟我說她終於知道怎麼走了。妳要不要也去聽聽看？我陪妳去。這週六還是下週六比較方便？」';
+      } else if (p.includes('股票') || p.includes('投資')) {
+        seminarAngle = '邀約方式：用好奇心鉤住。「你有沒有想過，為什麼那麼多有股票的人還在買房？我最近幫一個跟你條件很像的客戶算了一下，你有沒有興趣聽一下是怎麼做到的？」';
+      } else if (g.includes('首購') || p.includes('租')) {
+        seminarAngle = '邀約方式：用算數字帶進去。「你有沒有算過，你現在的條件到底買不買得起？很多人以為自己買不起，算完才發現其實夠了。去聽兩小時，讓我們幫你算清楚。」';
+      } else {
+        seminarAngle = '邀約方式：找一個跟他處境相似的真實故事，說故事不介紹內容，讓他自己想去。結尾一定用二選一鎖時段：「這週六還是下週六比較方便？」';
+      }
+    }
+
+    return { realBlock, financeInsight, gateWarnings, signals, seminarAngle };
+  }
+
+  function buildPrompt({ name, age, group, pain, status, keyman, support, finance, lastResult, target, extra, familiarity }) {
+    const { realBlock, financeInsight, gateWarnings, signals, seminarAngle } = preProcess({
+      name, age, group, pain, status, finance, target, extra, support, keyman, lastResult
+    });
+    const familiarityStr = familiarity || '未填';
+
+    return `你是一位專門解讀客戶心理的顧問教練。
+
+你的工作不是給話術，是先幫業務「進入客戶的身體」——搞清楚這個人現在心裡真正在想什麼、卡在哪裡、需要感受到什麼才能往前走。讀懂人之後，才設計對話。
+
+【你的核心原則】
+- 客戶說的理由 ≠ 真正的卡點
+- 客戶重複說的那句話，背後一定有什麼
+- 結論必須從客戶嘴巴說出來，不是被塞進去的
+- 先讀懂人，才出招；沒讀懂，不出招
+- 顧問的任務：幫客戶釐清這個決定對他們值不值得做，不是說服他買
+
+【禁止在話術中出現的仲介語言】
+❌「這個地段現在很搶手」「很多人都在搶」「現在不買以後更貴」
+❌ 任何用「市場熱度」或「價格上漲」製造焦慮的句子
+❌ 任何直接推產品而不先讀懂客戶的句子
+
+---
+
+### 業務填入的觀察資料
+
+- 姓名：${name}，年齡：${age || '未知'}
+- 客戶原型判讀：${group || '未填'}
+- 客戶說了什麼、重複說了什麼：${pain}
+- 觀察到的行為：${status || '未填'}
+- Keyman：${keyman || '未知'}，家人支持度：${support || '未知'}
+- 財務狀況：${finance || '未填'}
+- 上次跟進結果：${lastResult || '未填'}
+- 本次節點：${target}
+- 業務與客戶關係：${familiarityStr}
+${extra ? `- 這次想弄清楚的事：${extra}` : ''}
+
+---
+
+### ⚡ 系統預判（報告必須反映這些）
+
+**【客戶真正的卡點】**
+${realBlock}
+
+**【財務真相】**
+${financeInsight}
+
+**【三關檢查】**
+${gateWarnings.join('\n')}
+
+${signals.length > 0 ? '**【語言訊號】**\n' + signals.join('\n') : ''}
+
+---
+
+### 【請依序輸出以下七段】
+
+#### 一、進入客戶身體｜他現在心裡真正在說什麼
+用**第一人稱**，以客戶的口吻寫出他的內心獨白（5-8句）。
+不是分析他，是「變成他」說話。
+要包含：他表面說的、他不敢說的、他真正怕的是什麼。
+
+#### 二、拆解這個人的三層結構
+- **表面說的是**：（他說出口的理由）
+- **底層真正卡的是**：（情緒、恐懼、關係、面子）
+- **他需要先感受到什麼，才能往前走**：（不是話術，是心理需求）
+
+#### 三、業務這場的偵探任務
+這次見面/聯絡，要弄清楚哪 3 件事才算真正讀懂這個客戶。
+沒弄清楚這 3 件事，不出招。
+每件事說明：為什麼要知道 + 怎麼問才不突兀。
+
+#### 四、業務最容易踩的陷阱（針對這個客戶）
+3-4條，具體說明為什麼踩了會出問題。
+
+#### 五、基於他的心理邏輯，設計這場對話
+每一步先說「他需要感受到什麼」，再說「你可以說什麼」。
+
+**開場**（根據熟悉度：${familiarityStr}）
+→ 他需要感受到：
+→ 你可以說：
+
+**第一個問句**（挖他真正在意的，不是挖資料）
+→ 他需要感受到：
+→ 你可以問：
+
+**當他說出表面理由時**（不接招，繼續往下挖）
+→ 他需要感受到：
+→ 你可以接：
+
+**當他提到第三方**（家人/另一半/朋友）
+→ 他需要感受到：
+→ 你可以說：
+
+**往下一步走的收尾**
+→ 你確認到什麼才算讀夠了：
+→ 你可以說：
+
+#### 六、這場不要做什麼（針對這個客戶的陷阱）
+3-4條，說明為什麼這樣做反而讓他更遠。
+
+#### 七、後續跟進設計（D0/D1/D3/D7）
+${target.includes('諮詢') || target.includes('收訂') ? `
+每個接觸點說明：聯絡誰｜時間｜方式｜說什麼｜目的
+每個接觸點提供：收口指令句｜二選一鎖時段｜客戶拖延時的備援一句` : '說明接下來3步該怎麼走，每步的目的是什麼。'}
+
+${target.includes('研討會') ? `
+---
+⚠️ 本次節點是研討會邀約，邀約三字禁令：買、投資、房子。
+邀的是「一個讓他看懂自己財務狀況的機會」，不是賣場。
+${seminarAngle}
+` : ''}
+\`;
+  }TYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智偉哥 AI 顧問跟進系統</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=DM+Mono:wght@400;500&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+    :root {
+    --bg: #F5F0E8;
+    --surface: #FFFFFF;
+    --card: #F9F6F1;
+    --border: #E0D8CC;
+    --border-active: #3D5A40;
+    --olive: #3D5A40;
+    --olive-light: #4E7053;
+    --olive-dim: rgba(61,90,64,0.10);
+    --gold: #B8943C;
+    --gold-dim: rgba(184,148,60,0.15);
+    --gold-glow: rgba(184,148,60,0.12);
+    --text: #1E1A14;
+    --text-dim: #6B6358;
+    --text-muted: #9E9285;
+    --red: #C0392B;
+    --green: #27AE60;
+    --input-bg: #FFFFFF;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Manrope', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grain overlay removed */
+  body::before { display: none; }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--gold-glow);
+    border: 1px solid rgba(61,90,64,0.10);
+    border-radius: 100px;
+    padding: 6px 16px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: var(--olive);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--olive);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+  }
+
+  h1 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: clamp(28px, 5vw, 40px);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+
+  h1 span {
+    color: var(--olive);
+  }
+
+  .subtitle {
+    color: var(--text-dim);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  /* Form card */
+  .form-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 36px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 4px rgba(61,45,20,0.06), 0 4px 16px rgba(61,45,20,0.04);
+  }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--olive);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .field-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .field-grid.full { grid-template-columns: 1fr; }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .field.span2 { grid-column: span 2; }
+
+  label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-dim);
+    letter-spacing: 0.06em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  label .req {
+    color: var(--red);
+    font-size: 14px;
+    line-height: 1;
+  }
+
+  input, textarea, select {
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    color: var(--text);
+    font-family: 'Manrope', sans-serif;
+    font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+    outline: none;
+    -webkit-appearance: none;
+  }
+
+  input:focus, textarea:focus, select:focus {
+    border-color: var(--border-active);
+    box-shadow: 0 0 0 3px var(--olive-dim);
+  }
+
+  input::placeholder, textarea::placeholder {
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 80px;
+    line-height: 1.6;
+  }
+
+  select {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 40px;
+  }
+
+  select option {
+    background: var(--card);
+    color: var(--text);
+  }
+
+  /* Chip group */
+  .chip-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .chip {
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.15s;
+    background: transparent;
+    white-space: nowrap;
+  }
+
+  .chip:hover {
+    border-color: var(--olive);
+    color: var(--olive);
+  }
+
+  .chip.active {
+    border-color: var(--olive);
+    background: var(--olive-dim);
+    color: var(--olive);
+  }
+
+  /* Support toggle */
+  .toggle-group {
+    display: flex;
+    gap: 10px;
+  }
+
+  .toggle-btn {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: 'Manrope', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+  }
+
+  .toggle-btn:hover { border-color: var(--olive); color: var(--text); }
+  .toggle-btn.active-yes { border-color: var(--green); background: rgba(39,174,96,0.1); color: var(--green); }
+  .toggle-btn.active-no { border-color: var(--red); background: rgba(192,57,43,0.1); color: var(--red); }
+  .toggle-btn.active-neutral { border-color: var(--olive); background: var(--olive-dim); color: var(--olive); }
+
+  /* Submit button */
+  .submit-wrap {
+    margin-top: 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .submit-btn {
+    width: 100%;
+    padding: 18px 32px;
+    background: var(--gold);
+    color: #F5F0E8;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Manrope', sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .submit-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .submit-btn:hover::before { opacity: 1; }
+  .submit-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(61,90,64,0.10); }
+  .submit-btn:active { transform: translateY(0); }
+  .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  .hint { font-size: 12px; color: var(--text-muted); }
+
+  /* Loading */
+  .loading-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 48px;
+    text-align: center;
+    display: none;
+  }
+
+  .loading-card.show { display: block; }
+
+  .spinner {
+    width: 40px; height: 40px;
+    border: 2px solid var(--border);
+    border-top-color: var(--olive);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 20px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading-text {
+    color: var(--text-dim);
+    font-size: 14px;
+    line-height: 1.8;
+  }
+
+  .loading-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 20px;
+    text-align: left;
+    max-width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .step {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--text-muted);
+    transition: color 0.3s;
+  }
+
+  .step.done { color: var(--green); }
+  .step.active { color: var(--olive); }
+
+  .step-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+  }
+
+  /* Result */
+  .result-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    display: none;
+  }
+
+  .result-card.show { display: block; }
+
+  .result-header {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: gap;
+    gap: 12px;
+  }
+
+  .result-title {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--olive);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .result-meta {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .result-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .action-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    font-family: 'Manrope', sans-serif;
+  }
+
+  .action-btn:hover { border-color: var(--olive); color: var(--olive); }
+  .action-btn.primary { border-color: var(--olive); background: var(--olive-dim); color: var(--olive); }
+  .action-btn.primary:hover { background: rgba(61,90,64,0.10); }
+
+  .result-body {
+    padding: 28px;
+    max-height: 70vh;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+
+  .result-body::-webkit-scrollbar { width: 4px; }
+  .result-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  /* Markdown rendering */
+  .result-body h1, .result-body h2, .result-body h3 {
+    font-family: 'Noto Serif TC', serif;
+    color: var(--olive);
+    margin: 24px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .result-body h1 { font-size: 20px; }
+  .result-body h2 { font-size: 17px; }
+  .result-body h3 { font-size: 15px; color: var(--text); border-bottom: none; }
+
+  .result-body p {
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--text);
+    margin-bottom: 12px;
+  }
+
+  .result-body ul, .result-body ol {
+    padding-left: 20px;
+    margin-bottom: 12px;
+  }
+
+  .result-body li {
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .result-body strong {
+    color: var(--olive);
+    font-weight: 700;
+  }
+
+  .result-body em {
+    color: var(--text-dim);
+  }
+
+  .result-body blockquote {
+    border-left: 3px solid var(--olive);
+    padding: 12px 16px;
+    background: var(--olive-dim);
+    border-radius: 0 8px 8px 0;
+    margin: 16px 0;
+    font-style: normal;
+  }
+
+  .result-body blockquote p { margin: 0; color: var(--text); }
+
+  .result-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 13px;
+  }
+
+  .result-body th {
+    background: rgba(61,90,64,0.10);
+    color: var(--gold);
+    font-weight: 700;
+    padding: 10px 14px;
+    text-align: left;
+    border: 1px solid var(--border);
+  }
+
+  .result-body td {
+    padding: 9px 14px;
+    border: 1px solid var(--border);
+    color: var(--text);
+    vertical-align: top;
+    line-height: 1.6;
+  }
+
+  .result-body tr:nth-child(even) td { background: rgba(61,90,64,0.03); }
+
+  .result-body code {
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--olive-light);
+  }
+
+  .result-body hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 24px 0;
+  }
+
+  /* Reset btn */
+  .reset-wrap {
+    text-align: center;
+    margin-top: 24px;
+    display: none;
+  }
+
+  .reset-wrap.show { display: block; }
+
+  .reset-btn {
+    padding: 12px 28px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: 'Manrope', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .reset-btn:hover { border-color: var(--olive); color: var(--olive); }
+
+  /* Error */
+  .error-msg {
+    background: rgba(192,57,43,0.1);
+    border: 1px solid rgba(192,57,43,0.3);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-size: 13px;
+    color: #C0392B;
+    margin-top: 16px;
+    display: none;
+  }
+
+  .error-msg.show { display: block; }
+
+  @media (max-width: 600px) {
+    .field-grid { grid-template-columns: 1fr; }
+    .field.span2 { grid-column: span 1; }
+    .form-card { padding: 24px 18px; }
+    .result-header { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="badge">客戶心理解碼 · 跟進系統</div>
+    <h1>先讀懂<span>這個人</span>，再出招</h1>
+    <p class="subtitle">填你觀察到的行為與說法，AI 先進客戶身體讀懂心理<br>再給你對話地圖和跟進劇本</p>
+  </div>
+
+  <!-- AI 狀態列 -->
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 16px;margin-bottom:16px;font-size:12px;color:var(--text-dim);display:flex;align-items:center;">
+    <span>✅ AI 引擎已就緒（Claude）</span>
+  </div>
+
+  <!-- Form -->
+  <div class="form-card" id="formCard">
+
+    <div class="section-label">Step 1｜你觀察到的：這個客戶是什麼人</div>
+
+    <!-- CRM 快速帶入 -->
+    <div style="margin-bottom:20px">
+      <button onclick="openCrmPicker('coach')" style="width:100%;background:rgba(61,90,64,0.10);border:1px solid rgba(61,90,64,0.10);border-radius:10px;padding:11px 16px;color:var(--gold);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;text-align:left;transition:background .2s" onmouseover="this.style.background='rgba(61,90,64,0.10)'" onmouseout="this.style.background='rgba(61,90,64,0.10)'">
+        📋 從 CRM 選客戶，自動帶入資料
+      </button>
+    </div>
+
+    <div class="field-grid">
+      <div class="field">
+        <label>客戶姓名 <span class="req">*</span></label>
+        <input type="text" id="name" placeholder="例：王大明" />
+      </div>
+      <div class="field">
+        <label>年齡</label>
+        <input type="text" id="age" placeholder="例：42" />
+      </div>
+      <div class="field span2">
+        <label>客戶族群 <span class="req">*</span></label>
+        <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px">選最像的那一個（可複選）</div>
+        <div class="chip-group" id="groupChips">
+          <div class="chip" onclick="toggleChip(this)">🎭 白嫖狗急跳牆型</div>
+          <div class="chip" onclick="toggleChip(this)">📵 已讀不回型</div>
+          <div class="chip" onclick="toggleChip(this)">🔧 裝修假議題型</div>
+          <div class="chip" onclick="toggleChip(this)">🏚️ 多屋月付壓死型</div>
+          <div class="chip" onclick="toggleChip(this)">👨‍👩‍👦 家族共治三關未解型</div>
+          <div class="chip" onclick="toggleChip(this)">💰 教科書殺價型</div>
+          <div class="chip" onclick="toggleChip(this)">🧠 怕做錯決策數字腦型</div>
+          <div class="chip" onclick="toggleChip(this)">🔒 隱私防衛型</div>
+          <div class="chip" onclick="toggleChip(this)">🎭 預售防衛創業夢型</div>
+          <div class="chip" onclick="toggleChip(this)">😟 負債逃避型</div>
+          <div class="chip" onclick="toggleChip(this)">🔀 自住投資拉扯型</div>
+          <div class="chip" onclick="toggleChip(this)">🏠 首購安全感型</div>
+          <div class="chip" onclick="toggleChip(this)">⚠️ 爛尾沉沒成本混合型</div>
+          <div class="chip" onclick="toggleChip(this)">🌫️ 觀念未對齊白嫖型</div>
+          <div class="chip" onclick="toggleChip(this)">📈 合理聽懂但不動型</div>
+          <div class="chip" onclick="toggleChip(this)">🚀 槓桿放大跳階型</div>
+          <div class="chip" onclick="toggleChip(this)">👩‍👧 凡事回家問媽媽型</div>
+          <div class="chip" onclick="toggleChip(this)">🏚️ 退休焦慮無殼型</div>
+          <div class="chip" onclick="toggleChip(this)">🤝 姊姊合資資金不確定型</div>
+        </div>
+        <input type="text" id="groupOther" placeholder="或用自己的話描述（例：股票族又怕賣掉）" style="margin-top:8px;" />
+      </div>
+    </div>
+
+    <div class="section-label" style="margin-top:32px;">Step 2｜他說了什麼、做了什麼、重複了什麼</div>
+
+    <div class="field-grid full">
+      <div class="field">
+        <label>客戶說了什麼、重複說了什麼 <span class="req">*</span></label>
+        <textarea id="pain" placeholder="例：說了三次「我媽反對」；說「再想想」但又主動問了交屋時間；LINE已讀不回但朋友說他有在看房…"></textarea>
+      </div>
+      <div class="field">
+        <label>做了什麼行為（出現了什麼動作）</label>
+        <textarea id="status" placeholder="例：諮詢過一次說要回去想；上週傳訊息已讀不回；之前說老婆支持但老婆從沒出現過…"></textarea>
+      </div>
+    </div>
+
+    <div class="section-label" style="margin-top:32px;">Step 3｜關鍵人物與資源</div>
+
+    <div class="field-grid">
+      <div class="field">
+        <label>Keyman（決策者）</label>
+        <input type="text" id="keyman" placeholder="例：本人（太太授權）/ 先生才是主決策" />
+      </div>
+      <div class="field">
+        <label>家人支持度</label>
+        <div class="toggle-group" id="supportToggle">
+          <button class="toggle-btn" onclick="setSupport(this,'支持','active-yes')">✅ 支持</button>
+          <button class="toggle-btn" onclick="setSupport(this,'不清楚','active-neutral')">🤔 不清楚</button>
+          <button class="toggle-btn" onclick="setSupport(this,'反對','active-no')">❌ 反對</button>
+        </div>
+      </div>
+      <div class="field span2">
+        <label>財務狀況（越詳細越好）</label>
+        <textarea id="finance" placeholder="例：說存款100萬不到；股票210萬但說「先拿50-60萬試試」；有負債但沒說細項…" style="min-height:70px;"></textarea>
+      </div>
+    </div>
+
+    <div class="section-label" style="margin-top:32px;">Step 4｜這次你想弄清楚什麼</div>
+
+    <div class="field-grid">
+      <div class="field">
+        <label>上次跟進結果</label>
+        <textarea id="lastResult" placeholder="例：說「我再想想」然後消失；傳訊息已讀不回3天；上次見面說要帶老婆來但沒來…" style="min-height:60px;"></textarea>
+      </div>
+      <div class="field">
+        <label>本次要成交的節點 <span class="req">*</span></label>
+        <select id="target">
+          <option value="">— 請選擇 —</option>
+          <option value="研討會邀約（讓他來參加）">📅 研討會邀約</option>
+          <option value="諮詢約訪（約到公司做顧問諮詢）">🤝 諮詢約訪</option>
+          <option value="帶看（約帶看預售案）">🏗️ 帶看</option>
+          <option value="收訂（收取訂金 / 斡旋金）">💰 收訂</option>
+        </select>
+      </div>
+      <div class="field span2">
+        <label>你這次最想弄清楚的事（不是目標，是你想知道什麼）</label>
+        <input type="text" id="extra" placeholder="例：他媽媽說的原話是「不想買中和」；他在LINE說「我已經決定了」但沒行動…" />
+      </div>
+      <div class="field span2">
+        <label>業務與客戶熟悉度</label>
+        <div class="chip-group" id="familiarityChips">
+          <div class="chip" onclick="toggleFamiliarity(this)" data-value="第一次見面">🆕 第一次見面</div>
+          <div class="chip" onclick="toggleFamiliarity(this)" data-value="認識1個月內">🌱 認識1個月內</div>
+          <div class="chip" onclick="toggleFamiliarity(this)" data-value="認識3-6個月，有互動">🤝 認識3-6個月</div>
+          <div class="chip" onclick="toggleFamiliarity(this)" data-value="認識超過半年，關係穩定">💪 認識超過半年</div>
+          <div class="chip" onclick="toggleFamiliarity(this)" data-value="熟識，像朋友一樣">👫 熟識如朋友</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="submit-wrap">
+      <button class="submit-btn" id="submitBtn" onclick="generate()">
+        <span>⚡</span> 進入這個客戶的身體，生成對話地圖
+      </button>
+      <p class="hint">約需 30–60 秒，請稍候</p>
+    </div>
+
+    <div class="error-msg" id="errorMsg"></div>
+
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-card" id="loadingCard">
+    <div class="spinner"></div>
+    <div class="loading-text">正在進入這個客戶的身體…</div>
+    <div class="loading-steps">
+      <div class="step" id="step1"><div class="step-dot"></div>解讀客戶行為訊號</div>
+      <div class="step" id="step2"><div class="step-dot"></div>翻譯客戶內心獨白</div>
+      <div class="step" id="step3"><div class="step-dot"></div>設計基於客戶心理的對話地圖</div>
+      <div class="step" id="step4"><div class="step-dot"></div>輸出話術報告</div>
+    </div>
+  </div>
+
+  <!-- Result -->
+  <div class="result-card" id="resultCard">
+    <div class="result-header">
+      <div class="result-title">👁️ 客戶心理解碼報告</div>
+      <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+        <div class="result-meta" id="resultMeta"></div>
+        <div class="result-actions">
+          <button class="action-btn" onclick="copyResult()">📋 複製全文</button>
+          <button class="action-btn primary" onclick="saveToCRM()">☁️ 存回 CRM</button>
+        </div>
+      </div>
+    </div>
+    <div class="result-body" id="resultBody"></div>
+  </div>
+
+  <div class="reset-wrap" id="resetWrap">
+    <button class="reset-btn" onclick="reset()">← 重新填寫</button>
+  </div>
+
+</div>
+
+<script>
+  let supportValue = '';
+  let selectedChips = [];
+  let resultText = '';
+  let _crmSelectedId = null;
+  let _crmSelectedName = '';
+
+  function toggleChip(el) {
+    el.classList.toggle('active');
+    const val = el.textContent.trim();
+    if (el.classList.contains('active')) {
+      if (!selectedChips.includes(val)) selectedChips.push(val);
+    } else {
+      selectedChips = selectedChips.filter(c => c !== val);
+    }
+  }
+
+  function setSupport(btn, val, cls) {
+    document.querySelectorAll('#supportToggle .toggle-btn').forEach(b => {
+      b.classList.remove('active-yes', 'active-no', 'active-neutral');
+    });
+    btn.classList.add(cls);
+    supportValue = val;
+  }
+
+  let selectedFamiliarity = '';
+
+function toggleFamiliarity(el) {
+  document.querySelectorAll('#familiarityChips .chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  selectedFamiliarity = el.dataset.value || el.textContent.trim();
+}
+
+async function generate() {
+    const name = document.getElementById('name').value.trim();
+    const age = document.getElementById('age').value.trim();
+    const groupOther = document.getElementById('groupOther').value.trim();
+    const group = [...selectedChips, ...(groupOther ? [groupOther] : [])].join('＋') || '';
+    const pain = document.getElementById('pain').value.trim();
+    const status = document.getElementById('status').value.trim();
+    const keyman = document.getElementById('keyman').value.trim();
+    const finance = document.getElementById('finance').value.trim();
+    const lastResult = document.getElementById('lastResult').value.trim();
+    const target = document.getElementById('target').value;
+    const extra = document.getElementById('extra').value.trim();
+    const errorMsg = document.getElementById('errorMsg');
+
+    errorMsg.classList.remove('show');
+
+    if (!name) { showError('請填寫客戶姓名'); return; }
+    if (!pain) { showError('請填寫主要痛點'); return; }
+    if (!target) { showError('請選擇本次要成交的節點'); return; }
+
+    // Build prompt
+    const familiarity = selectedFamiliarity || '未填';
+    const prompt = buildPrompt({ name, age, group, pain, status, keyman, support: supportValue, finance, lastResult, target, extra, familiarity });
+
+    // Show loading
+    document.getElementById('formCard').style.display = 'none';
+    document.getElementById('loadingCard').classList.add('show');
+    document.getElementById('submitBtn').disabled = true;
+
+    animateSteps();
+
+    try {
+      const response = await fetch(
+        'https://zhiwei-coach-api.richtime90117277.workers.dev',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt })
+        }
+      );
+
+      const data = await response.json();
+      if (data.error) throw new Error(data.error);
+      const text = data.text || '';
+
+      if (!text) throw new Error('回應為空，請再試一次');
+
+      resultText = text;
+
+      // Show result
+      document.getElementById('loadingCard').classList.remove('show');
+      document.getElementById('resultCard').classList.add('show');
+      document.getElementById('resetWrap').classList.add('show');
+      document.getElementById('resultMeta').textContent = `客戶：${name}｜節點：${target.split('（')[0]}`;
+      document.getElementById('resultBody').innerHTML = markdownToHtml(text);
+
+    } catch (err) {
+      document.getElementById('loadingCard').classList.remove('show');
+      document.getElementById('formCard').style.display = 'block';
+      document.getElementById('submitBtn').disabled = false;
+      showError('生成失敗：' + err.message + '。請確認網路連線後再試。');
+    }
+  }
+
+  // ── Key 管理（由 Cloudflare Worker 處理，前端無需設定）──
+  function renderKeyStatus() {}
+
+  // 頁面載入時初始化 key 狀態
+  document.addEventListener('DOMContentLoaded', function() {
+    renderKeyStatus();
+    // 從 CRM 跳過來自動帶入客戶（延遲確保 DOM 完全就緒）
+    try {
+      var raw = sessionStorage.getItem('crm_launch_customer');
+      if (!raw) return;
+      sessionStorage.removeItem('crm_launch_customer');
+      var c = JSON.parse(raw);
+      setTimeout(function() {
+        pickCustomer(JSON.stringify(c));
+      }, 300);
+    } catch(e) {}
+  });
+
+  // ═══════════════════════════════════════════════
+  // 智偉哥預處理引擎 — 通殺各情境的核心
+  // ═══════════════════════════════════════════════
+  function preProcess({ name, age, group, pain, status, finance, target, extra, support, keyman, lastResult }) {
+    const p = ((pain || '') + ' ' + (extra || '') + ' ' + (status || '')).toLowerCase();
+    const g = (group || '').toLowerCase();
+    const f = (finance || '').toLowerCase();
+    const t = (target || '');
+
+    // ── 1. 客戶心理翻譯（從客戶身體出發）──
+    let realBlock = '';
+    const g_type = (group || '').toLowerCase();
+    if (p.includes('前夫') || p.includes('離婚') || p.includes('分居') || p.includes('前妻')) {
+      realBlock = '內心獨白：「我不是不想動，我是怕被說自私、怕孩子怪我。我需要一個讓我覺得「這樣做是為了孩子好」的理由，才敢開口。不是錢的問題，是罪惡感的問題。」\n→ 業務不要談數字，先幫她說出那個她說不出口的理由。';
+    } else if (p.includes('媽媽反對') || p.includes('家人反對') || p.includes('爸爸不同意') || g_type.includes('問媽媽')) {
+      realBlock = '內心獨白：「我其實自己也還沒想清楚，把媽媽搬出來是在替自己爭取時間。我怕買了以後媽媽唸我一輩子。但我更怕讓媽媽失望。」\n→ 不批評媽媽，幫他分清楚「媽媽是精神支持還是實際出資者」，讓他自己說出媽媽的真實角色。';
+    } else if (p.includes('股票') || p.includes('etf') || g_type.includes('股票') || g_type.includes('槓桿')) {
+      realBlock = '內心獨白：「我對股票熟，我不熟房地產，你說的道理我聽懂了，但我還是怕「被說服」——我要的是自己算出來的決定，不是被推著做的。」\n→ 不要跟他比報酬率（他贏定了），要比的是「用同樣的錢能控制多大的資產」，讓他自己算出來。';
+    } else if ((p.includes('租') || p.includes('無殼') || g_type.includes('無殼') || g_type.includes('退休焦慮')) && (p.includes('存款') || p.includes('不夠') || p.includes('100萬'))) {
+      realBlock = '內心獨白：「我都快50了還在租房，我知道我焦慮，但我以為100萬不到什麼都做不了，所以我還在等——等到什麼時候我自己也不知道。」\n→ 釘時間壓力，讓她自己算出退休缺口，再用「100萬可以控制800萬資產」破神經鏈。';
+    } else if (g_type.includes('家族') || g_type.includes('合資') || p.includes('姊姊') || p.includes('哥哥') || p.includes('合資')) {
+      realBlock = '內心獨白：「我自己想定案，但我不確定家人/合資方會不會臨時反悔。我表面上說「等一下」，其實是在等一個永遠不會自動到來的確認。」\n→ 不讓客戶回去轉述，把出資方約到現場，三關（資金/決策/時間）逐一確認再推進。';
+    } else if (p.includes('爛尾') || p.includes('虧損') || p.includes('被騙') || g_type.includes('爛尾')) {
+      realBlock = '內心獨白：「我晚上睡不著，我偷偷自責，我怕再做錯一次。但我也知道繼續等也在虧。我需要有人承認我不是傻瓜，而不是急著幫我解套。」\n→ 先肯定她過去買對的那筆，再把沉沒成本圈起來「先停、走法律流程」，把下一步放到新的機會上。';
+    } else if (g_type.includes('負債') || p.includes('沒錢') || p.includes('負債')) {
+      realBlock = '內心獨白：「我說「沒錢」，但其實我不是沒錢，我是不敢面對數字，我怕再一次讓家人失望，用「沒錢」保護自己不必承認扛不起。」\n→ 不跟他吵有沒有錢，先問「你真正想換到的結果是什麼」，再一起把負債結構拆開看。';
+    } else if (p.includes('自住') && p.includes('投資') || g_type.includes('拉扯')) {
+      realBlock = '內心獨白：「我嘴上說在考慮，其實心裡已經有傾向了，我只是需要一個「這樣想是對的」的認可。你直接問我選哪個，我反而說不出來。」\n→ 不替他做決定，讓他自己說出傾向，再給一個「理由支撐他的直覺」。';
+    } else if (p.includes('白嫖') || g_type.includes('白嫖') || p.includes('問問')) {
+      realBlock = '內心獨白：「我信任你們夠專業，但我還沒打算付出什麼，我想先用關係換免費資源，再看看值不值得合作。」\n→ 不給任何免費資源，用反問讓她自己說出「只有合作客戶才能用到這個資源」，結論要從她嘴巴出來。';
+    } else if (p.includes('已讀不回') || p.includes('沒回') || g_type.includes('已讀')) {
+      realBlock = '內心獨白：「我有興趣但不急，你越追我越想躲，你一講研討會我就聯想到被推銷。我在等一個讓我好奇想主動開口的理由。」\n→ 丟鉤子不追問，讓他好奇自己回；他一回才收3個情報，不要問開放式問題。';
+    } else if (p.includes('裝修') || g_type.includes('裝修')) {
+      realBlock = '內心獨白：「我用「裝修」包裝是因為我說不清楚自己真正想要什麼，其實我想要一個自己的家，但我不敢直說，也怕老公否決。」\n→ 不接裝修假議題，用「小病變大病」讓她自己看到拖延的代價（居住→夫妻關係→小孩）。';
+    } else {
+      realBlock = '卡點需要業務出門前確認——先問「你現在最不確定的是哪一塊」，再問「如果這件事今天解決了，你最想得到什麼答案」。不能靠猜，猜了就是業務視角不是客戶視角。';
     }
 
     // ── 2. 財務真相 ──
@@ -1269,45 +2368,53 @@ function pickCustomer(jsonStr) {
   _crmSelectedId = c.id;
   _crmSelectedName = c.customerName || '';
 
-  const sv = (id, val) => { const el = document.getElementById(id); if(el && val) el.value = val; };
+  // sv：不管 val 是否為空都寫入（避免空值不觸發）
+  const sv = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.value = val || '';
+  };
 
-  // ── 基本資料 ──
-  sv('name', c.customerName || '');
-  sv('age',  c.customerAge  || '');
+  // ── 姓名、年齡 ──
+  sv('name', c.customerName);
+  sv('age',  c.customerAge);
 
-  // ── 目前狀況：組合研討會、信任度、購買時程 ──
+  // ── 目前狀況 ──
   const statusParts = [];
   if (c.seminarAttended)    statusParts.push('研討會：' + c.seminarAttended);
   if (c.currentStatus)      statusParts.push('信任度：' + c.currentStatus);
   if (c.buyingTimeline)     statusParts.push('購買時程：' + c.buyingTimeline);
   if (c.lastFollowupResult) statusParts.push('上次互動：' + c.lastFollowupResult);
-  if (c.livingStatus)       statusParts.push('居住狀況：' + c.livingStatus);
-  if (statusParts.length) { const el = document.getElementById('status'); if(el) el.value = statusParts.join('｜'); }
+  if (c.livingStatus)       statusParts.push('居住：' + c.livingStatus);
+  sv('status', statusParts.join('｜'));
 
   // ── Keyman ──
-  sv('keyman', c.keyMan || '');
+  sv('keyman', c.keyMan);
 
-  // ── 財務：組合預算、月付、居住、購買目的 ──
+  // ── 財務 ──
   const finParts = [];
   if (c.purchasePurpose)   finParts.push('購買目的：' + c.purchasePurpose);
+  if (c.livingStatus)      finParts.push('居住：' + c.livingStatus);
+  if (c.familyMembers)     finParts.push('家庭：' + c.familyMembers);
   if (c.budget)            finParts.push('預算：' + c.budget);
-  if (c.monthlyPayment)    finParts.push('可負擔月付：' + c.monthlyPayment);
+  if (c.monthlyPayment)    finParts.push('月付上限：' + c.monthlyPayment);
   if (c.mtg_monthlyIncome) finParts.push('月收入：' + c.mtg_monthlyIncome);
-  if (c.livingStatus)      finParts.push('目前居住：' + c.livingStatus);
-  if (c.familyMembers)     finParts.push('家庭成員：' + c.familyMembers);
-  if (finParts.length) { const el = document.getElementById('finance'); if(el) el.value = finParts.join('，'); }
+  sv('finance', finParts.join('，'));
 
-  // ── 痛點：painPointsNote 為主，painPoints 為輔 ──
-  const painVal = [c.painPointsNote, c.painPoints].filter(Boolean).join('；');
-  sv('pain', painVal);
+  // ── 痛點 ──
+  const painParts = [];
+  if (c.painPointsNote) painParts.push(c.painPointsNote);
+  if (c.painPoints)     painParts.push(c.painPoints);
+  if (c.decisionBlock)  painParts.push(c.decisionBlock);
+  sv('pain', painParts.join('；'));
 
   // ── 上次跟進結果 ──
-  sv('lastResult', c.lastFollowupResult || '');
+  sv('lastResult', c.lastFollowupResult);
 
-  // ── 補充說明：帶入下次跟進行動 ──
-  sv('extra', c.nextFollowupAction ? c.nextFollowupAction.split('\n')[0] : '');
+  // ── 補充說明（下次跟進行動第一行）──
+  sv('extra', c.nextFollowupAction ? c.nextFollowupAction.split('
+')[0] : '');
 
-  // ── 族群 chip（clientSegment 是精準欄位）──
+  // ── 族群 chip ──
   selectedChips = [];
   document.querySelectorAll('#groupChips .chip').forEach(ch => ch.classList.remove('active'));
   const seg = c.clientSegment || '';
@@ -1326,17 +2433,21 @@ function pickCustomer(jsonStr) {
     }
   }
 
-  // ── 家人支持度（familySupport 帶有 emoji，用 includes 比對）──
+  // ── 家人支持度 ──
   const sup = c.familySupport || '';
   if (sup) {
     document.querySelectorAll('#supportToggle .toggle-btn').forEach(btn => {
       const label = btn.textContent.trim();
       if (label.includes('支持') && sup.includes('支持')) setSupport(btn, '支持', 'active-yes');
       else if (label.includes('反對') && sup.includes('反對')) setSupport(btn, '反對', 'active-no');
-      else if (label.includes('不清楚') && (sup.includes('不清楚') || sup.includes('觀望') || sup.includes('未知'))) setSupport(btn, '不清楚', 'active-neutral');
+      else if (label.includes('不清楚') || sup.includes('觀望') || sup.includes('不清楚') || sup.includes('未知')) {
+        if (label.includes('不清楚')) setSupport(btn, '不清楚', 'active-neutral');
+      }
     });
   }
 
+  // 滾回頂部讓使用者看到帶入結果
+  window.scrollTo({ top: 0, behavior: 'smooth' });
   showError_coach('✅ 已帶入 ' + (c.customerName || '') + ' 的資料，請確認後送出', true);
 }
 
