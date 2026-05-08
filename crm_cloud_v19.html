@@ -416,6 +416,81 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
   .stats-grid { gap: .375rem; }
 }
 
+/* ══════════════════════════════════════════════
+   ⚡ 快速建檔區塊 v27
+   ══════════════════════════════════════════════ */
+.quick-intake {
+  background: linear-gradient(135deg,#07192d 0%,#0f2744 60%,#1a3a5c 100%);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 8px 32px rgba(7,25,45,.25), 0 0 0 1px rgba(201,168,76,.2);
+}
+.quick-intake-header {
+  display: flex; align-items: center; gap: .75rem; margin-bottom: 1rem;
+}
+.quick-intake-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: linear-gradient(135deg,#c9a84c,#f0d080);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+  box-shadow: 0 3px 10px rgba(184,150,46,.4);
+}
+.quick-intake-title { font-size: 15px; font-weight: 700; color: #fff; }
+.quick-intake-sub { font-size: 11px; color: rgba(255,255,255,.55); margin-top: 2px; }
+
+.qi-section { margin-bottom: 1rem; }
+.qi-label {
+  font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  color: rgba(201,168,76,.9); margin-bottom: .5rem;
+}
+.qi-phone {
+  width: 100%; padding: .75rem 1rem;
+  background: rgba(255,255,255,.08); border: 1.5px solid rgba(201,168,76,.3);
+  border-radius: var(--radius-sm); color: #fff; font-size: 16px;
+  font-family: inherit; outline: none; transition: .2s;
+  -webkit-appearance: none;
+}
+.qi-phone::placeholder { color: rgba(255,255,255,.3); }
+.qi-phone:focus { border-color: var(--gold); background: rgba(255,255,255,.12); box-shadow: 0 0 0 3px rgba(201,168,76,.2); }
+
+.qi-btns { display: flex; flex-wrap: wrap; gap: .4rem; }
+.qi-btn {
+  padding: .45rem .85rem; border-radius: 20px; font-size: 12.5px; font-weight: 500;
+  border: 1.5px solid rgba(255,255,255,.18); background: rgba(255,255,255,.07);
+  color: rgba(255,255,255,.75); cursor: pointer; transition: all .18s;
+  font-family: inherit; white-space: nowrap;
+}
+.qi-btn:hover { background: rgba(255,255,255,.15); border-color: rgba(255,255,255,.4); color: #fff; }
+.qi-btn.selected {
+  background: linear-gradient(135deg,#c9a84c,#f0d080);
+  border-color: transparent; color: #07192d; font-weight: 700;
+  box-shadow: 0 3px 10px rgba(184,150,46,.4);
+}
+
+.qi-submit {
+  width: 100%; padding: .875rem; border-radius: var(--radius-sm);
+  background: linear-gradient(135deg,#c9a84c 0%,#f0d080 50%,#b8962e 100%);
+  color: #07192d; font-size: 15px; font-weight: 700; font-family: inherit;
+  border: none; cursor: pointer; margin-top: .25rem;
+  box-shadow: 0 4px 16px rgba(184,150,46,.4);
+  transition: transform .15s, box-shadow .15s;
+}
+.qi-submit:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(184,150,46,.5); }
+.qi-submit:active { transform: scale(.98); }
+.qi-submit:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+.qi-divider {
+  display: flex; align-items: center; gap: .75rem; margin: 1.25rem 0 1rem;
+}
+.qi-divider-line { flex: 1; height: 1px; background: var(--cream2); }
+.qi-divider-text { font-size: 11px; color: var(--text-muted); white-space: nowrap; letter-spacing: .08em; }
+
+@media(max-width:640px){
+  .qi-btn { font-size: 11.5px; padding: .4rem .7rem; }
+  .quick-intake { padding: 1rem; }
+}
+
 
 
 
@@ -1120,6 +1195,106 @@ function claimSeminarLead() {}
     <div id="newCustomer" class="page">
       <div class="alert alert-success" id="successAlert">✅ 客戶資料已成功儲存並同步到雲端！</div>
       <form id="customerForm">
+
+        <!-- ⚡ 快速建檔區塊 -->
+        <div class="quick-intake" id="quickIntakeCard">
+          <div class="quick-intake-header">
+            <div class="quick-intake-icon">⚡</div>
+            <div>
+              <div class="quick-intake-title">快速建檔 · 30秒完成</div>
+              <div class="quick-intake-sub">按按鈕選，最後填手機，完成</div>
+            </div>
+          </div>
+
+          <!-- 手機號碼 -->
+          <div class="qi-section">
+            <div class="qi-label">📱 客戶手機號碼</div>
+            <input class="qi-phone" type="tel" id="qi_phone" placeholder="09XX-XXX-XXX" maxlength="12">
+          </div>
+
+          <!-- 客戶類型 -->
+          <div class="qi-section">
+            <div class="qi-label">🎭 客戶類型（選一個最像的）</div>
+            <div class="qi-btns" id="qi_type_btns">
+              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'問問族')">問問族</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'格局族')">格局族</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'價格族')">價格族</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'面積族')">面積族</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'投資族')">投資族</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'自住安全感族')">自住安全感族</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'風險族')">風險族</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'退訂邊緣族')">退訂邊緣族</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'股票族')">股票族</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'問媽媽族')">問媽媽族</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'無殼族')">無殼族</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'合資族')">合資族</button>
+            </div>
+          </div>
+
+          <!-- 購屋目的 -->
+          <div class="qi-section">
+            <div class="qi-label">🏠 購屋目的</div>
+            <div class="qi-btns" id="qi_purpose_btns">
+              <button type="button" class="qi-btn" onclick="qiSelect('purpose',this,'自住')">🏠 自住</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('purpose',this,'投資')">💰 投資</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('purpose',this,'自住兼投資')">🏠💰 自住兼投資</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('purpose',this,'以租養房')">🏢 以租養房</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('purpose',this,'退休安置')">👴 退休安置</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('purpose',this,'傳承規劃')">🎁 傳承規劃</button>
+            </div>
+          </div>
+
+          <!-- 資金區間 -->
+          <div class="qi-section">
+            <div class="qi-label">💰 自備款區間</div>
+            <div class="qi-btns" id="qi_budget_btns">
+              <button type="button" class="qi-btn" onclick="qiSelect('budget',this,'100萬以下')">100萬以下</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('budget',this,'100–300萬')">100–300萬</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('budget',this,'300–500萬')">300–500萬</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('budget',this,'500–800萬')">500–800萬</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('budget',this,'800萬以上')">800萬以上</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('budget',this,'不確定')">不確定</button>
+            </div>
+          </div>
+
+          <!-- 當前障礙 -->
+          <div class="qi-section">
+            <div class="qi-label">🚧 當前最大障礙（可多選）</div>
+            <div class="qi-btns" id="qi_block_btns">
+              <button type="button" class="qi-btn" onclick="qiToggle('block',this,'需要問家人')">需要問家人</button>
+              <button type="button" class="qi-btn" onclick="qiToggle('block',this,'覺得時機未到')">覺得時機未到</button>
+              <button type="button" class="qi-btn" onclick="qiToggle('block',this,'頭期款不足')">頭期款不足</button>
+              <button type="button" class="qi-btn" onclick="qiToggle('block',this,'擔心貸款問題')">擔心貸款問題</button>
+              <button type="button" class="qi-btn" onclick="qiToggle('block',this,'股票還沒出場')">股票還沒出場</button>
+              <button type="button" class="qi-btn" onclick="qiToggle('block',this,'觀念未對齊')">觀念未對齊</button>
+              <button type="button" class="qi-btn" onclick="qiToggle('block',this,'不想欠人情')">不想欠人情</button>
+              <button type="button" class="qi-btn" onclick="qiToggle('block',this,'數字安全感不足')">數字安全感不足</button>
+            </div>
+          </div>
+
+          <!-- 購買時間軸 -->
+          <div class="qi-section">
+            <div class="qi-label">⏳ 購買時間軸</div>
+            <div class="qi-btns" id="qi_timeline_btns">
+              <button type="button" class="qi-btn" onclick="qiSelect('timeline',this,'1個月內')">1個月內</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('timeline',this,'3個月內')">3個月內</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('timeline',this,'半年內')">半年內</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('timeline',this,'1年以上')">1年以上</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('timeline',this,'純詢問觀望')">純詢問觀望</button>
+            </div>
+          </div>
+
+          <button type="button" class="qi-submit" id="qi_submit_btn" onclick="quickIntakeSave()">
+            ⚡ 建檔完成 · 帶出對應話術
+          </button>
+        </div>
+
+        <div class="qi-divider">
+          <div class="qi-divider-line"></div>
+          <div class="qi-divider-text">▼ 詳細資料（選填，讓 AI 更精準）</div>
+          <div class="qi-divider-line"></div>
+        </div>
+
         <div class="form-group highlight">
           <label>👨‍💼 負責業務 *</label>
           <select id="salesPerson" required></select>
@@ -1371,24 +1546,20 @@ function claimSeminarLead() {}
               <div class="form-group field-required">
                 <label>🏷️ 客戶族群（主要）</label>
                 <select id="clientSegment" onchange="updatePainPointsBySegment()">
-                  <option value="">請選擇族群</option>
-                  <optgroup label="💼 資產條件">
-                    <option value="新鮮人">🟡 新鮮人（剛出社會、首購）</option>
-                    <option value="雙薪無殼">👫 雙薪無殼（收入不低但未買）</option>
-                    <option value="月光族">🔵 月光族（存款少、現金流緊）</option>
-                    <option value="高資產">🔴 高資產（多筆資產、升級配置）</option>
-                    <option value="退休規劃">🌅 退休規劃族（55歲以上）</option>
-                  </optgroup>
-                  <optgroup label="🏠 居住狀態">
-                    <option value="租屋族">🟠 租屋族（長期租房）</option>
-                    <option value="有老屋">🟢 有老屋族（舊屋換新）</option>
-                    <option value="換屋族">🔄 換屋族（已有房要換）</option>
-                    <option value="地緣組">📍 地緣組（只買熟悉區域）</option>
-                  </optgroup>
-                  <optgroup label="💰 投資偏好">
-                    <option value="股票族">📈 股票族（資產多元配置）</option>
-                    <option value="定存族">🏦 定存族（保守理財）</option>
-                    <option value="包租公">🏢 包租公/婆（以租養房）</option>
+                  <option value="">請選擇客戶類型</option>
+                  <optgroup label="🎭 12種客戶原型">
+                    <option value="問問族">❓ 問問族（背後有障礙物人物）</option>
+                    <option value="格局族">🏆 格局族（家族動力卡關）</option>
+                    <option value="價格族">💲 價格族（數字安全感不足）</option>
+                    <option value="面積族">📐 面積族（對坪數格局有執著）</option>
+                    <option value="投資族">📈 投資族（目標不清或有隱傷）</option>
+                    <option value="自住安全感族">🏠 自住安全感族（觀念未對齊）</option>
+                    <option value="風險族">⚠️ 風險族（擔心市場風險）</option>
+                    <option value="退訂邊緣族">🚪 退訂邊緣族（觀念未對齊）</option>
+                    <option value="股票族">📊 股票族（換標的邏輯未建立）</option>
+                    <option value="問媽媽族">👨‍👩‍👧 問媽媽族（需要對家人的說詞）</option>
+                    <option value="無殼族">🏚️ 無殼族（情緒焦慮＋起步太晚感）</option>
+                    <option value="合資族">🤝 合資族（第三方變數）</option>
                   </optgroup>
                 </select>
               </div>
@@ -1423,71 +1594,54 @@ function claimSeminarLead() {}
               <div class="ms-wrap" id="ms_painPoint">
                 <div class="ms-display" onclick="toggleMs('ms_painPoint')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div>
                 <div class="ms-dropdown" id="painPointDropdown">
-                  <div class="ms-group">🟡 新鮮人</div>
-                  <label class="ms-opt"><input type="checkbox" value="新鮮人-趕不上通膨">薪水漲幅趕不上房價通膨</label>
-                  <label class="ms-opt"><input type="checkbox" value="新鮮人-想有自己空間">想要有自己的空間、不再與家人同住</label>
-                  <label class="ms-opt"><input type="checkbox" value="新鮮人-包租公夢想">想實踐包租公夢想、以房養房</label>
-                  <label class="ms-opt"><input type="checkbox" value="新鮮人-父母催促">父母希望盡早置產、有家的感覺</label>
-                  <label class="ms-opt"><input type="checkbox" value="新鮮人-貸款不確定">不確定自己能貸多少、害怕貸不到</label>
-                  <div class="ms-group">👫 雙薪無殼</div>
-                  <label class="ms-opt"><input type="checkbox" value="雙薪-一直看一直沒買">一直在看房，但沒有採取行動</label>
-                  <label class="ms-opt"><input type="checkbox" value="雙薪-兩人意見不一">另一半對買房看法不同、難以決策</label>
-                  <label class="ms-opt"><input type="checkbox" value="雙薪-覺得還可以等">總覺得時機未到、房價會跌</label>
-                  <label class="ms-opt"><input type="checkbox" value="雙薪-生活品質優先">習慣花費享受，難以存頭期款</label>
-                  <label class="ms-opt"><input type="checkbox" value="雙薪-租房很方便">覺得租房方便，沒有強烈購屋動力</label>
-                  <div class="ms-group">🔵 月光族</div>
-                  <label class="ms-opt"><input type="checkbox" value="月光族-醫療支出風險">家人醫療支出佔大宗，難以存錢</label>
-                  <label class="ms-opt"><input type="checkbox" value="月光族-投資失利">曾有投資失利，對高風險資產有陰影</label>
-                  <label class="ms-opt"><input type="checkbox" value="月光族-夢想現實落差">心中有理想的家，但現實條件差距大</label>
-                  <label class="ms-opt"><input type="checkbox" value="月光族-無被動收入">若失業只能靠勞動，沒有被動收入保障</label>
-                  <label class="ms-opt"><input type="checkbox" value="月光族-頭期款壓力">頭期款準備不足，需要父母協助或分期</label>
-                  <div class="ms-group">🔴 高資產</div>
-                  <label class="ms-opt"><input type="checkbox" value="高資產-資產升級">現有物件格局或地段不符期待，想升級</label>
-                  <label class="ms-opt"><input type="checkbox" value="高資產-傳承規劃">考慮子女未來，提前做資產傳承</label>
-                  <label class="ms-opt"><input type="checkbox" value="高資產-名字問題">持有人名字可能非本人，有稅務考量</label>
-                  <label class="ms-opt"><input type="checkbox" value="高資產-閒置資金">手中有大量閒置資金，需要找出路</label>
-                  <label class="ms-opt"><input type="checkbox" value="高資產-分散風險">資產過度集中單一項目，需要分散</label>
-                  <div class="ms-group">🌅 退休規劃</div>
-                  <label class="ms-opt"><input type="checkbox" value="退休-養老安置">考慮退休後的居住品質與便利性</label>
-                  <label class="ms-opt"><input type="checkbox" value="退休-以租養老">希望透過收租彌補退休金不足</label>
-                  <label class="ms-opt"><input type="checkbox" value="退休-留給子女">不想讓子女為房子問題煩惱</label>
-                  <label class="ms-opt"><input type="checkbox" value="退休-醫療資金">擔心醫療費用，希望有固定收入來源</label>
-                  <div class="ms-group">🟢 有老屋</div>
-                  <label class="ms-opt"><input type="checkbox" value="有老屋-爬樓梯不便">上下爬樓梯不便，影響日常生活</label>
-                  <label class="ms-opt"><input type="checkbox" value="有老屋-結構安全">老屋結構老化，居住安全有疑慮</label>
-                  <label class="ms-opt"><input type="checkbox" value="有老屋-格局過時">格局設計老舊，不符合現代生活需求</label>
-                  <label class="ms-opt"><input type="checkbox" value="有老屋-維修費高">老屋維修費用持續增加</label>
-                  <label class="ms-opt"><input type="checkbox" value="有老屋-價值停滯">老屋增值空間有限，想換有潛力的標的</label>
-                  <div class="ms-group">🔄 換屋族</div>
-                  <label class="ms-opt"><input type="checkbox" value="換屋-空間不夠">家庭成員增加，現有空間不敷使用</label>
-                  <label class="ms-opt"><input type="checkbox" value="換屋-學區需求">孩子入學，需要搬到特定學區</label>
-                  <label class="ms-opt"><input type="checkbox" value="換屋-工作地點變動">換工作或公司搬遷，通勤距離太遠</label>
-                  <label class="ms-opt"><input type="checkbox" value="換屋-想要更好環境">想搬到更好的社區或生活環境</label>
-                  <div class="ms-group">🟠 租屋族</div>
-                  <label class="ms-opt"><input type="checkbox" value="租屋-房東問題">房東問題：臨時漲租、要求搬遷</label>
-                  <label class="ms-opt"><input type="checkbox" value="租屋-年齡越大越難">年齡越大租屋越困難，被房東挑選</label>
-                  <label class="ms-opt"><input type="checkbox" value="租屋-房價上漲無份">房價上漲與自己無關，越租越輸</label>
-                  <label class="ms-opt"><input type="checkbox" value="租屋-無法裝潢">租房無法按自己喜好裝潢，住起來不像家</label>
-                  <label class="ms-opt"><input type="checkbox" value="租屋-租金浪費">每月租金等於幫房東繳貸款</label>
-                  <div class="ms-group">📍 地緣組</div>
-                  <label class="ms-opt"><input type="checkbox" value="地緣-只信任熟悉區域">只願意在熟悉的生活圈購買，不考慮其他區域</label>
-                  <label class="ms-opt"><input type="checkbox" value="地緣-已有多間同區">已在同區域持有多筆，熟悉當地行情</label>
-                  <label class="ms-opt"><input type="checkbox" value="地緣-在地人脈資源">該區域有人脈或生意，方便管理出租</label>
-                  <label class="ms-opt"><input type="checkbox" value="地緣-熟悉增值潛力">對該區域未來發展有信心、押注特定重劃區</label>
-                  <div class="ms-group">📈 股票族</div>
-                  <label class="ms-opt"><input type="checkbox" value="股票-資產多元配置">資產過度集中股票，想多元配置降低風險</label>
-                  <label class="ms-opt"><input type="checkbox" value="股票-股市波動大">股市波動讓人焦慮，不動產相對穩定</label>
-                  <label class="ms-opt"><input type="checkbox" value="股票-獲利出場需求">股票大賺一波，想把獲利轉到實體資產</label>
-                  <label class="ms-opt"><input type="checkbox" value="股票-槓桿操作興趣">理解槓桿操作，對房貸槓桿邏輯感興趣</label>
-                  <div class="ms-group">🏦 定存族</div>
-                  <label class="ms-opt"><input type="checkbox" value="定存-通膨侵蝕">通膨侵蝕購買力，定存利率跑不贏通膨</label>
-                  <label class="ms-opt"><input type="checkbox" value="定存-資金閒置">資金長期閒置，沒有好的出路</label>
-                  <label class="ms-opt"><input type="checkbox" value="定存-保守但想成長">個性保守，但也知道不能只靠定存</label>
-                  <div class="ms-group">🏢 包租公/婆</div>
-                  <label class="ms-opt"><input type="checkbox" value="包租-以房養房邏輯">想用租金收入繳房貸，實現以房養房</label>
-                  <label class="ms-opt"><input type="checkbox" value="包租-被動收入目標">設定每月被動收入目標，用收租達成</label>
-                  <label class="ms-opt"><input type="checkbox" value="包租-管理多間有經驗">已有出租經驗，想擴大規模</label>
-                  <label class="ms-opt"><input type="checkbox" value="包租-小資產大槓桿">資金有限，想用小頭期款槓桿更大資產</label>
+                  <div class="ms-group">❓ 問問族</div>
+                  <label class="ms-opt"><input type="checkbox" value="問問-背後有障礙物人物">背後有真正的決策者還沒出現</label>
+                  <label class="ms-opt"><input type="checkbox" value="問問-問完不回應">問了很多問題但後續沒有行動</label>
+                  <label class="ms-opt"><input type="checkbox" value="問問-資訊蒐集型">喜歡蒐集資訊、尚未準備好決策</label>
+                  <div class="ms-group">🏆 格局族</div>
+                  <label class="ms-opt"><input type="checkbox" value="格局-家族動力卡關">家族動力是卡關點，需要整體說服</label>
+                  <label class="ms-opt"><input type="checkbox" value="格局-想要更好但不知路徑">知道要升級，但不清楚路徑</label>
+                  <label class="ms-opt"><input type="checkbox" value="格局-面子問題">有面子考量，不想讓人覺得買不起</label>
+                  <div class="ms-group">💲 價格族</div>
+                  <label class="ms-opt"><input type="checkbox" value="價格-數字安全感不足">對數字沒有安全感，需要反覆確認</label>
+                  <label class="ms-opt"><input type="checkbox" value="價格-一直殺價">習慣議價，認為一定有空間</label>
+                  <label class="ms-opt"><input type="checkbox" value="價格-比較多個物件">不斷比較，難以下決定</label>
+                  <div class="ms-group">📐 面積族</div>
+                  <label class="ms-opt"><input type="checkbox" value="面積-對坪數有執著">對坪數有固定要求，難以妥協</label>
+                  <label class="ms-opt"><input type="checkbox" value="面積-格局不符需求">現有物件格局不符期待</label>
+                  <label class="ms-opt"><input type="checkbox" value="面積-公設比疑慮">對公設比有疑慮</label>
+                  <div class="ms-group">📈 投資族</div>
+                  <label class="ms-opt"><input type="checkbox" value="投資-目標不清楚">投資目標不清楚或有隱性傷痛</label>
+                  <label class="ms-opt"><input type="checkbox" value="投資-報酬率計算卡關">對投報率計算有疑問</label>
+                  <label class="ms-opt"><input type="checkbox" value="投資-資產過度集中">資產過度集中單一項目</label>
+                  <div class="ms-group">🏠 自住安全感族</div>
+                  <label class="ms-opt"><input type="checkbox" value="自住-觀念未對齊">買房觀念與家人未對齊</label>
+                  <label class="ms-opt"><input type="checkbox" value="自住-覺得還可以等">總覺得時機未到</label>
+                  <label class="ms-opt"><input type="checkbox" value="自住-擔心買錯">怕買錯位置或物件後悔</label>
+                  <div class="ms-group">⚠️ 風險族</div>
+                  <label class="ms-opt"><input type="checkbox" value="風險-擔心市場下跌">擔心買了之後房價下跌</label>
+                  <label class="ms-opt"><input type="checkbox" value="風險-貸款壓力">擔心貸款壓力太大</label>
+                  <label class="ms-opt"><input type="checkbox" value="風險-景氣不確定">對整體經濟景氣感到不確定</label>
+                  <div class="ms-group">🚪 退訂邊緣族</div>
+                  <label class="ms-opt"><input type="checkbox" value="退訂-觀念未對齊">原本有意願，但觀念動搖中</label>
+                  <label class="ms-opt"><input type="checkbox" value="退訂-外部影響">受到外部聲音影響（親友、新聞）</label>
+                  <label class="ms-opt"><input type="checkbox" value="退訂-情緒冷卻">熱情降低，需要重新點燃動力</label>
+                  <div class="ms-group">📊 股票族</div>
+                  <label class="ms-opt"><input type="checkbox" value="股票-換標邏輯未建立">股票轉房地產的換標邏輯還沒建立</label>
+                  <label class="ms-opt"><input type="checkbox" value="股票-資產沒出場">股票還沒出場，資金卡住</label>
+                  <label class="ms-opt"><input type="checkbox" value="股票-習慣高流動性">習慣股票的高流動性，不習慣不動產</label>
+                  <div class="ms-group">👨‍👩‍👧 問媽媽族</div>
+                  <label class="ms-opt"><input type="checkbox" value="問媽-需要對家人說詞">需要能說服家人的話術</label>
+                  <label class="ms-opt"><input type="checkbox" value="問媽-家人反對">家人明確反對，需要攻略</label>
+                  <label class="ms-opt"><input type="checkbox" value="問媽-keyman未出現">真正的決策者還沒參與討論</label>
+                  <div class="ms-group">🏚️ 無殼族</div>
+                  <label class="ms-opt"><input type="checkbox" value="無殼-情緒焦慮">有焦慮感，覺得起步太晚</label>
+                  <label class="ms-opt"><input type="checkbox" value="無殼-頭期款不足">頭期款準備不足</label>
+                  <label class="ms-opt"><input type="checkbox" value="無殼-每月租金浪費感">每月繳租金有浪費感但還沒行動</label>
+                  <div class="ms-group">🤝 合資族</div>
+                  <label class="ms-opt"><input type="checkbox" value="合資-第三方變數">有第三方（親友、合夥人）需要溝通</label>
+                  <label class="ms-opt"><input type="checkbox" value="合資-分配不清楚">合資條件和分配方式還沒談清楚</label>
+                  <label class="ms-opt"><input type="checkbox" value="合資-信任問題">合資對象之間有信任問題需處理</label>
                 </div>
               </div>
             </div>
@@ -5300,6 +5454,77 @@ function fillFormFromVoice(data) {
   }
 }
 
+
+// ══════════════════════════════════════════════
+// ⚡ 快速建檔邏輯 v27
+// ══════════════════════════════════════════════
+var _qi = { type: null, purpose: null, budget: null, block: [], timeline: null };
+
+function qiSelect(group, btn, val) {
+  // 單選：清除同組所有 selected
+  var container = btn.parentElement;
+  container.querySelectorAll('.qi-btn').forEach(function(b){ b.classList.remove('selected'); });
+  btn.classList.add('selected');
+  _qi[group] = val;
+}
+
+function qiToggle(group, btn, val) {
+  // 多選
+  if (btn.classList.contains('selected')) {
+    btn.classList.remove('selected');
+    _qi[group] = _qi[group].filter(function(v){ return v !== val; });
+  } else {
+    btn.classList.add('selected');
+    _qi[group].push(val);
+  }
+}
+
+function quickIntakeSave() {
+  var phone = document.getElementById('qi_phone').value.trim();
+  if (!phone) { showToast('⚠️ 請填入客戶手機號碼'); return; }
+  if (!_qi.type) { showToast('⚠️ 請選擇客戶類型'); return; }
+
+  var btn = document.getElementById('qi_submit_btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ 建檔中...';
+
+  var sp = document.getElementById('salesPerson') ? document.getElementById('salesPerson').value : '';
+  var today = new Date().toISOString().split('T')[0];
+
+  var c = {
+    salesPerson: sp || (window.currentUser || ''),
+    customerName: _qi.type + '客戶',
+    contactInfo: phone,
+    clientSegment: _qi.type || '',
+    purchasePurpose: _qi.purpose || '',
+    budget: _qi.budget || '',
+    buyingTimeline: _qi.timeline || '',
+    painPoints: _qi.block.join('、'),
+    creationDate: today,
+    customerActive: '進行中',
+    notes: '【快速建檔】類型：' + (_qi.type||'') + '｜目的：' + (_qi.purpose||'') + '｜資金：' + (_qi.budget||'') + '｜障礙：' + (_qi.block.join('、')||'未填') + '｜時間軸：' + (_qi.timeline||'未填'),
+    _quickIntake: true
+  };
+
+  callAPI({ action: 'save', customer: c }, function(res) {
+    btn.disabled = false;
+    btn.textContent = '⚡ 建檔完成 · 帶出對應話術';
+    if (res.success) {
+      showToast('✅ 快速建檔成功！');
+      // 重設快速建檔區塊
+      document.getElementById('qi_phone').value = '';
+      document.querySelectorAll('.qi-btn.selected').forEach(function(b){ b.classList.remove('selected'); });
+      _qi = { type: null, purpose: null, budget: null, block: [], timeline: null };
+      // 更新客戶列表
+      fetchCustomers();
+      // 跳到客戶列表頁
+      var listTab = document.querySelector('[onclick*="customerList"]') || document.querySelector('[onclick*="clientList"]');
+      if (listTab) listTab.click();
+    } else {
+      showToast('❌ 建檔失敗：' + (res.error || '請再試一次'));
+    }
+  });
+}
 
 function saveCustomer() {
   // ── 資料完整度提醒 ──
