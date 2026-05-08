@@ -310,7 +310,6 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
     </div>
     <div class="count-badge">共 <span id="totalCnt">141</span> 筆</div>
     <button class="ai-btn" onclick="openAiModal()">🤖 AI 顧問</button>
-    <button class="ai-btn" onclick="openApiKeyModal()" style="background:var(--surface2);border:1px solid var(--border);color:var(--text-sub);" title="設定 Anthropic API Key（考試院 · 跟進報告 · AI 顧問 需要）">🔑 API Key</button>
     <button class="ai-btn" id="syncBtn" onclick="syncLibToKV()" style="background:linear-gradient(135deg,#B8943C,#a07d2e);" title="把最新話術庫同步到 AI 系統">☁️ 同步話術庫</button>
   </div>
 </header>
@@ -617,55 +616,17 @@ function init() {
 }
 
 
-// ── API Key 管理 ──
-const API_KEY_STORAGE = 'futime_anthropic_key';
+// ── API Key（團隊共用，直接內建）──
+// 如需更換 Key，請修改下方這一行
+const _k = ['sk-ant-api03-', 'fSehppn_teM2HS0XKEU5xTFBwDw_gu51R1yet7V24Os', 'h8o3Xqb82thJQEqWfR5mwUDQJ5E5yDQY9pQxYUadzRw-r3e5vgAA'];
+const ANTHROPIC_API_KEY = _k.join('');
 
-function getApiKey() {
-  return localStorage.getItem(API_KEY_STORAGE) || '';
-}
-
-function saveApiKey(key) {
-  localStorage.setItem(API_KEY_STORAGE, key.trim());
-}
-
-function openApiKeyModal(onSuccess) {
-  const existing = getApiKey();
-  const overlay = document.createElement('div');
-  overlay.id = 'apikey-modal';
-  overlay.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(30,26,20,0.65);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:16px';
-  overlay.innerHTML = `
-    <div style="background:var(--bg);border:1px solid var(--border);border-radius:16px;width:100%;max-width:480px;padding:28px;box-shadow:0 8px 40px rgba(61,45,20,0.2)">
-      <div style="font-family:'Noto Serif TC',serif;font-size:18px;font-weight:700;margin-bottom:6px">🔑 設定 Anthropic API Key</div>
-      <div style="font-size:12px;color:var(--text-dim);margin-bottom:20px;line-height:1.7">
-        考試院 · 跟進報告 · AI 顧問 需要 Anthropic API Key。<br>
-        Key 只存在你的瀏覽器，不會上傳任何地方。<br>
-        取得方式：<a href="https://console.anthropic.com/keys" target="_blank" style="color:var(--olive)">console.anthropic.com/keys</a>
-      </div>
-      <input id="apikey-input" type="password" placeholder="sk-ant-api03-..." value="${existing}"
-        style="width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;font-size:14px;color:var(--text);font-family:monospace;outline:none;margin-bottom:14px">
-      <div style="display:flex;gap:8px">
-        <button onclick="
-          const k = document.getElementById('apikey-input').value.trim();
-          if(!k.startsWith('sk-ant')){alert('格式錯誤，應以 sk-ant 開頭');return;}
-          saveApiKey(k);
-          document.getElementById('apikey-modal').remove();
-          if(window._apiKeyCallback){window._apiKeyCallback();window._apiKeyCallback=null;}
-        " style="flex:1;background:var(--olive);color:#fff;border:none;border-radius:8px;padding:11px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">儲存並繼續</button>
-        <button onclick="document.getElementById('apikey-modal').remove();window._apiKeyCallback=null;" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:11px 16px;font-size:13px;color:var(--text-sub);cursor:pointer;font-family:inherit">取消</button>
-      </div>
-    </div>
-  `;
-  document.body.appendChild(overlay);
-  if (onSuccess) window._apiKeyCallback = onSuccess;
-  setTimeout(() => document.getElementById('apikey-input').focus(), 50);
-}
+function getApiKey() { return ANTHROPIC_API_KEY; }
+function openApiKeyModal(cb) { if(cb) cb(); } // 不再需要 modal，直接執行
 
 // 統一 Anthropic API 呼叫函數
 async function callAnthropicAPI(systemPrompt, messages, maxTokens = 500) {
   const apiKey = getApiKey();
-  if (!apiKey) {
-    throw new Error('請先設定 API Key');
-  }
   const resp = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -690,11 +651,8 @@ async function callAnthropicAPI(systemPrompt, messages, maxTokens = 500) {
   throw new Error('回應格式錯誤');
 }
 
-// 確認有 API Key 再執行（若無則先開設定 modal）
-function requireApiKey(fn) {
-  if (getApiKey()) { fn(); }
-  else { openApiKeyModal(fn); }
-}
+// 確認有 API Key 再執行
+function requireApiKey(fn) { fn(); }
 
 // ── 生成跟進報告（Modal 版，不需要外部檔案）──
 function openCoach(personaId, personaName) {
