@@ -5133,11 +5133,19 @@ function openTool(tool, customerId) {
   var c = customers.find(function(x){ return x.id && x.id.toString() === customerId.toString(); });
   if (!c) { alert('找不到客戶資料'); return; }
 
-  // 把客戶資料存到 sessionStorage，讓工具頁讀取
-  try { sessionStorage.setItem('crm_launch_customer', JSON.stringify(c)); } catch(e) {}
-
   var url = TOOL_URLS[tool];
   if (!url) { alert('找不到工具網址，請確認三個工具 HTML 與 CRM 在同一個資料夾'); return; }
+
+  // 用 URL 參數傳資料（可跨分頁），sessionStorage 當備援
+  try {
+    var encoded = btoa(encodeURIComponent(JSON.stringify(c)));
+    var separator = url.indexOf('?') >= 0 ? '&' : '?';
+    url = url + separator + 'customer=' + encoded;
+  } catch(e) {
+    // 編碼失敗退回 sessionStorage
+    try { sessionStorage.setItem('crm_launch_customer', JSON.stringify(c)); } catch(e2) {}
+  }
+
   window.open(url, '_blank');
 }
 
