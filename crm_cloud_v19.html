@@ -2619,7 +2619,9 @@ function renderLeaderboard() {
 
 
 function fetchCustomers() {
+  console.log('[fetchCustomers] user:', currentUser, 'role:', currentRole);
   callAPI({ action: 'getAll', role: currentRole, user: currentUser }, function(res) {
+    console.log('[fetchCustomers] success:', res.success, 'count:', res.customers && res.customers.length, 'error:', res.error);
     if (res.success) {
       customers = res.customers.map(function(c) {
         var clean = {};
