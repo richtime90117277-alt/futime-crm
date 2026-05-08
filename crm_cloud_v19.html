@@ -5136,15 +5136,8 @@ function openTool(tool, customerId) {
   var url = TOOL_URLS[tool];
   if (!url) { alert('找不到工具網址，請確認三個工具 HTML 與 CRM 在同一個資料夾'); return; }
 
-  // 用 URL 參數傳資料（可跨分頁），sessionStorage 當備援
-  try {
-    var encoded = btoa(encodeURIComponent(JSON.stringify(c)));
-    var separator = url.indexOf('?') >= 0 ? '&' : '?';
-    url = url + separator + 'customer=' + encoded;
-  } catch(e) {
-    // 編碼失敗退回 sessionStorage
-    try { sessionStorage.setItem('crm_launch_customer', JSON.stringify(c)); } catch(e2) {}
-  }
+  // localStorage 跨分頁可讀（同 domain），無長度限制
+  try { localStorage.setItem('crm_launch_customer', JSON.stringify(c)); } catch(e) {}
 
   window.open(url, '_blank');
 }
