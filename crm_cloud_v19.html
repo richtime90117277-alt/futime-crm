@@ -419,106 +419,76 @@ textarea{min-height:90px;resize:vertical;line-height:1.6}
 /* ══════════════════════════════════════════════
    ⚡ 快速建檔區塊 v27
    ══════════════════════════════════════════════ */
-/* ── 快速建檔卡片 ── */
 .quick-intake {
-  background: linear-gradient(160deg,#07192d 0%,#0d2440 55%,#142d50 100%);
+  background: linear-gradient(135deg,#07192d 0%,#0f2744 60%,#1a3a5c 100%);
   border-radius: var(--radius);
   padding: 1.25rem;
-  margin-bottom: 1rem;
-  box-shadow: 0 8px 32px rgba(7,25,45,.3), 0 0 0 1px rgba(201,168,76,.18);
+  margin-bottom: 1.25rem;
+  box-shadow: 0 8px 32px rgba(7,25,45,.25), 0 0 0 1px rgba(201,168,76,.2);
 }
 .quick-intake-header {
-  display: flex; align-items: center; gap: .75rem; margin-bottom: 1.25rem;
-  padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,.08);
+  display: flex; align-items: center; gap: .75rem; margin-bottom: 1rem;
 }
 .quick-intake-icon {
-  width: 38px; height: 38px; border-radius: 10px;
+  width: 36px; height: 36px; border-radius: 10px;
   background: linear-gradient(135deg,#c9a84c,#f0d080);
   display: flex; align-items: center; justify-content: center;
-  font-size: 19px; flex-shrink: 0;
-  box-shadow: 0 3px 10px rgba(184,150,46,.45);
+  font-size: 18px; flex-shrink: 0;
+  box-shadow: 0 3px 10px rgba(184,150,46,.4);
 }
-.quick-intake-title { font-size: 15px; font-weight: 700; color: #fff; letter-spacing: .02em; }
-.quick-intake-sub { font-size: 11px; color: rgba(255,255,255,.45); margin-top: 3px; }
+.quick-intake-title { font-size: 15px; font-weight: 700; color: #fff; }
+.quick-intake-sub { font-size: 11px; color: rgba(255,255,255,.55); margin-top: 2px; }
 
-/* 手機＋姓名同行 */
-.qi-name-row { display: flex; gap: .5rem; margin-bottom: 1rem; }
-.qi-name-row input {
-  flex: 1; padding: .7rem .9rem;
-  background: rgba(255,255,255,.08); border: 1.5px solid rgba(255,255,255,.12);
-  border-radius: 10px; color: #fff; font-size: 14px;
-  font-family: inherit; outline: none; transition: .2s;
-}
-.qi-name-row input::placeholder { color: rgba(255,255,255,.28); }
-.qi-name-row input:focus { border-color: var(--gold); background: rgba(255,255,255,.12); }
-.qi-name-row input.qi-phone-input { flex: 1.4; font-size: 15px; }
-
-.qi-section { margin-bottom: .875rem; }
+.qi-section { margin-bottom: 1rem; }
 .qi-label {
-  font-size: 10.5px; font-weight: 700; letter-spacing: .1em;
-  color: rgba(201,168,76,.8); margin-bottom: .45rem; text-transform: uppercase;
+  font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  color: rgba(201,168,76,.9); margin-bottom: .5rem;
 }
-
-.qi-btns { display: flex; flex-wrap: wrap; gap: .35rem; }
-.qi-btn {
-  padding: .42rem .8rem; border-radius: 18px; font-size: 12.5px; font-weight: 500;
-  border: 1.5px solid rgba(255,255,255,.15); background: rgba(255,255,255,.06);
-  color: rgba(255,255,255,.72); cursor: pointer; transition: all .16s;
-  font-family: inherit; white-space: nowrap; line-height: 1.3;
-}
-.qi-btn:hover { background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.35); color: #fff; }
-.qi-btn.selected {
-  background: linear-gradient(135deg,#c9a84c,#e8c96a);
-  border-color: transparent; color: #07192d; font-weight: 700;
-  box-shadow: 0 2px 8px rgba(184,150,46,.45);
-}
-
-/* 負責業務選擇器（暗色版） */
-.qi-sales-select {
-  width: 100%; padding: .7rem .9rem;
-  background: rgba(255,255,255,.08); border: 1.5px solid rgba(255,255,255,.12);
-  border-radius: 10px; color: #fff; font-size: 14px;
+.qi-phone {
+  width: 100%; padding: .75rem 1rem;
+  background: rgba(255,255,255,.08); border: 1.5px solid rgba(201,168,76,.3);
+  border-radius: var(--radius-sm); color: #fff; font-size: 16px;
   font-family: inherit; outline: none; transition: .2s;
-  appearance: none;
+  -webkit-appearance: none;
 }
-.qi-sales-select option { background: #0f2744; color: #fff; }
-.qi-sales-select:focus { border-color: var(--gold); }
+.qi-phone::placeholder { color: rgba(255,255,255,.3); }
+.qi-phone:focus { border-color: var(--gold); background: rgba(255,255,255,.12); box-shadow: 0 0 0 3px rgba(201,168,76,.2); }
+
+.qi-btns { display: flex; flex-wrap: wrap; gap: .4rem; }
+.qi-btn {
+  padding: .45rem .85rem; border-radius: 20px; font-size: 12.5px; font-weight: 500;
+  border: 1.5px solid rgba(255,255,255,.18); background: rgba(255,255,255,.07);
+  color: rgba(255,255,255,.75); cursor: pointer; transition: all .18s;
+  font-family: inherit; white-space: nowrap;
+}
+.qi-btn:hover { background: rgba(255,255,255,.15); border-color: rgba(255,255,255,.4); color: #fff; }
+.qi-btn.selected {
+  background: linear-gradient(135deg,#c9a84c,#f0d080);
+  border-color: transparent; color: #07192d; font-weight: 700;
+  box-shadow: 0 3px 10px rgba(184,150,46,.4);
+}
 
 .qi-submit {
-  width: 100%; padding: .9rem; border-radius: var(--radius-sm);
+  width: 100%; padding: .875rem; border-radius: var(--radius-sm);
   background: linear-gradient(135deg,#c9a84c 0%,#f0d080 50%,#b8962e 100%);
   color: #07192d; font-size: 15px; font-weight: 700; font-family: inherit;
-  border: none; cursor: pointer; margin-top: .5rem;
-  box-shadow: 0 4px 16px rgba(184,150,46,.38);
+  border: none; cursor: pointer; margin-top: .25rem;
+  box-shadow: 0 4px 16px rgba(184,150,46,.4);
   transition: transform .15s, box-shadow .15s;
-  letter-spacing: .02em;
 }
-.qi-submit:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(184,150,46,.5); }
+.qi-submit:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(184,150,46,.5); }
 .qi-submit:active { transform: scale(.98); }
 .qi-submit:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 
-/* 備註補充區（卡片外，淡色） */
-.qi-supplement {
-  background: var(--cream2);
-  border-radius: var(--radius);
-  padding: 1rem 1.125rem;
-  margin-bottom: 1rem;
-  border: 1.5px solid #e8edf2;
+.qi-divider {
+  display: flex; align-items: center; gap: .75rem; margin: 1.25rem 0 1rem;
 }
-.qi-supp-label {
-  font-size: 11px; font-weight: 700; color: var(--text-muted);
-  letter-spacing: .08em; margin-bottom: .625rem;
-}
-.qi-supp-row { margin-bottom: .5rem; }
-.qi-supp-row:last-child { margin-bottom: 0; }
-.qi-supp-row input, .qi-supp-row select, .qi-supp-row textarea {
-  border-radius: 10px !important;
-}
+.qi-divider-line { flex: 1; height: 1px; background: var(--cream2); }
+.qi-divider-text { font-size: 11px; color: var(--text-muted); white-space: nowrap; letter-spacing: .08em; }
 
 @media(max-width:640px){
-  .qi-btn { font-size: 11.5px; padding: .38rem .65rem; }
+  .qi-btn { font-size: 11.5px; padding: .4rem .7rem; }
   .quick-intake { padding: 1rem; }
-  .qi-name-row { flex-direction: column; gap: .4rem; }
 }
 
 
@@ -1231,26 +1201,37 @@ function claimSeminarLead() {}
           <div class="quick-intake-header">
             <div class="quick-intake-icon">⚡</div>
             <div>
-              <div class="quick-intake-title">快速建檔</div>
-              <div class="quick-intake-sub">按鈕選完就存，30秒一個客戶</div>
+              <div class="quick-intake-title">快速建檔 · 30秒完成</div>
+              <div class="quick-intake-sub">按按鈕選，最後填手機，完成</div>
             </div>
           </div>
 
-          <!-- 姓名 + 電話同行 -->
-          <div class="qi-name-row">
-            <input class="qi-phone-input" type="tel" id="qi_phone" placeholder="📱 手機號碼（必填）" maxlength="12" autocomplete="off">
-            <input type="text" id="qi_name" placeholder="稱呼 / 姓名（選填）" autocomplete="off">
-          </div>
-
-          <!-- 名單類型 + 購買目的 同區 -->
+          <!-- 手機號碼 -->
           <div class="qi-section">
-            <div class="qi-label">🏷️ 名單類型</div>
-            <div class="qi-btns" id="qi_ctype_btns">
-              <button type="button" class="qi-btn" onclick="qiSelect('ctype',this,'業務自開發')">👤 自開發</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('ctype',this,'公司名單')">🏢 公司名單</button>
+            <div class="qi-label">📱 客戶手機號碼</div>
+            <input class="qi-phone" type="tel" id="qi_phone" placeholder="09XX-XXX-XXX" maxlength="12">
+          </div>
+
+          <!-- 客戶類型 -->
+          <div class="qi-section">
+            <div class="qi-label">🎭 客戶類型（選一個最像的）</div>
+            <div class="qi-btns" id="qi_type_btns">
+              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'問問族')">問問族</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'格局族')">格局族</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'價格族')">價格族</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'面積族')">面積族</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'投資族')">投資族</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'自住安全感族')">自住安全感族</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'風險族')">風險族</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'退訂邊緣族')">退訂邊緣族</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'股票族')">股票族</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'問媽媽族')">問媽媽族</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'無殼族')">無殼族</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'合資族')">合資族</button>
             </div>
           </div>
 
+          <!-- 購屋目的 -->
           <div class="qi-section">
             <div class="qi-label">🏠 購屋目的</div>
             <div class="qi-btns" id="qi_purpose_btns">
@@ -1263,46 +1244,31 @@ function claimSeminarLead() {}
             </div>
           </div>
 
-          <!-- 客戶族群 -->
+          <!-- 資金區間 -->
           <div class="qi-section">
-            <div class="qi-label">🎭 客戶族群</div>
-            <div class="qi-btns" id="qi_type_btns">
-              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'新鮮人')">🟡 新鮮人</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'雙薪無殼')">👫 雙薪無殼</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'月光族')">🔵 月光族</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'高資產')">🔴 高資產</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'退休規劃')">🌅 退休規劃</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'租屋族')">🟠 租屋族</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'有老屋')">🟢 有老屋</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'換屋族')">🔄 換屋族</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'股票族')">📈 股票族</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'定存族')">🏦 定存族</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'包租公')">🏢 包租公/婆</button>
+            <div class="qi-label">💰 自備款區間</div>
+            <div class="qi-btns" id="qi_budget_btns">
+              <button type="button" class="qi-btn" onclick="qiSelect('budget',this,'100萬以下')">100萬以下</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('budget',this,'100–300萬')">100–300萬</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('budget',this,'300–500萬')">300–500萬</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('budget',this,'500–800萬')">500–800萬</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('budget',this,'800萬以上')">800萬以上</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('budget',this,'不確定')">不確定</button>
             </div>
           </div>
 
-          <!-- 家人支持度 -->
+          <!-- 當前障礙 -->
           <div class="qi-section">
-            <div class="qi-label">👨‍👩‍👧 家人支持度</div>
-            <div class="qi-btns" id="qi_family_btns">
-              <button type="button" class="qi-btn" onclick="qiSelect('family',this,'完全支持')">✅ 完全支持</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('family',this,'部分支持')">🟡 部分支持</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('family',this,'觀望')">👀 觀望中</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('family',this,'反對')">❌ 反對</button>
-            </div>
-          </div>
-
-          <!-- 卡點（多選） -->
-          <div class="qi-section">
-            <div class="qi-label">🚧 當前卡點（可多選）</div>
+            <div class="qi-label">🚧 當前最大障礙（可多選）</div>
             <div class="qi-btns" id="qi_block_btns">
               <button type="button" class="qi-btn" onclick="qiToggle('block',this,'需要問家人')">需要問家人</button>
-              <button type="button" class="qi-btn" onclick="qiToggle('block',this,'覺得時機未到')">時機未到</button>
+              <button type="button" class="qi-btn" onclick="qiToggle('block',this,'覺得時機未到')">覺得時機未到</button>
               <button type="button" class="qi-btn" onclick="qiToggle('block',this,'頭期款不足')">頭期款不足</button>
-              <button type="button" class="qi-btn" onclick="qiToggle('block',this,'擔心貸款')">擔心貸款</button>
-              <button type="button" class="qi-btn" onclick="qiToggle('block',this,'股票未出場')">股票未出場</button>
+              <button type="button" class="qi-btn" onclick="qiToggle('block',this,'擔心貸款問題')">擔心貸款問題</button>
+              <button type="button" class="qi-btn" onclick="qiToggle('block',this,'股票還沒出場')">股票還沒出場</button>
               <button type="button" class="qi-btn" onclick="qiToggle('block',this,'觀念未對齊')">觀念未對齊</button>
-              <button type="button" class="qi-btn" onclick="qiToggle('block',this,'數字不安心')">數字不安心</button>
+              <button type="button" class="qi-btn" onclick="qiToggle('block',this,'不想欠人情')">不想欠人情</button>
+              <button type="button" class="qi-btn" onclick="qiToggle('block',this,'數字安全感不足')">數字安全感不足</button>
             </div>
           </div>
 
@@ -1310,105 +1276,715 @@ function claimSeminarLead() {}
           <div class="qi-section">
             <div class="qi-label">⏳ 購買時間軸</div>
             <div class="qi-btns" id="qi_timeline_btns">
-              <button type="button" class="qi-btn" onclick="qiSelect('timeline',this,'1個月內')">🔴 1個月內</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('timeline',this,'3個月內')">🟠 3個月內</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('timeline',this,'半年內')">🟡 半年內</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('timeline',this,'1年以上')">🔵 1年以上</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('timeline',this,'純詢問觀望')">⚪ 純觀望</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('timeline',this,'1個月內')">1個月內</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('timeline',this,'3個月內')">3個月內</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('timeline',this,'半年內')">半年內</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('timeline',this,'1年以上')">1年以上</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('timeline',this,'純詢問觀望')">純詢問觀望</button>
             </div>
-          </div>
-
-          <!-- 自備款 -->
-          <div class="qi-section">
-            <div class="qi-label">💰 自備款區間</div>
-            <div class="qi-btns" id="qi_budget_btns">
-              <button type="button" class="qi-btn" onclick="qiSelect('budget',this,'100萬以下')">100萬以下</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('budget',this,'100–300萬')">100–300萬</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('budget',this,'300–500萬')">300–500萬</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('budget',this,'500萬以上')">500萬以上</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('budget',this,'不確定')">不確定</button>
-            </div>
-          </div>
-
-          <!-- 負責業務（暗色版） -->
-          <div class="qi-section">
-            <div class="qi-label">👨‍💼 負責業務</div>
-            <select class="qi-sales-select" id="salesPerson" required></select>
           </div>
 
           <button type="button" class="qi-submit" id="qi_submit_btn" onclick="quickIntakeSave()">
-            ☁️ 建檔完成
+            ⚡ 建檔完成 · 帶出對應話術
           </button>
         </div>
 
-        <!-- ── 姓名補充（選填）── -->
-        <div class="qi-supplement">
-          <div class="qi-supp-label">📝 補充資訊（選填）</div>
-          <div class="qi-supp-row">
-            <input type="hidden" id="customerName">
+        <div class="qi-divider">
+          <div class="qi-divider-line"></div>
+          <div class="qi-divider-text">▼ 詳細資料（選填，讓 AI 更精準）</div>
+          <div class="qi-divider-line"></div>
+        </div>
+
+        <div class="form-group highlight">
+          <label>👨‍💼 負責業務 *</label>
+          <select id="salesPerson" required></select>
+        </div>
+
+        <!-- ▌一部曲：客戶開發（預設展開）-->
+        <div class="acc-section">
+          <div class="acc-header required-section open" id="acc-h-s1" onclick="toggleAcc('s1')">
+            <div class="acc-title"><span class="acc-icon">1️⃣</span>一部曲：客戶開發 <span class="acc-badge required">必填</span></div>
+            <span class="acc-arrow">▼</span>
           </div>
-          <div class="qi-supp-row">
-            <textarea id="notes" rows="3" placeholder="備註：見面情形、特殊需求、其他..." style="min-height:72px;border-radius:10px;resize:none"></textarea>
+          <div class="acc-body open" id="acc-b-s1">
+            <!-- 圖例說明 -->
+            <div class="field-legend">
+              <div class="field-legend-item"><div class="legend-dot-gold"></div> 必填（AI準確度基礎）</div>
+              <div class="field-legend-item"><div class="legend-dot-blue"></div> 加分（讓AI更精準）</div>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group field-required"><label>客戶姓名</label><input type="text" id="customerName" placeholder="請輸入客戶姓名" required></div>
+              <div class="form-group field-required"><label>聯絡方式</label><input type="text" id="contactInfo" placeholder="電話 / Line ID / 其他" required></div>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group field-boost"><label>年齡</label><input type="number" id="customerAge" placeholder="請輸入年齡" min="18" max="99"></div>
+              <div class="form-group field-required">
+                <label>🏷️ 名單類型</label>
+                <select id="clientType" onchange="updateLeadSourceOptions()">
+                  <option value="">請選擇</option>
+                  <option value="業務自開發">👤 業務自開發</option>
+                  <option value="公司名單">🏢 公司名單</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group field-boost">
+                <label>名單來源</label>
+                <select id="leadSource" onchange="toggleReferralByRow()"><option value="">請先選名單類型</option></select>
+              </div>
+              <div class="form-group field-boost"><label>來源細節</label><input type="text" id="leadSourceDetail" placeholder="例：爬山、FB/IG、咖啡展"></div>
+            </div>
+            <!-- ★ 轉介紹人欄位（leadSource = 客戶轉介紹 時顯示）-->
+            <div class="form-grid two" id="referralByRow" style="display:none">
+              <div class="form-group field-boost">
+                <label>🤝 介紹人（客戶姓名）</label>
+                <input type="text" id="referralBy" placeholder="例：王大明（客戶）">
+              </div>
+              <div class="form-group">
+                <label>介紹人聯絡方式</label>
+                <input type="text" id="referralByContact" placeholder="例：0912-345-678">
+              </div>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group field-required"><label>創建日期</label><input type="date" id="creationDate" required></div>
+              <div class="form-group">
+                <label>🎓 研討會狀態</label>
+                <select id="seminarAttended">
+                  <option value="">請選擇</option>
+                  <option value="否">❌ 否（未邀請）</option>
+                  <option value="已邀請未參加">📩 已邀請尚未參加</option>
+                  <option value="已邀請並參加">✅ 已邀請並參加</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>📅 研討會時間（年月）</label>
+                <select id="seminarDate">
+                  <option value="">請選擇</option>
+                  <option>2025年12月</option>
+                  <option>2026年01月</option>
+                  <option>2026年02月</option>
+                  <option>2026年03月</option>
+                  <option>2026年04月</option>
+                  <option>2026年05月</option>
+                  <option>2026年06月</option>
+                  <option>2026年07月</option>
+                  <option>2026年08月</option>
+                  <option>2026年09月</option>
+                  <option>2026年10月</option>
+                  <option>2026年11月</option>
+                  <option>2026年12月</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>📋 顧問諮詢狀態</label>
+                <select id="consult2026">
+                  <option value="">請選擇</option>
+                  <option value="尚未預約">❌ 尚未預約</option>
+                  <option value="已預約待諮詢">📅 已預約待諮詢（2026）</option>
+                  <option value="已完成諮詢過往">✅ 已完成諮詢（過往）</option>
+                  <option value="已完成諮詢">✅ 已完成諮詢（2026）</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group field-required">
+                <label>⏳ 購買時間軸</label>
+                <select id="buyingTimeline">
+                  <option value="">請選擇</option>
+                  <option>1個月內</option>
+                  <option>3個月內</option>
+                  <option>半年內</option>
+                  <option>1年以上</option>
+                  <option>純詢問觀望</option>
+                </select>
+              </div>
+              <div class="form-group field-required">
+                <label>🏷️ 客戶狀態</label>
+                <select id="customerActive">
+                  <option value="進行中">🟢 進行中（跟進中）</option>
+                  <option value="已成交">✅ 已成交（歷史客戶）</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group field-boost">
+                <label>📱 溝通偏好</label>
+                <div class="ms-wrap" id="ms_contactPref">
+                  <div class="ms-display" onclick="toggleMs('ms_contactPref')"><span class="ms-placeholder">點選展開（可多選）</span><span class="ms-arrow">▾</span></div>
+                  <div class="ms-dropdown">
+                    <label class="ms-opt"><input type="checkbox" value="Line 訊息">💬 Line 訊息</label>
+                    <label class="ms-opt"><input type="checkbox" value="電話通話">📞 電話通話</label>
+                    <label class="ms-opt"><input type="checkbox" value="當面拜訪">🤝 當面拜訪</label>
+                    <label class="ms-opt"><input type="checkbox" value="Line 語音">🎙 Line 語音</label>
+                    <label class="ms-opt"><input type="checkbox" value="Email">📧 Email</label>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group field-boost">
+                <label>⏰ 最佳聯繫時段</label>
+                <div class="ms-wrap" id="ms_contactTime">
+                  <div class="ms-display" onclick="toggleMs('ms_contactTime')"><span class="ms-placeholder">點選展開（可多選）</span><span class="ms-arrow">▾</span></div>
+                  <div class="ms-dropdown">
+                    <label class="ms-opt"><input type="checkbox" value="早上（9–12點）">🌅 早上（9–12點）</label>
+                    <label class="ms-opt"><input type="checkbox" value="下午（12–17點）">☀️ 下午（12–17點）</label>
+                    <label class="ms-opt"><input type="checkbox" value="傍晚（17–19點）">🌇 傍晚（17–19點）</label>
+                    <label class="ms-opt"><input type="checkbox" value="晚上（19點後）">🌙 晚上（19點後）</label>
+                    <label class="ms-opt"><input type="checkbox" value="假日為主">📅 假日為主</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group field-boost">
+              <label>🧠 客戶個性類型</label>
+              <select id="personalityType">
+                <option value="">請選擇</option>
+                <option>分析型（喜歡數據與邏輯）</option>
+                <option>關係型（重視情感與信任）</option>
+                <option>直覺型（快速決策、跟感覺走）</option>
+                <option>謹慎型（慢慢來、需要多確認）</option>
+              </select>
+            </div>
           </div>
         </div>
 
-        <!-- 隱藏欄位：讓 saveCustomer / clearForm 不炸 -->
-        <input type="hidden" id="contactInfo">
-        <input type="hidden" id="customerAge">
-        <input type="hidden" id="clientType">
-        <input type="hidden" id="leadSource">
-        <input type="hidden" id="leadSourceDetail">
-        <input type="hidden" id="referralBy">
-        <input type="hidden" id="referralByContact">
-        <input type="hidden" id="creationDate">
-        <input type="hidden" id="seminarAttended">
-        <input type="hidden" id="seminarDate">
-        <input type="hidden" id="consult2026">
-        <input type="hidden" id="buyingTimeline">
-        <input type="hidden" id="customerActive" value="進行中">
-        <input type="hidden" id="personalityType">
-        <input type="hidden" id="familyMembers">
-        <input type="hidden" id="keyMan">
-        <input type="hidden" id="livingStatus">
-        <input type="hidden" id="familySupport">
-        <input type="hidden" id="trustScore">
-        <input type="hidden" id="professionalScore">
-        <input type="hidden" id="acquisitionMethod">
-        <input type="hidden" id="currentStatus">
-        <input type="hidden" id="clientSegment">
-        <input type="hidden" id="purchasePurpose">
-        <input type="hidden" id="budget">
-        <input type="hidden" id="monthlyPayment">
-        <input type="hidden" id="blueprintCompletion">
-        <input type="hidden" id="customerNeeds">
-        <input type="hidden" id="painPoints">
-        <input type="hidden" id="viewedProperties">
-        <input type="hidden" id="whyNotBought">
-        <input type="hidden" id="recommendedProperty">
-        <input type="hidden" id="viewingStatus">
-        <input type="hidden" id="productAdvantages">
-        <input type="hidden" id="matchedProperty">
-        <input type="hidden" id="objections">
-        <input type="hidden" id="solutions">
-        <input type="hidden" id="contractStatus" value="未簽約">
-        <input type="hidden" id="dealAmount">
-        <input type="hidden" id="contractDate">
-        <input type="hidden" id="satisfactionScore">
-        <input type="hidden" id="satisfactionSurvey">
-        <input type="hidden" id="loanHelp">
-        <input type="hidden" id="rentalMgmt">
-        <input type="hidden" id="decorAdvice">
-        <input type="hidden" id="assetReview">
-        <input type="hidden" id="afterSalesService">
-        <input type="hidden" id="referralEvent">
-        <input type="hidden" id="keepInTouch">
-        <input type="hidden" id="referralReward">
-        <input type="hidden" id="referralList">
-        <input type="hidden" id="referralCount">
-        <input type="hidden" id="preferredArea">
-        <input type="hidden" id="nextFollowupDate">
-        <input type="hidden" id="nextFollowupGoal">
+        <!-- ▌二部曲：初步接觸（預設收合）-->
+        <div class="acc-section">
+          <div class="acc-header" id="acc-h-s2" onclick="toggleAcc('s2')">
+            <div class="acc-title"><span class="acc-icon">2️⃣</span>二部曲：初步接觸（建立信任）</div>
+            <span class="acc-arrow">▼</span>
+          </div>
+          <div class="acc-body" id="acc-b-s2">
+            <div class="field-legend">
+              <div class="field-legend-item"><div class="legend-dot-gold"></div> 必填（AI準確度基礎）</div>
+              <div class="field-legend-item"><div class="legend-dot-blue"></div> 加分（讓AI更精準）</div>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group field-boost">
+                <label>家庭成員</label>
+                <input type="text" id="familyMembers" placeholder="例：2大人 / 1小孩(8歲) / 長輩">
+              </div>
+              <div class="form-group field-required">
+                <label>KEY MAN（決策者）</label>
+                <input type="text" id="keyMan" placeholder="例：本人、配偶、父母">
+              </div>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group field-boost">
+                <label>居住狀況</label>
+                <select id="livingStatus">
+                  <option value="">請選擇</option>
+                  <option>自住（已有房）</option>
+                  <option>與家人同住</option>
+                  <option>租屋中</option>
+                </select>
+              </div>
+              <div class="form-group field-required">
+                <label>家人購屋支持度</label>
+                <select id="familySupport">
+                  <option value="">請選擇</option>
+                  <option>✅ 完全支持</option>
+                  <option>🟡 部分支持</option>
+                  <option>👀 觀望</option>
+                  <option>❌ 反對</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>信任檢核（已達成項目）</label>
+              <div class="ms-wrap" id="ms_trustCheck">
+                <div class="ms-display" onclick="toggleMs('ms_trustCheck')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div>
+                <div class="ms-dropdown">
+                  <label class="ms-opt"><input type="checkbox" value="客戶主動分享財務需求與購屋計劃">客戶主動分享財務狀況、需求或購屋計劃</label>
+                  <label class="ms-opt"><input type="checkbox" value="客戶回覆訊息速度快且積極">客戶回覆訊息速度快且積極</label>
+                  <label class="ms-opt"><input type="checkbox" value="客戶提問時給予完整且真實的資訊">客戶提問時給予完整且真實的資訊</label>
+                  <label class="ms-opt"><input type="checkbox" value="互動氛圍輕鬆自然如朋友般交流">互動氛圍輕鬆自然，如朋友般交流</label>
+                  <label class="ms-opt"><input type="checkbox" value="客戶主動提及家人或重要他人參與討論">客戶主動提及家人或重要他人一起參與討論</label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>專業形象檢核（已達成項目）</label>
+              <div class="ms-wrap" id="ms_proCheck">
+                <div class="ms-display" onclick="toggleMs('ms_proCheck')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div>
+                <div class="ms-dropdown">
+                  <label class="ms-opt"><input type="checkbox" value="有針對市場產品貸款提出數據與案例">有針對市場、產品或貸款方案，提出客觀數據與案例</label>
+                  <label class="ms-opt"><input type="checkbox" value="客戶回應原來如此等學習性語句">客戶回應「原來如此」、「我不知道這個」等學習性語句</label>
+                  <label class="ms-opt"><input type="checkbox" value="客戶聽完後能重複或理解重點">客戶聽完後能重複或理解重點</label>
+                  <label class="ms-opt"><input type="checkbox" value="提出客戶沒想到但很有幫助的建議">提出「客戶沒有想到但很有幫助」的提醒或建議</label>
+                  <label class="ms-opt"><input type="checkbox" value="客戶產生更高的依賴感">客戶因此產生更高的依賴感</label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>當前信任狀態</label>
+              <select id="currentStatus">
+                <option value="">請選擇</option>
+                <option>基礎信任(1-4分)</option>
+                <option>中度信任(5-7分)</option>
+                <option>高度信任(8-10分)</option>
+              </select>
+            </div>
+            <input type="hidden" id="trustScore" value="">
+            <input type="hidden" id="professionalScore" value="">
+            <input type="hidden" id="acquisitionMethod" value="">
+          </div>
+        </div>
 
+        <!-- ▌三部曲：需求分析（預設收合）-->
+        <div class="acc-section">
+          <div class="acc-header" id="acc-h-s3" onclick="toggleAcc('s3')">
+            <div class="acc-title"><span class="acc-icon">3️⃣</span>三部曲：需求分析（顧問診斷）</div>
+            <span class="acc-arrow">▼</span>
+          </div>
+          <div class="acc-body" id="acc-b-s3">
+            <!-- 客戶族群 + 購屋目的 -->
+            <div class="field-legend">
+              <div class="field-legend-item"><div class="legend-dot-gold"></div> 必填（AI準確度基礎）</div>
+              <div class="field-legend-item"><div class="legend-dot-blue"></div> 加分（讓AI更精準）</div>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group field-required">
+                <label>🏷️ 客戶族群（主要）</label>
+                <select id="clientSegment" onchange="updatePainPointsBySegment()">
+                  <option value="">請選擇客戶類型</option>
+                  <optgroup label="🎭 12種客戶原型">
+                    <option value="問問族">❓ 問問族（背後有障礙物人物）</option>
+                    <option value="格局族">🏆 格局族（家族動力卡關）</option>
+                    <option value="價格族">💲 價格族（數字安全感不足）</option>
+                    <option value="面積族">📐 面積族（對坪數格局有執著）</option>
+                    <option value="投資族">📈 投資族（目標不清或有隱傷）</option>
+                    <option value="自住安全感族">🏠 自住安全感族（觀念未對齊）</option>
+                    <option value="風險族">⚠️ 風險族（擔心市場風險）</option>
+                    <option value="退訂邊緣族">🚪 退訂邊緣族（觀念未對齊）</option>
+                    <option value="股票族">📊 股票族（換標的邏輯未建立）</option>
+                    <option value="問媽媽族">👨‍👩‍👧 問媽媽族（需要對家人的說詞）</option>
+                    <option value="無殼族">🏚️ 無殼族（情緒焦慮＋起步太晚感）</option>
+                    <option value="合資族">🤝 合資族（第三方變數）</option>
+                  </optgroup>
+                </select>
+              </div>
+              <div class="form-group field-required">
+                <label>購屋主要目的</label>
+                <select id="purchasePurpose">
+                  <option value="">請選擇</option>
+                  <option>🏠 自住</option>
+                  <option>💰 投資</option>
+                  <option>🏠💰 自住兼投資</option>
+                  
+                  <option>🏢 以租養房</option>
+                  <option>👴 退休安置</option>
+                  <option>🎁 傳承規劃</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group field-required"><label>自有資金（萬元）＆來源</label><input type="text" id="budget" placeholder="例：300萬，來自存款／父母贊助／賣股票"></div>
+              <div class="form-group" id="geographyGroupDiv" style="display:none">
+                <label>📍 偏好區域（地緣組專用）</label>
+                <input type="text" id="preferredArea" placeholder="例：青埔、板橋、中和自住圈">
+              </div>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group field-boost"><label>每月可儲蓄（萬元）</label><input type="text" id="monthlyPayment" placeholder="例：3萬"></div>
+              <input type="hidden" id="blueprintCompletion" value="">
+            </div>
+            <input type="hidden" id="customerNeeds" value="">
+            <div class="form-group field-boost">
+              <label>痛點分析（可多選）</label>
+              <div class="ms-wrap" id="ms_painPoint">
+                <div class="ms-display" onclick="toggleMs('ms_painPoint')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div>
+                <div class="ms-dropdown" id="painPointDropdown">
+                  <div class="ms-group">❓ 問問族</div>
+                  <label class="ms-opt"><input type="checkbox" value="問問-背後有障礙物人物">背後有真正的決策者還沒出現</label>
+                  <label class="ms-opt"><input type="checkbox" value="問問-問完不回應">問了很多問題但後續沒有行動</label>
+                  <label class="ms-opt"><input type="checkbox" value="問問-資訊蒐集型">喜歡蒐集資訊、尚未準備好決策</label>
+                  <div class="ms-group">🏆 格局族</div>
+                  <label class="ms-opt"><input type="checkbox" value="格局-家族動力卡關">家族動力是卡關點，需要整體說服</label>
+                  <label class="ms-opt"><input type="checkbox" value="格局-想要更好但不知路徑">知道要升級，但不清楚路徑</label>
+                  <label class="ms-opt"><input type="checkbox" value="格局-面子問題">有面子考量，不想讓人覺得買不起</label>
+                  <div class="ms-group">💲 價格族</div>
+                  <label class="ms-opt"><input type="checkbox" value="價格-數字安全感不足">對數字沒有安全感，需要反覆確認</label>
+                  <label class="ms-opt"><input type="checkbox" value="價格-一直殺價">習慣議價，認為一定有空間</label>
+                  <label class="ms-opt"><input type="checkbox" value="價格-比較多個物件">不斷比較，難以下決定</label>
+                  <div class="ms-group">📐 面積族</div>
+                  <label class="ms-opt"><input type="checkbox" value="面積-對坪數有執著">對坪數有固定要求，難以妥協</label>
+                  <label class="ms-opt"><input type="checkbox" value="面積-格局不符需求">現有物件格局不符期待</label>
+                  <label class="ms-opt"><input type="checkbox" value="面積-公設比疑慮">對公設比有疑慮</label>
+                  <div class="ms-group">📈 投資族</div>
+                  <label class="ms-opt"><input type="checkbox" value="投資-目標不清楚">投資目標不清楚或有隱性傷痛</label>
+                  <label class="ms-opt"><input type="checkbox" value="投資-報酬率計算卡關">對投報率計算有疑問</label>
+                  <label class="ms-opt"><input type="checkbox" value="投資-資產過度集中">資產過度集中單一項目</label>
+                  <div class="ms-group">🏠 自住安全感族</div>
+                  <label class="ms-opt"><input type="checkbox" value="自住-觀念未對齊">買房觀念與家人未對齊</label>
+                  <label class="ms-opt"><input type="checkbox" value="自住-覺得還可以等">總覺得時機未到</label>
+                  <label class="ms-opt"><input type="checkbox" value="自住-擔心買錯">怕買錯位置或物件後悔</label>
+                  <div class="ms-group">⚠️ 風險族</div>
+                  <label class="ms-opt"><input type="checkbox" value="風險-擔心市場下跌">擔心買了之後房價下跌</label>
+                  <label class="ms-opt"><input type="checkbox" value="風險-貸款壓力">擔心貸款壓力太大</label>
+                  <label class="ms-opt"><input type="checkbox" value="風險-景氣不確定">對整體經濟景氣感到不確定</label>
+                  <div class="ms-group">🚪 退訂邊緣族</div>
+                  <label class="ms-opt"><input type="checkbox" value="退訂-觀念未對齊">原本有意願，但觀念動搖中</label>
+                  <label class="ms-opt"><input type="checkbox" value="退訂-外部影響">受到外部聲音影響（親友、新聞）</label>
+                  <label class="ms-opt"><input type="checkbox" value="退訂-情緒冷卻">熱情降低，需要重新點燃動力</label>
+                  <div class="ms-group">📊 股票族</div>
+                  <label class="ms-opt"><input type="checkbox" value="股票-換標邏輯未建立">股票轉房地產的換標邏輯還沒建立</label>
+                  <label class="ms-opt"><input type="checkbox" value="股票-資產沒出場">股票還沒出場，資金卡住</label>
+                  <label class="ms-opt"><input type="checkbox" value="股票-習慣高流動性">習慣股票的高流動性，不習慣不動產</label>
+                  <div class="ms-group">👨‍👩‍👧 問媽媽族</div>
+                  <label class="ms-opt"><input type="checkbox" value="問媽-需要對家人說詞">需要能說服家人的話術</label>
+                  <label class="ms-opt"><input type="checkbox" value="問媽-家人反對">家人明確反對，需要攻略</label>
+                  <label class="ms-opt"><input type="checkbox" value="問媽-keyman未出現">真正的決策者還沒參與討論</label>
+                  <div class="ms-group">🏚️ 無殼族</div>
+                  <label class="ms-opt"><input type="checkbox" value="無殼-情緒焦慮">有焦慮感，覺得起步太晚</label>
+                  <label class="ms-opt"><input type="checkbox" value="無殼-頭期款不足">頭期款準備不足</label>
+                  <label class="ms-opt"><input type="checkbox" value="無殼-每月租金浪費感">每月繳租金有浪費感但還沒行動</label>
+                  <div class="ms-group">🤝 合資族</div>
+                  <label class="ms-opt"><input type="checkbox" value="合資-第三方變數">有第三方（親友、合夥人）需要溝通</label>
+                  <label class="ms-opt"><input type="checkbox" value="合資-分配不清楚">合資條件和分配方式還沒談清楚</label>
+                  <label class="ms-opt"><input type="checkbox" value="合資-信任問題">合資對象之間有信任問題需處理</label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group"><label>痛點補充說明</label><textarea id="painPoints" placeholder="其他痛點或詳細描述..."></textarea></div>
+            <div class="form-group"><label>看過哪些案子？（區域／格局／價格）</label><textarea id="viewedProperties" placeholder="例：中和XX建案，3房2廳，1500萬&#10;板橋YY案，2房，980萬"></textarea></div>
+            <div class="form-group"><label>為什麼沒有買？</label><textarea id="whyNotBought" placeholder="例：價格太高、格局不喜歡、家人反對、時機未到"></textarea></div>
+          </div>
+        </div>
+
+        <!-- ▌四部曲：產品匹配（預設收合）-->
+        <div class="acc-section">
+          <div class="acc-header" id="acc-h-s4" onclick="toggleAcc('s4')">
+            <div class="acc-title"><span class="acc-icon">4️⃣</span>四部曲：產品匹配（專業推薦）</div>
+            <span class="acc-arrow">▼</span>
+          </div>
+          <div class="acc-body" id="acc-b-s4">
+            <div class="form-group"><label>推薦物件</label><textarea id="recommendedProperty" placeholder="推薦的房屋物件資訊、特色、優勢"></textarea></div>
+            <div class="form-group"><label>顧問諮詢狀態</label><select id="viewingStatus"><option value="">尚未預約</option><option>已預約諮詢</option><option>已完成諮詢</option></select></div>
+            <input type="hidden" id="productAdvantages" value="">
+            <div class="form-group"><label>建議配對物件</label><textarea id="matchedProperty" placeholder="例：推薦中和XX建案，符合預算與格局需求"></textarea></div>
+          </div>
+        </div>
+
+        <!-- ▌五部曲：異議處理（預設收合）-->
+        <div class="acc-section">
+          <div class="acc-header" id="acc-h-s5" onclick="toggleAcc('s5')">
+            <div class="acc-title"><span class="acc-icon">5️⃣</span>五部曲：異議處理（顧問解答）</div>
+            <span class="acc-arrow">▼</span>
+          </div>
+          <div class="acc-body" id="acc-b-s5">
+            <div class="field-legend">
+              <div class="field-legend-item"><div class="legend-dot-gold"></div> 必填（AI準確度基礎）</div>
+              <div class="field-legend-item"><div class="legend-dot-blue"></div> 加分（讓AI更精準）</div>
+            </div>
+            <div class="form-group field-required">
+              <label>🚧 決策障礙（卡點）</label>
+              <div class="ms-wrap" id="ms_decisionBlock">
+                <div class="ms-display" onclick="toggleMs('ms_decisionBlock')"><span class="ms-placeholder">點選展開（可多選）</span><span class="ms-arrow">▾</span></div>
+                <div class="ms-dropdown">
+                  <label class="ms-opt"><input type="checkbox" value="價格超出預算">💰 價格超出預算</label>
+                  <label class="ms-opt"><input type="checkbox" value="家人尚未同意">👨‍👩‍👧 家人尚未同意</label>
+                  <label class="ms-opt"><input type="checkbox" value="時機未到在觀望">⏳ 時機未到、在觀望</label>
+                  <label class="ms-opt"><input type="checkbox" value="還在比較其他物件">🔍 還在比較其他物件</label>
+                  <label class="ms-opt"><input type="checkbox" value="貸款疑慮">🏦 貸款疑慮</label>
+                  <label class="ms-opt"><input type="checkbox" value="工作收入不穩定">📉 工作收入不穩定</label>
+                  <label class="ms-opt"><input type="checkbox" value="純觀望短期不買">👀 純觀望、短期不買</label>
+                  <label class="ms-opt"><input type="checkbox" value="已在其他業務跟進中">🤝 已在其他業務跟進中</label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group"><label>客戶異議問題</label><textarea id="objections" placeholder="客戶提出的疑慮或問題"></textarea></div>
+            <div class="form-group"><label>顧問解決方案</label><textarea id="solutions" placeholder="提供的解決方案和數據支持"></textarea></div>
+          </div>
+        </div>
+
+        <!-- ▌六部曲：成交締結（預設收合）-->
+        <div class="acc-section">
+          <div class="acc-header" id="acc-h-s6" onclick="toggleAcc('s6')">
+            <div class="acc-title"><span class="acc-icon">6️⃣</span>六部曲：成交締結（下定與簽約）</div>
+            <span class="acc-arrow">▼</span>
+          </div>
+          <div class="acc-body" id="acc-b-s6">
+            <div class="form-grid two">
+              <div class="form-group"><label>簽約狀態</label><select id="contractStatus"><option>未簽約</option><option>已下定</option><option>已簽約</option><option>已付款</option></select></div>
+              <div class="form-group"><label>成交金額（萬元）</label><input type="text" id="dealAmount" placeholder="例：1500"></div>
+            </div>
+            <div class="form-group"><label>簽約日期</label><input type="date" id="contractDate"></div>
+          </div>
+        </div>
+
+        <!-- ▌七部曲：售後服務（預設收合）-->
+        <div class="acc-section">
+          <div class="acc-header" id="acc-h-s7" onclick="toggleAcc('s7')">
+            <div class="acc-title"><span class="acc-icon">7️⃣</span>七部曲：售後服務（客戶受到顧問價值）</div>
+            <span class="acc-arrow">▼</span>
+          </div>
+          <div class="acc-body" id="acc-b-s7">
+            <div class="form-grid two">
+              <div class="form-group"><label>貸款協助</label><input type="text" id="loanHelp" placeholder="例：台新、又庭、一籠"></div>
+              <div class="form-group"><label>租賃代管</label><input type="text" id="rentalMgmt" placeholder="例：富邦方字"></div>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group"><label>裝潢建議</label><select id="decorAdvice"><option value="">請選擇</option><option>是</option><option>否</option></select></div>
+              <div class="form-group"><label>定期資產檢視</label><select id="assetReview"><option value="">請選擇</option><option>是</option><option>否</option></select></div>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group"><label>滿意度評分 (1–10)</label><input type="number" id="satisfactionScore" min="1" max="10" placeholder="1–10"></div>
+              <div class="form-group"><label>滿意度調查表分數</label><input type="number" id="satisfactionSurvey" min="0" max="100" placeholder="分數"></div>
+            </div>
+            <div class="form-group"><label>售後服務記錄</label><textarea id="afterSalesService" placeholder="提供的售後服務內容"></textarea></div>
+          </div>
+        </div>
+
+
+        <!-- ▌房貸風控評估（七部曲附屬）-->
+        <div class="acc-section">
+          <div class="acc-header" id="acc-h-mortgage" onclick="toggleAcc('mortgage')">
+            <div class="acc-title"><span class="acc-icon">🏦</span>房貸風控評估表</div>
+            <span class="acc-arrow">▼</span>
+          </div>
+          <div class="acc-body" id="acc-b-mortgage">
+
+            <!-- 案件基本資訊 -->
+            <div style="font-size:11px;font-weight:700;color:var(--navy);letter-spacing:.1em;margin-bottom:.75rem;padding-bottom:.4rem;border-bottom:2px solid var(--cream2)">📋 案件基本資訊</div>
+            <div class="form-grid two">
+              <div class="form-group"><label>案號</label><input type="text" id="mtg_caseNo" placeholder="案號"></div>
+              <div class="form-group"><label>主管</label><input type="text" id="mtg_supervisor" placeholder="主管姓名"></div>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group"><label>總價（萬）</label><input type="number" id="mtg_totalPrice" placeholder="例：1200"></div>
+              <div class="form-group"><label>自備款（萬）</label><input type="number" id="mtg_ownFunds" placeholder="例：300"></div>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group"><label>信貸金額（萬）</label><input type="number" id="mtg_personalLoan" placeholder="例：100"></div>
+              <div class="form-group"><label>房貸金額（萬）</label><input type="number" id="mtg_loanAmount" placeholder="例：800"></div>
+            </div>
+
+            <!-- 申請人資料 -->
+            <div style="font-size:11px;font-weight:700;color:var(--navy);letter-spacing:.1em;margin:.875rem 0 .75rem;padding-bottom:.4rem;border-bottom:2px solid var(--cream2)">👤 申請人資料</div>
+            <div class="form-grid two">
+              <div class="form-group"><label>公司名稱</label><input type="text" id="mtg_company" placeholder="任職公司"></div>
+              <div class="form-group"><label>職位</label><input type="text" id="mtg_position" placeholder="職位/職稱"></div>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group"><label>年資（年）</label><input type="number" id="mtg_seniority" placeholder="例：3"></div>
+              <div class="form-group"><label>月收入（萬）</label><input type="number" id="mtg_monthlyIncome" placeholder="例：8" step="0.1"></div>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group"><label>工作地點</label><input type="text" id="mtg_workLocation" placeholder="例：台北市信義區"></div>
+              <div class="form-group"><label>扣繳憑單</label><select id="mtg_taxCert"><option value="">請選擇</option><option>有</option><option>無</option></select></div>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group"><label>薪資轉帳</label><select id="mtg_salaryTransfer"><option value="">請選擇</option><option>有</option><option>無</option></select></div>
+              <div class="form-group"><label>勞保</label><select id="mtg_laborInsurance"><option value="">請選擇</option><option>有</option><option>無</option></select></div>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group"><label>不動產</label><input type="text" id="mtg_realEstate" placeholder="例：有 2 棟 / 無"></div>
+              <div class="form-group"><label>存摺平均餘額（萬）</label><input type="number" id="mtg_bankBalance" placeholder="例：50" step="0.1"></div>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group"><label>銀行定存（萬）</label><input type="number" id="mtg_fixedDeposit" placeholder="例：100" step="0.1"></div>
+              <div class="form-group"><label>租金收入（萬/月）</label><input type="number" id="mtg_rentalIncome" placeholder="例：3" step="0.1"></div>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group"><label>基金投資（萬）</label><input type="number" id="mtg_fundInvest" placeholder="例：50" step="0.1"></div>
+              <div class="form-group"><label>股票投資（萬）</label><input type="number" id="mtg_stockInvest" placeholder="例：30" step="0.1"></div>
+            </div>
+            <div class="form-group"><label>其他收入說明</label><input type="text" id="mtg_otherIncome" placeholder="例：兼職、獎金、加班費等"></div>
+
+            <!-- 負債明細 -->
+            <div style="font-size:11px;font-weight:700;color:var(--navy);letter-spacing:.1em;margin:.875rem 0 .75rem;padding-bottom:.4rem;border-bottom:2px solid var(--cream2)">💳 負債明細</div>
+            <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:0 .5rem;margin-bottom:.25rem">
+              <div style="font-size:11px;color:var(--text-muted);font-weight:600">項目</div>
+              <div style="font-size:11px;color:var(--text-muted);font-weight:600">金額（萬）</div>
+              <div style="font-size:11px;color:var(--text-muted);font-weight:600">每月繳納</div>
+            </div>
+            <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:.35rem .5rem;margin-bottom:.75rem">
+              <div style="font-size:13px;padding:.5rem 0;border-bottom:1px solid var(--cream2);display:flex;align-items:center">助學貸款</div>
+              <div><input type="number" id="mtg_debt_student_amt" placeholder="0" step="0.1" style="width:100%;padding:.4rem .5rem;border:1.5px solid #e8edf2;border-radius:6px;font-size:13px"></div>
+              <div><input type="number" id="mtg_debt_student_monthly" placeholder="0" step="0.1" style="width:100%;padding:.4rem .5rem;border:1.5px solid #e8edf2;border-radius:6px;font-size:13px"></div>
+              <div style="font-size:13px;padding:.5rem 0;border-bottom:1px solid var(--cream2);display:flex;align-items:center">信貸</div>
+              <div><input type="number" id="mtg_debt_personal_amt" placeholder="0" step="0.1" style="width:100%;padding:.4rem .5rem;border:1.5px solid #e8edf2;border-radius:6px;font-size:13px"></div>
+              <div><input type="number" id="mtg_debt_personal_monthly" placeholder="0" step="0.1" style="width:100%;padding:.4rem .5rem;border:1.5px solid #e8edf2;border-radius:6px;font-size:13px"></div>
+              <div style="font-size:13px;padding:.5rem 0;border-bottom:1px solid var(--cream2);display:flex;align-items:center">車貸</div>
+              <div><input type="number" id="mtg_debt_car_amt" placeholder="0" step="0.1" style="width:100%;padding:.4rem .5rem;border:1.5px solid #e8edf2;border-radius:6px;font-size:13px"></div>
+              <div><input type="number" id="mtg_debt_car_monthly" placeholder="0" step="0.1" style="width:100%;padding:.4rem .5rem;border:1.5px solid #e8edf2;border-radius:6px;font-size:13px"></div>
+              <div style="font-size:13px;padding:.5rem 0;border-bottom:1px solid var(--cream2);display:flex;align-items:center">房貸</div>
+              <div><input type="number" id="mtg_debt_house_amt" placeholder="0" step="0.1" style="width:100%;padding:.4rem .5rem;border:1.5px solid #e8edf2;border-radius:6px;font-size:13px"></div>
+              <div><input type="number" id="mtg_debt_house_monthly" placeholder="0" step="0.1" style="width:100%;padding:.4rem .5rem;border:1.5px solid #e8edf2;border-radius:6px;font-size:13px"></div>
+              <div style="font-size:13px;padding:.5rem 0;display:flex;align-items:center">信用卡</div>
+              <div style="grid-column:span 2"><select id="mtg_creditCard" style="width:100%;padding:.4rem .5rem;border:1.5px solid #e8edf2;border-radius:6px;font-size:13px"><option value="">請選擇</option><option>全額繳清</option><option>循環利息</option></select></div>
+            </div>
+
+            <!-- 保證人 -->
+            <div style="font-size:11px;font-weight:700;color:var(--navy);letter-spacing:.1em;margin:.875rem 0 .75rem;padding-bottom:.4rem;border-bottom:2px solid var(--cream2)">👥 保證人資料</div>
+            <div class="form-group">
+              <label>是否有保證人</label>
+              <select id="mtg_hasGuarantor" onchange="toggleGuarantor(this.value)">
+                <option value="">請選擇</option>
+                <option value="無">無</option>
+                <option value="有">有</option>
+              </select>
+            </div>
+            <div id="guarantorFields" style="display:none">
+              <div class="form-grid two">
+                <div class="form-group"><label>公司名稱</label><input type="text" id="mtg_g_company" placeholder="任職公司"></div>
+                <div class="form-group"><label>職位</label><input type="text" id="mtg_g_position" placeholder="職位"></div>
+              </div>
+              <div class="form-grid two">
+                <div class="form-group"><label>年資（年）</label><input type="number" id="mtg_g_seniority" placeholder="例：3"></div>
+                <div class="form-group"><label>月收入（萬）</label><input type="number" id="mtg_g_income" placeholder="例：6" step="0.1"></div>
+              </div>
+              <div class="form-grid two">
+                <div class="form-group"><label>扣繳憑單</label><select id="mtg_g_taxCert"><option value="">請選擇</option><option>有</option><option>無</option></select></div>
+                <div class="form-group"><label>薪資轉帳</label><select id="mtg_g_salaryTransfer"><option value="">請選擇</option><option>有</option><option>無</option></select></div>
+              </div>
+              <div class="form-grid two">
+                <div class="form-group"><label>勞保</label><select id="mtg_g_labor"><option value="">請選擇</option><option>有</option><option>無</option></select></div>
+                <div class="form-group"><label>不動產</label><input type="text" id="mtg_g_realEstate" placeholder="例：有 1 棟 / 無"></div>
+              </div>
+              <div class="form-grid two">
+                <div class="form-group"><label>存摺平均餘額（萬）</label><input type="number" id="mtg_g_balance" placeholder="例：30" step="0.1"></div>
+                <div class="form-group"><label>銀行定存（萬）</label><input type="number" id="mtg_g_fixedDeposit" placeholder="例：50" step="0.1"></div>
+              </div>
+              <div class="form-grid two">
+                <div class="form-group"><label>基金投資（萬）</label><input type="number" id="mtg_g_fundInvest" placeholder="例：20" step="0.1"></div>
+                <div class="form-group"><label>股票投資（萬）</label><input type="number" id="mtg_g_stockInvest" placeholder="例：10" step="0.1"></div>
+              </div>
+              <div class="form-group"><label>租金／其他收入</label><input type="text" id="mtg_g_otherIncome" placeholder="例：租金 2萬/月"></div>
+              <div style="font-size:11px;color:var(--text-muted);font-weight:600;margin:.5rem 0 .35rem">負債明細</div>
+              <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:.35rem .5rem">
+                <div style="font-size:11px;color:var(--text-muted)">項目</div>
+                <div style="font-size:11px;color:var(--text-muted)">金額（萬）</div>
+                <div style="font-size:11px;color:var(--text-muted)">每月繳納</div>
+                <div style="font-size:12px;display:flex;align-items:center">助學貸款</div>
+                <div><input type="number" id="mtg_g_debt_student_amt" placeholder="0" step="0.1" style="width:100%;padding:.35rem .5rem;border:1.5px solid #e8edf2;border-radius:6px;font-size:12px"></div>
+                <div><input type="number" id="mtg_g_debt_student_monthly" placeholder="0" step="0.1" style="width:100%;padding:.35rem .5rem;border:1.5px solid #e8edf2;border-radius:6px;font-size:12px"></div>
+                <div style="font-size:12px;display:flex;align-items:center">信貸</div>
+                <div><input type="number" id="mtg_g_debt_personal_amt" placeholder="0" step="0.1" style="width:100%;padding:.35rem .5rem;border:1.5px solid #e8edf2;border-radius:6px;font-size:12px"></div>
+                <div><input type="number" id="mtg_g_debt_personal_monthly" placeholder="0" step="0.1" style="width:100%;padding:.35rem .5rem;border:1.5px solid #e8edf2;border-radius:6px;font-size:12px"></div>
+                <div style="font-size:12px;display:flex;align-items:center">車貸</div>
+                <div><input type="number" id="mtg_g_debt_car_amt" placeholder="0" step="0.1" style="width:100%;padding:.35rem .5rem;border:1.5px solid #e8edf2;border-radius:6px;font-size:12px"></div>
+                <div><input type="number" id="mtg_g_debt_car_monthly" placeholder="0" step="0.1" style="width:100%;padding:.35rem .5rem;border:1.5px solid #e8edf2;border-radius:6px;font-size:12px"></div>
+                <div style="font-size:12px;display:flex;align-items:center">房貸</div>
+                <div><input type="number" id="mtg_g_debt_house_amt" placeholder="0" step="0.1" style="width:100%;padding:.35rem .5rem;border:1.5px solid #e8edf2;border-radius:6px;font-size:12px"></div>
+                <div><input type="number" id="mtg_g_debt_house_monthly" placeholder="0" step="0.1" style="width:100%;padding:.35rem .5rem;border:1.5px solid #e8edf2;border-radius:6px;font-size:12px"></div>
+                <div style="font-size:12px;display:flex;align-items:center">信用卡</div>
+                <div style="grid-column:span 2"><select id="mtg_g_creditCard" style="width:100%;padding:.35rem .5rem;border:1.5px solid #e8edf2;border-radius:6px;font-size:12px"><option value="">請選擇</option><option>全額繳清</option><option>循環利息</option></select></div>
+              </div>
+            </div>
+            <div class="form-group" style="margin-top:.75rem"><label>備註</label><textarea id="mtg_notes" placeholder="其他補充說明..." style="min-height:50px"></textarea></div>
+
+          </div>
+        </div>
+
+        <!-- ▌八部曲：轉介紹裂變（預設收合）-->
+        <div class="acc-section">
+          <div class="acc-header" id="acc-h-s8" onclick="toggleAcc('s8')">
+            <div class="acc-title"><span class="acc-icon">8️⃣</span>八部曲：轉介紹裂變（變式開發）</div>
+            <span class="acc-arrow">▼</span>
+          </div>
+          <div class="acc-body" id="acc-b-s8">
+            <div class="form-group"><label>邀請朋友參加活動</label><textarea id="referralEvent" placeholder="例：9/20 研討會、山友大嫂、郵局兒子已婚大四女兒"></textarea></div>
+            <div class="form-grid two">
+              <div class="form-group"><label>保持聯繫</label><select id="keepInTouch"><option value="">請選擇</option><option>有</option><option>否</option></select></div>
+              <div class="form-group"><label>轉介紹獎勵</label><input type="text" id="referralReward" placeholder="例：送中秋禮盒、請客吃飯"></div>
+            </div>
+            <div class="form-group"><label>轉介紹名單</label><textarea id="referralList" placeholder="客戶介紹的親友名單（姓名、關係、聯絡方式）"></textarea></div>
+            <div class="form-grid two">
+              <div class="form-group"><label>轉介紹數量</label><input type="number" id="referralCount" min="0" placeholder="人數"></div>
+              <div class="form-group">
+                <label>轉介紹效果</label>
+                <div class="ms-wrap" id="ms_referralEffect">
+                  <div class="ms-display" onclick="toggleMs('ms_referralEffect')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div>
+                  <div class="ms-dropdown">
+                    <label class="ms-opt"><input type="checkbox" value="客戶已聯繫">客戶已聯繫</label>
+                    <label class="ms-opt"><input type="checkbox" value="已形成">已形成</label>
+                    <label class="ms-opt"><input type="checkbox" value="已購買">已購買</label>
+                    <label class="ms-opt"><input type="checkbox" value="持續追蹤中">持續追蹤中</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ▌備註欄（預設收合）-->
+        <div class="acc-section">
+          <div class="acc-header" id="acc-h-notes" onclick="toggleAcc('notes')">
+            <div class="acc-title"><span class="acc-icon">📝</span>備註與跟進紀錄</div>
+            <span class="acc-arrow">▼</span>
+          </div>
+          <div class="acc-body" id="acc-b-notes">
+            <div class="form-group">
+              <label>🔁 上次跟進摘要</label>
+              <div class="ms-wrap" id="ms_lastFollowup">
+                <div class="ms-display" onclick="toggleMs('ms_lastFollowup')"><span class="ms-placeholder">點選展開（可多選）</span><span class="ms-arrow">▾</span></div>
+                <div class="ms-dropdown">
+                  <label class="ms-opt"><input type="checkbox" value="✅ 有進展，下次約好了">✅ 有進展，下次約好了</label>
+                  <label class="ms-opt"><input type="checkbox" value="💬 有聊，態度正面">💬 有聊，態度正面</label>
+                  <label class="ms-opt"><input type="checkbox" value="😐 普通，需要再培養">😐 普通，需要再培養</label>
+                  <label class="ms-opt"><input type="checkbox" value="❌ 拒絕或沒有回應">❌ 拒絕或沒有回應</label>
+                  <label class="ms-opt"><input type="checkbox" value="🔄 重新建立關係中">🔄 重新建立關係中</label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>⚡ 跟進重點 / 話術建議</label>
+              <textarea id="ms_nextFollowup" placeholder="貼入早會建議或自行填寫，例如：&#10;1. 下週三約帶看，強調增值潛力&#10;2. 先解決家人疑慮，邀請一起來&#10;3. 傳送貸款試算表參考" style="min-height:110px;font-size:14px;line-height:1.7"></textarea>
+            </div>
+            <div class="form-grid two">
+              <div class="form-group">
+                <label>📅 預計跟進日期</label>
+                <input type="date" id="nextFollowupDate" style="font-size:15px">
+              </div>
+              <div class="form-group">
+                <label>✅ 截止完成目標</label>
+                <input type="text" id="nextFollowupGoal" placeholder="例：確認帶看時間" style="font-size:14px">
+              </div>
+            </div>
+            <div class="form-group"><textarea id="notes" placeholder="其他補充說明..." style="min-height:80px"></textarea></div>
+          </div>
+        </div>
+
+        <!-- 語音新增功能 -->
+        <div id="voiceInputCard" style="background:linear-gradient(135deg,#0f2744,#1a3a5c);border-radius:14px;padding:1.25rem;margin-bottom:1rem">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.875rem">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#c9a84c;letter-spacing:.05em">🎤 語音快速建檔</div>
+              <div style="font-size:11px;color:#a0b4c8;margin-top:.2rem">說出客戶資料，AI 自動填入表單</div>
+            </div>
+            <button type="button" id="voiceBtn" onclick="toggleVoiceInput()" 
+              style="background:linear-gradient(135deg,#c9a84c,#f0d080);color:#0f2744;border:none;border-radius:50px;padding:.625rem 1.25rem;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:.5rem;transition:all .2s">
+              🎤 開始錄音
+            </button>
+          </div>
+          <div id="voiceStatus" style="display:none;margin-bottom:.75rem">
+            <div id="voiceListening" style="display:none;align-items:center;gap:.75rem;padding:.75rem 1rem;background:rgba(201,168,76,.15);border:1.5px solid rgba(201,168,76,.4);border-radius:10px">
+              <div style="width:12px;height:12px;background:#c9a84c;border-radius:50%;animation:voicePulse 1s infinite"></div>
+              <span style="font-size:13px;color:#f0d080;font-weight:600">錄音中... 說完後點停止</span>
+            </div>
+            <div id="voiceProcessing" style="display:none;align-items:center;gap:.75rem;padding:.75rem 1rem;background:rgba(255,255,255,.08);border-radius:10px">
+              <div style="width:16px;height:16px;border:2px solid #c9a84c;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite"></div>
+              <span style="font-size:13px;color:#a0b4c8">AI 解析中...</span>
+            </div>
+          </div>
+          <div id="voiceTranscript" style="display:none;background:rgba(255,255,255,.06);border-radius:10px;padding:.875rem;margin-bottom:.75rem">
+            <div style="font-size:10px;color:#a0b4c8;font-weight:700;margin-bottom:.35rem">識別內容</div>
+            <div id="voiceTranscriptText" style="font-size:13px;color:#e8f0fb;line-height:1.6"></div>
+          </div>
+          <div id="voiceResult" style="display:none;background:rgba(201,168,76,.1);border:1.5px solid rgba(201,168,76,.3);border-radius:10px;padding:.875rem;margin-bottom:.75rem">
+            <div style="font-size:10px;color:#c9a84c;font-weight:700;margin-bottom:.5rem">✨ AI 已填入以下資料</div>
+            <div id="voiceResultText" style="font-size:12px;color:#e8f0fb;line-height:1.8"></div>
+          </div>
+          <div style="font-size:11px;color:#6a8aaa;line-height:1.6">
+            💡 範例：「客戶王大明，電話 0912345678，朋友轉介紹，想買三房自住，預算一千萬，三個月內要買」
+          </div>
+        </div>
+
+        <div class="button-row">
+          <button type="submit" class="btn btn-primary" id="saveBtn">☁️ 儲存並同步</button>
+          <button type="button" class="btn btn-secondary" onclick="clearForm()">🔄 清除</button>
+        </div>
       </form>
     </div>
 
@@ -4882,7 +5458,7 @@ function fillFormFromVoice(data) {
 // ══════════════════════════════════════════════
 // ⚡ 快速建檔邏輯 v27
 // ══════════════════════════════════════════════
-var _qi = { type: null, ctype: null, purpose: null, budget: null, block: [], timeline: null, family: null };
+var _qi = { type: null, purpose: null, budget: null, block: [], timeline: null };
 
 function qiSelect(group, btn, val) {
   // 單選：清除同組所有 selected
@@ -4906,56 +5482,40 @@ function qiToggle(group, btn, val) {
 function quickIntakeSave() {
   var phone = document.getElementById('qi_phone').value.trim();
   if (!phone) { showToast('⚠️ 請填入客戶手機號碼'); return; }
+  if (!_qi.type) { showToast('⚠️ 請選擇客戶類型'); return; }
 
   var btn = document.getElementById('qi_submit_btn');
   btn.disabled = true;
   btn.textContent = '⏳ 建檔中...';
 
   var sp = document.getElementById('salesPerson') ? document.getElementById('salesPerson').value : '';
-  if (!sp) { showToast('⚠️ 請選擇負責業務'); btn.disabled=false; btn.textContent='☁️ 建檔完成'; return; }
-
   var today = new Date().toISOString().split('T')[0];
-  // 客戶稱呼：有填用填的，否則用族群＋客戶
-  var qiName = (document.getElementById('qi_name')||{}).value || '';
-  var displayName = qiName.trim() || (_qi.type ? _qi.type + '客戶' : '新客戶');
-  // 補充備註
-  var suppNotes = (document.getElementById('notes')||{}).value || '';
 
   var c = {
-    salesPerson:   sp,
-    customerName:  displayName,
-    contactInfo:   phone,
-    clientType:    _qi.ctype    || '',
-    clientSegment: _qi.type     || '',
+    salesPerson: sp || (window.currentUser || ''),
+    customerName: _qi.type + '客戶',
+    contactInfo: phone,
+    clientSegment: _qi.type || '',
     purchasePurpose: _qi.purpose || '',
-    familySupport: _qi.family   ? (_qi.family === '完全支持' ? '✅ 完全支持' :
-                                   _qi.family === '部分支持' ? '🟡 部分支持' :
-                                   _qi.family === '觀望'     ? '👀 觀望'     : '❌ 反對') : '',
-    budget:        _qi.budget   || '',
+    budget: _qi.budget || '',
     buyingTimeline: _qi.timeline || '',
-    decisionBlock: _qi.block.join('、'),
-    creationDate:  today,
+    painPoints: _qi.block.join('、'),
+    creationDate: today,
     customerActive: '進行中',
-    notes: suppNotes || ('【快速建檔】' +
-      (_qi.type     ? '族群：' + _qi.type + '　'   : '') +
-      (_qi.purpose  ? '目的：' + _qi.purpose + '　' : '') +
-      (_qi.budget   ? '資金：' + _qi.budget + '　'  : '') +
-      (_qi.block.length ? '卡點：' + _qi.block.join('、') + '　' : '') +
-      (_qi.timeline ? '時間軸：' + _qi.timeline      : '')),
+    notes: '【快速建檔】類型：' + (_qi.type||'') + '｜目的：' + (_qi.purpose||'') + '｜資金：' + (_qi.budget||'') + '｜障礙：' + (_qi.block.join('、')||'未填') + '｜時間軸：' + (_qi.timeline||'未填'),
     _quickIntake: true
   };
 
   callAPI({ action: 'save', customer: c }, function(res) {
     btn.disabled = false;
-    btn.textContent = '☁️ 建檔完成';
+    btn.textContent = '⚡ 建檔完成 · 帶出對應話術';
     if (res.success) {
-      showToast('✅ 建檔成功！');
-      // 重設欄位
+      showToast('✅ 快速建檔成功！');
+      // 重設快速建檔區塊
       document.getElementById('qi_phone').value = '';
-      var qn = document.getElementById('qi_name'); if(qn) qn.value = '';
-      var nn = document.getElementById('notes');   if(nn) nn.value = '';
       document.querySelectorAll('.qi-btn.selected').forEach(function(b){ b.classList.remove('selected'); });
-      _qi = { type: null, ctype: null, purpose: null, budget: null, block: [], timeline: null, family: null };
+      _qi = { type: null, purpose: null, budget: null, block: [], timeline: null };
+      // 更新客戶列表
       fetchCustomers();
       // 跳到客戶列表頁
       var listTab = document.querySelector('[onclick*="customerList"]') || document.querySelector('[onclick*="clientList"]');
