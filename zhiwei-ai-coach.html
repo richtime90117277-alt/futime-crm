@@ -857,24 +857,16 @@ async function generate() {
   // 頁面載入時初始化 key 狀態
   document.addEventListener('DOMContentLoaded', function() {
     renderKeyStatus();
-    // 從 CRM 跳過來自動帶入客戶（支援 sessionStorage 和 URL 參數兩種方式）
+    // 從 CRM 跳過來自動帶入客戶（localStorage 跨分頁可讀）
     setTimeout(function() {
       try {
         var raw = null;
 
-        // 方式一：URL 參數 ?customer=base64
-        var urlParams = new URLSearchParams(window.location.search);
-        var urlCustomer = urlParams.get('customer');
-        if (urlCustomer) {
-          try {
-            raw = decodeURIComponent(atob(urlCustomer));
-            // 清掉網址列的參數，避免重複帶入
-            var cleanUrl = window.location.pathname;
-            window.history.replaceState({}, '', cleanUrl);
-          } catch(e) {}
-        }
+        // 方式一：localStorage（跨分頁，同 domain）
+        raw = localStorage.getItem('crm_launch_customer');
+        if (raw) localStorage.removeItem('crm_launch_customer');
 
-        // 方式二：sessionStorage（同分頁跳轉）
+        // 方式二：sessionStorage 備援
         if (!raw) {
           raw = sessionStorage.getItem('crm_launch_customer');
           if (raw) sessionStorage.removeItem('crm_launch_customer');
