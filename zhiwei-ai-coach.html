@@ -857,28 +857,29 @@ async function generate() {
   // 頁面載入時初始化 key 狀態
   document.addEventListener('DOMContentLoaded', function() {
     renderKeyStatus();
-    // 從 CRM 跳過來自動帶入客戶（localStorage 跨分頁可讀）
-    setTimeout(function() {
-      try {
-        var raw = null;
+    // 從 CRM 跳過來自動帶入客戶（輪詢等待，解決新分頁時序問題）
+    var attempts = 0;
+    var maxAttempts = 15; // 最多等 1.5 秒
+    function tryLoad() {
+      attempts++;
+      var raw = null;
+      try { raw = localStorage.getItem('crm_launch_customer'); } catch(e) {}
+      if (!raw) try { raw = sessionStorage.getItem('crm_launch_customer'); } catch(e) {}
 
-        // 方式一：localStorage（跨分頁，同 domain）
-        raw = localStorage.getItem('crm_launch_customer');
-        if (raw) localStorage.removeItem('crm_launch_customer');
-
-        // 方式二：sessionStorage 備援
-        if (!raw) {
-          raw = sessionStorage.getItem('crm_launch_customer');
-          if (raw) sessionStorage.removeItem('crm_launch_customer');
-        }
-
-        if (!raw) return;
-        var c = JSON.parse(raw);
-        pickCustomer(JSON.stringify(c));
-      } catch(e) {
-        console.warn('CRM 帶入失敗:', e);
+      if (raw) {
+        try {
+          localStorage.removeItem('crm_launch_customer');
+          sessionStorage.removeItem('crm_launch_customer');
+        } catch(e) {}
+        try {
+          var c = JSON.parse(raw);
+          pickCustomer(JSON.stringify(c));
+        } catch(e) { console.warn('CRM 帶入解析失敗:', e); }
+      } else if (attempts < maxAttempts) {
+        setTimeout(tryLoad, 100);
       }
-    }, 300);
+    }
+    setTimeout(tryLoad, 100);
   });
 
   // ═══════════════════════════════════════════════
