@@ -601,9 +601,12 @@
     <div class="section-label">Step 1｜這個客戶是什麼人</div>
 
     <!-- CRM 快速帶入 -->
-    <div style="margin-bottom:20px">
-      <button onclick="openCrmPicker('coach')" style="width:100%;background:rgba(61,90,64,0.10);border:1px solid rgba(61,90,64,0.10);border-radius:10px;padding:11px 16px;color:var(--gold);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;text-align:left;transition:background .2s" onmouseover="this.style.background='rgba(61,90,64,0.10)'" onmouseout="this.style.background='rgba(61,90,64,0.10)'">
+    <div style="margin-bottom:20px;display:flex;gap:10px">
+      <button onclick="openCrmPicker('coach')" style="flex:1;background:rgba(61,90,64,0.10);border:1px solid rgba(61,90,64,0.10);border-radius:10px;padding:11px 16px;color:var(--gold);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;text-align:left;transition:background .2s">
         📋 從 CRM 選客戶，自動帶入資料
+      </button>
+      <button onclick="loadFromCRM()" style="background:rgba(184,148,60,0.15);border:1px solid rgba(184,148,60,0.3);border-radius:10px;padding:11px 16px;color:var(--gold);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">
+        🔄 讀取 CRM 資料
       </button>
     </div>
 
@@ -853,6 +856,25 @@ async function generate() {
 
   // ── Key 管理（由 Cloudflare Worker 處理，前端無需設定）──
   function renderKeyStatus() {}
+
+  // 手動從 localStorage 讀取 CRM 帶入資料
+  function loadFromCRM() {
+    var raw = null;
+    try { raw = localStorage.getItem('crm_launch_customer'); } catch(e) {}
+    if (!raw) try { raw = sessionStorage.getItem('crm_launch_customer'); } catch(e) {}
+    if (!raw) {
+      showError_coach('❌ 沒有找到 CRM 資料，請先在 CRM 點「AI 跟進」再按此按鈕', false);
+      return;
+    }
+    try {
+      localStorage.removeItem('crm_launch_customer');
+      sessionStorage.removeItem('crm_launch_customer');
+      var c = JSON.parse(raw);
+      pickCustomer(JSON.stringify(c));
+    } catch(e) {
+      showError_coach('❌ 資料解析失敗：' + e.message, false);
+    }
+  }
 
   // 頁面載入時初始化 key 狀態
   document.addEventListener('DOMContentLoaded', function() {
