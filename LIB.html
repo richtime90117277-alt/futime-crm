@@ -288,6 +288,7 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
   .sidebar-close { display: none; }
   .sidebar-overlay { display: none !important; }
 }
+@keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
@@ -309,6 +310,7 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
     </div>
     <div class="count-badge">共 <span id="totalCnt">141</span> 筆</div>
     <button class="ai-btn" onclick="openAiModal()">🤖 AI 顧問</button>
+    <button class="ai-btn" onclick="openApiKeyModal()" style="background:var(--surface2);border:1px solid var(--border);color:var(--text-sub);" title="設定 Anthropic API Key（考試院 · 跟進報告 · AI 顧問 需要）">🔑 API Key</button>
     <button class="ai-btn" id="syncBtn" onclick="syncLibToKV()" style="background:linear-gradient(135deg,#B8943C,#a07d2e);" title="把最新話術庫同步到 AI 系統">☁️ 同步話術庫</button>
   </div>
 </header>
@@ -615,16 +617,202 @@ function init() {
 }
 
 
-// ── 生成跟進報告（跳轉到 AI Coach）──
+// ── API Key 管理 ──
+const API_KEY_STORAGE = 'futime_anthropic_key';
+
+function getApiKey() {
+  return localStorage.getItem(API_KEY_STORAGE) || '';
+}
+
+function saveApiKey(key) {
+  localStorage.setItem(API_KEY_STORAGE, key.trim());
+}
+
+function openApiKeyModal(onSuccess) {
+  const existing = getApiKey();
+  const overlay = document.createElement('div');
+  overlay.id = 'apikey-modal';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(30,26,20,0.65);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:16px';
+  overlay.innerHTML = `
+    <div style="background:var(--bg);border:1px solid var(--border);border-radius:16px;width:100%;max-width:480px;padding:28px;box-shadow:0 8px 40px rgba(61,45,20,0.2)">
+      <div style="font-family:'Noto Serif TC',serif;font-size:18px;font-weight:700;margin-bottom:6px">🔑 設定 Anthropic API Key</div>
+      <div style="font-size:12px;color:var(--text-dim);margin-bottom:20px;line-height:1.7">
+        考試院 · 跟進報告 · AI 顧問 需要 Anthropic API Key。<br>
+        Key 只存在你的瀏覽器，不會上傳任何地方。<br>
+        取得方式：<a href="https://console.anthropic.com/keys" target="_blank" style="color:var(--olive)">console.anthropic.com/keys</a>
+      </div>
+      <input id="apikey-input" type="password" placeholder="sk-ant-api03-..." value="${existing}"
+        style="width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;font-size:14px;color:var(--text);font-family:monospace;outline:none;margin-bottom:14px">
+      <div style="display:flex;gap:8px">
+        <button onclick="
+          const k = document.getElementById('apikey-input').value.trim();
+          if(!k.startsWith('sk-ant')){alert('格式錯誤，應以 sk-ant 開頭');return;}
+          saveApiKey(k);
+          document.getElementById('apikey-modal').remove();
+          if(window._apiKeyCallback){window._apiKeyCallback();window._apiKeyCallback=null;}
+        " style="flex:1;background:var(--olive);color:#fff;border:none;border-radius:8px;padding:11px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">儲存並繼續</button>
+        <button onclick="document.getElementById('apikey-modal').remove();window._apiKeyCallback=null;" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:11px 16px;font-size:13px;color:var(--text-sub);cursor:pointer;font-family:inherit">取消</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  if (onSuccess) window._apiKeyCallback = onSuccess;
+  setTimeout(() => document.getElementById('apikey-input').focus(), 50);
+}
+
+// 統一 Anthropic API 呼叫函數
+async function callAnthropicAPI(systemPrompt, messages, maxTokens = 500) {
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    throw new Error('請先設定 API Key');
+  }
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: maxTokens,
+      system: systemPrompt,
+      messages: messages
+    })
+  });
+  if (!resp.ok) {
+    const err = await resp.json().catch(() => ({}));
+    throw new Error(err.error?.message || `HTTP ${resp.status}`);
+  }
+  const data = await resp.json();
+  if (data.content && data.content[0]) return data.content[0].text;
+  throw new Error('回應格式錯誤');
+}
+
+// 確認有 API Key 再執行（若無則先開設定 modal）
+function requireApiKey(fn) {
+  if (getApiKey()) { fn(); }
+  else { openApiKeyModal(fn); }
+}
+
+// ── 生成跟進報告（Modal 版，不需要外部檔案）──
 function openCoach(personaId, personaName) {
-  const url = 'zhiwei-ai-coach-v4.html?persona=' + encodeURIComponent(personaName);
-  window.open(url, '_blank');
+  requireApiKey(() => _openCoach(personaId, personaName));
+}
+
+function _openCoach(personaId, personaName) {
+  const p = PERSONAS.find(x => x.id === personaId);
+  if (!p) return;
+
+  // 建立 modal overlay
+  const overlay = document.createElement('div');
+  overlay.id = 'coach-modal';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(30,26,20,0.55);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:16px';
+  overlay.onclick = (e) => { if(e.target === overlay) overlay.remove(); };
+
+  overlay.innerHTML = `
+    <div style="background:var(--bg);border:1px solid var(--border);border-radius:16px;width:100%;max-width:680px;max-height:88vh;overflow-y:auto;box-shadow:0 8px 40px rgba(61,45,20,0.18);display:flex;flex-direction:column">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 20px 14px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:1">
+        <div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--olive);margin-bottom:3px">⚡ AI 跟進報告</div>
+          <div style="font-family:'Noto Serif TC',serif;font-size:17px;font-weight:700;color:var(--text)">${p.icon} ${p.name}</div>
+        </div>
+        <button onclick="document.getElementById('coach-modal').remove()" style="background:var(--surface3);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--text-sub);cursor:pointer;font-family:inherit">✕ 關閉</button>
+      </div>
+      <div style="padding:20px">
+        <div id="coach-report-content" style="font-size:13px;line-height:1.85;color:var(--text)">
+          <div style="display:flex;align-items:center;gap:10px;padding:20px;background:var(--surface2);border-radius:10px;color:var(--text-dim)">
+            <div style="width:18px;height:18px;border:2px solid var(--olive);border-top-color:transparent;border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0"></div>
+            AI 正在分析「${p.name}」的心理模型，生成個人化跟進策略...
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  // 取得相關話術
+  const related = SCRIPTS.filter(s => s.persona === personaId).slice(0, 8);
+  const scriptSummary = related.map(s => `【${s.category}】${s.title}：${s.content.substring(0,80)}...`).join('\n');
+
+  // 呼叫 AI 生成跟進報告
+  generateCoachReport(p, scriptSummary);
+}
+
+async function generateCoachReport(p, scriptSummary) {
+  const systemPrompt = `你是富時代頂尖顧問「阮智偉」的 AI 教練助理。你精通房地產顧問式銷售，擅長針對不同客戶心理模型設計跟進策略。
+
+你的任務是：根據客戶的心理模型，生成一份簡潔有力的「跟進作戰報告」。
+
+格式規則：
+- 用繁體中文
+- 回應要具體、可執行，不要廢話
+- 每段用 emoji 做視覺分隔`;
+
+  const userPrompt = `客戶類型：${p.name}（${p.type}）
+
+【他說的（表面）】
+${p.surface}
+
+【心裡真正在說】
+${p.real}
+
+【他需要先感受到什麼才會鬆口】
+${p.need}
+
+【他最怕的事】
+${p.fear}
+
+【業務最容易踩的陷阱】
+${p.trap}
+
+【相關話術庫摘要】
+${scriptSummary}
+
+請生成一份跟進報告，包含：
+1. 🔍 這組客戶的核心卡點（2-3句，直指本質）
+2. 🎯 下一步行動計畫（具體3步，每步一句話要說什麼）
+3. 💬 開場鉤子訊息（1則 Line 文字，直接可發送）
+4. ⚠️ 三個絕對不能做的事
+5. 💡 如果三天沒回應，這樣說（1則追蹤文字）`;
+
+  try {
+    const text = await callAnthropicAPI(systemPrompt, [{ role: 'user', content: userPrompt }], 800);
+
+    const el = document.getElementById('coach-report-content');
+    if (!el) return;
+
+    // 格式化輸出
+    const formatted = text
+      .replace(/^(#{1,3} .+)$/gm, '<div style="font-family:\'Noto Serif TC\',serif;font-weight:700;font-size:15px;margin:18px 0 8px;color:var(--text)">$1</div>')
+      .replace(/\n\n/g, '</p><p style="margin-bottom:10px">')
+      .replace(/\n/g, '<br>');
+
+    el.innerHTML = `
+      <div style="background:rgba(61,90,64,0.06);border-left:3px solid var(--olive);padding:12px 16px;border-radius:0 8px 8px 0;margin-bottom:20px;font-size:12px;color:var(--text-sub)">
+        根據「${p.name}」的心理模型 · 相關話術 ${SCRIPTS.filter(s=>s.persona===p.id).length} 筆 · AI 生成跟進策略
+      </div>
+      <div style="white-space:pre-wrap;line-height:1.9">${text}</div>
+      <div style="margin-top:24px;padding-top:16px;border-top:1px solid var(--border);display:flex;gap:8px">
+        <button onclick="startExam('${p.id}');document.getElementById('coach-modal').remove()" style="flex:1;background:var(--olive);color:#fff;border:none;border-radius:8px;padding:10px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">🎯 進入考試院陪練</button>
+        <button onclick="navigator.clipboard.writeText(document.getElementById('coach-report-content').innerText).then(()=>alert('已複製到剪貼簿'))" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--text-sub);cursor:pointer;font-family:inherit">📋 複製</button>
+      </div>
+    `;
+  } catch(e) {
+    const el = document.getElementById('coach-report-content');
+    if (el) el.innerHTML = `<div style="color:#c0392b;padding:16px;background:rgba(192,57,43,0.06);border-radius:8px">連線失敗：${e.message}</div>`;
+  }
 }
 
 // ── 考試院：AI 直接扮演客戶考試 ──
 let examState = { personaId: null, messages: [], score: null, active: false };
 
 function startExam(personaId) {
+  requireApiKey(() => _startExam(personaId));
+}
+
+function _startExam(personaId) {
   const p = PERSONAS.find(x => x.id === personaId);
   if (!p) return;
   examState = { personaId, messages: [], score: null, active: true, persona: p };
@@ -766,19 +954,7 @@ async function callExamAPI(systemPrompt, messages, extraInstruction) {
       msgs.push({ role: 'user', content: '開始' });
     }
 
-    const resp = await fetch('https://script.google.com/macros/s/AKfycbz270Wt4O75bgBNpvY5ZZiNjz_sC60St_T-IwiDslP0vjSfw5A4cK8SDAL7W_PIpkFJaQ/exec', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 500,
-        system: systemPrompt,
-        messages: msgs
-      })
-    });
-    const data = await resp.json();
-    if (data.content && data.content[0]) return data.content[0].text;
-    return '（AI 回應失敗，請重試）';
+    return await callAnthropicAPI(systemPrompt, msgs, 500);
   } catch(e) {
     return '（連線失敗：' + e.message + '）';
   }
@@ -925,7 +1101,7 @@ function showPersona(id) {
       <button onclick="startExam('${p.id}')" style="flex:1;background:var(--olive);color:#fff;border:none;border-radius:10px;padding:13px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">
         🎯 考試院 · 開始陪練
       </button>
-      <button onclick="window.open('zhiwei-ai-coach-v4.html?persona='+encodeURIComponent('${p.name}'),'_blank')" style="flex:1;background:rgba(184,148,60,0.15);color:var(--gold);border:1px solid rgba(184,148,60,0.3);border-radius:10px;padding:13px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">
+      <button onclick="openCoach('${p.id}','${p.name}')" style="flex:1;background:rgba(184,148,60,0.15);color:var(--gold);border:1px solid rgba(184,148,60,0.3);border-radius:10px;padding:13px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">
         ⚡ 生成跟進報告
       </button>
     </div>
