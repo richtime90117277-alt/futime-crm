@@ -921,6 +921,14 @@ function showPersona(id) {
       </div>
     </div>
 
+    <div style="display:flex;gap:10px;margin-bottom:20px">
+      <button onclick="startExam('${p.id}')" style="flex:1;background:var(--olive);color:#fff;border:none;border-radius:10px;padding:13px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">
+        🎯 考試院 · 開始陪練
+      </button>
+      <button onclick="window.open('zhiwei-ai-coach-v4.html?persona='+encodeURIComponent('${p.name}'),'_blank')" style="flex:1;background:rgba(184,148,60,0.15);color:var(--gold);border:1px solid rgba(184,148,60,0.3);border-radius:10px;padding:13px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">
+        ⚡ 生成跟進報告
+      </button>
+    </div>
     <div class="view-eyebrow" style="margin-bottom:12px">📋 相關話術（${related.length} 筆）</div>
     <div class="script-list">${related.map(s=>card(s)).join('')}</div>
   `);
