@@ -84,6 +84,12 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'PingFang TC'
 
 .spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
+
+.function-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;padding:10px 14px 16px}
+.fn-btn{border:1.5px solid var(--border);border-radius:11px;padding:12px 6px 10px;text-align:center;cursor:pointer;font-size:12px;color:var(--grey);line-height:1.45;transition:all .18s;background:var(--card2);-webkit-tap-highlight-color:transparent;user-select:none}
+.fn-btn.active{border-color:var(--o);background:rgba(232,105,42,.13);color:#fff}
+.fn-btn.active .fn-num{background:var(--o);color:#fff}
+.fn-num{display:block;width:22px;height:22px;background:var(--dim);border-radius:50%;font-size:10px;font-weight:800;line-height:22px;text-align:center;margin:0 auto 6px;color:#fff;transition:all .18s}
 </style>
 </head>
 <body>
@@ -146,9 +152,16 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'PingFang TC'
         <label>手機號碼 <span class="req">*</span></label>
         <input type="tel" id="phone" placeholder="09XX-XXX-XXX" inputmode="numeric" autocomplete="tel">
       </div>
-      <div class="form-field">
-        <label>想了解的方向（選填）</label>
-        <textarea id="note" placeholder="例如：首購規劃、包租策略、資產配置…"></textarea>
+      <div class="form-field" style="padding-bottom:4px;border-bottom:none">
+        <label>想了解的方向 <span style="color:var(--dim);font-weight:400;letter-spacing:0">（可複選）</span></label>
+      </div>
+      <div class="function-grid" id="functionGrid">
+        <div class="fn-btn" onclick="toggleFn(this)" data-val="自住自用"><span class="fn-num">1</span><br>自住自用</div>
+        <div class="fn-btn" onclick="toggleFn(this)" data-val="強迫儲蓄"><span class="fn-num">2</span><br>強迫儲蓄</div>
+        <div class="fn-btn" onclick="toggleFn(this)" data-val="投資理財"><span class="fn-num">3</span><br>投資理財</div>
+        <div class="fn-btn" onclick="toggleFn(this)" data-val="退休規劃"><span class="fn-num">4</span><br>退休規劃</div>
+        <div class="fn-btn" onclick="toggleFn(this)" data-val="以房養老"><span class="fn-num">5</span><br>以房養老</div>
+        <div class="fn-btn" onclick="toggleFn(this)" data-val="資金調度傳承稅務"><span class="fn-num">6</span><br>資金調度<br>&amp;傳承稅務</div>
       </div>
     </div>
 
@@ -185,10 +198,12 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'PingFang TC'
 <script>
 const GAS_URL = "https://script.google.com/macros/s/AKfycbyoYXfbxxFUU7qaud8uBTUWsXw0z7cSEEIO1oW1PiU9QdvginvjfXGypWtG0Lzk15-C/exec";
 
+function toggleFn(el){el.classList.toggle('active');}
+
 async function submitForm() {
   const name  = document.getElementById('name').value.trim();
   const phone = document.getElementById('phone').value.trim();
-  const note  = document.getElementById('note').value.trim();
+  const note  = Array.from(document.querySelectorAll('.fn-btn.active')).map(b=>b.dataset.val).join('、') || '—';
 
   if (!name) { alert('請填寫姓名'); return; }
   if (!phone) { alert('請填寫手機號碼'); return; }
@@ -213,14 +228,9 @@ async function submitForm() {
   };
 
   try {
-    // ⚠️ GAS doPost 用 JSON.parse(e.postData.contents) 解析
-    // 必須送 JSON 字串，不能用 FormData
-    await fetch(GAS_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify(payload),
-      mode: 'no-cors'
-    });
+    const form = new FormData();
+    Object.entries(payload).forEach(([k,v]) => form.append(k,v));
+    await fetch(GAS_URL, { method:'POST', body:form, mode:'no-cors' });
 
     // Show success
     document.getElementById('formView').style.display = 'none';
