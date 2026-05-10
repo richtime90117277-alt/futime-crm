@@ -2135,6 +2135,8 @@ function enterApp() {
   initApp();
   fetchCustomers();
   loadBookings();
+  // 登入後初始化智偉哥浮動按鈕
+  if (typeof zwInit === 'function') zwInit();
 }
 
 function logout() {
@@ -5392,6 +5394,16 @@ function showDetail(id) {
   actionsDiv.appendChild(assetBtn);
 
   if (canEdit) {
+    // ── 標記成交快捷按鈕（未成交才顯示）──
+    if (isActive(c)) {
+      var closeBtn = document.createElement('button');
+      closeBtn.className = 'btn';
+      closeBtn.style.cssText = 'flex:1;margin-top:0;background:linear-gradient(135deg,#2e6b42,#1a4a2e);color:#fff;box-shadow:0 4px 14px rgba(46,107,66,.3)';
+      closeBtn.textContent = '🏆 標記成交';
+      closeBtn.addEventListener('click', (function(customer){ return function(){ showCloseModal(customer); }; })(c));
+      actionsDiv.appendChild(closeBtn);
+    }
+
     var editBtn = document.createElement('button');
     editBtn.className = 'btn btn-secondary';
     editBtn.style.cssText = 'flex:1;margin-top:0';
@@ -5717,6 +5729,73 @@ function saveEdit(c) {
       fetchCustomers();
     } else {
       showToast('❌ 更新失敗：'+res.error);
+    }
+  });
+}
+
+// ══════════════════════════════════════════════
+// 標記成交快捷流程
+// ══════════════════════════════════════════════
+function showCloseModal(c) {
+  var today = new Date().toISOString().slice(0,10);
+  var overlay = document.createElement('div');
+  overlay.id = 'closeQuickModal';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(44,36,22,.5);z-index:2000;display:flex;align-items:center;justify-content:center;padding:1rem';
+  overlay.innerHTML = '<div style="background:#fff;border-radius:20px;padding:24px;max-width:360px;width:100%;box-shadow:0 20px 60px rgba(44,36,22,.25)">'
+    + '<div style="font-size:18px;font-weight:700;color:#2c2416;margin-bottom:4px;font-family:Noto Serif TC,serif">🏆 標記成交</div>'
+    + '<div style="font-size:13px;color:#a09080;margin-bottom:20px">' + c.customerName + '</div>'
+    + '<div style="margin-bottom:14px">'
+    +   '<label style="display:block;font-size:11px;font-weight:700;color:#6b5d4a;letter-spacing:.06em;margin-bottom:6px">簽約日期</label>'
+    +   '<input id="qc_date" type="date" value="' + today + '" style="width:100%;padding:.75rem 1rem;border:2px solid #ede8df;border-radius:10px;font-size:14px;font-family:inherit;outline:none;background:#faf6f0">'
+    + '</div>'
+    + '<div style="margin-bottom:14px">'
+    +   '<label style="display:block;font-size:11px;font-weight:700;color:#6b5d4a;letter-spacing:.06em;margin-bottom:6px">成交金額（萬）</label>'
+    +   '<input id="qc_amount" type="number" placeholder="例：1800" style="width:100%;padding:.75rem 1rem;border:2px solid #ede8df;border-radius:10px;font-size:14px;font-family:inherit;outline:none;background:#faf6f0">'
+    + '</div>'
+    + '<div style="margin-bottom:20px">'
+    +   '<label style="display:block;font-size:11px;font-weight:700;color:#6b5d4a;letter-spacing:.06em;margin-bottom:6px">備註（選填）</label>'
+    +   '<input id="qc_note" type="text" placeholder="案名、樓層等…" style="width:100%;padding:.75rem 1rem;border:2px solid #ede8df;border-radius:10px;font-size:14px;font-family:inherit;outline:none;background:#faf6f0">'
+    + '</div>'
+    + '<div style="display:flex;gap:10px">'
+    +   '<button onclick="document.getElementById(\'closeQuickModal\').remove()" style="flex:1;padding:.75rem;border:2px solid #ede8df;border-radius:10px;background:#faf6f0;color:#6b5d4a;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit">取消</button>'
+    +   '<button id="qc_confirmBtn" onclick="quickClose(\'' + c.id + '\')" style="flex:2;padding:.75rem;border:none;border-radius:10px;background:linear-gradient(135deg,#2e6b42,#1a4a2e);color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">✅ 確認成交</button>'
+    + '</div>'
+    + '</div>';
+  document.body.appendChild(overlay);
+  // 點背景關閉
+  overlay.addEventListener('click', function(e){ if(e.target===overlay) overlay.remove(); });
+}
+
+function quickClose(customerId) {
+  var date = document.getElementById('qc_date').value;
+  var amount = document.getElementById('qc_amount').value;
+  var note = document.getElementById('qc_note').value;
+  if (!date) { alert('請填入簽約日期'); return; }
+
+  var c = customers.find(function(x){ return x.id && x.id.toString()===customerId.toString(); });
+  if (!c) { alert('找不到客戶資料'); return; }
+
+  var btn = document.getElementById('qc_confirmBtn');
+  btn.disabled = true; btn.textContent = '⏳ 儲存中...';
+
+  // 合併原有資料，只更新成交相關欄位
+  var updated = Object.assign({}, c, {
+    contractStatus: '已簽約',
+    contractDate:   date,
+    dealAmount:     amount,
+    customerActive: '已成交',
+    notes: note ? (c.notes ? c.notes + '\n' + note : note) : c.notes
+  });
+
+  callAPI({ action: 'update', customer: updated }, function(res) {
+    if (res.success) {
+      document.getElementById('closeQuickModal').remove();
+      document.getElementById('detailModal').classList.remove('active');
+      showToast('🏆 成交記錄完成！' + (amount ? ' ' + amount + '萬' : ''));
+      fetchCustomers(); // 重新載入讓列表即時更新
+    } else {
+      btn.disabled = false; btn.textContent = '✅ 確認成交';
+      showToast('❌ 儲存失敗：' + res.error);
     }
   });
 }
