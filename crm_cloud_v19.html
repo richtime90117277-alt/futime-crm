@@ -1561,6 +1561,35 @@ function claimSeminarLead() {}
           <div class="form-group">
             <label>補充說明（可略）</label>
             <textarea id="jn_note" placeholder="例：她說下週要問老公，約週五再聯絡" style="min-height:60px"></textarea>
+          <!-- 預測 vs 實際判斷力訓練 -->
+          <div style="background:linear-gradient(135deg,#faf6f0,#f5ede0);border:1.5px solid rgba(154,124,46,0.25);border-radius:12px;padding:14px;margin-bottom:1rem">
+            <div style="font-size:10px;letter-spacing:.12em;color:#9a7c2e;font-weight:700;margin-bottom:10px">🎯 判斷力訓練 — 預測 vs 實際</div>
+            <div class="form-grid two">
+              <div class="form-group" style="margin-bottom:0">
+                <label style="color:#6b5d4a">跟進前：預測客戶反應</label>
+                <select id="jn_predict">
+                  <option value="">（選填）</option>
+                  <option value="正向推進">🟢 正向推進</option>
+                  <option value="繼續觀望">🟡 繼續觀望</option>
+                  <option value="提出異議">🟠 提出異議</option>
+                  <option value="拒絕接觸">🔴 拒絕接觸</option>
+                  <option value="主動成交">🏆 主動要求成交</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom:0">
+                <label style="color:#6b5d4a">跟進後：實際結果</label>
+                <select id="jn_actual" onchange="renderPredictResult()">
+                  <option value="">（選填）</option>
+                  <option value="正向推進">🟢 正向推進</option>
+                  <option value="繼續觀望">🟡 繼續觀望</option>
+                  <option value="提出異議">🟠 提出異議</option>
+                  <option value="拒絕接觸">🔴 拒絕接觸</option>
+                  <option value="主動成交">🏆 主動要求成交</option>
+                </select>
+              </div>
+            </div>
+            <div id="jn_predictResult" style="margin-top:8px;font-size:12px;display:none"></div>
+          </div>
           </div>
           <div class="form-group">
             <label>下次跟進計畫</label>
@@ -1570,6 +1599,18 @@ function claimSeminarLead() {}
             </div>
           </div>
           <button onclick="saveJournalEntry()" class="btn btn-primary" id="jn_saveBtn">⚡ 記錄跟進（更新到客戶資料）</button>
+        </div>
+      </div>
+
+      <!-- 判斷力準確率統計卡 -->
+      <div class="card" style="margin-bottom:1rem">
+        <div class="card-header">
+          <div class="card-icon">🎯</div>
+          <h3>我的判斷力準確率</h3>
+          <span style="font-size:11px;color:var(--text-muted);margin-left:auto">累積預測記錄</span>
+        </div>
+        <div class="card-body">
+          <div id="predictStatsCard"><div style="font-size:13px;color:var(--text-muted)">尚無預測記錄</div></div>
         </div>
       </div>
 
@@ -4266,6 +4307,7 @@ function initJournalPage() {
 
   renderTodayFollowupList();
   renderWeekJournalList();
+  renderPredictStats(); // 判斷力準確率統計
 }
 
 function fillJournalCustomer() {
@@ -4286,6 +4328,11 @@ function saveJournalEntry() {
   var note = document.getElementById('jn_note').value;
   var nextDate = document.getElementById('jn_nextDate').value;
   var nextPlan = document.getElementById('jn_nextPlan').value;
+  // 預測 vs 實際
+  var predict = document.getElementById('jn_predict') ? document.getElementById('jn_predict').value : '';
+  var actual  = document.getElementById('jn_actual')  ? document.getElementById('jn_actual').value  : '';
+  // 判斷準確度
+  var predictMatch = (predict && actual) ? (predict === actual ? 'hit' : 'miss') : '';
 
   if (!cid) { showToast('請選擇客戶'); return; }
   if (!action) { showToast('請選擇今天做了什麼'); return; }
@@ -4309,6 +4356,9 @@ function saveJournalEntry() {
     note: note,
     nextDate: nextDate,
     nextPlan: nextPlan,
+    predict: predict,       // 跟進前預測
+    actual: actual,         // 實際結果
+    predictMatch: predictMatch, // hit / miss / ''
     date: new Date().toISOString().slice(0,10),
     ts: Date.now()
   });
@@ -4335,13 +4385,83 @@ function saveJournalEntry() {
       document.getElementById('jn_response').value = '';
       document.getElementById('jn_note').value = '';
       document.getElementById('jn_nextPlan').value = '';
+      // 清空預測欄位
+      var pd = document.getElementById('jn_predict'); if (pd) pd.value = '';
+      var ac = document.getElementById('jn_actual');  if (ac) ac.value = '';
+      var pr = document.getElementById('jn_predictResult'); if (pr) { pr.style.display='none'; pr.innerHTML=''; }
       fetchCustomers();
       renderWeekJournalList();
       renderTodayFollowupList();
+      renderPredictStats(); // 更新準確率統計
     } else {
       showToast('❌ 更新失敗：'+res.error);
     }
   });
+}
+
+// ══════════════════════════════════════════════
+// 預測 vs 實際 — 判斷力訓練系統
+// ══════════════════════════════════════════════
+
+// 即時顯示預測對比結果（選完實際結果後觸發）
+function renderPredictResult() {
+  var el = document.getElementById('jn_predictResult');
+  if (!el) return;
+  var predict = document.getElementById('jn_predict').value;
+  var actual  = document.getElementById('jn_actual').value;
+  if (!predict || !actual) { el.style.display = 'none'; return; }
+  el.style.display = 'block';
+  if (predict === actual) {
+    el.innerHTML = '<span style="color:#2e6b42;font-weight:700">✅ 預測準確！</span> 你對這個客戶的判斷是對的。';
+  } else {
+    el.innerHTML = '<span style="color:#b02a20;font-weight:700">⚠️ 有偏差</span> 預測「' + predict + '」，實際「' + actual + '」。'
+      + '<span style="color:#6b5d4a"> 記得問智偉哥為什麼判斷錯了。</span>';
+  }
+}
+
+// 渲染本人的預測準確率統計卡
+function renderPredictStats() {
+  var el = document.getElementById('predictStatsCard');
+  if (!el) return;
+  var journal = getJournal();
+  // 只看自己的、有填預測的
+  var mine = journal.filter(function(j){
+    return j.salesPerson === currentUser && j.predict && j.actual;
+  });
+  if (!mine.length) {
+    el.innerHTML = '<div style="font-size:13px;color:var(--text-muted);padding:.5rem 0">尚無預測記錄，填寫判斷力訓練後這裡會顯示你的準確率。</div>';
+    return;
+  }
+  var hit  = mine.filter(function(j){ return j.predictMatch === 'hit'; }).length;
+  var miss = mine.filter(function(j){ return j.predictMatch === 'miss'; }).length;
+  var rate = Math.round(hit / mine.length * 100);
+  var rateColor = rate >= 70 ? '#2e6b42' : rate >= 50 ? '#9a7c2e' : '#b02a20';
+
+  // 找最常判斷錯的情境
+  var missList = mine.filter(function(j){ return j.predictMatch === 'miss'; });
+  var missFreq = {};
+  missList.forEach(function(j){
+    var k = '預測' + j.predict + '→實際' + j.actual;
+    missFreq[k] = (missFreq[k]||0) + 1;
+  });
+  var topMiss = Object.keys(missFreq).sort(function(a,b){ return missFreq[b]-missFreq[a]; })[0];
+
+  el.innerHTML =
+    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">'
+    + '<div style="text-align:center;background:var(--white);border:1px solid var(--hub-border);border-radius:10px;padding:10px">'
+    +   '<div style="font-size:22px;font-weight:800;color:' + rateColor + ';font-family:DM Mono,monospace">' + rate + '%</div>'
+    +   '<div style="font-size:10px;color:var(--text-muted)">準確率</div>'
+    + '</div>'
+    + '<div style="text-align:center;background:var(--white);border:1px solid var(--hub-border);border-radius:10px;padding:10px">'
+    +   '<div style="font-size:22px;font-weight:800;color:#2e6b42;font-family:DM Mono,monospace">' + hit + '</div>'
+    +   '<div style="font-size:10px;color:var(--text-muted)">預測準確</div>'
+    + '</div>'
+    + '<div style="text-align:center;background:var(--white);border:1px solid var(--hub-border);border-radius:10px;padding:10px">'
+    +   '<div style="font-size:22px;font-weight:800;color:#b02a20;font-family:DM Mono,monospace">' + miss + '</div>'
+    +   '<div style="font-size:10px;color:var(--text-muted)">判斷偏差</div>'
+    + '</div>'
+    + '</div>'
+    + (topMiss ? '<div style="font-size:12px;color:#b02a20;background:#fdf0ee;padding:8px 10px;border-radius:8px">⚠️ 最常判斷錯：' + topMiss + '（' + missFreq[topMiss] + '次）</div>' : '');
 }
 
 function renderTodayFollowupList() {
