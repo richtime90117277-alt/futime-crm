@@ -737,12 +737,12 @@ body{
 </style>
 <style>
 /* ══ TABLET WOW INTEGRATION ══ */
-html,body{height:100%;overflow:hidden}
-.wow-app{display:none;grid-template-columns:380px 1fr;height:100vh;overflow:hidden}
+html,body{height:100%;overflow:hidden;overscroll-behavior:none;-webkit-overflow-scrolling:touch}
+.wow-app{display:none;grid-template-columns:380px 1fr;height:100vh;overflow:hidden;overscroll-behavior:none}
 .wow-app.active{display:grid}
 
 /* LEFT */
-.wow-left{background:#fdf9f2;border-right:1px solid rgba(160,120,60,.15);display:flex;flex-direction:column;overflow:hidden}
+.wow-left{background:#fdf9f2;border-right:1px solid rgba(160,120,60,.15);display:flex;flex-direction:column;overflow:hidden;height:100vh;position:relative}
 .wow-left-head{padding:11px 14px;border-bottom:1px solid rgba(160,120,60,.12);display:flex;align-items:center;gap:10px;flex-shrink:0}
 .wow-logo-box{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#c9922b,#e8b84b);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;color:#fff;box-shadow:0 2px 8px rgba(201,146,43,.28);flex-shrink:0}
 .wow-logo-name{font-size:11px;font-weight:bold;color:#2c1f0e;letter-spacing:.8px}
@@ -753,7 +753,7 @@ html,body{height:100%;overflow:hidden}
 .wow-ltab{flex-shrink:0;padding:7px 10px;font-size:10px;color:rgba(120,80,20,.45);background:none;border:none;cursor:pointer;font-family:inherit;border-bottom:2px solid transparent;transition:all .15s;letter-spacing:.3px;white-space:nowrap}
 .wow-ltab.on{color:#9a6820;border-bottom-color:#c9922b;font-weight:bold}
 
-.wow-left-scroll{flex:1;overflow-y:auto;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.wow-left-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:10px 12px 72px;display:flex;flex-direction:column;gap:8px;min-height:0}
 .wow-left-scroll::-webkit-scrollbar{width:3px}
 .wow-left-scroll::-webkit-scrollbar-thumb{background:rgba(160,120,60,.15);border-radius:2px}
 
@@ -774,8 +774,8 @@ html,body{height:100%;overflow:hidden}
 .wow-left .svd{font-size:11px}
 .wow-left .mini{width:60px;font-size:11px}
 
-.wow-gen-btn{margin:8px 12px 10px;padding:11px;background:linear-gradient(135deg,#c9922b,#e8b84b);border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:bold;cursor:pointer;font-family:inherit;box-shadow:0 3px 14px rgba(201,146,43,.3);transition:all .2s;flex-shrink:0}
-.wow-gen-btn:hover{transform:translateY(-1px);box-shadow:0 5px 20px rgba(201,146,43,.4)}
+.wow-gen-btn{position:sticky;bottom:0;margin:0;padding:13px 12px;background:linear-gradient(135deg,#c9922b,#e8b84b);border:none;border-top:1px solid rgba(201,146,43,.2);border-radius:0;color:#fff;font-size:13px;font-weight:bold;cursor:pointer;font-family:inherit;box-shadow:0 -4px 16px rgba(201,146,43,.2);transition:all .2s;flex-shrink:0;width:100%;letter-spacing:.3px}
+.wow-gen-btn:hover{background:linear-gradient(135deg,#b8821e,#d9a83c);box-shadow:0 -4px 20px rgba(201,146,43,.35)}
 
 /* RIGHT */
 .wow-right{overflow:hidden;display:flex;flex-direction:column;background:linear-gradient(160deg,#fefcf6 0%,#f8f3e8 50%,#f4f0e0 100%);position:relative}
@@ -787,7 +787,7 @@ html,body{height:100%;overflow:hidden}
 .wow-rtab.on{color:#9a6820;border-bottom-color:#c9922b;font-weight:bold}
 
 .wow-rpanels{flex:1;overflow:hidden;position:relative;z-index:1}
-.wow-rpanel{display:none;height:100%;overflow-y:auto;padding:18px 24px 14px}
+.wow-rpanel{display:none;height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:18px 24px 80px}
 .wow-rpanel.on{display:flex;flex-direction:column;gap:12px}
 
 /* DIAGNOSIS */
@@ -939,10 +939,10 @@ html,body{height:100%;overflow:hidden}
     </div>
 
     <div class="wow-ltabs">
-      <button class="wow-ltab on" onclick="wowLTab(0,this)">客戶 &amp; 收支</button>
-      <button class="wow-ltab" onclick="wowLTab(1,this)">資產 &amp; 負債</button>
-      <button class="wow-ltab" onclick="wowLTab(2,this)">貸款試算</button>
-      <button class="wow-ltab" onclick="wowLTab(3,this)">整合 &amp; 建議</button>
+      <button class="wow-ltab on" onclick="wowLTab(0,this)">客戶 &amp; 資產</button>
+      <button class="wow-ltab" onclick="wowLTab(1,this)">收入 &amp; 支出</button>
+      <button class="wow-ltab" onclick="wowLTab(2,this)">整合 &amp; 節流</button>
+      <button class="wow-ltab" onclick="wowLTab(3,this)">購屋試算</button>
     </div>
 
     <div class="wow-left-scroll">
@@ -14338,24 +14338,24 @@ function g(id){return document.getElementById(id)}
   var t3 = document.getElementById('wlt3');
 
   var cards = vi.querySelectorAll('.card');
-  var integ = vi.querySelector('[style*="border-color:rgba(46,204,113"]');
 
   cards.forEach(function(card){
     var cnEl = card.querySelector('.cn');
     var cn = cnEl ? cnEl.textContent.trim() : '';
-    if(cn==='01'||cn==='03'||cn==='04') { t0&&t0.appendChild(card); }
-    else if(cn==='02') { t1&&t1.appendChild(card); }
-    else if(cn==='05') { t2&&t2.appendChild(card); }
-    else if(cn==='06') { t3&&t3.appendChild(card); }
-    else if(cn==='整合') {
-      // 整合方案卡 → 放在 tab3 最前面
-      if(t3){ t3.insertBefore(card, t3.firstChild); }
-    }
+    // Tab 0：客戶 & 資產（01客戶資訊 + 02資產負債）
+    if(cn==='01'||cn==='02') { t0&&t0.appendChild(card); }
+    // Tab 1：收入 & 支出（03年收入 + 04支出明細）
+    else if(cn==='03'||cn==='04') { t1&&t1.appendChild(card); }
+    // Tab 2：整合 & 節流（整合卡在前 + 06開源節流）
+    else if(cn==='整合') { t2&&t2.appendChild(card); }
+    else if(cn==='06') { t2&&t2.appendChild(card); }
+    // Tab 3：購屋試算（05貸款試算）
+    else if(cn==='05') { t3&&t3.appendChild(card); }
   });
 
-  // Also move lbox elements into tab2 (they belong with card 05)
+  // lbox 屬於卡 05，跟著放 Tab 3
   var lboxes = vi.querySelectorAll('.lbox');
-  lboxes.forEach(function(lb){ t2&&t2.appendChild(lb); });
+  lboxes.forEach(function(lb){ t3&&t3.appendChild(lb); });
 })();
 
 // ── Tab switching ────────────────────────────────────────────
