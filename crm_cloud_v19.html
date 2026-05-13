@@ -3387,45 +3387,56 @@ function calcCloseProb(c) {
 // ══════════════════════════════════════════════
 function daysSinceUpdate(c) {
   var now = new Date();
+  var candidates = [];
 
-  // 優先：從日誌找這個客戶最近一筆記錄
+  // 1. 跟進日誌（最可靠）
   try {
     var journal = getJournal();
     var myLogs = journal.filter(function(j){ return j.customerId === c.id.toString(); });
     if (myLogs.length > 0) {
       myLogs.sort(function(a,b){ return new Date(b.date) - new Date(a.date); });
-      var lastLog = new Date(myLogs[0].date);
-      if (!isNaN(lastLog)) {
-        return Math.floor((now - lastLog) / 86400000);
-      }
+      var d = new Date(myLogs[0].date);
+      if (!isNaN(d)) candidates.push(d);
     }
   } catch(e) {}
 
-  // 次選：備註裡的日期（格式：2026/3/4）
+  // 2. lastFollowupResult / lastFollowupDate / lastContact 欄位中的日期
+  try {
+    [c.lastFollowupResult, c.lastFollowupDate, c.lastContact].forEach(function(f){
+      if (!f) return;
+      var m = f.toString().match(/(\d{4})[\/-](\d{1,2})[\/-](\d{1,2})/);
+      if (m) { var d = new Date(m[1]+'-'+m[2]+'-'+m[3]); if (!isNaN(d)) candidates.push(d); }
+    });
+  } catch(e) {}
+
+  // 3. 備註裡所有日期，取最新
   try {
     if (c.notes) {
-      var dateMatch = c.notes.match(/(\d{4}\/\d{1,2}\/\d{1,2})/);
-      if (dateMatch) {
-        var d = new Date(dateMatch[1].replace(/\//g, '-'));
-        if (!isNaN(d)) return Math.floor((now - d) / 86400000);
-      }
+      var matches = c.notes.match(/(\d{4}[\/\-]\d{1,2}[\/\-]\d{1,2})/g);
+      if (matches) matches.forEach(function(s){
+        var d = new Date(s.replace(/\//g,'-')); if (!isNaN(d)) candidates.push(d);
+      });
     }
   } catch(e) {}
 
-  // 最後：用 id 時間戳（新版資料）
-  try {
-    var idNum = parseInt(c.id);
-    if (!isNaN(idNum) && idNum > 1000000000000) {  // 合理的時間戳（13位數）
-      return Math.floor((now - new Date(idNum)) / 86400000);
-    }
-  } catch(e) {}
+  // 取候選中最新的日期
+  if (candidates.length > 0) {
+    candidates.sort(function(a,b){ return b - a; });
+    return Math.floor((now - candidates[0]) / 86400000);
+  }
 
-  // creationDate
+  // 4. creationDate 兜底
   try {
     if (c.creationDate) {
       var cd = new Date(c.creationDate);
       if (!isNaN(cd)) return Math.floor((now - cd) / 86400000);
     }
+  } catch(e) {}
+
+  // 5. id 時間戳最後兜底（13位數毫秒）
+  try {
+    var idNum = parseInt(c.id);
+    if (!isNaN(idNum) && idNum > 1000000000000) return Math.floor((now - new Date(idNum)) / 86400000);
   } catch(e) {}
 
   return 999;
@@ -5508,7 +5519,7 @@ function buildGenomeCard(c, stage) {
     // Genome 維度
     + '<div class="genome-section-lbl">GENOME DIMENSIONS</div>'
     + '<div class="genome-dims">'
-    +   buildDimItem('💛 信任度', (c.trustScore||0)*10, '#9a7c2e', (c.trustScore||'—')+'/10')
+    +   buildDimItem('💛 信任度', (c.trustScore!=null&&c.trustScore!==''?c.trustScore:0)*10, '#9a7c2e', (c.trustScore!=null&&c.trustScore!==''?c.trustScore:'—')+'/10')
     +   buildDimItem('🎯 成交機率', prob, prob>=70?'#2e6b42':prob>=40?'#e67e22':'#a09080', prob+'%')
     +   buildDimItem('🔥 客戶溫度', {A:90,B:65,C:40,D:15}[temp]||30, tempColor, tempLabel)
     +   buildDimItem('📋 流程進度', (stage/8)*100, '#1a56a8', stage+'/8 部曲')
@@ -5590,9 +5601,9 @@ function showDetail(id) {
   ];
   document.getElementById('modalBody').innerHTML = rows.filter(function(r){ return r[1]; }).map(function(r){
     return '<div class="detail-row"><div class="detail-label">'+r[0]+'</div><div class="detail-value">'+r[1]+'</div></div>';
-  }).join('') + renderConsultantAdvicePlaceholder(c);
+  }).join('') ;  // 智偉哥建議區塊已移除
   // 非同步載入「智偉哥建議」區塊（不阻塞 modal 開啟）
-  loadConsultantAdvice(c);
+  // loadConsultantAdvice 已停用
   var sid = c.id.toString();
   var canEdit = currentRole==='manager' || c.salesPerson===currentUser;
   var actionsDiv = document.getElementById('modalActions');
@@ -7256,19 +7267,25 @@ function zwInit() {
 // ── 打開客戶詳情時觸發 ──
 function zwOnCustomerOpen(customer) {
   zwCurrentCustomer = customer;
-  var prompt = zwGetAutoPrompt(customer);
-  document.getElementById('zwBubbleText').textContent = prompt;
-  document.getElementById('zwBubble').classList.remove('hidden');
-  document.getElementById('zwDot').style.display = 'block';
-  // 根據狀況選貼圖
-  var days = zwDaysSince(customer.updatedAt || customer.creationDate);
-  zwSetSticker(days >= 14 ? 'zw_please' : days >= 7 ? 'zw_fight' : 'zw_ok');
-  // 延遲抖動
-  setTimeout(function() {
-    var btn = document.getElementById('zwAvatarBtn');
-    btn.classList.add('shake');
-    setTimeout(function(){ btn.classList.remove('shake'); }, 500);
-  }, 600);
+  // 只有真正 >= 30 天未跟進才自動彈出提醒泡泡，否則靜默
+  var days = daysSinceUpdate(customer);
+  if (days >= 30) {
+    var prompt = zwGetAutoPrompt(customer);
+    document.getElementById('zwBubbleText').textContent = prompt;
+    document.getElementById('zwBubble').classList.remove('hidden');
+    document.getElementById('zwDot').style.display = 'block';
+    zwSetSticker('zw_please');
+    setTimeout(function() {
+      var btn = document.getElementById('zwAvatarBtn');
+      btn.classList.add('shake');
+      setTimeout(function(){ btn.classList.remove('shake'); }, 500);
+    }, 600);
+  } else {
+    // 一般情況：靜默更新貼圖即可，不彈泡泡
+    document.getElementById('zwBubble').classList.add('hidden');
+    document.getElementById('zwDot').style.display = 'none';
+    zwSetSticker(days >= 14 ? 'zw_fight' : 'zw_ok');
+  }
 }
 
 function zwDismissBubble() {
