@@ -711,6 +711,18 @@
           <div class="chip" onclick="toggleFamiliarity(this)" data-value="熟識，像朋友一樣">👫 熟識如朋友</div>
         </div>
       </div>
+      <div class="field span2">
+        <label>客戶提出的異議（他說什麼讓你卡住）</label>
+        <input type="text" id="objection" placeholder="例：現在房價這麼高配置房地產不會立刻有收益 / 等一下再說…" />
+      </div>
+      <div class="field span2">
+        <label>痛點補充（CRM 額外記錄）</label>
+        <textarea id="painDetail" placeholder="例：太太58年次，自己60年次，貸款條件越來越難，資產配置需加快…" style="min-height:60px;"></textarea>
+      </div>
+      <div class="field span2">
+        <label>上次提的解決方案</label>
+        <input type="text" id="solution" placeholder="例：邀請帶太太一起來研討會，之後再來算物件細節…" />
+      </div>
     </div>
 
     <div class="submit-wrap">
@@ -812,7 +824,10 @@ async function generate() {
 
     // Build prompt
     const familiarity = selectedFamiliarity || '未填';
-    const prompt = buildPrompt({ name, age, group, pain, status, keyman, support: supportValue, finance, lastResult, target, extra, familiarity });
+    const objection = document.getElementById('objection') ? document.getElementById('objection').value.trim() : '';
+    const solution = document.getElementById('solution') ? document.getElementById('solution').value.trim() : '';
+    const painDetail = document.getElementById('painDetail') ? document.getElementById('painDetail').value.trim() : '';
+    const prompt = buildPrompt({ name, age, group, pain, status, keyman, support: supportValue, finance, lastResult, target, extra, familiarity, objection, solution, painDetail });
 
     // Show loading
     document.getElementById('formCard').style.display = 'none';
@@ -905,122 +920,176 @@ async function generate() {
   });
 
   // ═══════════════════════════════════════════════
-  // 智偉哥預處理引擎 — 通殺各情境的核心
+  // 智偉哥預處理引擎 v2 — 走入客戶內心版
   // ═══════════════════════════════════════════════
-  function preProcess({ name, age, group, pain, status, finance, target, extra, support, keyman, lastResult }) {
-    const p = ((pain || '') + ' ' + (extra || '') + ' ' + (status || '')).toLowerCase();
+  function preProcess({ name, age, group, pain, status, finance, target, extra, support, keyman, lastResult, objection, solution, painDetail }) {
+    const allText = ((pain||'') + ' ' + (extra||'') + ' ' + (status||'') + ' ' + (objection||'') + ' ' + (painDetail||'')).toLowerCase();
+    const p = allText;
     const g = (group || '').toLowerCase();
     const f = (finance || '').toLowerCase();
     const t = (target || '');
+    const n = name || '這位客戶';
 
-    // ── 1. 客戶心理翻譯（從客戶身體出發）──
+    // ── 1. 從客戶身體讀出「他真正在想什麼」——必須用他的具體情境，不能說模板話 ──
     let realBlock = '';
-    const g_type = (group || '').toLowerCase();
-    if (p.includes('前夫') || p.includes('離婚') || p.includes('分居') || p.includes('前妻')) {
-      realBlock = '內心獨白：「我不是不想動，我是怕被說自私、怕孩子怪我。我需要一個讓我覺得這樣做是為了孩子好的理由，才敢開口。」\n→ 不談數字，先幫她說出她說不出口的理由。';
-    } else if (p.includes('媽媽反對') || p.includes('家人反對') || g_type.includes('問媽媽')) {
-      realBlock = '內心獨白：「我其實自己也還沒想清楚，把媽媽搬出來是在替自己爭取時間。我怕買了以後媽媽唸我一輩子。」\n→ 不批評媽媽，幫他分清楚媽媽是精神支持還是實際出資者。';
-    } else if (p.includes('股票') || p.includes('etf') || g_type.includes('股票') || g_type.includes('槓桿')) {
-      realBlock = '內心獨白：「我對股票熟，你說的道理我聽懂了，但我還是怕被說服——我要的是自己算出來的決定，不是被推著做的。」\n→ 不跟他比報酬率，要讓他用自己的數字算出來。';
-    } else if (p.includes('租') || p.includes('無殼') || g_type.includes('無殼') || g_type.includes('退休')) {
-      realBlock = '內心獨白：「我都快50了還在租房，我知道焦慮，但我以為100萬不到什麼都做不了，所以我還在等。」\n→ 釘時間壓力，讓她自己算出退休缺口，再破神經鏈。';
-    } else if (g_type.includes('家族') || g_type.includes('合資') || p.includes('姊姊') || p.includes('合資')) {
-      realBlock = '內心獨白：「我自己想定案，但我不確定家人/合資方會不會臨時反悔。我表面說等一下，其實是在等一個永遠不會自動到來的確認。」\n→ 不讓客戶回去轉述，把出資方約到現場。';
-    } else if (p.includes('爛尾') || p.includes('虧損') || p.includes('被騙') || g_type.includes('爛尾')) {
-      realBlock = '內心獨白：「我晚上睡不著，我偷偷自責，我怕再做錯一次。但我也知道繼續等也在虧。我需要有人承認我不是傻瓜。」\n→ 先肯定她過去買對的那筆，再把沉沒成本圈起來先停。';
-    } else if (g_type.includes('負債') || p.includes('沒錢') || p.includes('負債')) {
-      realBlock = '內心獨白：「我說沒錢，但其實我不是沒錢，我是不敢面對數字，用沒錢保護自己不必承認扛不起。」\n→ 不跟他吵有沒有錢，先問你真正想換到的結果是什麼。';
-    } else if ((p.includes('自住') && p.includes('投資')) || g_type.includes('拉扯')) {
-      realBlock = '內心獨白：「我嘴上說在考慮，其實心裡已經有傾向了，我只是需要一個讓我覺得這樣想是對的認可。」\n→ 不替他做決定，讓他自己說出傾向，再給一個理由支撐他的直覺。';
-    } else if (p.includes('白嫖') || g_type.includes('白嫖') || p.includes('已讀不回') || g_type.includes('已讀')) {
-      realBlock = '內心獨白：「我有興趣但不急，你越追我越想躲，我在等一個讓我好奇想主動開口的理由。」\n→ 丟鉤子不追問，讓他好奇自己回。';
-    } else if (p.includes('裝修') || g_type.includes('裝修')) {
-      realBlock = '內心獨白：「我用裝修包裝是因為我說不清楚自己真正想要什麼，其實我想要一個自己的家，但我不敢直說。」\n→ 不接裝修假議題，用小病變大病讓她自己看到代價。';
+
+    // 先抓出財務數字做個人化用
+    const moneyNums = [];
+    const moneyMatches = (finance||'').match(/[\d,]+萬/g) || [];
+    moneyMatches.forEach(m => moneyNums.push(m));
+    const firstNum = moneyNums[0] || '';
+    const hasAsset = f.includes('股票') || f.includes('etf') || f.includes('基金') || f.includes('債券') || f.includes('海外');
+    const hasOldHouse = f.includes('老屋') || f.includes('繼承') || f.includes('舊屋') || p.includes('老屋') || p.includes('繼承');
+    const hasRetirementWorry = p.includes('退休') || p.includes('以房養老') || p.includes('老了') || g.includes('退休');
+    const hasFamilyBlock = p.includes('媽媽') || p.includes('家人反對') || p.includes('爸爸不同意') || p.includes('老婆') || p.includes('先生') || p.includes('太太') || g.includes('問媽媽');
+    const hasDivorce = p.includes('前夫') || p.includes('離婚') || p.includes('分居') || p.includes('前妻');
+    const hasGhost = p.includes('已讀不回') || p.includes('已讀') || g.includes('已讀');
+    const hasBadDeal = p.includes('爛尾') || p.includes('虧損') || p.includes('被騙') || g.includes('爛尾') || g.includes('沉沒');
+    const hasDebt = p.includes('負債') || p.includes('沒錢') || g.includes('負債');
+    const hasPullPush = (p.includes('自住') && p.includes('投資')) || g.includes('拉扯');
+    const hasRenovation = p.includes('裝修') || g.includes('裝修') || g.includes('假議題');
+
+    // 組出「這個人的內心獨白」——貼著他的具體數字和情境寫
+    let innerVoice = '';
+    let blockReason = '';
+    let breakStrategy = '';
+
+    if (hasDivorce) {
+      innerVoice = `「我現在最怕的不是錢，是怕被說自私——孩子怪我、前夫說我沒資格。我需要一個讓我可以理直氣壯的理由，我才敢開口。」`;
+      blockReason = `表面在糾結${firstNum ? firstNum + '的資金' : '資金'}，真正卡的是罪惡感：${n}怕行動了被說自私。`;
+      breakStrategy = `不談數字，先說出她說不出口的那句話——「妳這樣做是為了孩子，不是為了自己，有什麼不對？」`;
+    } else if (hasFamilyBlock && !hasDivorce) {
+      const blocker = p.includes('媽媽') ? '媽媽' : p.includes('老婆') || p.includes('太太') ? '另一半' : p.includes('先生') ? '先生' : '家人';
+      innerVoice = `「我把${blocker}搬出來其實是在幫自己爭取時間——我自己都還沒想清楚。我怕買了以後被唸一輩子，所以先推給${blocker}。」`;
+      blockReason = `Keyman（${keyman || blocker}）沒進來這件事說明了一切——${n}還沒確定，在用${blocker}當緩衝。`;
+      breakStrategy = `不批評${blocker}，先問清楚：「${blocker}是有在出錢，還是純粹給意見？」把關係定位清楚，再處理${blocker}。`;
+    } else if (hasAsset) {
+      // 用他實際的資產數字
+      const assetType = f.includes('海外') || f.includes('債券') ? '海外債券' : f.includes('股票') || f.includes('etf') ? '股票/ETF' : '金融資產';
+      const assetAmt = firstNum || '這筆錢';
+      innerVoice = `「我的${assetType}我很熟、我有把握，你說的道理我都聽懂了——但我不想被說服，我要的是自己算出來的決定。你告訴我好，我會懷疑；我自己算出來，我才會動。」`;
+      blockReason = `${n}是數字腦型——${assetAmt}放${assetType}是他熟悉的控制感。換跑道等於承認現有配置有天花板，這對他來說是難關。`;
+      breakStrategy = `不跟他比報酬率，直接問：「你現在${assetType}每年大概幫你賺多少錢？如果同樣的錢，可以控制${firstNum ? parseInt(firstNum)*4+'萬' : '更大'}的資產，你願不願意算算看？」讓他用自己的數字得出結論。`;
+    } else if (hasRetirementWorry) {
+      const ageNum = age ? parseInt(age) : null;
+      const retireGap = ageNum ? `距離退休只剩${65 - ageNum}年` : '退休倒數計時';
+      innerVoice = `「我知道焦慮，但我以為自己的條件什麼都做不了，所以繼續等。沒有人告訴過我，我現在的資源其實已經夠了。」`;
+      blockReason = `${n}${ageNum ? `（${ageNum}歲），${retireGap}` : ''}——卡點不是沒錢，是不知道自己的條件能做什麼。沒有人幫他把退休缺口算清楚過。`;
+      breakStrategy = `出門前先用${firstNum || '他的資源'}算出退休缺口的數字，讓他自己看到「繼續等的代價」比「現在動的代價」大。`;
+    } else if (hasBadDeal) {
+      innerVoice = `「我晚上有時候睡不著，一直在想自己是不是傻瓜。我怕再做錯一次——但我也知道繼續放著，也是在虧。我需要有人承認我過去不是傻瓜，我才能繼續往前走。」`;
+      blockReason = `${n}有過失敗的投資經驗，沉沒成本讓他動彈不得。自責感比金額更重要。`;
+      breakStrategy = `先肯定他過去的判斷依據（不是結果），再說：「過去那一筆不管了，我們今天從現在的數字開始算。」`;
+    } else if (hasDebt) {
+      innerVoice = `「我說沒錢，但其實我是不敢面對數字。用沒錢保護自己，就不必承認自己扛不起。」`;
+      blockReason = `${n}說的「沒錢」是一道防火牆，不是事實。真正的問題是他不確定自己能不能承擔。`;
+      breakStrategy = `不跟他討論有沒有錢，直接問：「如果今天你的月付控制在＿＿以內，你覺得還是太多嗎？」讓他說出他能接受的數字。`;
+    } else if (hasPullPush) {
+      innerVoice = `「自住和投資我說兩個都在考慮，但其實我心裡已經有傾向了。我只是需要有人認同我的那個傾向，我才敢說出口。」`;
+      blockReason = `${n}心裡有答案，但需要被認同才敢說——不要替他做決定，讓他說出來。`;
+      breakStrategy = `直接問：「你說兩個都在考慮——但如果今天逼你只能選一個，你比較偏哪邊？」讓他自己說出傾向，你再強化那個直覺。`;
+    } else if (hasGhost) {
+      innerVoice = `「我有興趣但不急。你越追我越想躲。我在等一個讓我好奇、讓我想主動開口的理由——你給我那個，我自然會回。」`;
+      blockReason = `${n}已讀不回不是拒絕，是在等一個值得回的理由。追問只會讓他更想躲。`;
+      breakStrategy = `丟一個鉤子就走，不問要不要。鉤子要跟他的具體狀況有關，不能是泛泛的問候。`;
+    } else if (hasRenovation) {
+      innerVoice = `「裝修是我說出口最安全的理由，其實我也說不清楚自己真正要什麼。我只是想要一個屬於自己的家，但我不敢直說。」`;
+      blockReason = `裝修是假議題，是${n}在用來保護真正想要的東西——找到他真正想要的那個畫面，裝修就不重要了。`;
+      breakStrategy = `不接裝修的話，直接問：「如果裝修的事都解決了，你最想要的那間房子長什麼樣子？」`;
+    } else if (hasOldHouse) {
+      innerVoice = `「我有舊的資產，但我不確定現在動的時機對不對。我需要有人告訴我，現在做這個決定是對的。」`;
+      blockReason = `${n}手上有舊資產可以運用，真正卡的是「時機焦慮」——不是不能動，是不確定要不要動。`;
+      breakStrategy = `先把舊資產的淨值算清楚（市值減貸款等於可動資金），讓他看到他真正能動用的數字。`;
     } else {
-      realBlock = '卡點需要業務出門前確認——先問「你現在最不確定的是哪一塊」，再問「如果今天解決了，你最想得到什麼答案」。不能靠猜。';
-    }
-    if (p.includes('前夫') || p.includes('離婚') || p.includes('分居') || p.includes('前妻')) {
-      realBlock = '她表面糾結的是房子，底層真正卡的是：害怕被說自私、害怕孩子怪她。需要一個「這樣做是為了孩子好」的正當理由才能行動——不是錢的問題，是罪惡感的問題。';
-    } else if (p.includes('媽媽反對') || p.includes('家人反對') || p.includes('爸爸不同意')) {
-      realBlock = '表面是家人反對，真正卡的是：他自己還沒確定，用家人當擋箭牌在拖時間。先確認他自己想不想，再處理家人。';
-    } else if (p.includes('股票') || p.includes('etf') || p.includes('不想動')) {
-      realBlock = '表面是資金問題，真正卡的是：不願承認現有配置的天花板，需要看到槓桿邏輯（600萬放股票 vs 控制3000萬資產）才會動。';
-    } else if ((p.includes('租') || p.includes('無殼')) && (g.includes('首購') || g.includes('新鮮'))) {
-      realBlock = '表面覺得錢不夠，真正卡的是：不知道自己其實已經夠了。需要有人把數字算給他看，算清楚了他自己就會動。';
-    } else if (g.includes('換屋') || p.includes('老屋') || p.includes('屋齡') || p.includes('土城')) {
-      realBlock = '表面在找更好的房子，真正卡的是：不確定現在動的時機點對不對，需要被確認「現在動是對的決定」。';
-    } else if (p.includes('家人都在投資') || p.includes('爸爸有買') || p.includes('朋友都買')) {
-      realBlock = '關鍵訊號：家人都在投資，他卻來找業務——代表他和家人的投資邏輯有落差，或需要獨立的判斷來源。必須先搞清楚：你能給他什麼是家人給不了的？';
-    } else if (g.includes('退休') || p.includes('退休') || p.includes('以房養老')) {
-      realBlock = '表面擔心錢不夠，真正卡的是：沒有把退休缺口算出來。把缺口算清楚，他自己就會行動。';
-    } else if (p.includes('自住') && p.includes('投資')) {
-      realBlock = '自住和投資在拉扯——他心裡其實已經有傾向，只是需要人認同。先問：「你說『另一方面在考慮』——所以你其實比較偏哪邊？」讓他自己說出來。';
+      // 沒有明確關鍵字——根據現有資訊拼出最可能的心理狀態
+      innerVoice = `「我今天來，是因為還有一個問題沒想清楚。只要那個問題解決了，我就可以動。」`;
+      blockReason = `${n}的真正卡點需要在對話中釣出來——出門前不能靠猜，先問：「你現在最不確定的是哪一塊？」`;
+      breakStrategy = `第一刀就問那個問題，不要先介紹任何東西。`;
     }
 
-    // ── 2. 財務真相 ──
+    realBlock = `**${n}的內心獨白：**\n${innerVoice}\n\n**為什麼卡在這裡：**\n${blockReason}\n\n**破關策略：**\n${breakStrategy}`;
+
+    // ── 2. 財務真相——用他的實際數字，不說「100-200萬」的模板 ──
     let financeInsight = '';
-    const hasNum = f.match(/(\d+)萬/);
-    if (f.includes('200') || f.includes('300') || f.includes('200萬') || f.includes('300萬')) {
-      financeInsight = '自有200-300萬 → 實際購買力800-1200萬（8成貸款）。如果目標超過這個範圍，必須先處理舊資產（賣舊換新或增貸）。';
-    } else if (f.includes('100萬') || f.includes('100')) {
-      financeInsight = '自有約100萬 → 購買力約500-800萬。需要確認有無其他資源（父母房子、信貸）可以搭配，否則選擇有限。';
-    } else if (f.includes('股票') || f.includes('etf') || f.includes('基金')) {
-      financeInsight = '資金在股票/基金 → 問題是「動不動」不是「有沒有」。用比例問句：「這件事在你人生目標裡值多少比例？」讓他自己說出合理配置。';
-    } else if (f.includes('老屋') || f.includes('繼承') || f.includes('1500') || f.includes('1200')) {
-      financeInsight = '有舊資產可運用 → 真正的槓桿是「以舊換新」。先把舊屋淨值算清楚（市值-貸款=可動資金），再設計換屋路徑。';
-    } else if (!f || f === '未填' || f.length < 3) {
-      financeInsight = '⚠️ 財務資訊完全未填——出門前必須問：①能動用的現金多少？②每月舒適繳款上限多少？這兩個數字不知道，什麼方案都推不了。';
+    if (!f || f === '未填' || f.length < 3) {
+      financeInsight = `⚠️ 財務資訊完全空白——出門前必問兩個數字：①${n}現在能動用的現金是多少？②每個月繳到多少他睡得著？這兩個數字不知道，什麼都推不了。`;
     } else {
-      financeInsight = '財務資訊需進一步確認可動用現金和每月舒適繳款上限。';
+      // 萃取所有數字，組出個人化分析
+      const allNums = (finance||'').match(/[\d,]+萬/g) || [];
+      const numStr = allNums.length > 0 ? allNums.join('、') : '';
+      
+      if (hasAsset && numStr) {
+        const assetType = f.includes('海外') || f.includes('債券') ? '海外債券/債券資產' : f.includes('股票') ? '股票/ETF' : '金融資產';
+        financeInsight = `${n}手上有${numStr}放在${assetType}。\n→ 問題不是「有沒有錢」，是「動不動」。\n→ 關鍵提問：「這${numStr}放著，一年幫你賺多少？如果用同樣的錢控制${allNums[0] ? parseInt(allNums[0].replace(/[^\d]/g,''))*4+'萬' : '更大'}的資產，你願不願意算算看？」\n→ 讓他自己算，不要你告訴他答案。`;
+      } else if (hasOldHouse && numStr) {
+        financeInsight = `${n}有舊資產（${numStr}）可以運用。\n→ 先把舊屋淨值算清楚：市值－現有貸款＝可動資金。\n→ 算出那個數字之前，不要說任何方案。`;
+      } else if (numStr) {
+        // 估算購買力
+        const firstNumVal = parseInt((allNums[0]||'0').replace(/[^\d]/g,''));
+        const buyPower = firstNumVal > 0 ? (firstNumVal * 4) + '萬到' + (firstNumVal * 5) + '萬' : '待確認';
+        financeInsight = `${n}可動資金約${numStr}。\n→ 推估購買力：${buyPower}（以8成貸款估算）。\n→ 還需確認：每月舒適繳款上限是多少？`;
+      } else {
+        financeInsight = `財務描述有提到但數字不明確——出門前還要確認：①可動用現金多少？②每月繳多少睡得著？`;
+      }
     }
 
     // ── 3. Keyman 三關檢查 ──
     const gateWarnings = [];
     if (!support || support === '不清楚' || support === '未知') {
-      gateWarnings.push('❌ 關卡1未解：家人支持度未確認。有意願≠可以推流程。不確認這關，簽約後反悔風險極高。');
+      const blockerName = keyman && keyman !== '本人' && keyman !== '自己' ? keyman : '家人';
+      gateWarnings.push(`❌ 關卡1未解：${blockerName}支持度未確認。有意願≠可以推流程。這關沒搞清楚，簽約後反悔風險極高。`);
+    } else if (support === '反對') {
+      const blockerName = keyman && keyman !== '本人' ? keyman : '家人';
+      gateWarnings.push(`🔴 關卡1警報：${blockerName}明確反對。不能繞過去談流程，必須先把${blockerName}約進來，或釐清${blockerName}是出資者還是只給意見。`);
     }
     if (keyman && keyman !== '本人' && keyman !== '自己' && keyman !== '她自己' && keyman !== '他自己') {
-      gateWarnings.push(`❌ 關卡2未解：Keyman 是「${keyman}」還沒進來。Keyman 沒來，談了也沒用——先把他/她拉進局再說。`);
+      gateWarnings.push(`❌ 關卡2未解：Keyman「${keyman}」還沒進來。${keyman}沒到場，談什麼都可能被推翻——先把${keyman}約到現場。`);
     }
     if (!finance || finance === '未填' || finance.length < 5) {
-      gateWarnings.push('❌ 關卡3未解：財務狀況未確認。三關沒過不能推流程，先補這個資訊。');
+      gateWarnings.push(`❌ 關卡3未解：${n}的財務數字一個都不知道。三關沒過不能出招，先補這個資訊。`);
     }
     if (gateWarnings.length === 0) gateWarnings.push('✅ 三關基本已確認，可以推進流程。');
 
-    // ── 4. 語言訊號警報 ──
+    // ── 4. 語言訊號警報——聽到就要立刻轉 ──
     const signals = [];
-    if (p.includes('家人都在投資') || p.includes('爸爸買') || p.includes('朋友都')) {
-      signals.push('⚡ 訊號：「家人/朋友都在投資」→ 立刻轉方向問：「那你為什麼來找我？我能給你什麼是他們給不了的？」');
-    }
-    if (p.includes('再想想') || p.includes('再考慮') || p.includes('再看看')) {
-      signals.push('⚡ 訊號：「再想想/考慮」→ 立刻問：「你現在最不確定的是哪一塊？」不讓他帶著模糊感離開。');
+    if (p.includes('再想想') || p.includes('再考慮') || p.includes('再看看') || p.includes('回去想')) {
+      signals.push(`⚡「再想想」→ 立刻問：「你現在最不確定的是哪一塊？是錢的問題、還是有人不同意、還是你自己還沒想清楚？」逼他說出具體的那一個，不讓他帶著模糊感離開。`);
     }
     if (p.includes('另一半') || p.includes('老婆') || p.includes('先生') || p.includes('太太')) {
-      signals.push('⚡ 訊號：提到另一半 → 立刻確認：「他/她是支持你來的，還是你還沒跟他/她說？」');
+      const spouse = p.includes('老婆') || p.includes('太太') ? '老婆/太太' : p.includes('先生') ? '先生' : '另一半';
+      signals.push(`⚡ 提到${spouse} → 立刻確認：「${spouse}是支持你來的，還是你還沒跟${spouse}說？」把支持度確認完再往下走。`);
+    }
+    if (p.includes('朋友都') || p.includes('家人都在') || p.includes('同事也')) {
+      signals.push(`⚡ 提到「別人都在做」→ 轉方向問：「那你自己的考量是什麼？跟他們的情況一樣嗎？」把焦點拉回他自己的數字和情境。`);
+    }
+    if (objection) {
+      signals.push(`⚡ 已知客戶異議：「${objection}」→ 這是他真正的擔憂，話術必須直接回應這個點，不能繞過去。`);
     }
 
-    // ── 5. 研討會邀約角度 ──
+    // ── 5. 研討會邀約角度——貼著他的具體情境 ──
     let seminarAngle = '';
     if (t.includes('研討會')) {
-      if (p.includes('前夫') || p.includes('孩子') || p.includes('離婚')) {
-        seminarAngle = '邀約方式：說故事，不介紹研討會。「我之前遇過一個媽媽，跟妳處境很像——她也是這樣卡住。後來她去聽了一場說明會，不是去買房的，就是聽兩個小時。她聽完跟我說她終於知道怎麼走了。妳要不要也去聽聽看？我陪妳去。這週六還是下週六比較方便？」';
-      } else if (p.includes('股票') || p.includes('投資')) {
-        seminarAngle = '邀約方式：用好奇心鉤住。「你有沒有想過，為什麼那麼多有股票的人還在買房？我最近幫一個跟你條件很像的客戶算了一下，你有沒有興趣聽一下是怎麼做到的？」';
-      } else if (g.includes('首購') || p.includes('租')) {
-        seminarAngle = '邀約方式：用算數字帶進去。「你有沒有算過，你現在的條件到底買不買得起？很多人以為自己買不起，算完才發現其實夠了。去聽兩小時，讓我們幫你算清楚。」';
+      if (hasDivorce) {
+        seminarAngle = `邀約角度：說一個跟她情況很像的真實故事——單親媽媽、孩子、擔心、最後去了一場說明會才想清楚。不介紹內容，製造「去了才知道」的感覺。結尾：「我陪妳去，妳看這週六還是下週六？」`;
+      } else if (hasAsset) {
+        const assetType = f.includes('海外') || f.includes('債券') ? '海外債券' : '股票';
+        seminarAngle = `邀約鉤子：「你有沒有想過，為什麼有${assetType}的人還要再配房地產？我最近幫一個跟你條件很像的人算了一下，你有沒有興趣聽一下他是怎麼做到的？」不要解釋，讓他好奇。二選一：「這週六還是下週六？」`;
+      } else if (hasRetirementWorry) {
+        seminarAngle = `邀約鉤子：「如果你可以在不影響現在生活的前提下，把退休缺口的數字算清楚，你願不願意花兩小時？」她說好→「我們有個說明會就在幫這種情況的人算，妳想不想去看看？我陪妳去。」二選一鎖時段。`;
       } else {
-        seminarAngle = '邀約方式：找一個跟他處境相似的真實故事，說故事不介紹內容，讓他自己想去。結尾一定用二選一鎖時段：「這週六還是下週六比較方便？」';
+        seminarAngle = `邀約策略：找一個跟${n}處境相似的真實故事（跟他說的困境一樣、最後去了說明會想清楚），說故事不介紹內容，讓他自己想去。結尾一定是二選一：「這週六還是下週六比較方便？」`;
       }
     }
 
     return { realBlock, financeInsight, gateWarnings, signals, seminarAngle };
   }
 
-  function buildPrompt({ name, age, group, pain, status, keyman, support, finance, lastResult, target, extra, familiarity }) {
+  function buildPrompt({ name, age, group, pain, status, keyman, support, finance, lastResult, target, extra, familiarity, objection, solution, painDetail }) {
     const { realBlock, financeInsight, gateWarnings, signals, seminarAngle } = preProcess({
-      name, age, group, pain, status, finance, target, extra, support, keyman, lastResult
+      name, age, group, pain, status, finance, target, extra, support, keyman, lastResult, objection, solution, painDetail
     });
     const familiarityStr = familiarity || '未填';
+    const n = name || '這位客戶';
 
     return `你是富時代地產創辦人阮智偉。你的身份是「資產顧問」，不是「房屋仲介」。
 現在是早會時間，業務向你報告客戶狀況，你要用早會現場的方式，給出「可直接照做」的完整跟進策略。
@@ -1036,16 +1105,11 @@ async function generate() {
 **不論本次節點是「收訂」還是「研討會」，你的立場永遠是幫客戶做對的決定，不是說服他買。**
 
 ❌ 以下是仲介語言，禁止在任何話術中出現：
-- 「這個地段現在很搶手」
-- 「很多人都在搶」「很多家長都在買」
-- 「現在不買以後更貴」
-- 「三年前才 XX 萬，現在漲到 XX」（用漲幅製造緊迫感）
-- 「這個區域供給稀缺」「限量」「機會難得」
+- 「這個地段現在很搶手」「很多人都在搶」「現在不買以後更貴」
 - 任何用「市場熱度」或「價格上漲」來製造焦慮的句子
 
 ✅ 顧問語言的特徵：
 - 用提問讓客戶說出自己的優先順序
-- 幫客戶釐清「卡點在哪」，不是推他跨過去
 - 讓客戶自己得出結論（「我覺得值得」比「你告訴他值得」有效 10 倍）
 - 必要時可以說「如果你現在不確定，我們先把問題搞清楚，不急著簽」
 
@@ -1053,20 +1117,17 @@ async function generate() {
 
 ### 一、你的說話方式（硬規則）
 - 提問佔 8 成，說明佔 2 成
-- 口語直接，像在早會親自指導
-- 不給故事，給劇本
+- 口語直接，像在早會親自指導，不說廢話
+- **話術裡必須出現客戶的名字（${n}）和他的具體數字**——說出名字和數字才算切中這個人，泛泛的話不合格
 - **每一個提問句後面都必須標注：**（停頓，等回答）
-- 讓客戶自己說出你要的答案，你只負責設局與收斂
-- 問問題的目的，是引導到結果（研討會／諮詢／帶看／收訂），不是聊天了解背景
-- 話術中絕對禁止出現「零節」列出的仲介語言
+- 問問題的目的是引導到節點，不是聊天
 
 ### 二、你的核心邏輯（判斷框架）
 - 客戶說的理由 ≠ 真正卡關點，先讀懂「客戶長相」
 - Keyman 沒來，談了也沒用。先把 keyman 拉進局
 - 成交是設計出來的：每一步都要有「聯絡誰／幾點／用什麼方式／說什麼／目的」
-- 高層做局，低層做事：每個提問都是一個局，讓對方自己跳進來
 - 已讀不回不是拒絕，沒有明確說不＝還在考慮。丟鉤子，不追問
-- **「收訂」節點不代表你要說服他買——而是確認他自己已經想清楚，幫他走完最後一步**
+- **「收訂」節點不代表說服他買——而是確認他已經想清楚，幫他走完最後一步**
 
 ### 三、輸出版型（硬規則｜全部必出）
 
@@ -1074,129 +1135,119 @@ async function generate() {
 
 #### 【0. 話術對應（必做）】
 - 最像情境類型（理由 20 字內）
-- 本次核心觸發句（原創，直接可用）
+- 本次核心觸發句（原創，必須點到${n}的具體情境或數字，不能是通用模板句）
 
 #### 【1. 客況摘要（表格必出）】
-姓名｜年齡｜族群｜痛點｜目前狀況｜Keyman｜家人支持度｜上次跟進結果｜本次節點｜要成交的是什麼
+姓名｜年齡｜族群｜核心卡點｜Keyman｜家人支持度｜上次跟進｜本次節點
 
 #### 【2. 核心策略（最多 3 行）】
-本次這一局你要怎麼贏
+這一局你要怎麼贏——必須針對${n}的具體情況，不能說「建立信任→提供價值→促成行動」這種廢話
 
-#### 【3. 業務會前必看：溝通重點（最多 6 點）】
-「搞清楚三件事再出門」用條列寫清楚
+#### 【3. 業務出門前必確認（最多 5 點）】
+針對${n}這個案子，你出門前必須先想清楚哪幾件事——具體到這個人，不是通用清單
 
-#### 【4. 客戶長相（必出）】
-這個人的心理模型、卡點、需要什麼感受才會動
+#### 【4. 走進${n}的身體——他現在在想什麼】
+⚠️ 這是最重要的一節。你要讓業務「變成」${n}，感受他的情緒和卡點。
+- 他的內心獨白是什麼（用第一人稱「我」來寫，貼著他的具體情境）
+- 他為什麼到現在還沒動（真正的原因，不是他說的理由）
+- 他需要什麼感受，才會願意跨出下一步
 
-#### 【5. 分叉聊天地圖（必出）】
-⚠️ 這不是單線劇本，是「他說什麼你接什麼」的地圖，業務根據對方說的話選路走，不要照順序念。
+#### 【5. 對話地圖（分叉版，必出）】
+⚠️ 這不是單線劇本，是「他說什麼你接什麼」的地圖，業務根據對方說的話選路走。
 
-**開場暖身**（1-2句，根據熟悉度調整——第一次見面先閒聊建立感，熟識的直接切）：
+**開場**（根據熟悉度${familiarityStr}調整——第一次見面先閒聊，熟識的直接切）：
 
-**第一刀**（第一個丟出去的問題，要讓他說出今天最想搞清楚的事）：
+**第一刀**（讓他說出今天最想搞清楚的事）：
 
 **分叉一**：他說「比較想＿＿」→ 你接：
 **分叉二**：他說「但是＿＿」（提出顧慮）→ 你接：
-**分叉三**：他說「再看看 / 都好 / 要回去想」→ 你接：
-**分叉四**：他提到家人 / 另一半 / 第三方 → 你接：
+**分叉三**：他說「再看看 / 要回去想」→ 你接：
+**分叉四**：他提到${keyman ? keyman : '家人/另一半/第三方'} → 你接：
 
-**資訊沒收齊，不出招**（留下次的收尾句）：
-「這樣，今天你給我一個答案就好——＿＿。」
+**收尾（資訊沒到位，不出招）**：
+「今天你給我一個答案就好——＿＿。」
 
-**時機到了，出招**（口語，問流程不問要不要）：
+**出招（時機到）**（口語，問流程不問要不要）：
 
 ---
 
-#### 【6. 單線完整話術（最多25句，可直接照念）】
-提問句加（停頓，等回答），陳述句加（確認）
-⚠️ 這是分叉地圖的「主線版本」，實際對話要根據客戶反應靈活調整
-
-#### 【6. 完整話術（最多 25 句，可直接照念）】
+#### 【6. 完整話術（最多 20 句，可直接照念）】
+⚠️ 硬規則：每一句話術裡至少每 3 句就要出現一次${n}的名字或他的具體數字。
 提問句加（停頓，等回答），陳述句加（確認）
 
-#### 【7. 不要做什麼（必出）】
+#### 【7. 這次不要做什麼（必出）】
+針對${n}這個案子的具體禁忌——不是通用的「不要說謊不要施壓」
 
 #### 【8. 財務破洞偵測（必出）】
+${n}的財務資訊哪裡有洞，出門前要先填好哪些數字
 ${target.includes('諮詢') || target.includes('收訂') ? `
 #### 【9. 後段跟進指令（D0/D1/D3/D4/D6 五個接觸點，必出）】
-每個接觸點：聯絡誰｜幾點｜方式｜說什麼｜目的
+每個接觸點：聯絡誰｜幾點｜方式｜說什麼（用${n}聽得懂的語言）｜目的
 每個接觸點必須提供：收口指令句｜二選一鎖時段｜備援一句（客戶拖延時用）` : ''}
 
 ---
 
 ### 四、已知資訊不能再問（硬規則）
-以下資訊業務已填寫，你的話術和劇本中絕對不能再問這些問題：
-- 客戶資料欄位中已有明確數字、年齡、族群、財務的，不能用話術重複確認
-- 補充說明欄位中有明確說的事（例：已知是5月研討會、已知小孩年級），不能在話術裡問出來
-- 違反此規則代表報告不合格
+業務已填寫的資訊，話術中絕對不能再問——違反此規則代表報告不合格。
 
 ### 五、研討會邀約話術庫（節點為研討會邀約時必須參考）
 ${target.includes('研討會') ? `
-本次節點是研討會邀約，以下是智偉哥認可的研討會邀約核心邏輯，**話術必須貼近這些原則，不能自由發揮**：
+本次節點是研討會邀約，以下是智偉哥認可的邀約核心邏輯，**話術必須貼近這些原則**：
 
-【邀約三字禁令】邀約話術裡三個字不能說：買、投資、房子。
-你在邀的是「一個讓她看懂自己資產的機會」，不是賣場。
+【三字禁令】話術裡三個字不能說：買、投資、房子。你邀的是「讓他看懂自己真正財務狀況的機會」。
 
-【橋的邏輯（S126）】
-客戶要先覺得「這個人跟我有同樣的問題，而且他解決了」才會想知道怎麼解決的。
-第一段：認同客戶現在狀況
-第二段：說自己怎麼接觸到富時代
-第三段：說改變不說產品
-第四段：「他每個月辦一場說明會，不賣東西，就是把這套邏輯講清楚，去聽過的人都說，不管最後買不買，光那兩個小時就值得。你有沒有興趣去聽聽看？我陪你去。」
+【橋的邏輯（S126）】先找一個跟${n}處境相似的真實故事。順序：
+1. 認同他現在的狀況（用他說過的話來認同，不要通用的感同身受）
+2. 說你是怎麼接觸到富時代的
+3. 說改變，不說產品
+4. 「不賣東西，就是把這套邏輯講清楚，去聽過的人都說光那兩小時就值得。你有沒有興趣去聽聽看？我陪你去。」
 
-【地點用順便邏輯（適合本案）】
-補充說明已說明研討會在她公司附近時，一定要用地點的「順便性」降低出席門檻。
-「就在妳公司附近/樓上，下班順便，兩小時，我陪妳去，不買沒關係，但我覺得妳去了一定有感。」
+【鉤子問句（S096）】「如果你可以在不影響現在生活的前提下，把你最擔心的那個問題搞清楚，你願不願意花兩小時？」
 
-【不要詳細介紹研討會內容】製造「去了才知道」的好奇感，讓她想來，不是聽懂了就不想來。
-
-【鉤子問句邀約版（S096）】
-在邀約前先問：「如果妳可以在不影響現在生活的前提下，多了解自己真正的財務狀況，妳願意花兩小時嗎？」
-她答好→「我們有個說明會就在教這個，妳想不想來了解看看？」
-
-【二選一鎖時段】
-「我幫妳報名，妳看6月哪個日期，A日還是B日？」不要問「妳有沒有空」。
+【二選一鎖時段】「我幫你報名，你看這週六還是下週六？」——不要問「有沒有空」。
 ` : ''}
 
 ---
 
-### 六、業務填報 + 智偉哥預處理結果
+### 六、業務填報 + 智偉哥預處理分析
 
-**⚠️ 以下是完整的客況分析，生成報告必須完全反映這些判斷**
+**⚠️ 以下客況分析是報告的核心素材，生成的每一節都必須反映這些判斷，話術必須點到這些具體細節**
 
 #### 原始資料（已知資訊不能再問）
 - 姓名：${name}，年齡：${age || '未知'}，族群：${group || '未填'}
-- 痛點：${pain}
-- 目前狀況：${status || '未填'}
-- Keyman：${keyman || '未知'}，家人支持度：${support || '未知'}
+- 客戶說了什麼：${pain}
+- 行為觀察：${status || '未填'}
+- Keyman：${keyman || '未確認'}，家人支持度：${support || '未確認'}
 - 財務狀況：${finance || '未填'}
+- 客戶異議：${objection || '未填'}
+- 解決方案（上次提的）：${solution || '未填'}
 - 上次跟進結果：${lastResult || '未填'}
 - 本次節點：${target}
-- 業務與客戶熟悉度：${familiarityStr}（影響開場方式：第一次見面要先暖身建立信任；熟識的可以直接切入）
-${extra ? `- 補充說明（最高優先級）：${extra}` : ''}
+- 業務與客戶熟悉度：${familiarityStr}
+${extra ? `- 補充說明（最高優先級，必須進入話術）：${extra}` : ''}
+${painDetail ? `- 痛點補充：${painDetail}` : ''}
 
-#### ⚡ 智偉哥預判（自動推導，報告必須用這個框架）
+#### ⚡ 智偉哥預判（報告必須用這個框架，不能說通用模板話）
 
-**【真正的卡點】**
+**【走進${n}的身體】**
 ${realBlock}
 
 **【財務真相】**
 ${financeInsight}
 
-**【三關檢查——有意願≠可以推流程】**
+**【三關狀態】**
 ${gateWarnings.join('\n')}
 
-${signals.length > 0 ? `**【語言訊號警報——聽到這些立刻轉方向】**
+${signals.length > 0 ? `**【聽到這些，立刻轉方向】**
 ${signals.join('\n')}` : ''}
 
-${seminarAngle ? `**【研討會邀約方向】**
+${seminarAngle ? `**【研討會邀約這樣切】**
 ${seminarAngle}` : ''}
 
-**【資訊收集清單——沒蒐集到這些，不出招】**
-- [ ] 他/她真正的決策動機是什麼（表面說的不算）
-- [ ] Keyman 的真實態度（支持到什麼程度）
-- [ ] 可動用現金上限 + 每月舒適繳款上限
-- [ ] 這次聊完他/她要給你的一個明確答覆是什麼`;
+**【出門前還要確認的】**
+- 這次聊完，${n}要給你的一個明確答覆是什麼
+- ${keyman ? `${keyman}的真實態度（支持到什麼程度）` : 'Keyman是誰、支持度如何'}
+- 可動用現金上限 + 每月舒適繳款上限（不知道這兩個數字，什麼方案都推不了）`;
   }
 
   function animateSteps() {
@@ -1381,6 +1432,15 @@ function pickCustomer(jsonStr) {
   // ── 補充說明（下次跟進行動第一行）──
   sv('extra', c.nextFollowupAction ? c.nextFollowupAction.split('\n')[0] : '');
 
+  // ── 客戶異議 ──
+  sv('objection', c.customerObjection || c.objection || '');
+
+  // ── 痛點補充 ──
+  sv('painDetail', c.painPointDetail || c.painPointsDetail || c.additionalPainPoints || '');
+
+  // ── 上次提的解決方案 ──
+  sv('solution', c.solutionProvided || c.solution || c.recommendedSolution || '');
+
   // ── 族群 chip ──
   selectedChips = [];
   document.querySelectorAll('#groupChips .chip').forEach(ch => ch.classList.remove('active'));
@@ -1461,6 +1521,6 @@ function saveToCRM() {
 }
 </script>
 
-<div style="text-align:center;padding:24px 16px 40px;font-size:11px;color:#9E9285;letter-spacing:.08em;border-top:1px solid #E0D8CC;margin-top:24px;">Richtime © 2026 &nbsp;◆&nbsp; 內部版僅供團隊使用 &nbsp;◆&nbsp; AI DECISION ENGINE · V 1.5</div>
+<div style="text-align:center;padding:24px 16px 40px;font-size:11px;color:#9E9285;letter-spacing:.08em;border-top:1px solid #E0D8CC;margin-top:24px;">Richtime © 2026 &nbsp;◆&nbsp; 內部版僅供團隊使用 &nbsp;◆&nbsp; AI DECISION ENGINE · V 2.0</div>
 </body>
 </html>
