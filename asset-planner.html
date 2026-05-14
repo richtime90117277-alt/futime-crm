@@ -790,11 +790,11 @@ html,body{height:100%;overflow:hidden;overscroll-behavior:none;-webkit-overflow-
 
 .wow-rpanels{flex:1;overflow:hidden;position:relative;z-index:1}
 .wow-rpanel{display:none;height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:18px 24px 80px}
-.wow-rpanel.on{display:flex;flex-direction:column;gap:12px}
+.wow-rpanel.on{display:flex;flex-direction:column;gap:12px;overflow-y:auto;-webkit-overflow-scrolling:touch}
 
 /* DIAGNOSIS */
 .diag-eyebrow{font-size:11px;letter-spacing:3px;color:rgba(120,80,20,.32);font-family:'DM Mono','Courier New',monospace;margin-bottom:5px}
-.diag-sentence{font-family:'Georgia','Times New Roman',serif;font-size:22px;line-height:1.5;color:#2c1f0e;letter-spacing:.2px;min-height:60px;transition:opacity .25s}
+.diag-sentence{font-family:'Georgia','Times New Roman',serif;font-size:24px;line-height:1.5;color:#2c1f0e;letter-spacing:.2px;min-height:60px;transition:opacity .25s}
 .diag-sentence em{font-style:normal;color:#c9922b}
 .diag-sentence.fade{opacity:0}
 .diag-advisor{font-size:9px;color:rgba(120,80,20,.35);margin-top:4px;font-family:'DM Mono','Courier New',monospace;letter-spacing:1px}
@@ -804,7 +804,7 @@ html,body{height:100%;overflow:hidden;overscroll-behavior:none;-webkit-overflow-
 .hero-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;flex-shrink:0}
 .hero-block{display:flex;flex-direction:column}
 .hero-lbl{font-size:11px;letter-spacing:2px;color:rgba(120,80,20,.35);font-family:'DM Mono','Courier New',monospace;margin-bottom:4px}
-.hero-val{font-family:'Georgia','Times New Roman',serif;font-size:42px;font-weight:400;line-height:1;letter-spacing:-1px;color:#2c1f0e;transition:all .4s cubic-bezier(.4,0,.2,1)}
+.hero-val{font-family:'Georgia','Times New Roman',serif;font-size:46px;font-weight:400;line-height:1;letter-spacing:-1px;color:#2c1f0e;transition:all .4s cubic-bezier(.4,0,.2,1)}
 .hero-val.gold{color:#c9922b}.hero-val.green{color:#2a7a48}.hero-val.red{color:#b83020}
 .hero-val.muted{color:rgba(120,80,20,.15);font-size:26px}
 .hero-sub{font-size:11px;color:rgba(120,80,20,.35);margin-top:3px}
@@ -812,30 +812,30 @@ html,body{height:100%;overflow:hidden;overscroll-behavior:none;-webkit-overflow-
 .hb-green{background:rgba(42,122,72,.1);color:#2a7a48}.hb-warn{background:rgba(200,112,64,.1);color:#c87040}.hb-red{background:rgba(184,48,32,.1);color:#b83020}
 
 /* ANALYSIS */
-.analysis-row{flex:1;display:grid;grid-template-columns:1.15fr 1fr;gap:12px;min-height:0}
+.analysis-row{display:grid;grid-template-columns:1.15fr 1fr;gap:12px;flex-shrink:0}
 .a-panel{background:rgba(255,255,255,.72);border:1px solid rgba(160,120,60,.1);border-radius:14px;padding:14px 16px;backdrop-filter:blur(8px);display:flex;flex-direction:column;overflow:hidden}
 .a-title{font-size:11px;letter-spacing:2px;color:rgba(120,80,20,.35);font-family:'DM Mono','Courier New',monospace;margin-bottom:10px;flex-shrink:0}
 .ratio-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
-.ratio-txt{font-size:10px;color:rgba(44,31,14,.45)}
-.ratio-big{font-family:'Georgia',serif;font-size:22px;color:#2c1f0e;transition:color .3s}
+.ratio-txt{font-size:13px;color:rgba(44,31,14,.55)}
+.ratio-big{font-family:'Georgia',serif;font-size:26px;color:#2c1f0e;transition:color .3s}
 .ratio-big.safe{color:#2a7a48}.ratio-big.over{color:#b83020}
-.bar-track{height:5px;background:rgba(160,120,60,.1);border-radius:3px;overflow:hidden;margin-bottom:3px}
-.bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#4ade80,#c9922b);transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+.bar-track{height:7px;background:rgba(160,120,60,.1);border-radius:3px;overflow:hidden;margin-bottom:3px}
+.bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#4ade80,#c9922b);min-height:7px;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
 .bar-fill.danger{background:linear-gradient(90deg,#c9922b,#ef4444)}
-.bar-tips{display:flex;justify-content:space-between;font-size:8px;color:rgba(120,80,20,.25);font-family:'DM Mono','Courier New',monospace;margin-bottom:8px}
+.bar-tips{display:flex;justify-content:space-between;font-size:10px;color:rgba(120,80,20,.25);font-family:'DM Mono','Courier New',monospace;margin-bottom:8px}
 .stat-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(160,120,60,.06)}
 .stat-row:last-child{border-bottom:none}
-.sl{font-size:12px;color:rgba(44,31,14,.42)}
-.sv{font-size:13px;font-weight:bold;color:#2c1f0e;font-family:'DM Mono','Courier New',monospace}
+.sl{font-size:13px;color:rgba(44,31,14,.55)}
+.sv{font-size:15px;font-weight:bold;color:#2c1f0e;font-family:'DM Mono','Courier New',monospace}
 .sv.gold{color:#c9922b}.sv.green{color:#2a7a48}.sv.red{color:#b83020}
 .mini-col{display:flex;flex-direction:column;gap:10px}
-.mini-card{flex:1;border-radius:14px;padding:13px 15px;display:flex;flex-direction:column}
+.mini-card{border-radius:14px;padding:13px 15px;display:flex;flex-direction:column}
 .mini-card.opp{background:linear-gradient(135deg,rgba(255,253,246,.9),rgba(253,248,236,.85));border:1px solid rgba(201,146,43,.18)}
 .mini-card.res{background:linear-gradient(135deg,rgba(246,253,248,.9),rgba(237,249,242,.85));border:1px solid rgba(42,122,72,.15)}
-.mini-title{font-size:11px;letter-spacing:2px;color:rgba(120,80,20,.35);font-family:'DM Mono','Courier New',monospace;margin-bottom:6px}
-.mini-num{font-family:'Georgia',serif;font-size:24px;font-weight:400;color:#c9922b;letter-spacing:-1px;line-height:1;transition:all .45s}
+.mini-title{font-size:12px;letter-spacing:1.5px;color:rgba(120,80,20,.35);font-family:'DM Mono','Courier New',monospace;margin-bottom:6px}
+.mini-num{font-family:'Georgia',serif;font-size:28px;font-weight:400;color:#c9922b;letter-spacing:-1px;line-height:1;transition:all .45s}
 .mini-num.green{color:#2a7a48}.mini-num.red{color:#b83020}.mini-num.muted{color:rgba(120,80,20,.18);font-size:18px}
-.mini-desc{font-size:11px;color:rgba(44,31,14,.38);margin-top:6px;line-height:1.7;flex:1}
+.mini-desc{font-size:12px;color:rgba(44,31,14,.5);margin-top:6px;line-height:1.7;flex:1}
 
 /* ── vR/vF 在平板雙欄內強制顯示 ── */
 #wrp3 #vR { display: block !important; }
@@ -981,12 +981,15 @@ html,body{height:100%;overflow:hidden;overscroll-behavior:none;-webkit-overflow-
     <div class="wow-rpanels">
 
       <div class="wow-rpanel on" id="wrp0">
+        <!-- 診斷句 -->
         <div>
           <div class="diag-eyebrow">REAL-TIME FINANCIAL DIAGNOSIS — 即時財務診斷</div>
           <div class="diag-sentence" id="wowDiag">您好，請與顧問一起填寫左側資料，<em>系統將即時分析您的財務全貌。</em></div>
           <div class="diag-advisor" id="wowAdvisor">FUTIME WEALTH PLANNER</div>
         </div>
         <div class="gold-rule"></div>
+
+        <!-- Hero 三數字 -->
         <div class="hero-row">
           <div class="hero-block">
             <div class="hero-lbl">MONTHLY INCOME</div>
@@ -1005,7 +1008,10 @@ html,body{height:100%;overflow:hidden;overscroll-behavior:none;-webkit-overflow-
             <div id="wRemBadge"></div>
           </div>
         </div>
+
+        <!-- 主分析區 -->
         <div class="analysis-row">
+          <!-- 左：貸款分析 -->
           <div class="a-panel">
             <div class="a-title">LOAN ANALYSIS — 貸款能力分析</div>
             <div class="ratio-row"><span class="ratio-txt">月付佔收入比率</span><span class="ratio-big" id="wRatioNum">—</span></div>
@@ -1018,6 +1024,8 @@ html,body{height:100%;overflow:hidden;overscroll-behavior:none;-webkit-overflow-
             <div class="stat-row"><span class="sl">📊 總月付（含現有）</span><span class="sv" id="wStTotal">—</span></div>
             <div class="stat-row"><span class="sl">✅ 銀行估計可貸上限</span><span class="sv green" id="wStMax">—</span></div>
           </div>
+
+          <!-- 右：三張小卡 -->
           <div class="mini-col">
             <div class="mini-card opp">
               <div class="mini-title">COST OF WAITING — 每年等待代價</div>
@@ -1029,6 +1037,31 @@ html,body{height:100%;overflow:hidden;overscroll-behavior:none;-webkit-overflow-
               <div class="mini-num muted" id="wResNum">—</div>
               <div class="mini-desc" id="wResDesc">填入資產，顯示繳完自備款後的財務餘裕。</div>
             </div>
+            <!-- 新增：淨資產卡 -->
+            <div class="mini-card" style="background:linear-gradient(135deg,rgba(245,248,255,.9),rgba(235,240,255,.85));border:1px solid rgba(80,100,180,.15);flex:0 0 auto;">
+              <div class="mini-title" style="color:rgba(60,80,160,.45)">NET WORTH — 客戶淨資產</div>
+              <div class="mini-num muted" id="wNetNum" style="color:#3a5ab0">—</div>
+              <div class="mini-desc" id="wNetDesc">填入資產與負債，顯示淨資產總額。</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 下方補充資訊列 -->
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:2px;flex-shrink:0">
+          <div style="background:rgba(255,255,255,.65);border:1px solid rgba(160,120,60,.1);border-radius:12px;padding:12px 14px">
+            <div style="font-size:11px;letter-spacing:1.5px;color:rgba(120,80,20,.4);font-family:'DM Mono',monospace;margin-bottom:6px">BANK INCOME</div>
+            <div style="font-size:26px;font-weight:bold;color:#2c1f0e;font-family:'DM Mono',monospace" id="wBankInc">—</div>
+            <div style="font-size:12px;color:rgba(44,31,14,.5);margin-top:3px">銀行估認月收入</div>
+          </div>
+          <div style="background:rgba(255,255,255,.65);border:1px solid rgba(160,120,60,.1);border-radius:12px;padding:12px 14px">
+            <div style="font-size:10px;letter-spacing:2px;color:rgba(120,80,20,.32);font-family:'DM Mono',monospace;margin-bottom:6px">SAVINGS RATE</div>
+            <div style="font-size:26px;font-weight:bold;color:#2c1f0e;font-family:'DM Mono',monospace" id="wSavRate">—</div>
+            <div style="font-size:12px;color:rgba(44,31,14,.5);margin-top:3px">月儲蓄率（結餘／收入）</div>
+          </div>
+          <div style="background:rgba(255,255,255,.65);border:1px solid rgba(160,120,60,.1);border-radius:12px;padding:12px 14px">
+            <div style="font-size:10px;letter-spacing:2px;color:rgba(120,80,20,.32);font-family:'DM Mono',monospace;margin-bottom:6px">MONTHS TO DOWN</div>
+            <div style="font-size:26px;font-weight:bold;color:#2c1f0e;font-family:'DM Mono',monospace" id="wMoDown">—</div>
+            <div style="font-size:12px;color:rgba(44,31,14,.5);margin-top:3px">存滿自備款需要幾個月</div>
           </div>
         </div>
       </div>
@@ -14517,6 +14550,54 @@ function wowCalc(){
     rn2.className='mini-num'+(reserve>=20?' green':reserve>=0?'':' red');
     if(rd){if(reserve>=20)rd.textContent='備用金充裕。扣除自備款 '+wFmtW(dw)+'，仍有 '+wFmtW(reserve)+' 萬緊急預備金。';else if(reserve>=0)rd.textContent='備用金偏低，目前餘裕 '+wFmtW(reserve)+' 萬，建議保留 20 萬緊急預備。';else rd.textContent='⚠ 資產不足支付自備款 '+wFmtW(dw)+'，需再籌措 '+wFmtW(Math.abs(reserve))+' 萬。';}
   }else{if(rn2){rn2.textContent='—';rn2.className='mini-num muted';}if(rd)rd.textContent='填入資產欄位，顯示繳完自備款後的財務安全餘裕。';}
+
+  // Net worth card (totalAssets in 萬, oln/car in 元/月 — need balance not payment)
+  var wn=g('wNetNum'),wd2=g('wNetDesc');
+  var aW=totalAssets; // already in 萬
+  var studentBal=parseFloat((g('d_student')||{}).value)||0;
+  var homeBal=parseFloat((g('d_home')||{}).value)||0;
+  var debtW=studentBal+homeBal; // 萬
+  var netW=aW-debtW;
+  if(wn){
+    if(aW>0||debtW>0){
+      wn.textContent=(netW>=0?'+':'')+Math.round(netW)+'萬';
+      wn.className='mini-num'+(netW>=100?' green':netW>=0?'':' red');
+      if(wd2)wd2.textContent='資產 '+Math.round(aW)+'萬 — 負債 '+Math.round(debtW)+'萬 = '+Math.round(netW)+'萬';
+    } else {
+      wn.textContent='—'; wn.className='mini-num muted';
+      if(wd2)wd2.textContent='填入資產與負債，顯示淨資產總額。';
+    }
+  }
+
+  // Bottom cards: bank estimated income, savings rate, months to down payment
+  var fullExp=exp+oln+car; // total monthly outflow including loan payments
+  var wbi=g('wBankInc');
+  if(wbi){
+    if(inc>0){
+      var bankM=Math.round((salY+spoY)/12*0.85 + ren*0.7 + oti*0.7);
+      wbi.textContent='$'+Math.max(bankM,0).toLocaleString('zh-TW');
+    } else wbi.textContent='—';
+  }
+  var wsr=g('wSavRate');
+  if(wsr){
+    if(inc>0){
+      var surplus2=inc-fullExp;
+      var sr=Math.round(surplus2/inc*100);
+      wsr.textContent=sr+'%';
+      wsr.style.color=sr>=30?'#2a7a48':sr>=15?'#c9922b':'#b83020';
+    } else {wsr.textContent='—';wsr.style.color='';}
+  }
+  var wmd=g('wMoDown');
+  if(wmd){
+    var surplus3=inc-fullExp;
+    if(surplus3>0&&dw>0){
+      var mo=Math.ceil(dw*10000/surplus3);
+      wmd.textContent=mo>120?'120個月以上':mo+'個月';
+      wmd.style.color=mo<=24?'#2a7a48':mo<=48?'#c9922b':'#b83020';
+    } else if(dw>0&&surplus3<=0){
+      wmd.textContent='目前無法儲蓄';wmd.style.color='#b83020';
+    } else {wmd.textContent='—';wmd.style.color='';}
+  }
 
   // Diagnosis sentence
   if(_wDiagTimer)clearTimeout(_wDiagTimer);
