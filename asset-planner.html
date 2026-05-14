@@ -738,7 +738,7 @@ body{
 <style>
 /* ══ TABLET WOW INTEGRATION ══ */
 html,body{height:100%;overflow:hidden;overscroll-behavior:none;-webkit-overflow-scrolling:touch}
-.wow-app{display:none;grid-template-columns:380px 1fr;height:100vh;overflow:hidden;overscroll-behavior:none}
+.wow-app{display:none;grid-template-columns:460px 1fr;height:100vh;overflow:hidden;overscroll-behavior:none}
 .wow-app.active{display:grid}
 
 /* LEFT */
@@ -835,7 +835,11 @@ html,body{height:100%;overflow:hidden;overscroll-behavior:none;-webkit-overflow-
 .mini-num.green{color:#2a7a48}.mini-num.red{color:#b83020}.mini-num.muted{color:rgba(120,80,20,.18);font-size:18px}
 .mini-desc{font-size:9px;color:rgba(44,31,14,.38);margin-top:6px;line-height:1.7;flex:1}
 
-/* ANIMATION */
+/* ── vR/vF 在平板雙欄內強制顯示 ── */
+#wrp3 #vR { display: block !important; }
+#wrp1 #vF { display: block !important; }
+
+/* ── ANIMATION ── */
 @keyframes popUp{0%{opacity:0;transform:translateY(7px) scale(.97)}60%{transform:translateY(-2px) scale(1.01)}100%{opacity:1;transform:none}}
 .pop{animation:popUp .4s cubic-bezier(.34,1.56,.64,1) forwards}
 </style>
@@ -1027,7 +1031,7 @@ html,body{height:100%;overflow:hidden;overscroll-behavior:none;-webkit-overflow-
         </div>
       </div>
 
-      <div class="wow-rpanel" id="wrp1" style="padding:0"><div id="vF" style="display:none;max-width:580px;margin:0 auto;padding:16px 14px 80px">
+      <div class="wow-rpanel" id="wrp1" style="padding:0"><div id="vF" style="max-width:580px;margin:0 auto;padding:16px 14px 80px">
 
   <!-- 頁首說明 -->
   <div style="background:linear-gradient(155deg,#1a0802,#2c0c06);border:none;border-radius:18px;padding:20px;margin-bottom:14px;box-shadow:0 8px 32px rgba(0,0,0,.3);position:relative;overflow:hidden">
@@ -14371,13 +14375,29 @@ function wowRTab(n,btn){
   document.querySelectorAll('.wow-rpanel').forEach(function(p){p.classList.remove('on')});
   if(btn) btn.classList.add('on');
   var p=document.getElementById('wrp'+n); if(p) p.classList.add('on');
+  if(n===3){
+    ca();
+    var C=window._C||{};
+    if(!C.inc){
+      var vr=document.getElementById('reportContent');
+      if(vr && !document.getElementById('_noDataMsg')){
+        var msg=document.createElement('div');
+        msg.id='_noDataMsg';
+        msg.style.cssText='padding:60px 24px;text-align:center;color:rgba(120,80,20,.5);font-size:14px;line-height:2;order:-1';
+        msg.innerHTML='<div style="font-size:40px;margin-bottom:16px">\uD83D\uDCCA</div><div style="font-size:16px;font-weight:bold;color:#c9922b;margin-bottom:8px">\u5C1A\u672A\u8F38\u5165\u8CC7\u6599</div><div>\u8ACB\u5148\u5728\u5DE6\u5074\u586B\u5BEB\u5BA2\u6236\u7684<br><strong>\u5E74\u6536\u5165</strong>\uFF0C\u518D\u9EDE\u64CA\u300C\u7522\u751F\u5B8C\u6574\u5C08\u5C6C\u5831\u544A\u300D</div>';
+        vr.insertBefore(msg,vr.firstChild);
+      }
+      return;
+    }
+    var nm=document.getElementById('_noDataMsg');
+    if(nm) nm.remove();
+    doGen();
+  }
 }
 
 // ── Activate ─────────────────────────────────────────────────
 function activateWow(){
   var app=g('wowApp'); if(app) app.classList.add('active');
-  // 平板版啟動時隱藏手機版 toolbar，避免雙層 tabs 重疊
-  var tb=document.querySelector('.tb'); if(tb) tb.style.display='none';
 }
 window.closeSplash=function(){
   var sp=g('vSplash');
