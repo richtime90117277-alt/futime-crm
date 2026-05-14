@@ -14376,6 +14376,8 @@ function wowRTab(n,btn){
 // ── Activate ─────────────────────────────────────────────────
 function activateWow(){
   var app=g('wowApp'); if(app) app.classList.add('active');
+  // 平板版啟動時隱藏手機版 toolbar，避免雙層 tabs 重疊
+  var tb=document.querySelector('.tb'); if(tb) tb.style.display='none';
 }
 window.closeSplash=function(){
   var sp=g('vSplash');
