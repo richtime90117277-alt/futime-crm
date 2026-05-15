@@ -928,6 +928,54 @@ html,body{height:100%;overflow:hidden;overscroll-behavior:none;-webkit-overflow-
     <button class="tab" id="tF" onclick="sw('F')">等待代價</button>
     <button class="tab" id="tT" onclick="sw('T')" style="border-color:rgba(160,100,30,.3);color:rgba(120,80,20,.6)">傳承風險</button>
   </div>
+  <!-- ══ 存檔按鈕組 ══ -->
+  <div style="display:flex;gap:6px;align-items:center;margin-left:8px">
+    <button onclick="openClientManager()" title="客戶檔案管理" style="padding:6px 12px;border-radius:20px;border:1px solid rgba(201,146,43,.4);background:rgba(201,146,43,.1);color:#8a5c1a;font-size:12px;cursor:pointer;font-family:sans-serif;font-weight:bold;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(201,146,43,.2)'" onmouseout="this.style.background='rgba(201,146,43,.1)'">📁 客戶檔案</button>
+    <button onclick="saveClientJSON()" title="存檔（下載 JSON）" style="padding:6px 10px;border-radius:20px;border:1px solid rgba(46,204,113,.4);background:rgba(46,204,113,.1);color:#1a6b3a;font-size:12px;cursor:pointer;font-family:sans-serif;font-weight:bold;transition:all .2s" onmouseover="this.style.background='rgba(46,204,113,.2)'" onmouseout="this.style.background='rgba(46,204,113,.1)'">💾 存檔</button>
+    <label title="開檔（載入 JSON）" style="padding:6px 10px;border-radius:20px;border:1px solid rgba(93,173,226,.4);background:rgba(93,173,226,.1);color:#1a4a7a;font-size:12px;cursor:pointer;font-family:sans-serif;font-weight:bold;transition:all .2s;white-space:nowrap" onmouseover="this.style.background='rgba(93,173,226,.2)'" onmouseout="this.style.background='rgba(93,173,226,.1)'">📂 開檔<input type="file" accept=".json" onchange="loadClientJSON(this)" style="display:none"></label>
+  </div>
+</div>
+
+<!-- ══ 客戶管理 Modal ══ -->
+<div id="clientManagerModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(44,31,14,.6);z-index:3000;align-items:center;justify-content:center;padding:16px">
+  <div style="background:#faf7f0;border-radius:20px;max-width:480px;width:100%;max-height:85vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(120,80,20,.2)">
+    <!-- Header -->
+    <div style="padding:20px 24px 16px;border-bottom:1px solid rgba(160,120,60,.12);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+      <div>
+        <div style="font-size:14px;font-weight:bold;color:#2c1f0e;letter-spacing:.5px">📁 客戶檔案管理</div>
+        <div style="font-size:10px;color:rgba(120,80,20,.6);margin-top:3px;font-family:'DM Mono',monospace">JSON 本機存檔系統</div>
+      </div>
+      <button onclick="closeClientManager()" style="width:30px;height:30px;border-radius:50%;border:1px solid rgba(160,120,60,.2);background:#fff;color:rgba(44,31,14,.5);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center">×</button>
+    </div>
+    <!-- 操作按鈕 -->
+    <div style="padding:16px 24px;border-bottom:1px solid rgba(160,120,60,.08);display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0">
+      <button onclick="saveClientJSON()" style="flex:1;padding:10px;border-radius:10px;border:1px solid rgba(46,204,113,.4);background:rgba(46,204,113,.08);color:#1a6b3a;font-size:12px;cursor:pointer;font-weight:bold;font-family:sans-serif">💾 存檔（下載 JSON）</button>
+      <label style="flex:1;padding:10px;border-radius:10px;border:1px solid rgba(93,173,226,.4);background:rgba(93,173,226,.08);color:#1a4a7a;font-size:12px;cursor:pointer;font-weight:bold;font-family:sans-serif;text-align:center">📂 開啟舊檔<input type="file" accept=".json" onchange="loadClientJSON(this)" style="display:none"></label>
+      <button onclick="clearAllFields();closeClientManager()" style="padding:10px 14px;border-radius:10px;border:1px solid rgba(224,90,50,.3);background:rgba(224,90,50,.06);color:#8a2000;font-size:12px;cursor:pointer;font-family:sans-serif">🗑 清空</button>
+    </div>
+    <!-- 說明 -->
+    <div style="padding:16px 24px;flex:1;overflow-y:auto">
+      <div style="font-size:11px;color:rgba(120,80,20,.7);line-height:2;margin-bottom:16px;padding:12px;background:rgba(201,146,43,.05);border-radius:10px;border:1px solid rgba(201,146,43,.15)">
+        💡 <strong>使用說明</strong><br>
+        ① 每次諮詢填完後，按「存檔」下載一個 <code style="font-size:10px;background:rgba(201,146,43,.1);padding:1px 4px;border-radius:3px">.json</code> 檔案<br>
+        ② 檔名格式：<code style="font-size:10px;background:rgba(201,146,43,.1);padding:1px 4px;border-radius:3px">客戶姓名_日期.json</code><br>
+        ③ 下次開啟同一客戶，按「開啟舊檔」載入即可繼續<br>
+        ④ 所有資料存在您電腦，不上傳至任何伺服器
+      </div>
+      <div style="font-size:11px;color:rgba(120,80,20,.8);margin-bottom:8px;font-weight:bold">📋 目前檔案狀態</div>
+      <div id="cmStatusBox" style="padding:12px;background:#fff;border-radius:10px;border:1px solid rgba(160,120,60,.12);font-size:12px;color:#2c1f0e;line-height:1.8"></div>
+      <div style="margin-top:14px;font-size:11px;color:rgba(120,80,20,.8);font-weight:bold;margin-bottom:8px">📁 建議資料夾結構</div>
+      <div style="padding:12px;background:#fff;border-radius:10px;border:1px solid rgba(160,120,60,.12);font-size:11px;font-family:'DM Mono',monospace;color:#5a3a10;line-height:2">
+        📂 富時代_客戶資料/<br>
+        &nbsp;&nbsp;📂 2025/<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;📄 王小明_20250514.json<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;📄 林美華_20250515.json<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;📄 陳志偉_20250516.json<br>
+        &nbsp;&nbsp;📂 2026/<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;📄 ...
+      </div>
+    </div>
+  </div>
 </div>
 
 
@@ -14397,6 +14445,23 @@ function g(id){var el=document.getElementById(id);return el||{value:'',textConte
   lboxes.forEach(function(lb){ t3&&t3.appendChild(lb); });
 })();
 
+// ── 去除重複 ID：保留最後一個（distributeCards 注入的才是真正用的） ──
+(function deduplicateIds(){
+  var seen = {};
+  // 遍歷所有有 id 的元素，從後往前，保留最後出現的，移除前面的重複
+  var all = Array.from(document.querySelectorAll('[id]'));
+  // 反轉：從後往前掃，第一次出現 = 最後一個，保留；之後的重複 = 前面的舊版，移除
+  for (var i = all.length - 1; i >= 0; i--) {
+    var id = all[i].id;
+    if (seen[id]) {
+      // 這是前面（較舊）的重複元素，移除
+      all[i].parentNode && all[i].parentNode.removeChild(all[i]);
+    } else {
+      seen[id] = true;
+    }
+  }
+})();
+
 // ── Tab switching ────────────────────────────────────────────
 function wowLTab(n,btn){
   document.querySelectorAll('.wow-ltab').forEach(function(b){b.classList.remove('on')});
@@ -14639,6 +14704,299 @@ document.addEventListener('DOMContentLoaded',function(){
     try{ if(typeof _origCa==='function') _origCa(); } catch(e){}
     try{ wowCalc(); } catch(e2){}
   }, 200);
+});
+</script>
+
+<!-- ══ 客戶存檔系統 ══ -->
+<script>
+// ── 收集所有欄位資料 ──
+function collectAllFields() {
+  var data = { _version: '1.0', _savedAt: new Date().toISOString(), fields: {}, quickSelects: {}, checkboxes: {}, customInputs: {} };
+
+  // 所有 input/textarea/select
+  document.querySelectorAll('input[id], textarea[id], select[id]').forEach(function(el) {
+    if (!el.id || el.type === 'file' || el.type === 'button') return;
+    if (el.type === 'checkbox') { data.checkboxes[el.id] = el.checked; }
+    else { data.fields[el.id] = el.value; }
+  });
+
+  // 快選按鈕 (qs-btn.on)
+  var qs = {};
+  document.querySelectorAll('.qs-btn.on').forEach(function(btn) {
+    var row = btn.closest('[id]');
+    if (row) qs[row.id] = btn.textContent.trim();
+  });
+  data.quickSelects = qs;
+
+  // seg-btn (房地產六大功能 etc)
+  var segs = {};
+  document.querySelectorAll('.seg-btn.on[id]').forEach(function(btn) {
+    segs[btn.id] = true;
+  });
+  data.segBtns = segs;
+
+  // fn-btn (六大功能)
+  var fns = [];
+  document.querySelectorAll('.fn-btn.on').forEach(function(btn) {
+    fns.push(btn.id);
+  });
+  data.fnBtns = fns;
+
+  // 動態列表：不動產、信貸、車貸
+  data.propertyRows = [];
+  document.querySelectorAll('#propertyList [data-pidx]').forEach(function(row) {
+    var idx = row.dataset.pidx;
+    var obj = {};
+    row.querySelectorAll('input, select').forEach(function(el) {
+      if (el.id) obj[el.id] = el.value;
+    });
+    data.propertyRows.push(obj);
+  });
+
+  data.personalLoanRows = [];
+  document.querySelectorAll('#personalLoanList [data-plidx]').forEach(function(row) {
+    var idx = row.dataset.plidx;
+    var obj = {};
+    row.querySelectorAll('input').forEach(function(el) {
+      if (el.id) obj[el.id] = el.value;
+    });
+    data.personalLoanRows.push(obj);
+  });
+
+  data.carLoanRows = [];
+  document.querySelectorAll('#carLoanList [data-clidx]').forEach(function(row) {
+    var obj = {};
+    row.querySelectorAll('input').forEach(function(el) {
+      if (el.id) obj[el.id] = el.value;
+    });
+    data.carLoanRows.push(obj);
+  });
+
+  // 整合方案列表
+  data.consoSchemes = [];
+  var schemeList = document.getElementById('cc_scheme_list');
+  if (schemeList) {
+    Array.from(schemeList.children).forEach(function(row) {
+      var obj = { id: row.id };
+      row.querySelectorAll('input, select').forEach(function(el) {
+        if (el.id) obj[el.id] = el.type === 'checkbox' ? el.checked : el.value;
+      });
+      data.consoSchemes.push(obj);
+    });
+  }
+
+  return data;
+}
+
+// ── 存檔（下載 JSON）──
+function saveClientJSON() {
+  var data = collectAllFields();
+  var name = (document.getElementById('iName') || {}).value || '未命名客戶';
+  var now = new Date();
+  var dateStr = now.getFullYear() + ('0'+(now.getMonth()+1)).slice(-2) + ('0'+now.getDate()).slice(-2);
+  var filename = name + '_' + dateStr + '.json';
+
+  var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+
+  // 顯示成功提示
+  showToast('✅ 已存檔：' + filename, 'green');
+  updateCMStatus(data);
+}
+
+// ── 開檔（載入 JSON）──
+function loadClientJSON(input) {
+  var file = input.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      var data = JSON.parse(e.target.result);
+      applyClientData(data);
+      showToast('✅ 已載入：' + file.name, 'blue');
+      updateCMStatus(data);
+    } catch(err) {
+      showToast('❌ 檔案格式錯誤，請確認是正確的 JSON 存檔', 'red');
+    }
+    input.value = '';
+  };
+  reader.readAsText(file);
+}
+
+// ── 套用資料到欄位 ──
+function applyClientData(data) {
+  if (!data || !data.fields) return;
+
+  // 先清空動態列表
+  var pl = document.getElementById('propertyList');
+  if (pl) pl.innerHTML = '';
+  var pll = document.getElementById('personalLoanList');
+  if (pll) pll.innerHTML = '';
+  var cll = document.getElementById('carLoanList');
+  if (cll) cll.innerHTML = '';
+
+  // 重建動態列表
+  if (data.propertyRows && typeof addProperty === 'function') {
+    data.propertyRows.forEach(function(obj) {
+      addProperty();
+      Object.keys(obj).forEach(function(id) {
+        var el = document.getElementById(id); if (el) el.value = obj[id];
+      });
+    });
+  }
+  if (data.personalLoanRows && typeof addPersonalLoan === 'function') {
+    data.personalLoanRows.forEach(function(obj) {
+      addPersonalLoan();
+      Object.keys(obj).forEach(function(id) {
+        var el = document.getElementById(id); if (el) el.value = obj[id];
+      });
+    });
+  }
+  if (data.carLoanRows && typeof addCarLoan === 'function') {
+    data.carLoanRows.forEach(function(obj) {
+      addCarLoan();
+      Object.keys(obj).forEach(function(id) {
+        var el = document.getElementById(id); if (el) el.value = obj[id];
+      });
+    });
+  }
+
+  // 整合方案
+  if (data.consoSchemes && data.consoSchemes.length > 0) {
+    var schemeList = document.getElementById('cc_scheme_list');
+    if (schemeList) schemeList.innerHTML = '';
+    data.consoSchemes.forEach(function(obj) {
+      if (typeof addConsoScheme === 'function') {
+        addConsoScheme();
+        Object.keys(obj).forEach(function(id) {
+          if (id === 'id') return;
+          var el = document.getElementById(id);
+          if (el) { if (el.type === 'checkbox') el.checked = obj[id]; else el.value = obj[id]; }
+        });
+      }
+    });
+  }
+
+  // 一般欄位
+  Object.keys(data.fields).forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el && el.type !== 'file') el.value = data.fields[id];
+  });
+
+  // 複選框
+  if (data.checkboxes) {
+    Object.keys(data.checkboxes).forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el && el.type === 'checkbox') el.checked = data.checkboxes[id];
+    });
+  }
+
+  // 六大功能按鈕
+  if (data.fnBtns) {
+    document.querySelectorAll('.fn-btn').forEach(function(btn) {
+      btn.classList.remove('on');
+    });
+    data.fnBtns.forEach(function(id) {
+      var btn = document.getElementById(id);
+      if (btn) btn.classList.add('on');
+    });
+  }
+
+  // seg-btn
+  if (data.segBtns) {
+    Object.keys(data.segBtns).forEach(function(id) {
+      var btn = document.getElementById(id);
+      if (btn) btn.classList.add('on');
+    });
+  }
+
+  // 快選按鈕：恢復狀態（比對 textContent）
+  if (data.quickSelects) {
+    Object.keys(data.quickSelects).forEach(function(rowId) {
+      var row = document.getElementById(rowId);
+      if (!row) return;
+      var target = data.quickSelects[rowId];
+      row.querySelectorAll('.qs-btn').forEach(function(btn) {
+        if (btn.textContent.trim() === target) btn.classList.add('on');
+        else btn.classList.remove('on');
+      });
+    });
+  }
+
+  // 重新計算
+  setTimeout(function() {
+    try { if (typeof calcAssets === 'function') calcAssets(); } catch(e) {}
+    try { if (typeof ca === 'function') ca(); } catch(e) {}
+    try { if (typeof wowCalc === 'function') wowCalc(); } catch(e) {}
+    try { if (typeof syncConsoSummary === 'function') syncConsoSummary(); } catch(e) {}
+  }, 100);
+}
+
+// ── 清空所有欄位 ──
+function clearAllFields() {
+  if (!confirm('確定要清空所有資料嗎？此動作無法復原。')) return;
+  document.querySelectorAll('input[id], textarea[id]').forEach(function(el) {
+    if (el.type === 'file' || el.type === 'checkbox') return;
+    if (el.type === 'hidden') return;
+    el.value = '';
+  });
+  document.querySelectorAll('select[id]').forEach(function(el) {
+    el.selectedIndex = 0;
+  });
+  var pl = document.getElementById('propertyList'); if (pl) pl.innerHTML = '';
+  var pll = document.getElementById('personalLoanList'); if (pll) pll.innerHTML = '';
+  var cll = document.getElementById('carLoanList'); if (cll) cll.innerHTML = '';
+  document.querySelectorAll('.fn-btn, .seg-btn').forEach(function(b) { b.classList.remove('on'); });
+  document.querySelectorAll('.qs-btn').forEach(function(b) { b.classList.remove('on'); });
+  setTimeout(function() {
+    try { calcAssets(); } catch(e) {}
+    try { ca(); } catch(e) {}
+    try { wowCalc(); } catch(e) {}
+  }, 50);
+  showToast('🗑 已清空所有資料', 'orange');
+}
+
+// ── 客戶管理 Modal ──
+function openClientManager() {
+  var m = document.getElementById('clientManagerModal');
+  if (m) { m.style.display = 'flex'; updateCMStatus(null); }
+}
+function closeClientManager() {
+  var m = document.getElementById('clientManagerModal');
+  if (m) m.style.display = 'none';
+}
+
+function updateCMStatus(data) {
+  var box = document.getElementById('cmStatusBox');
+  if (!box) return;
+  var name = (document.getElementById('iName') || {}).value || '—';
+  var adv = (document.getElementById('iAdv') || {}).value || '—';
+  var savedAt = data && data._savedAt ? new Date(data._savedAt).toLocaleString('zh-TW') : '（尚未存檔）';
+  box.innerHTML =
+    '<div>👤 客戶姓名：<strong>' + name + '</strong></div>' +
+    '<div>🧑‍💼 諮詢顧問：<strong>' + adv + '</strong></div>' +
+    '<div>🕐 存檔時間：' + savedAt + '</div>' +
+    '<div style="margin-top:6px;font-size:10px;color:rgba(120,80,20,.5)">存檔後的 .json 檔案可用任何文字編輯器開啟確認</div>';
+}
+
+// ── Toast 提示 ──
+function showToast(msg, color) {
+  var colors = { green:'#1a6b3a', blue:'#1a4a7a', red:'#8a2000', orange:'#7a4800' };
+  var bgs = { green:'rgba(46,204,113,.12)', blue:'rgba(93,173,226,.12)', red:'rgba(224,90,50,.12)', orange:'rgba(201,146,43,.12)' };
+  var t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:' + (bgs[color]||bgs.green) + ';color:' + (colors[color]||colors.green) + ';border:1px solid ' + (colors[color]||colors.green) + ';padding:10px 20px;border-radius:20px;font-size:13px;font-weight:bold;z-index:9999;transition:opacity .4s;pointer-events:none;font-family:sans-serif;box-shadow:0 4px 20px rgba(0,0,0,.1)';
+  document.body.appendChild(t);
+  setTimeout(function() { t.style.opacity='0'; setTimeout(function(){ document.body.removeChild(t); }, 400); }, 2800);
+}
+
+// 點擊 Modal 背景關閉
+document.getElementById('clientManagerModal').addEventListener('click', function(e) {
+  if (e.target === this) closeClientManager();
 });
 </script>
 </body>
