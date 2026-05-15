@@ -1984,11 +1984,26 @@ function empty(msg) {
   return `<div class="empty-state"><div class="empty-icon">🔍</div><div>${msg}</div></div>`;
 }
 
+// 每次 session 已讀過的話術 ID（防重複給分）
+const _readScriptIds = new Set();
+
 function toggleCard(id) {
   const el = document.getElementById('card-' + id);
   if (!el) return;
-  expandedCards.has(id) ? (expandedCards.delete(id), el.classList.remove('expanded'))
-                        : (expandedCards.add(id), el.classList.add('expanded'));
+  if (expandedCards.has(id)) {
+    expandedCards.delete(id);
+    el.classList.remove('expanded');
+  } else {
+    expandedCards.add(id);
+    el.classList.add('expanded');
+    // 閱讀話術庫 +1pt（每篇 session 內只算一次）
+    if (!_readScriptIds.has(id) && typeof growthAddPts === 'function' && libCurrentUser) {
+      _readScriptIds.add(id);
+      growthAddPts(1, '閱讀話術庫');
+      checkGrowthMilestones(libCurrentUser.id, libUserData);
+      saveGrowthUser(libCurrentUser.id, libUserData);
+    }
+  }
 }
 
 function copyScript(id) {
@@ -2539,6 +2554,19 @@ function showQuizResult() {
   const score = quizState.score;
   const pct = Math.round((score / total) * 100);
   const level = pct >= 80 ? '🏆 頂尖解碼力' : pct >= 60 ? '💪 正在進步中' : '🌱 繼續練習';
+
+  // ── 成長系統積分串接 ──
+  if (typeof growthAddPts === 'function' && libCurrentUser && libUserData) {
+    libUserData.totalExams++;
+    growthAddPts(5, '完成解碼練習');
+    if (pct >= 80) growthAddPts(5, '解碼練習 80 分以上');
+    if (pct === 100) {
+      growthAddPts(10, '解碼練習滿分！');
+      libUserData.hasPerfect = true;
+    }
+    checkGrowthMilestones(libCurrentUser.id, libUserData);
+    saveGrowthUser(libCurrentUser.id, libUserData);
+  }
 
   renderMain(`
     <div class="view-eyebrow">🧠 解碼練習結果</div>
@@ -3559,18 +3587,28 @@ function closeGrowthReward() {
 }
 
 // ── 考試院積分串接（在 endExam 完成後觸發）──
-// 原本的 endExam 會呼叫 window.rtAddPts && window.rtAddPts(5, '完成考試院')
-// 這裡統一處理：考試院加分 + 更新 totalExams
-var _origEndExamRef = null;
+// 攔截 endExam，完成後計算積分（含 80+ 加成、滿分加成）
 document.addEventListener('DOMContentLoaded', function() {
-  // 攔截考試院結束，累積積分
   var origEndExam = window.endExam;
   if(origEndExam) {
     window.endExam = async function() {
       await origEndExam.apply(this, arguments);
       if(libCurrentUser && libUserData) {
+        // 讀取 AI 評分文字，解析總分
+        var scoreEl = document.querySelector('.exam-msg.score .exam-bubble');
+        var examScore = 0;
+        if (scoreEl) {
+          var match = scoreEl.textContent.match(/總分[：:]\s*(\d+)\s*\/\s*100/);
+          if (match) examScore = parseInt(match[1]);
+        }
+
         libUserData.totalExams++;
         growthAddPts(5, '完成考試院');
+        if (examScore >= 80) growthAddPts(5, '考試院 80 分以上');
+        if (examScore === 100) {
+          growthAddPts(10, '考試院滿分！');
+          libUserData.hasPerfect = true;
+        }
         checkGrowthMilestones(libCurrentUser.id, libUserData);
         saveGrowthUser(libCurrentUser.id, libUserData);
       }
