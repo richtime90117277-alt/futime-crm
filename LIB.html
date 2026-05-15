@@ -17,6 +17,106 @@
 html{scroll-behavior:smooth;}
 body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.6;}
 
+/* ── LOGIN SCREEN ── */
+#lib-login{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:32px 24px;background:linear-gradient(160deg,#1A2E1C 0%,#2D4A30 50%,#1A2E1C 100%);position:fixed;inset:0;z-index:9000;}
+#lib-login::before{content:'';position:absolute;top:-100px;right:-100px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(184,148,60,0.15) 0%,transparent 70%);pointer-events:none;}
+#lib-login::after{content:'';position:absolute;bottom:-80px;left:-80px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(184,148,60,0.08) 0%,transparent 70%);pointer-events:none;}
+.lib-login-logo{font-family:'Noto Serif TC',serif;font-size:28px;font-weight:700;color:#fff;letter-spacing:0.1em;margin-bottom:4px;position:relative;z-index:1;}
+.lib-login-sub{font-size:11px;color:rgba(255,255,255,0.45);letter-spacing:0.25em;margin-bottom:48px;position:relative;z-index:1;}
+.lib-login-card{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:32px 28px;width:100%;max-width:340px;backdrop-filter:blur(12px);position:relative;z-index:1;}
+.lib-login-card label{display:block;font-size:11px;font-weight:700;letter-spacing:0.15em;color:rgba(255,255,255,0.5);margin-bottom:8px;margin-top:20px;}
+.lib-login-card label:first-of-type{margin-top:0;}
+.lib-login-card select,.lib-login-card input{width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:13px 16px;font-size:15px;color:#fff;font-family:inherit;outline:none;transition:border-color 0.2s;appearance:none;-webkit-appearance:none;}
+.lib-login-card select option{background:#2D4A30;color:#fff;}
+.lib-login-card select:focus,.lib-login-card input:focus{border-color:var(--gold);}
+.lib-login-card input::placeholder{color:rgba(255,255,255,0.25);}
+.lib-login-btn{width:100%;margin-top:28px;background:linear-gradient(135deg,var(--gold) 0%,#d4a84b 100%);color:#1A1714;border:none;border-radius:12px;padding:15px;font-size:15px;font-weight:900;font-family:inherit;letter-spacing:0.08em;cursor:pointer;transition:opacity 0.2s,transform 0.1s;}
+.lib-login-btn:active{opacity:0.85;transform:scale(0.98);}
+.lib-login-err{margin-top:14px;font-size:12px;color:#ff7f7f;text-align:center;min-height:18px;}
+/* topbar user badge */
+.topbar-user{display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 8px;border-radius:20px;transition:background .2s;}
+.topbar-user:hover{background:rgba(61,90,64,0.1);}
+.topbar-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#d4a84b);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#1A1714;}
+.topbar-uname{font-size:12px;font-weight:700;color:var(--olive);}
+.topbar-logout{background:none;border:1px solid var(--border);border-radius:12px;padding:4px 10px;font-size:11px;color:var(--text-dim);cursor:pointer;font-family:inherit;transition:all .2s;}
+.topbar-logout:hover{border-color:var(--olive);color:var(--olive);}
+/* 成長系統頁面 */
+#growth-panel{display:none;position:fixed;inset:0;z-index:500;background:var(--bg);overflow-y:auto;padding-bottom:80px;}
+.growth-header{background:var(--olive);padding:16px 20px 14px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
+.growth-header-brand{font-family:'Noto Serif TC',serif;font-size:16px;font-weight:700;color:#fff;letter-spacing:0.06em;}
+.growth-header-user{display:flex;align-items:center;gap:8px;}
+.growth-header-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#d4a84b);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#1A1714;}
+.growth-header-name{font-size:13px;font-weight:700;color:rgba(255,255,255,0.9);}
+.growth-back-btn{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:6px 14px;border-radius:20px;cursor:pointer;font-size:12px;font-family:inherit;white-space:nowrap;}
+.growth-page{display:none;padding:0 0 80px;}
+.growth-page.active{display:block;}
+.growth-bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);display:flex;z-index:200;padding-bottom:env(safe-area-inset-bottom);}
+.growth-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;background:none;border:none;cursor:pointer;color:var(--text-dim);font-size:10px;font-family:inherit;gap:3px;transition:color .15s;}
+.growth-nav-item.active{color:var(--olive);font-weight:700;}
+.growth-nav-icon{font-size:20px;line-height:1;}
+/* profile cards */
+.profile-hero{background:var(--olive);padding:24px 20px 28px;text-align:center;}
+.profile-rank-badge{display:inline-block;background:rgba(184,148,60,0.25);border:1px solid rgba(184,148,60,0.5);border-radius:20px;padding:4px 16px;font-size:12px;font-weight:700;color:var(--gold);letter-spacing:0.1em;margin-bottom:12px;}
+.profile-name{font-family:'Noto Serif TC',serif;font-size:22px;font-weight:700;color:#fff;margin-bottom:4px;}
+.profile-title{font-size:12px;color:rgba(255,255,255,0.6);margin-bottom:16px;}
+.xp-bar-wrap{background:rgba(255,255,255,0.15);border-radius:10px;height:8px;margin:0 0 8px;}
+.xp-bar-fill{background:linear-gradient(90deg,var(--gold),#d4a84b);height:8px;border-radius:10px;transition:width 0.6s ease;}
+.xp-label{display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,0.6);}
+.growth-stats-row{display:flex;gap:12px;padding:16px 16px 0;}
+.growth-stat-card{flex:1;background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;}
+.growth-stat-num{font-size:28px;font-weight:900;color:var(--olive);}
+.growth-stat-label{font-size:11px;color:var(--text-dim);margin-top:2px;}
+.growth-section{padding:16px 16px 0;}
+.growth-section-title{font-size:12px;font-weight:700;letter-spacing:0.1em;color:var(--text-dim);text-transform:uppercase;margin-bottom:10px;}
+.milestone-item{display:flex;align-items:center;gap:12px;padding:12px;background:#fff;border:1px solid var(--border);border-radius:12px;margin-bottom:8px;}
+.milestone-item.achieved{border-color:rgba(61,90,64,0.3);background:rgba(61,90,64,0.04);}
+.milestone-icon-wrap{width:36px;height:36px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.milestone-info{flex:1;min-width:0;}
+.milestone-name{font-size:13px;font-weight:700;color:var(--text);}
+.milestone-desc{font-size:11px;color:var(--text-dim);margin-top:2px;line-height:1.4;}
+.milestone-status{font-size:11px;font-weight:700;color:var(--text-dim);flex-shrink:0;}
+.milestone-status.done{color:var(--olive);}
+.badges-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.badge-item{text-align:center;padding:10px 4px;}
+.badge-item.locked{opacity:0.3;}
+.badge-icon{font-size:24px;margin-bottom:4px;}
+.badge-name{font-size:10px;color:var(--text-dim);}
+/* leaderboard */
+.lb-header-section{background:var(--olive);padding:20px;text-align:center;}
+.lb-title-text{font-family:'Noto Serif TC',serif;font-size:20px;font-weight:700;color:#fff;margin-bottom:4px;}
+.lb-subtitle-text{font-size:12px;color:rgba(255,255,255,0.6);}
+.lb-podium{display:flex;align-items:flex-end;justify-content:center;gap:8px;padding:20px 16px;background:#fff;border-bottom:1px solid var(--border);}
+.lb-podium-item{text-align:center;flex:1;}
+.lb-podium-icon{font-size:24px;margin-bottom:4px;}
+.lb-podium-name{font-size:12px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.lb-podium-pts{font-size:11px;color:var(--text-dim);}
+.lb-podium-bar{border-radius:8px 8px 0 0;margin:0 auto;width:60%;}
+.lb-list{padding:12px 16px;}
+.lb-item{display:flex;align-items:center;gap:12px;padding:12px;background:#fff;border:1px solid var(--border);border-radius:12px;margin-bottom:8px;}
+.lb-item.me{border-color:var(--olive);background:rgba(61,90,64,0.04);}
+.lb-rank{font-size:16px;font-weight:900;color:var(--text-dim);width:24px;text-align:center;flex-shrink:0;}
+.lb-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#d4a84b);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#1A1714;flex-shrink:0;}
+.lb-info{flex:1;min-width:0;}
+.lb-name{font-size:13px;font-weight:700;color:var(--text);}
+.lb-level{font-size:11px;color:var(--text-dim);}
+.lb-pts-num{font-size:15px;font-weight:900;color:var(--olive);}
+/* checkin */
+.checkin-hero{background:var(--olive);padding:28px 20px;text-align:center;}
+.checkin-streak-num{font-size:64px;font-weight:900;color:#fff;line-height:1;}
+.checkin-streak-label{font-size:13px;color:rgba(255,255,255,0.6);margin:8px 0 20px;}
+.checkin-btn-el{background:linear-gradient(135deg,var(--gold),#d4a84b);color:#1A1714;border:none;border-radius:16px;padding:16px 32px;font-size:15px;font-weight:900;font-family:inherit;cursor:pointer;letter-spacing:0.05em;}
+.checkin-btn-el:disabled{opacity:0.5;cursor:not-allowed;}
+.checkin-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;padding:4px 0;}
+.checkin-day{aspect-ratio:1;border-radius:8px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text-dim);}
+.checkin-day.done{background:var(--olive);border-color:var(--olive);color:#fff;}
+.checkin-day.today{border-color:var(--gold);font-weight:700;}
+/* reward popup */
+.growth-reward-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9100;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(4px);}
+.growth-reward-overlay.show{display:flex;}
+.growth-reward-card{background:#fff;border-radius:24px;padding:36px 28px;text-align:center;max-width:320px;width:100%;animation:rewardPop .4s cubic-bezier(0.22,1,0.36,1);}
+@keyframes rewardPop{from{transform:scale(0.8);opacity:0}to{transform:scale(1);opacity:1}}
+.growth-toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#1E1A14;color:#fff;border-radius:12px;padding:10px 20px;font-size:13px;font-weight:700;white-space:nowrap;pointer-events:none;transition:opacity .3s;z-index:9200;}
+
 /* topbar */
 .topbar{position:fixed;top:0;left:0;right:0;z-index:100;height:52px;background:rgba(245,240,232,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:16px;}
 .topbar-logo{font-family:'Noto Serif TC',serif;font-size:15px;font-weight:700;color:var(--olive);letter-spacing:.06em;white-space:nowrap;}
@@ -342,6 +442,159 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 </head>
 <body>
 
+<!-- ══ LIB 登入畫面 ══ -->
+<div id="lib-login">
+  <div class="lib-login-logo">◆ 富時代地產</div>
+  <div class="lib-login-sub">RICHTIME · 話術教材庫 v6</div>
+  <div class="lib-login-card">
+    <label>選擇身份</label>
+    <select id="lib-user-select">
+      <option value="">── 請選擇 ──</option>
+      <optgroup label="👑 管理層">
+        <option value="admin">總經理</option>
+        <option value="crm_op">CRM營運長</option>
+        <option value="knowledge">知識長</option>
+        <option value="ai_trainer">AI訓練長</option>
+      </optgroup>
+      <optgroup label="👨‍💼 業務團隊">
+        <option value="rzw">阮智偉</option>
+        <option value="lyl">廖一龍</option>
+        <option value="zcw">鄭采崴</option>
+        <option value="zsh">張書菡</option>
+        <option value="wjz">王鈞志</option>
+        <option value="wyr">吳玉如</option>
+        <option value="sgt">商國泰</option>
+        <option value="gzz">郭淑真</option>
+        <option value="gyq">高亞琦</option>
+        <option value="csm">陳淑美</option>
+        <option value="hmz">侯明智</option>
+        <option value="xyi">許亞茵</option>
+        <option value="zsl">曾素蘭</option>
+        <option value="lzj">林紫君</option>
+        <option value="hzx">黃中興</option>
+        <option value="hyc">黃彥程</option>
+        <option value="syd">孫運迪</option>
+        <option value="cfy">陳丰彥</option>
+        <option value="lcy">劉常裕</option>
+        <option value="sxy">施向宇</option>
+        <option value="zhy">莊環蔭</option>
+        <option value="lht">廉海桃</option>
+        <option value="lcg">劉晁綱</option>
+        <option value="yfy">游馥宇</option>
+      </optgroup>
+    </select>
+    <label>密碼</label>
+    <input type="password" id="lib-pw" placeholder="請輸入密碼" onkeydown="if(event.key==='Enter')libLogin()">
+    <button class="lib-login-btn" onclick="libLogin()">🔐 進入系統</button>
+    <div class="lib-login-err" id="lib-login-err"></div>
+  </div>
+</div>
+
+<!-- ══ 成長系統面板 ══ -->
+<div id="growth-panel">
+  <header class="growth-header">
+    <div class="growth-header-brand">◆ 富時代地產</div>
+    <div class="growth-header-user">
+      <div class="growth-header-avatar" id="growth-avatar">?</div>
+      <div class="growth-header-name" id="growth-name">-</div>
+    </div>
+    <button class="growth-back-btn" onclick="closeGrowthPanel()">← 返回話術庫</button>
+  </header>
+
+  <!-- 我的檔案 -->
+  <div id="growth-page-profile" class="growth-page active">
+    <div class="profile-hero">
+      <div class="profile-rank-badge" id="g-rank-badge">🚪 踏門人</div>
+      <div class="profile-name" id="g-profile-name">-</div>
+      <div class="profile-title" id="g-profile-title">累積你的第一個積分</div>
+      <div class="xp-bar-wrap"><div class="xp-bar-fill" id="g-xp-bar" style="width:0%"></div></div>
+      <div class="xp-label">
+        <span id="g-xp-current">0 pt</span>
+        <span id="g-xp-next">下一級：50 pt</span>
+      </div>
+    </div>
+    <div class="growth-stats-row">
+      <div class="growth-stat-card"><div class="growth-stat-num" id="g-stat-pts">0</div><div class="growth-stat-label">總積分</div></div>
+      <div class="growth-stat-card"><div class="growth-stat-num" id="g-stat-exams">0</div><div class="growth-stat-label">考試場次</div></div>
+      <div class="growth-stat-card"><div class="growth-stat-num" id="g-stat-streak">0</div><div class="growth-stat-label">連續天數</div></div>
+    </div>
+    <div class="growth-section" style="margin-top:16px">
+      <div class="growth-section-title">🏆 里程碑進度</div>
+      <div id="g-milestone-list"></div>
+    </div>
+    <div class="growth-section" style="margin-top:8px">
+      <div class="growth-section-title">🎖 徽章收集</div>
+      <div class="badges-grid" id="g-badges-grid"></div>
+    </div>
+  </div>
+
+  <!-- 排行榜 -->
+  <div id="growth-page-lb" class="growth-page">
+    <div class="lb-header-section">
+      <div class="lb-title-text">🏅 本期排行榜</div>
+      <div class="lb-subtitle-text">積分排名 · 激發你的潛力</div>
+    </div>
+    <div class="lb-podium" id="g-lb-podium"></div>
+    <div class="lb-list" id="g-lb-list"></div>
+  </div>
+
+  <!-- 打卡 -->
+  <div id="growth-page-checkin" class="growth-page">
+    <div class="checkin-hero">
+      <div class="checkin-streak-num" id="g-ci-streak">0</div>
+      <div class="checkin-streak-label">連續打卡天數</div>
+      <button class="checkin-btn-el" id="g-ci-btn" onclick="doCheckin()">✅ 今日打卡 +2pt</button>
+    </div>
+    <div class="growth-section" style="margin-top:16px">
+      <div class="growth-section-title">本月打卡紀錄</div>
+      <div class="checkin-grid" id="g-ci-grid"></div>
+    </div>
+    <div class="growth-section" style="margin-top:16px">
+      <div class="growth-section-title">📋 積分規則</div>
+      <div style="background:#fff;border:1px solid var(--border);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--text-sub)">每日打卡</span><span style="font-weight:700;color:var(--olive)">+2 pt</span></div>
+        <div style="height:1px;background:var(--border)"></div>
+        <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--text-sub)">連續 7 天打卡</span><span style="font-weight:700;color:var(--olive)">額外 +20 pt</span></div>
+        <div style="height:1px;background:var(--border)"></div>
+        <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--text-sub)">完成一場考試院</span><span style="font-weight:700;color:var(--olive)">+5 pt</span></div>
+        <div style="height:1px;background:var(--border)"></div>
+        <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--text-sub)">考試院得分 80+</span><span style="font-weight:700;color:var(--olive)">額外 +5 pt</span></div>
+        <div style="height:1px;background:var(--border)"></div>
+        <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--text-sub)">考試院滿分 100</span><span style="font-weight:700;color:var(--olive)">額外 +10 pt</span></div>
+        <div style="height:1px;background:var(--border)"></div>
+        <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--text-sub)">閱讀話術庫一篇</span><span style="font-weight:700;color:var(--olive)">+1 pt</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 成長底部導航 -->
+  <nav class="growth-bottom-nav">
+    <button class="growth-nav-item active" id="gnav-profile" onclick="showGrowthPage('profile')">
+      <span class="growth-nav-icon">👤</span>我的檔案
+    </button>
+    <button class="growth-nav-item" id="gnav-lb" onclick="showGrowthPage('lb')">
+      <span class="growth-nav-icon">🏅</span>排行榜
+    </button>
+    <button class="growth-nav-item" id="gnav-checkin" onclick="showGrowthPage('checkin')">
+      <span class="growth-nav-icon">📅</span>打卡
+    </button>
+  </nav>
+</div>
+
+<!-- 成長系統 toast -->
+<div id="growth-toast" class="growth-toast" style="display:none;opacity:0"></div>
+
+<!-- 成長系統 reward popup -->
+<div class="growth-reward-overlay" id="growth-reward-overlay" onclick="closeGrowthReward()">
+  <div class="growth-reward-card" onclick="event.stopPropagation()">
+    <div style="font-size:64px;margin-bottom:16px" id="grw-emoji">🎉</div>
+    <div style="font-family:'Noto Serif TC',serif;font-size:22px;font-weight:700;color:var(--text);margin-bottom:8px" id="grw-title">恭喜！</div>
+    <div style="font-size:13px;color:var(--text-sub);line-height:1.7;margin-bottom:24px;white-space:pre-wrap" id="grw-desc"></div>
+    <button onclick="closeGrowthReward()" style="background:var(--olive);color:#fff;border:none;border-radius:12px;padding:14px 32px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer">太好了！</button>
+  </div>
+</div>
+
+
 <header class="topbar">
   <!-- 手機版漢堡選單 -->
   <div class="hamburger" id="hamburgerBtn" onclick="toggleSidebar()">☰</div>
@@ -360,6 +613,13 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
     <div class="count-badge">共 <span id="totalCnt">141</span> 筆</div>
     <button class="ai-btn" onclick="openAiModal()">🤖 AI 顧問</button>
     <button class="ai-btn" id="syncBtn" onclick="syncLibToKV()" style="background:linear-gradient(135deg,#B8943C,#a07d2e);" title="把最新話術庫同步到 AI 系統">☁️ 同步話術庫</button>
+    <div id="topbar-user-area" style="display:none;align-items:center;gap:8px">
+      <div class="topbar-user" onclick="openGrowthPanel('profile')">
+        <div class="topbar-avatar" id="tb-avatar">?</div>
+        <div class="topbar-uname" id="tb-name">-</div>
+      </div>
+      <button class="topbar-logout" onclick="libLogout()">登出</button>
+    </div>
   </div>
 </header>
 
@@ -2948,6 +3208,375 @@ function copyDrillPrompt() {
     setTimeout(() => document.getElementById('drillCopyMsg').style.display = 'none', 3000);
   }
 }
+</script>
+
+
+<script>
+// ══════════════════════════════════════════════
+// 富時代 LIB v6 — 登入 + 成長系統
+// ══════════════════════════════════════════════
+
+// 帳號資料庫（格式同 CRM：選下拉，後端驗密碼；這裡用前端簡易版）
+const LIB_ACCOUNTS = {
+  admin:      { name:'總經理',   pw:'boss888',    role:'manager' },
+  crm_op:     { name:'CRM營運長',pw:'boss888',    role:'manager' },
+  knowledge:  { name:'知識長',   pw:'boss888',    role:'manager' },
+  ai_trainer: { name:'AI訓練長', pw:'boss888',    role:'manager' },
+  rzw:  { name:'阮智偉', pw:'futime001', role:'sales' },
+  lyl:  { name:'廖一龍', pw:'futime002', role:'sales' },
+  zcw:  { name:'鄭采崴', pw:'futime003', role:'sales' },
+  zsh:  { name:'張書菡', pw:'futime004', role:'sales' },
+  wjz:  { name:'王鈞志', pw:'futime005', role:'sales' },
+  wyr:  { name:'吳玉如', pw:'futime006', role:'sales' },
+  sgt:  { name:'商國泰', pw:'futime007', role:'sales' },
+  gzz:  { name:'郭淑真', pw:'futime008', role:'sales' },
+  gyq:  { name:'高亞琦', pw:'futime009', role:'sales' },
+  csm:  { name:'陳淑美', pw:'futime010', role:'sales' },
+  hmz:  { name:'侯明智', pw:'futime011', role:'sales' },
+  xyi:  { name:'許亞茵', pw:'futime012', role:'sales' },
+  zsl:  { name:'曾素蘭', pw:'futime013', role:'sales' },
+  lzj:  { name:'林紫君', pw:'futime014', role:'sales' },
+  hzx:  { name:'黃中興', pw:'futime015', role:'sales' },
+  hyc:  { name:'黃彥程', pw:'futime016', role:'sales' },
+  syd:  { name:'孫運迪', pw:'futime017', role:'sales' },
+  cfy:  { name:'陳丰彥', pw:'futime018', role:'sales' },
+  lcy:  { name:'劉常裕', pw:'futime019', role:'sales' },
+  sxy:  { name:'施向宇', pw:'futime020', role:'sales' },
+  zhy:  { name:'莊環蔭', pw:'futime021', role:'sales' },
+  lht:  { name:'廉海桃', pw:'futime022', role:'sales' },
+  lcg:  { name:'劉晁綱', pw:'futime023', role:'sales' },
+  yfy:  { name:'游馥宇', pw:'futime024', role:'sales' },
+};
+
+let libCurrentUser = null;
+let libUserData = null;
+
+// ── 登入 ──
+function libLogin() {
+  var uid = document.getElementById('lib-user-select').value;
+  var pw  = document.getElementById('lib-pw').value;
+  var errEl = document.getElementById('lib-login-err');
+  if (!uid) { errEl.textContent = '🔒 請選擇身份'; return; }
+  if (!pw)  { errEl.textContent = '🔒 請輸入密碼'; return; }
+  var acc = LIB_ACCOUNTS[uid];
+  if (!acc || acc.pw !== pw) {
+    errEl.textContent = '帳號或密碼錯誤，請再試一次';
+    document.getElementById('lib-pw').value = '';
+    return;
+  }
+  errEl.textContent = '';
+  libCurrentUser = { id: uid, name: acc.name, role: acc.role };
+  libUserData = loadGrowthUser(uid);
+
+  // 首次登入里程碑
+  if (!libUserData.achievedMilestones.includes('first_login')) {
+    checkGrowthMilestones(uid, libUserData);
+    saveGrowthUser(uid, libUserData);
+  }
+
+  libEnterApp();
+}
+
+function libEnterApp() {
+  document.getElementById('lib-login').style.display = 'none';
+  // 顯示 topbar 用戶區
+  var ua = document.getElementById('topbar-user-area');
+  ua.style.display = 'flex';
+  var initials = libCurrentUser.name.slice(-1);
+  document.getElementById('tb-avatar').textContent = initials;
+  document.getElementById('tb-name').textContent = libCurrentUser.name;
+  document.getElementById('growth-avatar').textContent = initials;
+  document.getElementById('growth-name').textContent = libCurrentUser.name;
+
+  // 管理員顯示同步按鈕，業務不顯示
+  var syncBtn = document.getElementById('syncBtn');
+  if (syncBtn) syncBtn.style.display = libCurrentUser.role === 'manager' ? '' : 'none';
+}
+
+function libLogout() {
+  libCurrentUser = null;
+  libUserData = null;
+  document.getElementById('topbar-user-area').style.display = 'none';
+  document.getElementById('lib-login').style.display = 'flex';
+  document.getElementById('lib-pw').value = '';
+  document.getElementById('lib-user-select').value = '';
+  document.getElementById('lib-login-err').textContent = '';
+  closeGrowthPanel();
+}
+
+// ── 成長系統導航 ──
+function openGrowthPanel(page) {
+  if (!libCurrentUser) return;
+  document.getElementById('growth-panel').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+  showGrowthPage(page || 'profile');
+}
+
+function closeGrowthPanel() {
+  document.getElementById('growth-panel').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function showGrowthPage(id) {
+  document.querySelectorAll('.growth-page').forEach(function(p) { p.classList.remove('active'); });
+  document.querySelectorAll('.growth-nav-item').forEach(function(n) { n.classList.remove('active'); });
+  document.getElementById('growth-page-' + id).classList.add('active');
+  document.getElementById('gnav-' + id).classList.add('active');
+  if (id === 'profile') renderGrowthProfile();
+  if (id === 'lb') renderGrowthLB();
+  if (id === 'checkin') renderGrowthCheckin();
+}
+
+// ══════════════════════════════════════════════
+// 積分 / 等級系統
+// ══════════════════════════════════════════════
+const GROWTH_LEVELS = [
+  { lv:1, name:'踏門人',     icon:'🚪', ptReq:0,    desc:'剛踏入富時代的大門' },
+  { lv:2, name:'問路者',     icon:'🧭', ptReq:50,   desc:'開始尋找自己的方向' },
+  { lv:3, name:'立局者',     icon:'⚙️', ptReq:150,  desc:'懂得設計局，讓事情發生' },
+  { lv:4, name:'破防師',     icon:'🛡️', ptReq:350,  desc:'任何異議都難不倒你' },
+  { lv:5, name:'造局者',     icon:'🎯', ptReq:700,  desc:'不跟客戶吵，讓局說話' },
+  { lv:6, name:'千萬顧問',   icon:'💎', ptReq:1200, desc:'客戶信任、成交自然' },
+  { lv:7, name:'富時代傳承', icon:'👑', ptReq:2000, desc:'你就是富時代的標準' },
+];
+
+const GROWTH_MILESTONES = [
+  { id:'first_login',  icon:'🌅', name:'第一步最難',     desc:'完成首次登入',             check:function(u){return true;} },
+  { id:'first_checkin',icon:'✅', name:'說到做到',       desc:'完成第一次打卡',           check:function(u){return u.totalCheckins>=1;} },
+  { id:'streak7',      icon:'🔥', name:'七日不斷火',     desc:'連續打卡 7 天',            check:function(u){return u.maxStreak>=7;} },
+  { id:'streak30',     icon:'💥', name:'月不停功',       desc:'連續打卡 30 天',           check:function(u){return u.maxStreak>=30;} },
+  { id:'exam5',        icon:'🎓', name:'考場常客',       desc:'完成 5 場考試院',          check:function(u){return u.totalExams>=5;} },
+  { id:'exam_perfect', icon:'💯', name:'滿分神話',       desc:'考試院拿到滿分',           check:function(u){return u.hasPerfect===true;} },
+  { id:'lv3',          icon:'⚙️', name:'立局入門',       desc:'晉升「立局者」Lv.3',      check:function(u){return growthGetLevel(u.pts).lv>=3;} },
+  { id:'lv5',          icon:'🎯', name:'造局有成',       desc:'晉升「造局者」Lv.5',      check:function(u){return growthGetLevel(u.pts).lv>=5;} },
+  { id:'pts500',       icon:'🏆', name:'積分五百',       desc:'累積 500 積分',            check:function(u){return u.pts>=500;} },
+];
+
+const GROWTH_BADGES = [
+  { id:'starter', icon:'🚪', name:'踏門人',  check:function(u){return true;} },
+  { id:'streak7', icon:'🔥', name:'七日火',  check:function(u){return u.maxStreak>=7;} },
+  { id:'exam5',   icon:'🎓', name:'考場老手',check:function(u){return u.totalExams>=5;} },
+  { id:'perfect', icon:'💯', name:'滿分神',  check:function(u){return u.hasPerfect;} },
+  { id:'lv5',     icon:'🎯', name:'造局者',  check:function(u){return growthGetLevel(u.pts).lv>=5;} },
+  { id:'lv7',     icon:'👑', name:'傳承',    check:function(u){return growthGetLevel(u.pts).lv>=7;} },
+  { id:'pts500',  icon:'🏆', name:'積分500', check:function(u){return u.pts>=500;} },
+];
+
+function growthGetLevel(pts) {
+  var cur = GROWTH_LEVELS[0];
+  GROWTH_LEVELS.forEach(function(lv){ if(pts>=lv.ptReq) cur=lv; });
+  return cur;
+}
+function growthGetNextLevel(pts) {
+  for(var i=0;i<GROWTH_LEVELS.length;i++){ if(pts<GROWTH_LEVELS[i].ptReq) return GROWTH_LEVELS[i]; }
+  return null;
+}
+function growthGetProgress(pts) {
+  var cur=growthGetLevel(pts), next=growthGetNextLevel(pts);
+  if(!next) return 100;
+  return Math.min(100, Math.round(((pts-cur.ptReq)/(next.ptReq-cur.ptReq))*100));
+}
+
+function growthStorageKey(uid, key){ return 'rt_'+uid+'_'+key; }
+
+function loadGrowthUser(uid) {
+  var raw = localStorage.getItem(growthStorageKey(uid,'data'));
+  if(raw) return JSON.parse(raw);
+  return { pts:0, totalExams:0, totalCheckins:0, maxStreak:0, currentStreak:0, lastCheckin:null, checkinDates:[], hasPerfect:false, achievedMilestones:[], earnedBadges:[] };
+}
+
+function saveGrowthUser(uid, data) {
+  localStorage.setItem(growthStorageKey(uid,'data'), JSON.stringify(data));
+  var lb = loadGrowthLB();
+  var lv = growthGetLevel(data.pts);
+  lb[uid] = { name:libCurrentUser.name, pts:data.pts, lv:lv.lv, lvName:lv.name, lvIcon:lv.icon };
+  localStorage.setItem('rt_leaderboard', JSON.stringify(lb));
+}
+
+function loadGrowthLB() {
+  var raw = localStorage.getItem('rt_leaderboard');
+  return raw ? JSON.parse(raw) : {};
+}
+
+function growthAddPts(amount, reason) {
+  if(!libCurrentUser||!libUserData) return;
+  var oldLv = growthGetLevel(libUserData.pts).lv;
+  libUserData.pts += amount;
+  var newLv = growthGetLevel(libUserData.pts).lv;
+  saveGrowthUser(libCurrentUser.id, libUserData);
+  showGrowthToast('+'+amount+' pt　'+reason);
+  if(newLv > oldLv) {
+    var lv = growthGetLevel(libUserData.pts);
+    setTimeout(function(){ showGrowthReward(lv.icon, '升級！'+lv.name, '你已晉升為「'+lv.name+'」 '+lv.desc); }, 800);
+  }
+}
+
+// 對外暴露接口（供考試院 endExam 呼叫）
+window.rtAddPts = function(amount, reason) { growthAddPts(amount, reason||'完成訓練'); };
+
+function checkGrowthMilestones(uid, data) {
+  GROWTH_MILESTONES.forEach(function(m) {
+    if(data.achievedMilestones.includes(m.id)) return;
+    if(m.check(data)) {
+      data.achievedMilestones.push(m.id);
+      setTimeout(function(){ showGrowthReward(m.icon, '里程碑解鎖！', '【'+m.name+'】 '+m.desc); }, 1200);
+    }
+  });
+  GROWTH_BADGES.forEach(function(b) {
+    if(!data.earnedBadges.includes(b.id) && b.check(data)) data.earnedBadges.push(b.id);
+  });
+}
+
+// ── 渲染 ──
+function renderGrowthProfile() {
+  if(!libCurrentUser||!libUserData) return;
+  var u = libUserData;
+  var lv = growthGetLevel(u.pts);
+  var next = growthGetNextLevel(u.pts);
+  var prog = growthGetProgress(u.pts);
+  document.getElementById('g-rank-badge').textContent = lv.icon+' '+lv.name;
+  document.getElementById('g-profile-name').textContent = libCurrentUser.name;
+  document.getElementById('g-profile-title').textContent = lv.desc;
+  document.getElementById('g-xp-bar').style.width = prog+'%';
+  document.getElementById('g-xp-current').textContent = u.pts+' pt';
+  document.getElementById('g-xp-next').textContent = next ? '下一級：'+next.ptReq+' pt' : '最高等級 👑';
+  document.getElementById('g-stat-pts').textContent = u.pts;
+  document.getElementById('g-stat-exams').textContent = u.totalExams;
+  document.getElementById('g-stat-streak').textContent = u.currentStreak;
+  // milestones
+  var ml = document.getElementById('g-milestone-list');
+  ml.innerHTML = '';
+  GROWTH_MILESTONES.forEach(function(m) {
+    var done = u.achievedMilestones.includes(m.id);
+    var div = document.createElement('div');
+    div.className = 'milestone-item '+(done?'achieved':'');
+    div.innerHTML = '<div class="milestone-icon-wrap">'+m.icon+'</div><div class="milestone-info"><div class="milestone-name">'+m.name+'</div><div class="milestone-desc">'+m.desc+'</div></div><div class="milestone-status '+(done?'done':'')+'">'+( done?'✅ 達成':'🔒')+'</div>';
+    ml.appendChild(div);
+  });
+  // badges
+  var bg = document.getElementById('g-badges-grid');
+  bg.innerHTML = '';
+  GROWTH_BADGES.forEach(function(b) {
+    var earned = u.earnedBadges.includes(b.id);
+    var div = document.createElement('div');
+    div.className = 'badge-item '+(earned?'':'locked');
+    div.innerHTML = '<div class="badge-icon">'+b.icon+'</div><div class="badge-name">'+b.name+'</div>';
+    bg.appendChild(div);
+  });
+}
+
+function renderGrowthLB() {
+  var lb = loadGrowthLB();
+  var entries = Object.entries(lb).sort(function(a,b){ return b[1].pts - a[1].pts; });
+  var podiumEl = document.getElementById('g-lb-podium');
+  var listEl = document.getElementById('g-lb-list');
+  if(!entries.length) { podiumEl.innerHTML=''; listEl.innerHTML='<div style="text-align:center;padding:32px;color:var(--text-dim)">還沒有人打卡或完成訓練，快去衝第一吧！</div>'; return; }
+  // podium top3
+  var top3 = [entries[1],entries[0],entries[2]].filter(Boolean);
+  var colors = ['#C0C0C0','#FFD700','#CD7F32'];
+  var heights = [60,80,50];
+  podiumEl.innerHTML = top3.map(function(e,i){
+    var realRank = (i===0)?2:(i===1)?1:3;
+    var medals = ['🥇','🥈','🥉'];
+    return '<div class="lb-podium-item"><div class="lb-podium-icon">'+medals[realRank-1]+'</div><div class="lb-podium-name">'+(e?e[1].name:'')+'</div><div class="lb-podium-pts">'+(e?e[1].pts:0)+' pt</div><div class="lb-podium-bar" style="height:'+heights[i]+'px;background:'+(colors[i])+';opacity:0.7;"></div></div>';
+  }).join('');
+  // full list
+  listEl.innerHTML = entries.map(function(e,i){
+    var isMe = libCurrentUser && e[0]===libCurrentUser.id;
+    return '<div class="lb-item '+(isMe?'me':'')+'"><div class="lb-rank">'+(i+1)+'</div><div class="lb-avatar">'+e[1].name.slice(-1)+'</div><div class="lb-info"><div class="lb-name">'+e[1].name+'</div><div class="lb-level">'+e[1].lvIcon+' '+e[1].lvName+'</div></div><div class="lb-pts-num">'+e[1].pts+' pt</div></div>';
+  }).join('');
+}
+
+function renderGrowthCheckin() {
+  if(!libCurrentUser||!libUserData) return;
+  var u = libUserData;
+  document.getElementById('g-ci-streak').textContent = u.currentStreak;
+  var today = new Date().toISOString().split('T')[0];
+  var alreadyToday = u.checkinDates.includes(today);
+  var btn = document.getElementById('g-ci-btn');
+  btn.disabled = alreadyToday;
+  btn.textContent = alreadyToday ? '✅ 今日已打卡' : '✅ 今日打卡 +2pt';
+  // calendar
+  var grid = document.getElementById('g-ci-grid');
+  var now = new Date();
+  var year = now.getFullYear(), month = now.getMonth();
+  var firstDay = new Date(year, month, 1).getDay();
+  var daysInMonth = new Date(year, month+1, 0).getDate();
+  var html = '';
+  for(var i=0;i<firstDay;i++) html += '<div class="checkin-day" style="opacity:0"></div>';
+  for(var d=1;d<=daysInMonth;d++) {
+    var dateStr = year+'-'+(String(month+1).padStart(2,'0'))+'-'+(String(d).padStart(2,'0'));
+    var done = u.checkinDates.includes(dateStr);
+    var isToday = dateStr===today;
+    html += '<div class="checkin-day '+(done?'done':'')+(isToday?' today':'')+'">'+d+'</div>';
+  }
+  grid.innerHTML = html;
+}
+
+function doCheckin() {
+  if(!libCurrentUser||!libUserData) return;
+  var today = new Date().toISOString().split('T')[0];
+  if(libUserData.checkinDates.includes(today)) return;
+  libUserData.checkinDates.push(today);
+  libUserData.totalCheckins++;
+  // streak
+  var yesterday = new Date(Date.now()-86400000).toISOString().split('T')[0];
+  if(libUserData.lastCheckin===yesterday) {
+    libUserData.currentStreak++;
+  } else {
+    libUserData.currentStreak = 1;
+  }
+  libUserData.lastCheckin = today;
+  libUserData.maxStreak = Math.max(libUserData.maxStreak, libUserData.currentStreak);
+  saveGrowthUser(libCurrentUser.id, libUserData);
+  growthAddPts(2, '今日打卡');
+  // 連續7天加成
+  if(libUserData.currentStreak === 7) growthAddPts(20, '連續7天獎勵');
+  if(libUserData.currentStreak === 30) growthAddPts(50, '連續30天獎勵');
+  checkGrowthMilestones(libCurrentUser.id, libUserData);
+  saveGrowthUser(libCurrentUser.id, libUserData);
+  renderGrowthCheckin();
+}
+
+// ── Toast & Reward ──
+function showGrowthToast(msg) {
+  var t = document.getElementById('growth-toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  t.style.opacity = '1';
+  setTimeout(function(){ t.style.opacity='0'; setTimeout(function(){ t.style.display='none'; },300); }, 2500);
+}
+
+function showGrowthReward(emoji, title, desc) {
+  document.getElementById('grw-emoji').textContent = emoji;
+  document.getElementById('grw-title').textContent = title;
+  document.getElementById('grw-desc').textContent = desc;
+  document.getElementById('growth-reward-overlay').classList.add('show');
+}
+
+function closeGrowthReward() {
+  document.getElementById('growth-reward-overlay').classList.remove('show');
+}
+
+// ── 考試院積分串接（在 endExam 完成後觸發）──
+// 原本的 endExam 會呼叫 window.rtAddPts && window.rtAddPts(5, '完成考試院')
+// 這裡統一處理：考試院加分 + 更新 totalExams
+var _origEndExamRef = null;
+document.addEventListener('DOMContentLoaded', function() {
+  // 攔截考試院結束，累積積分
+  var origEndExam = window.endExam;
+  if(origEndExam) {
+    window.endExam = async function() {
+      await origEndExam.apply(this, arguments);
+      if(libCurrentUser && libUserData) {
+        libUserData.totalExams++;
+        growthAddPts(5, '完成考試院');
+        checkGrowthMilestones(libCurrentUser.id, libUserData);
+        saveGrowthUser(libCurrentUser.id, libUserData);
+      }
+    };
+  }
+});
 </script>
 
 <footer style="text-align:center;padding:20px;font-size:11px;color:#9E9285;letter-spacing:.08em;border-top:1px solid #E0D8CC;margin-top:20px;">Richtime © 2026 &nbsp;◆&nbsp; 內部版僅供團隊使用 &nbsp;◆&nbsp; AI DECISION ENGINE · V 1.5</footer>
