@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -214,41 +215,7 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 .toast{position:fixed;bottom:24px;right:24px;background:var(--surface);border:1px solid var(--olive);color:var(--text);padding:10px 18px;border-radius:6px;font-size:13px;transform:translateY(80px);opacity:0;transition:all .3s;z-index:999;pointer-events:none;box-shadow:0 4px 16px rgba(61,45,20,0.12);}
 .toast.show{transform:translateY(0);opacity:1;}
 
-/* ── AI 顧問 Modal ── */
-.ai-btn{display:flex;align-items:center;gap:6px;background:linear-gradient(135deg,#3D5A40,#4E7053);color:#fff;border:none;border-radius:20px;padding:5px 14px;font-size:12px;font-weight:700;font-family:'Noto Sans TC',sans-serif;cursor:pointer;letter-spacing:.04em;transition:opacity .2s;white-space:nowrap;flex-shrink:0;}
-.ai-btn:hover{opacity:.85;}
-.ai-modal-bg{position:fixed;inset:0;background:rgba(30,26,20,.6);z-index:500;display:none;align-items:center;justify-content:center;padding:16px;}
-.ai-modal-bg.open{display:flex;}
-.ai-modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;width:100%;max-width:680px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 8px 40px rgba(61,45,20,0.15);}
-.ai-modal-head{display:flex;align-items:center;gap:10px;padding:18px 20px 14px;border-bottom:1px solid var(--border);flex-shrink:0;}
-.ai-modal-icon{font-size:20px;}
-.ai-modal-ttl{font-family:'Noto Serif TC',serif;font-size:16px;font-weight:700;color:var(--text);flex:1;}
-.ai-modal-sub{font-size:11px;color:var(--text-sub);}
-.ai-modal-close{background:none;border:none;color:var(--text-sub);font-size:18px;cursor:pointer;padding:2px 6px;border-radius:4px;transition:color .15s;}
-.ai-modal-close:hover{color:var(--text);}
-.ai-modal-body{overflow-y:auto;padding:20px;flex:1;}
-.ai-section-label{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--olive);margin-bottom:10px;}
-.ai-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
-.ai-field{display:flex;flex-direction:column;gap:4px;}
-.ai-field.wide{grid-column:1/-1;}
-.ai-field label{font-size:11px;color:var(--text-sub);font-weight:500;}
-.ai-field input,.ai-field textarea,.ai-field select{background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:8px 10px;font-size:13px;font-family:'Noto Sans TC',sans-serif;outline:none;transition:border-color .2s;width:100%;}
-.ai-field input:focus,.ai-field textarea:focus,.ai-field select:focus{border-color:var(--olive);}
-.ai-field textarea{resize:vertical;min-height:60px;line-height:1.6;}
-.ai-field select option{background:var(--surface2);}
-.ai-preview-wrap{margin-bottom:16px;}
-.ai-preview{background:#FFFFFF;border:1px solid var(--border);border-radius:8px;padding:14px 16px;font-size:12px;color:var(--text-sub);line-height:1.9;white-space:pre-wrap;max-height:280px;overflow-y:auto;font-family:monospace;user-select:text;}
-.ai-preview mark{background:rgba(61,90,64,0.10);color:var(--gold-light);border-radius:2px;padding:0 2px;}
-.ai-modal-foot{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;flex-shrink:0;flex-wrap:wrap;}
-.ai-copy-btn{background:var(--olive);color:#fff;border:none;border-radius:6px;padding:9px 22px;font-size:13px;font-weight:700;font-family:'Noto Sans TC',sans-serif;cursor:pointer;transition:opacity .2s;}
-.ai-copy-btn:hover{opacity:.85;}
-.ai-reset-btn{background:none;border:1px solid var(--border);border-radius:6px;padding:9px 16px;font-size:13px;color:var(--text-sub);font-family:'Noto Sans TC',sans-serif;cursor:pointer;transition:all .15s;}
-.ai-reset-btn:hover{border-color:var(--text-sub);color:var(--text);}
-@media(max-width:600px){
-  .ai-fields{grid-template-columns:1fr;}
-  .ai-field.wide{grid-column:auto;}
-  .ai-modal{max-height:95vh;}
-}
+
 
 /* ════════════════════════════════════════
    Mobile RWD — 手機版響應式佈局
@@ -268,9 +235,6 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
   .search-wrap { max-width: 130px; }
   .search-input { width: 100px; font-size: 12px; }
   .mode-btn span, .mode-btn { font-size: 10px; padding: 3px 7px; }
-  /* AI顧問按鈕縮短顯示 */
-  .ai-btn { padding: 5px 10px; font-size: 11px; }
-
   /* ── Hamburger 按鈕 ── */
   .hamburger {
     display: flex;
@@ -611,8 +575,7 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
       <button class="mode-btn" id="modeLib" onclick="setMode('lib')">🗂 全庫</button>
     </div>
     <div class="count-badge">共 <span id="totalCnt">141</span> 筆</div>
-    <button class="ai-btn" onclick="openAiModal()">🤖 AI 顧問</button>
-    <button class="ai-btn" id="syncBtn" onclick="syncLibToKV()" style="background:linear-gradient(135deg,#B8943C,#a07d2e);" title="把最新話術庫同步到 AI 系統">☁️ 同步話術庫</button>
+    <button id="syncBtn" onclick="syncLibToKV()" style="display:flex;align-items:center;gap:6px;background:linear-gradient(135deg,#B8943C,#a07d2e);color:#fff;border:none;border-radius:20px;padding:5px 14px;font-size:12px;font-weight:700;font-family:'Noto Sans TC',sans-serif;cursor:pointer;letter-spacing:.04em;transition:opacity .2s;white-space:nowrap;flex-shrink:0;" title="把最新話術庫同步到 AI 系統" onmouseenter="this.style.opacity='.85'" onmouseleave="this.style.opacity='1'">☁️ 同步話術庫</button>
     <div id="topbar-user-area" style="display:none;align-items:center;gap:8px">
       <div class="topbar-user" onclick="openGrowthPanel('profile')">
         <div class="topbar-avatar" id="tb-avatar">?</div>
@@ -631,73 +594,6 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 <!-- 遮罩層 -->
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
-<!-- AI 顧問 Modal -->
-<div class="ai-modal-bg" id="aiModalBg" onclick="handleAiModalBgClick(event)">
-  <div class="ai-modal">
-    <div class="ai-modal-head">
-      <span class="ai-modal-icon">🤖</span>
-      <div>
-        <div class="ai-modal-ttl">客戶心理解碼｜先讀懂人，再出招</div>
-        <div class="ai-modal-sub">填入你觀察到的行為與說法，AI 先進客戶身體，再設計對話</div>
-      </div>
-      <button class="ai-modal-close" onclick="closeAiModal()">✕</button>
-    </div>
-    <div class="ai-modal-body">
-      <div class="ai-section-label">Step 0 — 從 CRM 快速帶入（選用）</div>
-      <button onclick="openCrmPicker('futime')" style="width:100%;background:rgba(61,90,64,0.10);border:1px solid rgba(61,90,64,0.10);border-radius:8px;padding:10px 14px;color:#3D5A40;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:16px;text-align:left">
-        📋 從 CRM 選客戶，自動帶入資料
-      </button>
-      <div class="ai-section-label">Step 1 — 你觀察到的：客戶說了什麼、做了什麼</div>
-      <div class="ai-fields">
-        <div class="ai-field">
-          <label>客戶族群</label>
-          <input id="ai-族群" type="text" placeholder="例：雙薪無殼、股票族、退休族" oninput="renderPreview()">
-        </div>
-        <div class="ai-field">
-          <label>客戶年齡</label>
-          <input id="ai-年齡" type="text" placeholder="例：38 歲" oninput="renderPreview()">
-        </div>
-        <div class="ai-field wide">
-          <label>🔍 客戶說了什麼、做了什麼、重複說了什麼（越具體越好）</label>
-          <textarea id="ai-卡關" placeholder="例：說了三次「這件事我可以做主」、說要跟老婆討論但老婆一直沒出現、已看三次但每次都說再想想、LINE 已讀不回..." oninput="renderPreview()" style="min-height:80px"></textarea>
-        </div>
-        <div class="ai-field">
-          <label>真正的決策者（KEY MAN）</label>
-          <input id="ai-keyman" type="text" placeholder="例：本人、另一半、媽媽" oninput="renderPreview()">
-        </div>
-        <div class="ai-field">
-          <label>家人／第三方的狀態</label>
-          <input id="ai-家人" type="text" placeholder="例：另一半還沒出現、媽媽明確反對" oninput="renderPreview()">
-        </div>
-        <div class="ai-field">
-          <label>目前在第幾部曲</label>
-          <select id="ai-部曲" onchange="renderPreview()">
-            <option value="">— 選擇 —</option>
-            <option>第一部曲</option><option>第二部曲</option><option>第三部曲</option>
-            <option>第四部曲</option><option>第五部曲</option><option>第六部曲</option>
-            <option>第七部曲</option><option>第八部曲</option>
-          </select>
-        </div>
-        <div class="ai-field">
-          <label>你跟這個客戶的關係</label>
-          <input id="ai-熟悉度" type="text" placeholder="例：第一次見面 / 認識半年 / 轉介紹" oninput="renderPreview()">
-        </div>
-        <div class="ai-field wide">
-          <label>這次你想弄清楚的事（不是「目標」，是「你想知道什麼」）</label>
-          <input id="ai-目標" type="text" placeholder="例：他到底是不是 KEY MAN、他老婆真正的態度、他有沒有錢" oninput="renderPreview()">
-        </div>
-      </div>
-      <div class="ai-section-label">Step 2 — 預覽指令詞</div>
-      <div class="ai-preview-wrap">
-        <div class="ai-preview" id="aiPreview"></div>
-      </div>
-    </div>
-    <div class="ai-modal-foot">
-      <button class="ai-reset-btn" onclick="resetAiForm()">清空重填</button>
-      <button class="ai-copy-btn" onclick="copyAiPrompt()">📋 複製指令詞</button>
-    </div>
-  </div>
-</div>
 
 <div class="layout">
   <nav class="sidebar" id="sidebar">
@@ -1848,37 +1744,43 @@ function showOverview() {
     <div class="view-title">你想練什麼？</div>
     <div class="view-desc" style="margin-bottom:24px">兩個核心能力，缺一不可</div>
 
-    <div style="display:grid;grid-template-columns:1fr;gap:12px;max-width:560px">
+    <div style="display:grid;grid-template-columns:1fr;gap:12px">
 
-      <div style="background:linear-gradient(135deg,rgba(61,90,64,0.1) 0%,rgba(184,148,60,0.06) 100%);border:2px solid rgba(61,90,64,0.3);border-radius:16px;padding:22px;cursor:pointer" onclick="showDecodeHome()">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-          <span style="font-size:20px">🔍</span>
-          <div>
-            <div style="font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--olive)">第一能力 · 猜解客戶</div>
-            <div style="font-size:16px;font-weight:700;color:var(--text)">我剛才聽到什麼？</div>
+      <!-- 兩大能力卡：桌面並排，手機堆疊 -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px">
+
+        <div style="background:linear-gradient(135deg,rgba(61,90,64,0.1) 0%,rgba(184,148,60,0.06) 100%);border:2px solid rgba(61,90,64,0.3);border-radius:16px;padding:22px;cursor:pointer;display:flex;flex-direction:column" onclick="showDecodeHome()">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+            <span style="font-size:20px">🔍</span>
+            <div style="flex:1">
+              <div style="font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--olive)">第一能力 · 猜解客戶</div>
+              <div style="font-size:16px;font-weight:700;color:var(--text)">我剛才聽到什麼？</div>
+            </div>
+            <span style="flex-shrink:0;background:var(--olive);color:#fff;font-size:10px;font-weight:700;border-radius:10px;padding:3px 10px">推薦先進</span>
           </div>
-          <span style="margin-left:auto;background:var(--olive);color:#fff;font-size:10px;font-weight:700;border-radius:10px;padding:3px 10px">推薦先進</span>
-        </div>
-        <div style="font-size:12px;color:var(--text-sub);line-height:1.7;margin-bottom:12px">聽到客戶說一句話，先解讀他背後的A/B/C可能性，再決定怎麼回。這才是帶得走的能力。</div>
-        <div style="display:flex;gap:8px">
-          <div style="background:rgba(61,90,64,0.08);border-radius:8px;padding:8px 12px;font-size:11px;color:var(--olive);font-weight:700">🗂️ 47筆解碼卡</div>
-          <div style="background:rgba(184,148,60,0.08);border-radius:8px;padding:8px 12px;font-size:11px;color:var(--gold);font-weight:700">🧠 6題練習</div>
-          <div style="background:rgba(61,90,64,0.08);border-radius:8px;padding:8px 12px;font-size:11px;color:var(--olive);font-weight:700">🎬 3個複盤</div>
-        </div>
-      </div>
-
-      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:20px;cursor:pointer" onclick="showPersona('p01')">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-          <span style="font-size:18px">👁️</span>
-          <div>
-            <div style="font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--text-dim)">第二能力 · 客戶辨識</div>
-            <div style="font-size:15px;font-weight:700;color:var(--text)">這個人是什麼類型？</div>
+          <div style="font-size:12px;color:var(--text-sub);line-height:1.7;margin-bottom:12px;flex:1">聽到客戶說一句話，先解讀他背後的A/B/C可能性，再決定怎麼回。這才是帶得走的能力。</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px">
+            <div style="background:rgba(61,90,64,0.08);border-radius:8px;padding:8px 12px;font-size:11px;color:var(--olive);font-weight:700">🗂️ 47筆解碼卡</div>
+            <div style="background:rgba(184,148,60,0.08);border-radius:8px;padding:8px 12px;font-size:11px;color:var(--gold);font-weight:700">🧠 6題練習</div>
+            <div style="background:rgba(61,90,64,0.08);border-radius:8px;padding:8px 12px;font-size:11px;color:var(--olive);font-weight:700">🎬 3個複盤</div>
           </div>
         </div>
-        <div style="font-size:12px;color:var(--text-sub);margin-bottom:10px">20種客戶辨識卡，找到這個人的心理模型，進入考試院陪練。</div>
-        <div style="display:flex;flex-wrap:wrap;gap:4px">${PERSONAS.slice(0,8).map(p=>`<span style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:2px 8px;font-size:10px;color:var(--text-sub)">${p.icon} ${p.name}</span>`).join('')}<span style="font-size:10px;color:var(--text-dim);padding:2px 4px">+${PERSONAS.length-8}個</span></div>
+
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:22px;cursor:pointer;display:flex;flex-direction:column" onclick="showPersona('p01')">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+            <span style="font-size:20px">👁️</span>
+            <div>
+              <div style="font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--text-dim)">第二能力 · 客戶辨識</div>
+              <div style="font-size:15px;font-weight:700;color:var(--text)">這個人是什麼類型？</div>
+            </div>
+          </div>
+          <div style="font-size:12px;color:var(--text-sub);margin-bottom:12px;flex:1">20種客戶辨識卡，找到這個人的心理模型，進入考試院陪練。</div>
+          <div style="display:flex;flex-wrap:wrap;gap:4px">${PERSONAS.slice(0,8).map(p=>`<span style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:2px 8px;font-size:10px;color:var(--text-sub)">${p.icon} ${p.name}</span>`).join('')}<span style="font-size:10px;color:var(--text-dim);padding:2px 4px">+${PERSONAS.length-8}個</span></div>
+        </div>
+
       </div>
 
+      <!-- 底部工具列：速查 + 課程 -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
         <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer" onclick="showSlimCat(SLIM_CATS[0])">
           <div style="font-size:16px;margin-bottom:4px">⚡</div>
@@ -2708,216 +2610,8 @@ init();
     var raw = sessionStorage.getItem('crm_launch_customer');
     if (!raw) return;
     sessionStorage.removeItem('crm_launch_customer');
-    var c = JSON.parse(raw);
-    openAiModal();
-    setTimeout(function() {
-      _crmPickerTarget = 'futime';
-      selectCrmCustomer(JSON.stringify(c));
-    }, 300);
   } catch(e) {}
 })();
-
-// ══════════════════════════════════════
-// AI 顧問 Modal 邏輯
-// ══════════════════════════════════════
-
-/** 開啟 modal 並初始化預覽 */
-function openAiModal() {
-  document.getElementById('aiModalBg').classList.add('open');
-  document.body.style.overflow = 'hidden';
-  renderPreview();
-}
-
-/** 關閉 modal */
-function closeAiModal() {
-  document.getElementById('aiModalBg').classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-/** 點背景關閉（不點到 modal 內容時） */
-function handleAiModalBgClick(e) {
-  if (e.target === document.getElementById('aiModalBg')) closeAiModal();
-}
-
-/** 清空表單 */
-function resetAiForm() {
-  ['ai-族群','ai-年齡','ai-卡關','ai-keyman','ai-家人','ai-熟悉度','ai-目標'].forEach(id => {
-    document.getElementById(id).value = '';
-  });
-  document.getElementById('ai-部曲').value = '';
-  renderPreview();
-}
-
-/** 讀取欄位值，空白時回傳佔位符 */
-function getField(id, placeholder) {
-  const v = document.getElementById(id).value.trim();
-  return v || placeholder;
-}
-
-/** 產生指令詞（佔位符用 mark 標示） */
-function buildPrompt(forCopy = false) {
-  const f = {
-    族群:  getField('ai-族群',  '______'),
-    年齡:  getField('ai-年齡',  '______'),
-    觀察:  getField('ai-卡關',  '______'),
-    keyman:getField('ai-keyman','______'),
-    家人:  getField('ai-家人',  '______'),
-    部曲:  document.getElementById('ai-部曲').value || '第___部曲',
-    想知道:getField('ai-目標',  '______'),
-    關係:  getField('ai-熟悉度','______'),
-  };
-
-  const text = `你是一個專門解讀客戶心理的顧問教練。
-
-你的工作不是給話術，是先幫業務「進入客戶的身體」——搞清楚這個人現在心裡真正在想什麼、卡在哪裡、需要感受到什麼才能往前走。讀懂人之後，才設計對話。
-
-【核心原則】
-- 客戶說的理由 ≠ 真正的卡點
-- 客戶重複說的那句話，背後一定有什麼
-- 結論必須從客戶嘴巴說出來，不是被塞進去的
-- 先讀懂人，才出招；沒讀懂，不出招
-
----
-
-【參考素材：富時代 150 筆實戰話術庫】
-https://richtime90117277-alt.github.io/futime-crm/LIB.html
-這是從真實客戶案例提煉的對話素材，在最後一段輸出時才參考，不是第一步。
-
----
-
-【業務觀察到的資料】
-客戶族群：${f.族群}
-客戶年齡：${f.年齡}
-客戶說了什麼、做了什麼、重複了什麼：${f.觀察}
-真正的決策者（KEY MAN）：${f.keyman}
-家人／第三方狀態：${f.家人}
-目前在第幾部曲：${f.部曲}
-業務與客戶的關係：${f.關係}
-業務這次想弄清楚的事：${f.想知道}
-
----
-
-【請依序輸出以下五段】
-
-**一、進入客戶身體｜他現在心裡真正在說什麼**
-用第一人稱，以客戶的口吻寫出他的內心獨白（5-8句）。
-不是分析他，是「變成他」說話。
-要包含：他表面說的、他不敢說的、他真正怕的是什麼。
-
-範例格式（輸出時不要複製這個，要根據這個客戶的實際狀況寫）：
-「我說要跟老婆討論，但其實我自己也還沒想清楚。我不是不想買，我是怕做錯決定被她說。她一旦反對，我就沒有台階下了...」
-
-**二、拆解這個人的三層結構**
-- 表面說的是：（他說出口的理由）
-- 底層真正卡的是：（情緒、恐懼、關係、面子——不是財務問題，是人的問題）
-- 他需要先感受到什麼，才能往前走：（不是話術，是心理需求）
-
-**三、這場的偵探任務｜業務要弄清楚的 3 件事**
-這次見面／聯絡，業務要確認哪 3 件事才算真的讀懂這個客戶。
-沒弄清楚這 3 件事，不出招。
-每件事寫清楚：
-→ 為什麼要知道這件事
-→ 怎麼問才不突兀（用他容易接受的方式）
-
-**四、基於他的心理邏輯，設計這場對話**
-每一步先說「他需要感受到什麼」，再說「你可以說什麼／問什麼」。
-
-開場｜先讓他感受到被理解：
-→ 他需要感受到：
-→ 你可以說：
-
-第一個問句｜挖他真正在意的（不是挖資料，是挖感受）：
-→ 他需要感受到：
-→ 你可以問：
-
-當他說出表面理由時｜不接招，繼續往下挖：
-→ 他需要感受到：
-→ 你可以接：
-
-當他提到第三方（家人／朋友／另一半）：
-→ 他需要感受到：
-→ 你可以說：
-
-讀到足夠了，準備往下一步走：
-→ 你確認到什麼，才算讀夠了：
-→ 你可以說：
-
-**五、從話術庫挑 3 條最貼合他心理的**
-不是情境最像的，是最能回應他底層需求的。
-格式：
-- 話術編號 ＋ 核心句
-- 為什麼這條適合他：從他的心理角度解釋（不是「這個情境符合」，是「他現在需要聽到這個感受」）`;
-
-  return forCopy ? text : text;
-}
-
-/** 渲染預覽（空白欄位用金色標示） */
-function renderPreview() {
-  const raw = buildPrompt();
-  // 把 ______ 用 mark 包起來方便看出未填欄位
-  const html = raw
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-    .replace(/______/g, '<mark>______</mark>');
-  document.getElementById('aiPreview').innerHTML = html;
-}
-
-/** 複製指令詞到剪貼簿 */
-function copyAiPrompt() {
-  const text = buildPrompt(true);
-  // 先試 clipboard API
-  if (navigator.clipboard && window.isSecureContext) {
-    navigator.clipboard.writeText(text)
-      .then(() => showToast('✅ 已複製，貼入 Claude 即可'))
-      .catch(() => showCopyFallback(text)); // 被拒絕時降級
-  } else {
-    showCopyFallback(text);
-  }
-}
-
-/** 降級方案：展開可全選的 textarea，讓使用者手動複製 */
-function showCopyFallback(text) {
-  // 若已存在就移除
-  const old = document.getElementById('aiCopyFallback');
-  if (old) old.remove();
-
-  const wrap = document.createElement('div');
-  wrap.id = 'aiCopyFallback';
-  wrap.style.cssText = `
-    position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.85);
-    display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;
-  `;
-  wrap.innerHTML = `
-    <div style="background:#FFFFFF;border:1px solid #3D5A40;border-radius:10px;width:100%;max-width:640px;overflow:hidden;">
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid #E0D8CC;">
-        <span style="font-size:14px;font-weight:700;color:#1E1A14;">全選後複製（Ctrl+A → Ctrl+C）</span>
-        <button onclick="document.getElementById('aiCopyFallback').remove()"
-          style="background:none;border:none;color:#888;font-size:18px;cursor:pointer;padding:2px 6px;">✕</button>
-      </div>
-      <textarea id="aiFallbackText" readonly
-        style="width:100%;height:320px;background:#FFFFFF;border:none;color:#3D5A40;
-               padding:14px 16px;font-size:12px;font-family:monospace;line-height:1.9;
-               resize:none;outline:none;"
-      ></textarea>
-      <div style="padding:12px 18px;border-top:1px solid #E0D8CC;text-align:right;">
-        <button onclick="selectFallbackText()"
-          style="background:#3D5A40;color:#000;border:none;border-radius:6px;
-                 padding:8px 20px;font-size:13px;font-weight:700;cursor:pointer;">
-          全選文字
-        </button>
-      </div>
-    </div>
-  `;
-  document.body.appendChild(wrap);
-  document.getElementById('aiFallbackText').value = text;
-  // 自動全選
-  setTimeout(selectFallbackText, 80);
-}
-
-function selectFallbackText() {
-  const ta = document.getElementById('aiFallbackText');
-  if (!ta) return;
-  ta.focus(); ta.select();
-}
 
 // ── 手機版 Sidebar 抽屜控制 ──
 function toggleSidebar() {
@@ -3020,18 +2714,7 @@ function selectCrmCustomer(jsonStr) {
   closeCrmPicker();
 
   if (_crmPickerTarget === 'futime') {
-    // 帶入 AI 顧問 Modal 欄位
-    const stageMap = {'第一部曲':'第一部曲','第二部曲':'第二部曲','第三部曲':'第三部曲','第四部曲':'第四部曲','第五部曲':'第五部曲','第六部曲':'第六部曲','第七部曲':'第七部曲','第八部曲':'第八部曲'};
-    if (c.clientSegment || c.clientType) setVal('ai-族群', c.clientSegment || c.clientType || '');
-    if (c.customerAge) setVal('ai-年齡', c.customerAge + ' 歲');
-    if (c.painPointsNote || c.objections) setVal('ai-卡關', c.painPointsNote || c.objections || '');
-    if (c.keyMan) setVal('ai-keyman', c.keyMan);
-    if (c.familySupport) setVal('ai-家人', c.familySupport);
-    const bp = c.blueprintCompletion || '';
-    const sel = document.getElementById('ai-部曲');
-    if (sel) { for(let i=0;i<sel.options.length;i++) { if(sel.options[i].value === bp) { sel.selectedIndex=i; break; } } }
-    renderPreview();
-    showToast('✅ 已帶入 ' + c.customerName + ' 的資料');
+    showToast('✅ 已選取 ' + c.customerName);
   }
 }
 
@@ -3056,7 +2739,7 @@ function setVal(id, val) {
     <div style="overflow-y:auto;flex:1;padding:20px">
 
       <!-- 客戶設定 -->
-      <div style="font-size:11px;font-weight:700;letter-spacing:.12em;color:#b06eff;margin-bottom:10px">👤 客戶設定（從 AI 顧問帶入或手動填）</div>
+      <div style="font-size:11px;font-weight:700;letter-spacing:.12em;color:#b06eff;margin-bottom:10px">👤 客戶設定</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
         <div>
           <div style="font-size:11px;color:#888;margin-bottom:4px">族群</div>
@@ -3121,13 +2804,12 @@ function openDrillModal(scriptId) {
   const s = SCRIPTS.find(x => x.id === scriptId);
   document.getElementById('drillScriptTitle').textContent = s ? s.title : '話術演練';
 
-  // 從 AI 顧問欄位帶入（如果有填的話）
-  const getAI = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
-  document.getElementById('drill-族群').value = getAI('ai-族群');
-  document.getElementById('drill-年齡').value = getAI('ai-年齡');
-  document.getElementById('drill-卡關').value = getAI('ai-卡關');
-  document.getElementById('drill-keyman').value = getAI('ai-keyman');
-  document.getElementById('drill-家人').value = getAI('ai-家人');
+  // 帶入演練欄位（預設空白）
+  document.getElementById('drill-族群').value = '';
+  document.getElementById('drill-年齡').value = '';
+  document.getElementById('drill-卡關').value = '';
+  document.getElementById('drill-keyman').value = '';
+  document.getElementById('drill-家人').value = '';
 
   // 預設選「比較機車」
   document.querySelectorAll('.diff-btn').forEach(b => {
