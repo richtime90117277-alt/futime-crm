@@ -738,6 +738,79 @@ body{
   .r-card::before, #assetSnapshotBox::before, #youCanDoThis::before { display: none; }
 }
 </style>
+
+<style>
+/* ══ TABLET WOW INTEGRATION ══ */
+@media(min-width:900px){
+  html,body{height:100%;overflow:hidden;overscroll-behavior:none}
+  .wow-app{display:grid!important;grid-template-columns:460px 1fr;height:100vh;overflow:hidden}
+  .wow-app.active ~ .tb{display:none!important}
+  .wow-left{background:#fdf9f2;border-right:1px solid rgba(160,120,60,.15);display:flex;flex-direction:column;overflow:hidden;height:100vh;position:relative}
+  .wow-left-head{padding:11px 14px;border-bottom:1px solid rgba(160,120,60,.12);display:flex;align-items:center;gap:10px;flex-shrink:0}
+  .wow-logo-box{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#c9922b,#e8b84b);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;color:#fff;flex-shrink:0}
+  .wow-logo-name{font-size:14px;font-weight:bold;color:#2c1f0e;letter-spacing:.8px}
+  .wow-logo-sub{font-size:10px;color:rgba(120,80,20,.4);letter-spacing:2px;font-family:'DM Mono',monospace}
+  .wow-ltabs{display:flex;border-bottom:1px solid rgba(160,120,60,.1);flex-shrink:0;overflow-x:auto}
+  .wow-ltab{flex-shrink:0;padding:9px 14px;font-size:13px;color:rgba(120,80,20,.45);background:none;border:none;cursor:pointer;font-family:inherit;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap}
+  .wow-ltab.on{color:#9a6820;border-bottom-color:#c9922b;font-weight:bold}
+  .wow-left-scroll{flex:1;height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:10px 12px 80px;display:flex;flex-direction:column;gap:8px;min-height:0}
+  .wow-tab-panel{display:none;flex-direction:column;gap:8px;width:100%}
+  .wow-tab-panel.on{display:flex}
+  .wow-left .card{border-radius:10px;margin-bottom:0}
+  .wow-left .ch{padding:10px 14px}
+  .wow-left .cb{padding:10px 12px;gap:8px}
+  .wow-left .fl input,.wow-left .fl select{padding:9px 11px;font-size:14px}
+  .wow-left .g2{gap:8px}
+  .wow-gen-btn{position:sticky;bottom:0;margin:0;padding:13px 12px;background:linear-gradient(135deg,#c9922b,#e8b84b);border:none;border-top:1px solid rgba(201,146,43,.2);border-radius:0;color:#fff;font-size:13px;font-weight:bold;cursor:pointer;font-family:inherit;flex-shrink:0;width:100%}
+  .wow-right{overflow:hidden;display:flex;flex-direction:column;background:linear-gradient(160deg,#fefcf6 0%,#f8f3e8 50%,#f4f0e0 100%);position:relative}
+  .wow-right-topbar{height:3px;flex-shrink:0;background:linear-gradient(90deg,transparent 0%,#c9922b 30%,#e8b84b 50%,#c9922b 70%,transparent 100%)}
+  .wow-rtabs{display:flex;gap:4px;padding:8px 24px 0;border-bottom:1px solid rgba(160,120,60,.1);background:rgba(255,255,255,.4);flex-shrink:0}
+  .wow-rtab{padding:8px 16px;font-size:13px;color:rgba(120,80,20,.45);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;font-family:inherit;transition:all .15s}
+  .wow-rtab.on{color:#9a6820;border-bottom-color:#c9922b;font-weight:bold}
+  .wow-rpanels{flex:1;overflow:hidden;position:relative}
+  .wow-rpanel{display:none;height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:18px 24px 80px}
+  .wow-rpanel.on{display:flex;flex-direction:column;gap:12px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .diag-eyebrow{font-size:11px;letter-spacing:3px;color:rgba(120,80,20,.32);font-family:'DM Mono',monospace;margin-bottom:5px}
+  .diag-sentence{font-family:'Georgia',serif;font-size:22px;line-height:1.5;color:#2c1f0e;min-height:56px;transition:opacity .25s}
+  .diag-sentence em{font-style:normal;color:#c9922b}
+  .gold-rule{height:1px;background:linear-gradient(90deg,rgba(201,146,43,.4),rgba(201,146,43,.08),transparent);margin:6px 0 8px}
+  .hero-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;flex-shrink:0}
+  .hero-block{display:flex;flex-direction:column}
+  .hero-lbl{font-size:11px;letter-spacing:2px;color:rgba(120,80,20,.35);font-family:'DM Mono',monospace;margin-bottom:4px}
+  .hero-val{font-family:'Georgia',serif;font-size:40px;font-weight:400;line-height:1;letter-spacing:-1px;color:#2c1f0e;transition:all .4s}
+  .hero-val.gold{color:#c9922b}.hero-val.green{color:#2a7a48}.hero-val.red{color:#b83020}.hero-val.muted{color:rgba(120,80,20,.15);font-size:22px}
+  .hero-sub{font-size:11px;color:rgba(120,80,20,.35);margin-top:3px}
+  .hero-badge{display:inline-block;margin-top:4px;font-size:9px;padding:2px 8px;border-radius:10px;font-family:'DM Mono',monospace}
+  .hb-green{background:rgba(42,122,72,.1);color:#2a7a48}.hb-warn{background:rgba(200,112,64,.1);color:#c87040}.hb-red{background:rgba(184,48,32,.1);color:#b83020}
+  .analysis-row{display:grid;grid-template-columns:1.15fr 1fr;gap:12px;flex-shrink:0}
+  .a-panel{background:rgba(255,255,255,.72);border:1px solid rgba(160,120,60,.1);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;overflow:hidden}
+  .a-title{font-size:11px;letter-spacing:2px;color:rgba(120,80,20,.35);font-family:'DM Mono',monospace;margin-bottom:10px;flex-shrink:0}
+  .ratio-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+  .ratio-txt{font-size:13px;color:rgba(44,31,14,.55)}
+  .ratio-big{font-family:'Georgia',serif;font-size:26px;color:#2c1f0e;transition:color .3s}
+  .ratio-big.safe{color:#2a7a48}.ratio-big.over{color:#b83020}
+  .bar-track{height:7px;background:rgba(160,120,60,.1);border-radius:3px;overflow:hidden;margin-bottom:3px}
+  .bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#4ade80,#c9922b);min-height:7px;transition:width 1.2s}
+  .bar-fill.danger{background:linear-gradient(90deg,#c9922b,#ef4444)}
+  .bar-tips{display:flex;justify-content:space-between;font-size:10px;color:rgba(120,80,20,.25);font-family:'DM Mono',monospace;margin-bottom:8px}
+  .stat-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(160,120,60,.06)}
+  .stat-row:last-child{border-bottom:none}
+  .sl{font-size:13px;color:rgba(44,31,14,.55)}
+  .sv{font-size:15px;font-weight:bold;color:#2c1f0e;font-family:'DM Mono',monospace}
+  .sv.gold{color:#c9922b}.sv.green{color:#2a7a48}.sv.red{color:#b83020}
+  .mini-col{display:flex;flex-direction:column;gap:10px}
+  .mini-card{border-radius:14px;padding:13px 15px;display:flex;flex-direction:column}
+  .mini-card.opp{background:linear-gradient(135deg,rgba(255,253,246,.9),rgba(253,248,236,.85));border:1px solid rgba(201,146,43,.18)}
+  .mini-card.res{background:linear-gradient(135deg,rgba(246,253,248,.9),rgba(237,249,242,.85));border:1px solid rgba(42,122,72,.15)}
+  .mini-title{font-size:12px;letter-spacing:1.5px;color:rgba(120,80,20,.35);font-family:'DM Mono',monospace;margin-bottom:6px}
+  .mini-num{font-family:'Georgia',serif;font-size:28px;font-weight:400;color:#c9922b;letter-spacing:-1px;line-height:1;transition:all .45s}
+  .mini-num.green{color:#2a7a48}.mini-num.red{color:#b83020}.mini-num.muted{color:rgba(120,80,20,.18);font-size:18px}
+  .mini-desc{font-size:12px;color:rgba(44,31,14,.5);margin-top:6px;line-height:1.7;flex:1}
+  #wrp3 #vR{display:block!important}
+  #wrp1 #vF{display:block!important}
+  #wrp2 #vT{display:block!important}
+}
+</style>
 <!-- Chart.js 已移除，改用投報率文字呈現 -->
 </head>
 <body>
@@ -903,7 +976,234 @@ body{
     <button class="tab" id="tF" onclick="sw('F')">等待代價</button>
     <button class="tab" id="tT" onclick="sw('T')" style="border-color:rgba(160,100,30,.3);color:rgba(120,80,20,.6)">傳承風險</button>
   </div>
+  <!-- ══ 存檔按鈕組 ══ -->
+  <div style="display:flex;gap:6px;align-items:center;margin-left:8px">
+    <button onclick="openClientManager()" title="客戶檔案管理" style="padding:6px 12px;border-radius:20px;border:1px solid rgba(201,146,43,.4);background:rgba(201,146,43,.1);color:#8a5c1a;font-size:12px;cursor:pointer;font-family:sans-serif;font-weight:bold;white-space:nowrap;transition:all .2s" onmouseover="this.style.background='rgba(201,146,43,.2)'" onmouseout="this.style.background='rgba(201,146,43,.1)'">📁 客戶檔案</button>
+    <button onclick="saveClientJSON()" title="存檔（下載 JSON）" style="padding:6px 10px;border-radius:20px;border:1px solid rgba(46,204,113,.4);background:rgba(46,204,113,.1);color:#1a6b3a;font-size:12px;cursor:pointer;font-family:sans-serif;font-weight:bold;transition:all .2s" onmouseover="this.style.background='rgba(46,204,113,.2)'" onmouseout="this.style.background='rgba(46,204,113,.1)'">💾 存檔</button>
+    <label title="開檔（載入 JSON）" style="padding:6px 10px;border-radius:20px;border:1px solid rgba(93,173,226,.4);background:rgba(93,173,226,.1);color:#1a4a7a;font-size:12px;cursor:pointer;font-family:sans-serif;font-weight:bold;transition:all .2s;white-space:nowrap" onmouseover="this.style.background='rgba(93,173,226,.2)'" onmouseout="this.style.background='rgba(93,173,226,.1)'">📂 開檔<input type="file" accept=".json" onchange="loadClientJSON(this)" style="display:none"></label>
+  </div>
 </div>
+
+<!-- ══ 客戶管理 Modal ══ -->
+<div id="clientManagerModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(44,31,14,.6);z-index:3000;align-items:center;justify-content:center;padding:16px">
+  <div style="background:#faf7f0;border-radius:20px;max-width:480px;width:100%;max-height:85vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(120,80,20,.2)">
+    <div style="padding:20px 24px 16px;border-bottom:1px solid rgba(160,120,60,.12);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+      <div>
+        <div style="font-size:14px;font-weight:bold;color:#2c1f0e;letter-spacing:.5px">📁 客戶檔案管理</div>
+        <div style="font-size:10px;color:rgba(120,80,20,.6);margin-top:3px;font-family:'DM Mono',monospace">JSON 本機存檔系統</div>
+      </div>
+      <button onclick="closeClientManager()" style="width:30px;height:30px;border-radius:50%;border:1px solid rgba(160,120,60,.2);background:#fff;color:rgba(44,31,14,.5);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center">×</button>
+    </div>
+    <div style="padding:16px 24px;border-bottom:1px solid rgba(160,120,60,.08);display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0">
+      <button onclick="saveClientJSON()" style="flex:1;padding:10px;border-radius:10px;border:1px solid rgba(46,204,113,.4);background:rgba(46,204,113,.08);color:#1a6b3a;font-size:12px;cursor:pointer;font-weight:bold;font-family:sans-serif">💾 存檔（下載 JSON）</button>
+      <label style="flex:1;padding:10px;border-radius:10px;border:1px solid rgba(93,173,226,.4);background:rgba(93,173,226,.08);color:#1a4a7a;font-size:12px;cursor:pointer;font-weight:bold;font-family:sans-serif;text-align:center">📂 開啟舊檔<input type="file" accept=".json" onchange="loadClientJSON(this)" style="display:none"></label>
+      <button onclick="clearAllFields();closeClientManager()" style="padding:10px 14px;border-radius:10px;border:1px solid rgba(224,90,50,.3);background:rgba(224,90,50,.06);color:#8a2000;font-size:12px;cursor:pointer;font-family:sans-serif">🗑 清空</button>
+    </div>
+    <div style="padding:16px 24px;flex:1;overflow-y:auto">
+      <div style="font-size:11px;color:rgba(120,80,20,.7);line-height:2;margin-bottom:16px;padding:12px;background:rgba(201,146,43,.05);border-radius:10px;border:1px solid rgba(201,146,43,.15)">
+        💡 <strong>使用說明</strong><br>
+        ① 每次諮詢填完後，按「存檔」下載一個 <code style="font-size:10px;background:rgba(201,146,43,.1);padding:1px 4px;border-radius:3px">.json</code> 檔案<br>
+        ② 檔名格式：<code style="font-size:10px;background:rgba(201,146,43,.1);padding:1px 4px;border-radius:3px">客戶姓名_日期.json</code><br>
+        ③ 下次開啟同一客戶，按「開啟舊檔」載入即可繼續<br>
+        ④ 所有資料存在您電腦，不上傳至任何伺服器
+      </div>
+      <div style="font-size:11px;color:rgba(120,80,20,.8);margin-bottom:8px;font-weight:bold">📋 目前檔案狀態</div>
+      <div id="cmStatusBox" style="padding:12px;background:#fff;border-radius:10px;border:1px solid rgba(160,120,60,.12);font-size:12px;color:#2c1f0e;line-height:1.8"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TABLET APP ══ -->
+<div class="wow-app" id="wowApp" style="display:none">
+
+  <!-- ═══ LEFT ═══ -->
+  <div class="wow-left">
+    <div class="wow-left-head">
+      <div class="wow-logo-box">富</div>
+      <div>
+        <div class="wow-logo-name">富時代地產開發</div>
+        <div class="wow-logo-sub">WEALTH PLANNER</div>
+      </div>
+    </div>
+
+    <div class="wow-ltabs">
+      <button class="wow-ltab on" onclick="wowLTab(0,this)">客戶 &amp; 資產</button>
+      <button class="wow-ltab" onclick="wowLTab(1,this)">收入 &amp; 支出</button>
+      <button class="wow-ltab" onclick="wowLTab(2,this)">整合 &amp; 節流</button>
+      <button class="wow-ltab" onclick="wowLTab(3,this)">購屋試算</button>
+    </div>
+
+    <div class="wow-left-scroll">
+      <div class="wow-tab-panel on" id="wlt0"></div>
+      <div class="wow-tab-panel" id="wlt1"></div>
+      <div class="wow-tab-panel" id="wlt2"></div>
+      <div class="wow-tab-panel" id="wlt3"></div>
+    </div>
+
+    <button class="wow-gen-btn" onclick="wowGenReport()">📊 產生完整專屬報告</button>
+  </div>
+
+  <!-- ═══ RIGHT ═══ -->
+  <div class="wow-right">
+    <div class="wow-right-topbar"></div>
+    <div class="wow-rtabs">
+      <button class="wow-rtab on" onclick="wowRTab(0,this)">即時分析</button>
+      <button class="wow-rtab" onclick="wowRTab(1,this)">等待代價</button>
+      <button class="wow-rtab" onclick="wowRTab(2,this)">傳承風險</button>
+      <button class="wow-rtab" onclick="wowRTab(3,this)">完整報告</button>
+    </div>
+    <div class="wow-rpanels">
+
+      <!-- ── Panel 0: 即時分析 ── -->
+      <div class="wow-rpanel on" id="wrp0">
+        <div>
+          <div class="diag-eyebrow">REAL-TIME FINANCIAL DIAGNOSIS — 即時財務診斷</div>
+          <div class="diag-sentence" id="wowDiag">請與顧問一起填寫左側資料，<em>系統將即時分析您的財務全貌。</em></div>
+          <div style="font-size:9px;color:rgba(120,80,20,.35);margin-top:4px;font-family:'DM Mono',monospace">FUTIME WEALTH PLANNER</div>
+        </div>
+        <div class="gold-rule"></div>
+
+        <!-- Hero 三數字 -->
+        <div class="hero-row">
+          <div class="hero-block">
+            <div class="hero-lbl">MONTHLY INCOME</div>
+            <div class="hero-val muted" id="wDispInc">—</div>
+            <div class="hero-sub">家庭月收入合計</div>
+          </div>
+          <div class="hero-block">
+            <div class="hero-lbl">MONTHLY EXPENSE</div>
+            <div class="hero-val muted" id="wDispExp">—</div>
+            <div class="hero-sub">每月固定支出</div>
+          </div>
+          <div class="hero-block">
+            <div class="hero-lbl">MONTHLY SURPLUS</div>
+            <div class="hero-val muted" id="wDispRem">—</div>
+            <div class="hero-sub">每月可用結餘</div>
+          </div>
+        </div>
+
+        <!-- 主分析區 -->
+        <div class="analysis-row">
+          <!-- 左：貸款分析 -->
+          <div class="a-panel">
+            <div class="a-title">LOAN ANALYSIS — 貸款能力分析</div>
+            <div class="ratio-row"><span class="ratio-txt">月付佔收入比率</span><span class="ratio-big" id="wRatioNum">—</span></div>
+            <div class="bar-track"><div class="bar-fill" id="wBarFill" style="width:0%"></div></div>
+            <div class="bar-tips"><span>0%</span><span style="color:rgba(42,122,72,.5)">安全線 40%</span><span>100%</span></div>
+            <div class="stat-row"><span class="sl">🏠 目標總價</span><span class="sv gold" id="wStPrc">—</span></div>
+            <div class="stat-row"><span class="sl">💵 自備款</span><span class="sv" id="wStDw">—</span></div>
+            <div class="stat-row"><span class="sl">💳 貸款金額</span><span class="sv" id="wStLn">—</span></div>
+            <div class="stat-row"><span class="sl">📅 預估月房貸</span><span class="sv gold" id="wStMn">—</span></div>
+            <div class="stat-row"><span class="sl">📊 總月付（含現有）</span><span class="sv" id="wStTotal">—</span></div>
+            <div class="stat-row"><span class="sl">✅ 銀行估計可貸上限</span><span class="sv green" id="wStMax">—</span></div>
+          </div>
+
+          <!-- 右：三張小卡 -->
+          <div class="mini-col">
+            <div class="mini-card opp">
+              <div class="mini-title">COST OF WAITING — 每年等待代價</div>
+              <div class="mini-num muted" id="wOppNum">—</div>
+              <div class="mini-desc" id="wOppDesc">輸入目標房價，系統計算每延遲一年的機會成本。</div>
+            </div>
+            <div class="mini-card res">
+              <div class="mini-title">RESERVE — 自備後備用金</div>
+              <div class="mini-num muted" id="wResNum">—</div>
+              <div class="mini-desc" id="wResDesc">填入資產，顯示繳完自備款後的財務餘裕。</div>
+            </div>
+            <div class="mini-card" style="background:linear-gradient(135deg,rgba(245,248,255,.9),rgba(235,240,255,.85));border:1px solid rgba(80,100,180,.15)">
+              <div class="mini-title" style="color:rgba(60,80,160,.45)">NET WORTH — 客戶淨資產</div>
+              <div class="mini-num muted" id="wNetNum" style="color:#3a5ab0">—</div>
+              <div class="mini-desc" id="wNetDesc">填入資產與負債，顯示淨資產總額。</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 下方補充資訊列 -->
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;flex-shrink:0">
+          <div style="background:rgba(255,255,255,.65);border:1px solid rgba(160,120,60,.1);border-radius:12px;padding:12px 14px">
+            <div style="font-size:10px;letter-spacing:1.5px;color:rgba(120,80,20,.4);font-family:'DM Mono',monospace;margin-bottom:6px">BANK INCOME</div>
+            <div style="font-size:22px;font-weight:bold;color:#2c1f0e;font-family:'DM Mono',monospace" id="wBankInc">—</div>
+            <div style="font-size:12px;color:rgba(44,31,14,.5);margin-top:3px">銀行估認月收入</div>
+          </div>
+          <div style="background:rgba(255,255,255,.65);border:1px solid rgba(160,120,60,.1);border-radius:12px;padding:12px 14px">
+            <div style="font-size:10px;letter-spacing:2px;color:rgba(120,80,20,.32);font-family:'DM Mono',monospace;margin-bottom:6px">SAVINGS RATE</div>
+            <div style="font-size:22px;font-weight:bold;color:#2c1f0e;font-family:'DM Mono',monospace" id="wSavRate">—</div>
+            <div style="font-size:12px;color:rgba(44,31,14,.5);margin-top:3px">月儲蓄率（結餘／收入）</div>
+          </div>
+          <div style="background:rgba(255,255,255,.65);border:1px solid rgba(160,120,60,.1);border-radius:12px;padding:12px 14px">
+            <div style="font-size:10px;letter-spacing:2px;color:rgba(120,80,20,.32);font-family:'DM Mono',monospace;margin-bottom:6px">MONTHS TO DOWN</div>
+            <div style="font-size:22px;font-weight:bold;color:#2c1f0e;font-family:'DM Mono',monospace" id="wMoDown">—</div>
+            <div style="font-size:12px;color:rgba(44,31,14,.5);margin-top:3px">存滿自備款需要幾個月</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Panel 1: 等待代價 ── -->
+      <div class="wow-rpanel" id="wrp1" style="padding:18px 20px 80px;gap:14px">
+        <div style="text-align:center;padding:24px 20px 20px;border-bottom:1px solid rgba(160,120,60,.12)">
+          <div style="font-size:9px;letter-spacing:4px;color:rgba(176,48,16,.6);font-family:'DM Mono',monospace;margin-bottom:10px;font-weight:bold">COST OF WAITING — 你猶豫的每一天</div>
+          <div style="font-size:15px;color:#2c1f0e;line-height:1.8;margin-bottom:16px">房子不等人。每晚一天，多付一點。<br><strong>你打算再等幾年？</strong></div>
+          <div style="display:flex;gap:8px;justify-content:center;margin-bottom:16px;flex-wrap:wrap">
+            <button onclick="setWaitYrs(0.5,this)" style="padding:8px 16px;border-radius:20px;border:1.5px solid rgba(176,48,16,.25);background:#fff;color:#7a1800;font-size:13px;cursor:pointer;font-family:inherit;transition:all .2s">半年</button>
+            <button onclick="setWaitYrs(1,this)" class="wyr-active" style="padding:8px 16px;border-radius:20px;border:1.5px solid rgba(176,48,16,.6);background:rgba(176,48,16,.08);color:#7a1800;font-size:13px;font-weight:bold;cursor:pointer;font-family:inherit">1年</button>
+            <button onclick="setWaitYrs(2,this)" style="padding:8px 16px;border-radius:20px;border:1.5px solid rgba(176,48,16,.25);background:#fff;color:#7a1800;font-size:13px;cursor:pointer;font-family:inherit;transition:all .2s">2年</button>
+            <button onclick="setWaitYrs(3,this)" style="padding:8px 16px;border-radius:20px;border:1.5px solid rgba(176,48,16,.25);background:#fff;color:#7a1800;font-size:13px;cursor:pointer;font-family:inherit;transition:all .2s">3年</button>
+            <button onclick="setWaitYrs(5,this)" style="padding:8px 16px;border-radius:20px;border:1.5px solid rgba(176,48,16,.25);background:#fff;color:#7a1800;font-size:13px;cursor:pointer;font-family:inherit;transition:all .2s">5年</button>
+          </div>
+          <div style="background:rgba(239,68,68,.06);border:1.5px solid rgba(239,68,68,.18);border-radius:16px;padding:24px 20px;margin-bottom:8px;position:relative;overflow:hidden">
+            <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(239,68,68,.5),transparent)"></div>
+            <div style="font-size:10px;letter-spacing:2px;color:#dc2626;margin-bottom:8px;font-weight:bold;font-family:'DM Mono',monospace">再等 <span id="wc_yrsLabel">1</span> 年，你少了</div>
+            <div style="font-size:52px;font-weight:900;color:#dc2626;font-family:'DM Mono',monospace;letter-spacing:-2px;line-height:1;transition:all .4s" id="wc_total">—</div>
+            <div style="font-size:12px;color:rgba(176,48,16,.7);margin-top:10px" id="wc_totalSub">請先在左側「購屋試算」欄填入物件總價</div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:center;justify-content:space-between;background:#fff;border:1px solid rgba(160,120,60,.12);border-radius:14px;padding:16px 18px">
+            <div>
+              <div style="font-size:9px;letter-spacing:2px;color:rgba(176,48,16,.6);font-weight:bold;font-family:'DM Mono',monospace;margin-bottom:4px">PRICE RISE</div>
+              <div style="font-size:14px;font-weight:bold;color:#2c1f0e">房價漲了</div>
+            </div>
+            <div style="font-size:28px;font-weight:900;color:#dc2626;font-family:'DM Mono',monospace;transition:all .4s" id="wc_priceRise">—</div>
+          </div>
+          <div id="wc_rentBlock" style="display:none;align-items:center;justify-content:space-between;background:#fff;border:1px solid rgba(160,120,60,.12);border-radius:14px;padding:16px 18px">
+            <div>
+              <div style="font-size:9px;letter-spacing:2px;color:rgba(176,48,16,.6);font-weight:bold;font-family:'DM Mono',monospace;margin-bottom:4px">RENT WASTE</div>
+              <div style="font-size:14px;font-weight:bold;color:#2c1f0e">白繳租金</div>
+            </div>
+            <div style="font-size:28px;font-weight:900;color:#dc2626;font-family:'DM Mono',monospace;transition:all .4s" id="wc_rentTotal">—</div>
+          </div>
+        </div>
+
+        <div style="background:rgba(201,146,43,.05);border:1px solid rgba(201,146,43,.18);border-radius:12px;padding:14px 16px">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="flex:1">
+              <div style="font-size:10px;color:rgba(120,80,20,.7);font-weight:bold;letter-spacing:.5px;margin-bottom:5px">現在每月租金（元）</div>
+              <input type="number" id="waitRentInput" placeholder="例：20,000（沒有填0）" oninput="calcWaitCostWow()" style="width:100%;background:#fff;border:1px solid rgba(160,120,60,.2);border-radius:8px;padding:8px 10px;font-size:13px;color:#2c1f0e;font-family:sans-serif">
+            </div>
+            <div style="flex:1">
+              <div style="font-size:10px;color:rgba(120,80,20,.7);font-weight:bold;letter-spacing:.5px;margin-bottom:5px">年增值率（%）</div>
+              <div style="font-size:16px;font-weight:bold;color:#c9922b;padding:8px 10px;background:#fff;border:1px solid rgba(160,120,60,.2);border-radius:8px" id="wc_growthDisp">4%</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="wc_scriptBox" style="display:none;background:linear-gradient(135deg,rgba(201,146,43,.08),rgba(160,100,30,.04));border:1.5px solid rgba(201,146,43,.25);border-radius:14px;padding:18px">
+          <div style="font-size:9px;letter-spacing:3px;color:#9a6820;font-weight:bold;font-family:'DM Mono',monospace;margin-bottom:10px">💬 顧問話術</div>
+          <div style="font-size:13px;color:#2c1f0e;line-height:2;font-style:italic" id="wc_script">—</div>
+        </div>
+      </div>
+
+      <!-- ── Panel 2: 傳承風險（vT）── -->
+      <div class="wow-rpanel" id="wrp2" style="padding:0"></div>
+
+      <!-- ── Panel 3: 完整報告（vR）── -->
+      <div class="wow-rpanel" id="wrp3" style="padding:0"></div>
+    </div>
+  </div>
+
+</div>
+
 
 <!-- INPUT -->
 <div id="vI" class="main">
@@ -6907,5 +7207,390 @@ function updateConsoCalc() {
   if(typeof syncConsoSummary==="function") syncConsoSummary();
 }
 </script>
+
+<script>
+/* ══ WOW APP TABLET ══ */
+var _wowActive = false;
+function initWowApp() {
+  if (window.innerWidth < 900) return;
+  var app = document.getElementById('wowApp');
+  if (!app) return;
+  _wowActive = true;
+  app.style.display = 'grid';
+  // Move cards into tab panels
+  var cards = document.querySelectorAll('#vI .card');
+  var panels = [
+    document.getElementById('wlt0'),
+    document.getElementById('wlt1'),
+    document.getElementById('wlt2'),
+    document.getElementById('wlt3')
+  ];
+  // Cards distribution: 01,02->p0; 03,04->p1; 整合,05->p3; 06->p3
+  if (panels[0] && panels[1] && panels[2] && panels[3]) {
+    var allCards = Array.from(document.querySelectorAll('#vI .card'));
+    allCards.forEach(function(c, i) {
+      if (i < 2) panels[0].appendChild(c);
+      else if (i < 4) panels[1].appendChild(c);
+      else if (i < 5) panels[2].appendChild(c);
+      else panels[3].appendChild(c);
+    });
+  }
+}
+
+function wowLTab(idx, btn) {
+  document.querySelectorAll('.wow-ltab').forEach(function(t) { t.classList.remove('on'); });
+  document.querySelectorAll('.wow-tab-panel').forEach(function(p) { p.classList.remove('on'); });
+  btn.classList.add('on');
+  var panels = ['wlt0','wlt1','wlt2','wlt3'];
+  var el = document.getElementById(panels[idx]);
+  if (el) el.classList.add('on');
+}
+
+function wowRTab(idx, btn) {
+  document.querySelectorAll('.wow-rtab').forEach(function(t) { t.classList.remove('on'); });
+  document.querySelectorAll('.wow-rpanel').forEach(function(p) { p.classList.remove('on'); });
+  btn.classList.add('on');
+  var panels = ['wrp0','wrp1','wrp2','wrp3'];
+  var el = document.getElementById(panels[idx]);
+  if (el) el.classList.add('on');
+}
+
+function wowGenReport() {
+  doGen();
+  if (_wowActive) {
+    var rtab = document.querySelector('.wow-rtab:last-child');
+    if (rtab) { wowRTab(3, rtab); }
+  }
+}
+
+function updateSummaryBar() {
+  var C = window._C || {};
+  var inc = C.inc || 0, exp = C.exp || 0, mn = C.mn || 0;
+  var ts = C.ts || 0, pr = C.pr || 0, dw = C.dw || 0, ln = C.ln || 0;
+  var rent = C.rent || 0, effMn = C.effMn || 0, ratio = C.ratio || 0;
+
+  function fmt2(n) { return n > 0 ? '$' + Math.round(n).toLocaleString('zh-TW') : '—'; }
+  function fmtW(n) { return n > 0 ? Math.round(n/10000) + '萬' : '—'; }
+  var rem = inc - exp - (mn > 0 ? (effMn > 0 ? effMn : mn) : 0) + ts;
+
+  // Diagnosis sentence
+  var diagEl = document.getElementById('wowDiag');
+  if (diagEl && inc > 0) {
+    var nm = (document.getElementById('iName') || {}).value || '客戶';
+    var sentences = [];
+    if (ratio <= 40) sentences.push(nm + '，<em>財務健康</em>，月付佔收入 ' + ratio.toFixed(1) + '%，在安全線內。');
+    else if (ratio <= 55) sentences.push(nm + '，月付佔收入 ' + ratio.toFixed(1) + '%，<em>稍高但可行</em>，需評估生活品質。');
+    else sentences.push(nm + '，月付佔收入 ' + ratio.toFixed(1) + '%，<em>壓力偏高</em>，建議檢討支出或調整方案。');
+    if (pr > 0 && dw > 0) sentences.push('目標 ' + fmtW(pr) + '，自備 ' + fmtW(dw) + '，貸款 ' + fmtW(ln) + '。');
+    diagEl.innerHTML = sentences.join('<br>');
+  } else if (diagEl) {
+    diagEl.innerHTML = '請填入基本資料，系統即時顯示分析結果。';
+  }
+
+  // Hero numbers
+  function setHero(id, val, cls) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    if (val) { el.textContent = val; el.className = 'hero-val ' + (cls||''); }
+    else { el.textContent = '—'; el.className = 'hero-val muted'; }
+  }
+  setHero('wDispInc', inc > 0 ? '$' + Math.round(inc/1000) + 'k' : null, 'gold');
+  setHero('wDispExp', exp > 0 ? '$' + Math.round(exp/1000) + 'k' : null, 'red');
+  setHero('wDispRem', rem !== 0 ? (rem >= 0 ? '+' : '') + '$' + Math.round(rem/1000) + 'k' : null, rem >= 0 ? 'green' : 'red');
+
+  // Bank income
+  var bankInc = document.getElementById('stIBank');
+  var wbi = document.getElementById('wBankInc');
+  if (wbi && bankInc) wbi.textContent = bankInc.textContent;
+
+  // Savings rate
+  var wsr = document.getElementById('wSavRate');
+  if (wsr) wsr.textContent = inc > 0 ? (Math.max(0, rem) / inc * 100).toFixed(1) + '%' : '—';
+
+  // Months to down payment
+  var wmd = document.getElementById('wMoDown');
+  if (wmd && dw > 0 && rem > 0) {
+    var mo = Math.ceil(dw / rem);
+    wmd.textContent = mo + ' 個月';
+  } else if (wmd) { wmd.textContent = '—'; }
+
+  // Loan analysis
+  var ratioNum = document.getElementById('wRatioNum');
+  var barFill = document.getElementById('wBarFill');
+  var stPrc = document.getElementById('wStPrc');
+  var stDw = document.getElementById('wStDw');
+  var stLn = document.getElementById('wStLn');
+  var stMn = document.getElementById('wStMn');
+  var stTotal = document.getElementById('wStTotal');
+  var stMax = document.getElementById('wStMax');
+
+  if (ratioNum) {
+    ratioNum.textContent = ratio > 0 ? ratio.toFixed(1) + '%' : '—';
+    ratioNum.className = 'ratio-big ' + (ratio <= 40 ? 'safe' : 'over');
+  }
+  if (barFill) {
+    var pct = Math.min(100, ratio);
+    barFill.style.width = pct + '%';
+    barFill.className = 'bar-fill ' + (ratio > 40 ? 'danger' : '');
+  }
+  if (stPrc) stPrc.textContent = fmtW(pr);
+  if (stDw) stDw.textContent = fmtW(dw);
+  if (stLn) stLn.textContent = fmtW(ln);
+  if (stMn) { stMn.textContent = mn > 0 ? fmt2(mn) : '—'; stMn.className = 'sv gold'; }
+
+  // Total monthly including current debts
+  var iOLn = parseFloat((document.getElementById('iOLn')||{}).value)||0;
+  var iCar = parseFloat((document.getElementById('iCar')||{}).value)||0;
+  var totalMn = mn + iOLn + iCar;
+  if (stTotal) stTotal.textContent = totalMn > 0 ? fmt2(totalMn) : '—';
+
+  // Max loan estimate (bank income * 0.3 * 12 / interest * years rough)
+  var bankIncAmt = parseFloat((document.getElementById('stIBank')||{textContent:'0'}).textContent.replace(/[^0-9]/g,'')) || 0;
+  var maxLoan = bankIncAmt > 0 ? Math.round(bankIncAmt * 0.3 * 360 / (1000)) * 1000 : 0; // rough 30yr
+  if (stMax) stMax.textContent = maxLoan > 0 ? fmtW(maxLoan) : '—';
+
+  // Opportunity cost mini card
+  var growth = parseFloat((document.getElementById('iGrowth')||{value:'4'}).value)/100 || 0.04;
+  var prWan = pr > 0 ? Math.round(pr/10000) : 0;
+  var opp = prWan > 0 ? Math.round(prWan * growth) : 0;
+  var wOpp = document.getElementById('wOppNum');
+  var wOppDesc = document.getElementById('wOppDesc');
+  if (wOpp) { wOpp.textContent = opp > 0 ? '+' + opp + '萬' : '—'; wOpp.className = 'mini-num' + (opp > 0 ? ' red' : ' muted'); }
+  if (wOppDesc) wOppDesc.textContent = opp > 0 ? '每年房價漲 ' + opp + '萬，等一年多付這些。' : '填入目標房價後顯示。';
+
+  // Reserve mini card
+  var netAsset = document.getElementById('a_netAsset');
+  var netWan = netAsset ? parseInt(netAsset.textContent) || 0 : 0;
+  var reserve = netWan > 0 && dw > 0 ? netWan - Math.round(dw/10000) : 0;
+  var wRes = document.getElementById('wResNum');
+  var wResDesc = document.getElementById('wResDesc');
+  if (wRes) { wRes.textContent = dw > 0 ? (reserve >= 0 ? '+' : '') + reserve + '萬' : '—'; wRes.className = 'mini-num' + (reserve >= 50 ? ' green' : reserve >= 0 ? '' : ' red'); }
+  if (wResDesc) wResDesc.textContent = reserve >= 50 ? '購屋後備用金充足，財務穩健。' : reserve >= 0 ? '備用金尚可，建議保留 50 萬以上。' : '備用金不足，建議補充資金或降低自備款。';
+
+  // Net worth mini card
+  var netEl = document.getElementById('wNetNum');
+  var netDescEl = document.getElementById('wNetDesc');
+  var na = document.getElementById('a_netAsset');
+  if (netEl && na) {
+    var nv = na.textContent || '—';
+    netEl.textContent = nv;
+    netEl.className = 'mini-num' + (netWan > 0 ? ' green' : netWan < 0 ? ' red' : ' muted');
+  }
+  if (netDescEl) netDescEl.textContent = netWan > 0 ? '淨資產正向，財務基礎穩固。' : netWan < 0 ? '負債大於資產，建議優先整合。' : '填入資產負債資料後顯示。';
+
+  // Wait cost tab sync
+  calcWaitCostWow();
+}
+
+function calcWaitCostWow() {
+  var C = window._C || {};
+  if (!C.pr) return;
+  var waitYrs = 1;
+  var growth = parseFloat((document.getElementById('iGrowth')||{value:'4'}).value)/100 || 0.04;
+  var prWan = Math.round(C.pr/10000);
+  var prAfter = Math.round(prWan * Math.pow(1 + growth, waitYrs));
+  var priceRise = prAfter - prWan;
+  var rentInput = parseFloat((document.getElementById('waitRentInput')||{}).value)||0;
+  var iRntVal = parseFloat((document.getElementById('iRnt')||{value:'0'}).value)||0;
+  var monthlyRent = rentInput > 0 ? rentInput : iRntVal;
+  var rentTotal = monthlyRent > 0 ? Math.round(monthlyRent * 12 * waitYrs / 10000) : 0;
+  var total = priceRise + rentTotal;
+  var wc_total = document.getElementById('wc_total');
+  var wc_priceRise = document.getElementById('wc_priceRise');
+  var wc_yrsLabel = document.getElementById('wc_yrsLabel');
+  var wc_totalSub = document.getElementById('wc_totalSub');
+  var wc_rentBlock = document.getElementById('wc_rentBlock');
+  var wc_rentTotal = document.getElementById('wc_rentTotal');
+  var wc_growthDisp = document.getElementById('wc_growthDisp');
+  var wc_scriptBox = document.getElementById('wc_scriptBox');
+  var wc_script = document.getElementById('wc_script');
+  if (wc_total) wc_total.textContent = '+' + total + '萬';
+  if (wc_priceRise) wc_priceRise.textContent = '+' + priceRise + '萬';
+  if (wc_totalSub) wc_totalSub.textContent = '房價漲了 ' + priceRise + '萬' + (rentTotal > 0 ? '＋租金白繳 ' + rentTotal + '萬' : '');
+  if (wc_yrsLabel) wc_yrsLabel.textContent = waitYrs;
+  if (wc_growthDisp) wc_growthDisp.textContent = Math.round(growth*100) + '%';
+  if (wc_rentBlock) wc_rentBlock.style.display = rentTotal > 0 ? 'flex' : 'none';
+  if (wc_rentTotal) wc_rentTotal.textContent = '+' + rentTotal + '萬';
+  if (wc_scriptBox && wc_script && total > 0) {
+    var nm = (document.getElementById('iName')||{}).value || '您';
+    wc_script.textContent = '「' + nm + '，你說再考慮一年。這一年房子漲了 ' + priceRise + ' 萬，' + (rentTotal > 0 ? '加上租金 ' + rentTotal + ' 萬，' : '') + '合計損失 ' + total + ' 萬——這是數學，不是嚇你。」';
+    wc_scriptBox.style.display = 'block';
+  }
+}
+
+function setWaitYrs(yrs, btn) {
+  document.querySelectorAll('.wyr-active').forEach(function(b) { b.classList.remove('wyr-active'); b.style.fontWeight=''; b.style.borderColor='rgba(176,48,16,.25)'; b.style.background='#fff'; });
+  if (btn) { btn.classList.add('wyr-active'); btn.style.fontWeight='bold'; btn.style.borderColor='rgba(176,48,16,.6)'; btn.style.background='rgba(176,48,16,.08)'; }
+  // update waitYrs and recalc
+  var C = window._C || {};
+  if (!C.pr) return;
+  var growth = parseFloat((document.getElementById('iGrowth')||{value:'4'}).value)/100 || 0.04;
+  var prWan = Math.round(C.pr/10000);
+  var prAfter = Math.round(prWan * Math.pow(1 + growth, yrs));
+  var priceRise = prAfter - prWan;
+  var rentInput = parseFloat((document.getElementById('waitRentInput')||{}).value)||0;
+  var iRntVal = parseFloat((document.getElementById('iRnt')||{value:'0'}).value)||0;
+  var monthlyRent = rentInput > 0 ? rentInput : iRntVal;
+  var rentTotal = monthlyRent > 0 ? Math.round(monthlyRent * 12 * yrs / 10000) : 0;
+  var total = priceRise + rentTotal;
+  var wc_total = document.getElementById('wc_total');
+  var wc_priceRise = document.getElementById('wc_priceRise');
+  var wc_yrsLabel = document.getElementById('wc_yrsLabel');
+  var wc_totalSub = document.getElementById('wc_totalSub');
+  var wc_rentBlock = document.getElementById('wc_rentBlock');
+  var wc_rentTotal = document.getElementById('wc_rentTotal');
+  var wc_scriptBox = document.getElementById('wc_scriptBox');
+  var wc_script = document.getElementById('wc_script');
+  if (wc_total) wc_total.textContent = '+' + total + '萬';
+  if (wc_priceRise) wc_priceRise.textContent = '+' + priceRise + '萬';
+  if (wc_totalSub) wc_totalSub.textContent = '房價漲了 ' + priceRise + '萬' + (rentTotal > 0 ? '＋租金白繳 ' + rentTotal + '萬' : '');
+  if (wc_yrsLabel) wc_yrsLabel.textContent = yrs;
+  if (wc_rentBlock) wc_rentBlock.style.display = rentTotal > 0 ? 'flex' : 'none';
+  if (wc_rentTotal) wc_rentTotal.textContent = '+' + rentTotal + '萬';
+  if (wc_scriptBox && wc_script && total > 0) {
+    var nm = (document.getElementById('iName')||{}).value || '您';
+    var rentNote = rentTotal > 0 ? '加上你這段時間白繳的 ' + rentTotal + ' 萬租金，' : '';
+    var script = yrs <= 1
+      ? '「' + nm + '，你說再考慮一年。這一年房子漲了 ' + priceRise + ' 萬，' + rentNote + '合計損失 ' + total + ' 萬——這是數學，不是嚇你。」'
+      : '「' + nm + '，' + yrs + ' 年聽起來不長。但房子漲了 ' + priceRise + ' 萬，' + rentNote + '合計 ' + total + ' 萬。現在做決定，才是真正省錢。」';
+    wc_script.textContent = script;
+    wc_scriptBox.style.display = 'block';
+  }
+}
+
+/* ── 客戶管理功能 ── */
+function openClientManager() {
+  var modal = document.getElementById('clientManagerModal');
+  if (modal) {
+    modal.style.display = 'flex';
+    updateCmStatus();
+  }
+}
+function closeClientManager() {
+  var modal = document.getElementById('clientManagerModal');
+  if (modal) modal.style.display = 'none';
+}
+function updateCmStatus() {
+  var nm = (document.getElementById('iName')||{}).value || '（未填）';
+  var box = document.getElementById('cmStatusBox');
+  if (box) box.innerHTML = '目前客戶：<strong>' + nm + '</strong><br>填寫進度：依各欄位自動記錄';
+}
+
+function saveClientJSON() {
+  var nm = (document.getElementById('iName')||{}).value || 'client';
+  var today = new Date();
+  var ds = today.getFullYear() + ('0'+(today.getMonth()+1)).slice(-2) + ('0'+today.getDate()).slice(-2);
+  var filename = nm + '_' + ds + '.json';
+  var inputs = document.querySelectorAll('input,select,textarea');
+  var data = {};
+  inputs.forEach(function(el) { if(el.id) data[el.id] = el.type==='checkbox' ? el.checked : el.value; });
+  var json = JSON.stringify({v:'ft-1',ts:Date.now(),data:data}, null, 2);
+  var blob = new Blob([json], {type:'application/json'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+  closeClientManager();
+}
+
+function loadClientJSON(input) {
+  var file = input.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      var obj = JSON.parse(e.target.result);
+      var data = obj.data || obj;
+      Object.keys(data).forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) {
+          if (el.type === 'checkbox') el.checked = data[id];
+          else el.value = data[id];
+          el.dispatchEvent(new Event('input', {bubbles:true}));
+          el.dispatchEvent(new Event('change', {bubbles:true}));
+        }
+      });
+      ca();
+      closeClientManager();
+      alert('✅ 客戶資料載入完成：' + ((data.iName)||''));
+    } catch(err) { alert('載入失敗：' + err.message); }
+  };
+  reader.readAsText(file);
+}
+
+function clearAllFields() {
+  document.querySelectorAll('input,select,textarea').forEach(function(el) {
+    if (el.type === 'checkbox') el.checked = false;
+    else el.value = '';
+  });
+  ca();
+}
+
+// Init on load
+window.addEventListener('load', function() {
+  if (window.innerWidth >= 900) {
+    var app = document.getElementById('wowApp');
+    if (app) {
+      app.classList.add('active');
+      _wowActive = true;
+      // Move card content into panels
+      setTimeout(function() {
+        var vI = document.getElementById('vI');
+        if (!vI) return;
+        var allCards = Array.from(vI.querySelectorAll(':scope > .card, :scope > [class*="card"]'));
+        var p0 = document.getElementById('wlt0');
+        var p1 = document.getElementById('wlt1');
+        var p2 = document.getElementById('wlt2');
+        var p3 = document.getElementById('wlt3');
+        if (!p0||!p1||!p2||!p3) return;
+        allCards.forEach(function(c, i) {
+          if (i <= 1) p0.appendChild(c);
+          else if (i <= 3) p1.appendChild(c);
+          else if (i === 4) p2.appendChild(c);
+          else p3.appendChild(c);
+        });
+        // Also move quickModeCard to p0
+        var qm = document.getElementById('quickModeCard');
+        if (qm) p0.insertBefore(qm, p0.firstChild);
+      }, 50);
+    }
+  }
+});
+</script>
+
+<script>
+// Move report and inheritance panels into wow right panels on tablet
+(function() {
+  var isTablet = window.innerWidth >= 900;
+  if (!isTablet) return;
+  
+  // After DOM loaded, move sections
+  document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+      var wrp2 = document.getElementById('wrp2');
+      var wrp3 = document.getElementById('wrp3');
+      var vT = document.getElementById('vT');
+      var vR = document.getElementById('vR');
+      
+      if (wrp2 && vT) {
+        vT.style.display = 'block';
+        vT.style.maxWidth = '100%';
+        vT.style.padding = '16px 20px 80px';
+        wrp2.appendChild(vT);
+      }
+      if (wrp3 && vR) {
+        vR.style.display = 'block';
+        vR.style.maxWidth = '100%';
+        vR.style.padding = '16px 20px 80px';
+        wrp3.appendChild(vR);
+      }
+      
+      // Also move vF into wrp1 wait panel (append after existing content)
+      // Actually vF is the original mobile wait panel - don't move it, we have our own wrp1
+    }, 100);
+  });
+})();
+</script>
+
 </body>
 </html>
