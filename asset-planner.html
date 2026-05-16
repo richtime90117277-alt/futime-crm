@@ -807,7 +807,6 @@ body{
   .mini-num.green{color:#2a7a48}.mini-num.red{color:#b83020}.mini-num.muted{color:rgba(120,80,20,.18);font-size:18px}
   .mini-desc{font-size:12px;color:rgba(44,31,14,.5);margin-top:6px;line-height:1.7;flex:1}
   #wrp3 #vR{display:block!important}
-  #wrp1 #vF{display:block!important}
   #wrp2 #vT{display:block!important}
 }
 </style>
@@ -3884,7 +3883,8 @@ function sw(m){
   var isI=m==='I', isR=m==='R', isF=m==='F', isT=m==='T';
   g('vI').style.display=isI?'block':'none';
   g('vR').style.display=isR?'block':'none';
-  if(g('vF')) g('vF').style.display=isF?'block':'none';
+  // 平板模式下等待代價已在右側 wrp1，不顯示手機版 vF
+  if(g('vF')) g('vF').style.display=(_wowActive ? 'none' : (isF?'block':'none'));
   if(g('vT')) g('vT').style.display=isT?'block':'none';
   g('gbar').style.display=isI?'flex':'none';
   g('tI').className='tab'+(isI?' on':'');
@@ -5710,6 +5710,44 @@ function doLogin() {
     setTimeout(function(){
       loginEl.style.display='none';
       lsLoad();
+      // 平板模式：啟動雙欄佈局
+      if (window.innerWidth >= 900) {
+        var app = document.getElementById('wowApp');
+        if (app) {
+          app.style.display = 'grid';
+          app.classList.add('active');
+          _wowActive = true;
+          // 搬 card 到左側 tab 分頁
+          setTimeout(function() {
+            var vI = document.getElementById('vI');
+            if (!vI) return;
+            var allCards = Array.from(vI.querySelectorAll(':scope > .card, :scope > [class*="card"]'));
+            var p0 = document.getElementById('wlt0');
+            var p1 = document.getElementById('wlt1');
+            var p2 = document.getElementById('wlt2');
+            var p3 = document.getElementById('wlt3');
+            if (!p0||!p1||!p2||!p3) return;
+            allCards.forEach(function(c, i) {
+              if (i <= 1) p0.appendChild(c);
+              else if (i <= 3) p1.appendChild(c);
+              else if (i === 4) p2.appendChild(c);
+              else p3.appendChild(c);
+            });
+            var qm = document.getElementById('quickModeCard');
+            if (qm) p0.insertBefore(qm, p0.firstChild);
+            // 搬 vT、vR 到右側面板
+            var wrp2 = document.getElementById('wrp2');
+            var wrp3 = document.getElementById('wrp3');
+            var vT = document.getElementById('vT');
+            var vR = document.getElementById('vR');
+            if (wrp2 && vT) { vT.style.display='block'; vT.style.maxWidth='100%'; vT.style.padding='16px 20px 80px'; wrp2.appendChild(vT); }
+            if (wrp3 && vR) { vR.style.display='block'; vR.style.maxWidth='100%'; vR.style.padding='16px 20px 80px'; wrp3.appendChild(vR); }
+            // 隱藏手機版 vF
+            var vFel = document.getElementById('vF');
+            if (vFel) vFel.style.display = 'none';
+          }, 100);
+        }
+      }
     }, 600);
   }
 }
@@ -7253,6 +7291,11 @@ function wowRTab(idx, btn) {
   var panels = ['wrp0','wrp1','wrp2','wrp3'];
   var el = document.getElementById(panels[idx]);
   if (el) el.classList.add('on');
+  // 平板模式：手機版 vF 強制隱藏（右側 wrp1 已有等待代價，不需要 vF）
+  var vFel = document.getElementById('vF');
+  if (vFel && _wowActive) { vFel.style.display = 'none'; }
+  // 切到等待代價 tab 時更新計算
+  if (idx === 1) { if(typeof calcWaitCostWow==='function') calcWaitCostWow(); }
 }
 
 function wowGenReport() {
