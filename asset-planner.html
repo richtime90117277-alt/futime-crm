@@ -2385,7 +2385,8 @@ function doGen(){
     var _fLiq2   = parseFloat((g('fLiquid')||{value:'0'}).value)||0;
     var _gCont2  = parseFloat((g('g_contribution')||{value:'0'}).value)||0; // ★ 保證人出資
     var _assetSum2 = fund+stock+dep+bankb+_bonus2+_gCont2;
-    var _cash2 = (_fLiq2>0 ? _fLiq2+_gCont2 : _assetSum2);
+    // ✅ Fix3: fLiquid 為顧問校調後總額，不再重複疊加 _gCont2（已含在 _assetSum2 裡）
+    var _cash2 = (_fLiq2>0 ? _fLiq2 : _assetSum2);
     var _res2  = _cash2+_credit2-_dwW2-_earn2;
     var _resBox=g('snapReserveBox');
     if(_resBox&&_dwW2>0&&(_cash2>0||_credit2>0)){
@@ -2876,7 +2877,7 @@ function doGen(){
     // 重寫標題說法
     g('waitSubtitle').textContent='你今天簽約，是用現在的價格鎖定這間房。若等半年才決定，同一間房你要多付——';
     var _wmEl=g('waitMonthly'); if(_wmEl){ countUp(_wmEl, risePerMo, 800, '$', ''); }
-    if(g('waitDaily')) var _wdEl=g('waitDaily'); if(_wdEl){ countUp(_wdEl, Math.round(risePerMo/30), 800, '$', ' 元/天'); }
+    var _wdEl=g('waitDaily'); if(_wdEl){ countUp(_wdEl, Math.round(risePerMo/30), 800, '$', ' 元/天'); } // ✅ Fix2: var moved outside if
     var _el_lost6m=g('lost6m'); if(_el_lost6m){ countUp(_el_lost6m, Math.round(Math.round(prWan*(Math.pow(1+growth,0.5)-1))), 1000, '+', '萬'); }
     var _el_lost1y=g('lost1y'); if(_el_lost1y){ countUp(_el_lost1y, Math.round(Math.round(prWan*(Math.pow(1+growth,1)-1))), 1000, '+', '萬'); }
     var _el_lost2y=g('lost2y'); if(_el_lost2y){ countUp(_el_lost2y, Math.round(Math.round(prWan*(Math.pow(1+growth,2)-1))), 1000, '+', '萬'); }
@@ -2916,9 +2917,10 @@ function doGen(){
     var waitDailyLoss=Math.round(waitYearlyTotal/365);
     g('waitYearly').textContent=fmt(waitYearlyTotal)+'元';
     if(g('waitDaily')) g('waitDaily').textContent=fmt(waitDailyLoss)+' 元/天';
-    var l6m=Math.round(C.pr*growth*0.5);
-    var l1y=Math.round(C.pr*growth);
-    var l2y=Math.round(C.pr*growth*2);
+    // ✅ Fix1: 複利公式，與預售模式一致
+    var l6m=Math.round(C.pr*(Math.pow(1+growth,0.5)-1));
+    var l1y=Math.round(C.pr*(Math.pow(1+growth,1)-1));
+    var l2y=Math.round(C.pr*(Math.pow(1+growth,2)-1));
     g('lost6m').textContent=fmtW(l6m);
     g('lost1y').textContent=fmtW(l1y);
     g('lost2y').textContent=fmtW(l2y);
@@ -7591,7 +7593,8 @@ function doGen(){
     var _fLiq2   = parseFloat((g('fLiquid')||{value:'0'}).value)||0;
     var _gCont2  = parseFloat((g('g_contribution')||{value:'0'}).value)||0; // ★ 保證人出資
     var _assetSum2 = fund+stock+dep+bankb+_bonus2+_gCont2;
-    var _cash2 = (_fLiq2>0 ? _fLiq2+_gCont2 : _assetSum2);
+    // ✅ Fix3: fLiquid 為顧問校調後總額，不再重複疊加 _gCont2（已含在 _assetSum2 裡）
+    var _cash2 = (_fLiq2>0 ? _fLiq2 : _assetSum2);
     var _res2  = _cash2+_credit2-_dwW2-_earn2;
     var _resBox=g('snapReserveBox');
     if(_resBox&&_dwW2>0&&(_cash2>0||_credit2>0)){
@@ -8082,7 +8085,7 @@ function doGen(){
     // 重寫標題說法
     g('waitSubtitle').textContent='你今天簽約，是用現在的價格鎖定這間房。若等半年才決定，同一間房你要多付——';
     var _wmEl=g('waitMonthly'); if(_wmEl){ countUp(_wmEl, risePerMo, 800, '$', ''); }
-    if(g('waitDaily')) var _wdEl=g('waitDaily'); if(_wdEl){ countUp(_wdEl, Math.round(risePerMo/30), 800, '$', ' 元/天'); }
+    var _wdEl=g('waitDaily'); if(_wdEl){ countUp(_wdEl, Math.round(risePerMo/30), 800, '$', ' 元/天'); } // ✅ Fix2: var moved outside if
     var _el_lost6m=g('lost6m'); if(_el_lost6m){ countUp(_el_lost6m, Math.round(Math.round(prWan*(Math.pow(1+growth,0.5)-1))), 1000, '+', '萬'); }
     var _el_lost1y=g('lost1y'); if(_el_lost1y){ countUp(_el_lost1y, Math.round(Math.round(prWan*(Math.pow(1+growth,1)-1))), 1000, '+', '萬'); }
     var _el_lost2y=g('lost2y'); if(_el_lost2y){ countUp(_el_lost2y, Math.round(Math.round(prWan*(Math.pow(1+growth,2)-1))), 1000, '+', '萬'); }
@@ -8122,9 +8125,10 @@ function doGen(){
     var waitDailyLoss=Math.round(waitYearlyTotal/365);
     g('waitYearly').textContent=fmt(waitYearlyTotal)+'元';
     if(g('waitDaily')) g('waitDaily').textContent=fmt(waitDailyLoss)+' 元/天';
-    var l6m=Math.round(C.pr*growth*0.5);
-    var l1y=Math.round(C.pr*growth);
-    var l2y=Math.round(C.pr*growth*2);
+    // ✅ Fix1: 複利公式，與預售模式一致
+    var l6m=Math.round(C.pr*(Math.pow(1+growth,0.5)-1));
+    var l1y=Math.round(C.pr*(Math.pow(1+growth,1)-1));
+    var l2y=Math.round(C.pr*(Math.pow(1+growth,2)-1));
     g('lost6m').textContent=fmtW(l6m);
     g('lost1y').textContent=fmtW(l1y);
     g('lost2y').textContent=fmtW(l2y);
@@ -11723,7 +11727,8 @@ function doGen(){
     var _fLiq2   = parseFloat((g('fLiquid')||{value:'0'}).value)||0;
     var _gCont2  = parseFloat((g('g_contribution')||{value:'0'}).value)||0; // ★ 保證人出資
     var _assetSum2 = fund+stock+dep+bankb+_bonus2+_gCont2;
-    var _cash2 = (_fLiq2>0 ? _fLiq2+_gCont2 : _assetSum2);
+    // ✅ Fix3: fLiquid 為顧問校調後總額，不再重複疊加 _gCont2（已含在 _assetSum2 裡）
+    var _cash2 = (_fLiq2>0 ? _fLiq2 : _assetSum2);
     var _res2  = _cash2+_credit2-_dwW2-_earn2;
     var _resBox=g('snapReserveBox');
     if(_resBox&&_dwW2>0&&(_cash2>0||_credit2>0)){
@@ -12214,7 +12219,7 @@ function doGen(){
     // 重寫標題說法
     g('waitSubtitle').textContent='你今天簽約，是用現在的價格鎖定這間房。若等半年才決定，同一間房你要多付——';
     var _wmEl=g('waitMonthly'); if(_wmEl){ countUp(_wmEl, risePerMo, 800, '$', ''); }
-    if(g('waitDaily')) var _wdEl=g('waitDaily'); if(_wdEl){ countUp(_wdEl, Math.round(risePerMo/30), 800, '$', ' 元/天'); }
+    var _wdEl=g('waitDaily'); if(_wdEl){ countUp(_wdEl, Math.round(risePerMo/30), 800, '$', ' 元/天'); } // ✅ Fix2: var moved outside if
     var _el_lost6m=g('lost6m'); if(_el_lost6m){ countUp(_el_lost6m, Math.round(Math.round(prWan*(Math.pow(1+growth,0.5)-1))), 1000, '+', '萬'); }
     var _el_lost1y=g('lost1y'); if(_el_lost1y){ countUp(_el_lost1y, Math.round(Math.round(prWan*(Math.pow(1+growth,1)-1))), 1000, '+', '萬'); }
     var _el_lost2y=g('lost2y'); if(_el_lost2y){ countUp(_el_lost2y, Math.round(Math.round(prWan*(Math.pow(1+growth,2)-1))), 1000, '+', '萬'); }
@@ -12254,9 +12259,10 @@ function doGen(){
     var waitDailyLoss=Math.round(waitYearlyTotal/365);
     g('waitYearly').textContent=fmt(waitYearlyTotal)+'元';
     if(g('waitDaily')) g('waitDaily').textContent=fmt(waitDailyLoss)+' 元/天';
-    var l6m=Math.round(C.pr*growth*0.5);
-    var l1y=Math.round(C.pr*growth);
-    var l2y=Math.round(C.pr*growth*2);
+    // ✅ Fix1: 複利公式，與預售模式一致
+    var l6m=Math.round(C.pr*(Math.pow(1+growth,0.5)-1));
+    var l1y=Math.round(C.pr*(Math.pow(1+growth,1)-1));
+    var l2y=Math.round(C.pr*(Math.pow(1+growth,2)-1));
     g('lost6m').textContent=fmtW(l6m);
     g('lost1y').textContent=fmtW(l1y);
     g('lost2y').textContent=fmtW(l2y);
