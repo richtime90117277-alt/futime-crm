@@ -621,6 +621,23 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 <div class="toast" id="toast"></div>
 
 <script>
+// ╔══════════════════════════════════════════════════════════════╗
+// ║  富時代 · 客戶解碼系統 LIB v8.0                              ║
+// ║  架構模組說明：                                               ║
+// ║  ■ 模組 A — API 呼叫層（穩定性強化版） ~L1265               ║
+// ║  ■ 模組 B — 資料層（SCRIPTS / PERSONAS / MODULES）  ~L624   ║
+// ║  ■ 模組 C — 題庫管理後台                        （頁尾 script）║
+// ║  ■ 模組 D — UI 渲染層（showOverview / card / ...）  ~L1600  ║
+// ║  ■ 模組 E — 解碼系統（DECODE_DB / showDecodeHome）  ~L1975  ║
+// ║  ■ 模組 F — 考試院（startExam / sendExamMsg / endExam）~L1403║
+// ║  ■ 模組 G — 成長系統（growthAddPts / checkin / LB） ~L3043  ║
+// ║  ■ 模組 H — 手機 Sidebar / CRM / SOS / 同步          ~L2616 ║
+// ╚══════════════════════════════════════════════════════════════╝
+
+// ══════════════════════════════════════════════
+// ■ 模組 B：資料層 — SCRIPTS / PERSONAS / MODULES
+//   話術資料請在此處編輯，不要動其他模組
+// ══════════════════════════════════════════════
 const SCRIPTS = [
 {"id":"S001","category":"投資心理","situation":"客戶有股票或信貸不想動本金帶家人來","trigger":"我不想動現有的資金，看看而已","title":"股票族不想動本金","content":"客戶真正的需求不是家人反對，是想投資但不想動本金希望家人出錢。不要繞著家人反對做文章。直接勾房地產槓桿讓現有資產效益放大三到五倍。鉤子訊息範本：「大哥，我最近幫一個跟你條件很像的客戶算了一下，他完全沒動到股票，就多控制了一個資產，你有沒有興趣聽一下是怎麼做到的？」等他回應再約面談，面談時用數字算給他看。","persona":"p13","note":"案例#001"},
 {"id":"S002","category":"轉介紹策略","situation":"成交客戶住在案子附近本人有意願但家人當場阻擋","trigger":"我家人不太同意，可能要再等等","title":"鄰居情懷轉介紹","content":"用鄰居身份送水果登門拜訪降低防衛再締結邀約。開場白：「我是XX的顧問，上次跟您聊過，今天順路帶點小東西來，不打擾，就想說一聲。」不要強約家人來說服時機錯會加深抗拒。成交後立刻布局轉介紹：一組鄰居帶兩組，五組就賣完一個案子。","persona":"p10","note":"案例#002"},
@@ -896,6 +913,13 @@ const SCRIPTS = [
 const MODULES = [{"no":0,"name":"話術系統地圖","icon":"🗺️","desc":"共通框架：觸發句→目的→推進","cats":["銷售心態"],"label":"跨部曲｜心法"},{"no":1,"name":"信任與開場","icon":"🤝","desc":"讓客戶對你這個人有感","cats":["信任建立"],"label":"一部曲｜開發名單"},{"no":2,"name":"開發與接觸","icon":"🎯","desc":"找到對的人、打開對話","cats":["開發策略"],"label":"二部曲｜建立信任"},{"no":3,"name":"提問式銷售","icon":"💬","desc":"讓客戶自己說出你要的答案","cats":["提問式銷售"],"label":"三部曲｜需求與痛點"},{"no":4,"name":"銷售流程控制","icon":"🔄","desc":"每一步都要有劇本","cats":["銷售流程"],"label":"四部曲｜物件配對"},{"no":5,"name":"異議處理","icon":"🛡️","desc":"客戶說的不等於真正的卡關點","cats":["異議處理"],"label":"五部曲｜異議處理"},{"no":6,"name":"追蹤與破冰","icon":"📡","desc":"沒有明確說不就是還在考慮","cats":["追蹤技巧"],"label":"六部曲｜締結成交"},{"no":7,"name":"締結成交","icon":"✍️","desc":"確認式推進，把下一步定死","cats":["締結成交","轉介紹策略"],"label":"七部曲｜售後服務"},{"no":8,"name":"市場知識武裝","icon":"📊","desc":"數字武器庫","cats":["市場知識","投資心理","真實案例","產品介紹"],"label":"八部曲｜進階技巧"}];
 const CAT_ICONS = {"銷售心態":"🧠","信任建立":"🤝","開發策略":"🎯","提問式銷售":"💬","銷售流程":"🔄","異議處理":"🛡️","追蹤技巧":"📡","締結成交":"✍️","市場知識":"📊","真實案例":"📖","投資心理":"💡","轉介紹策略":"🔗","產品介紹":"🏠"};
 const CAT_ORDER = ["銷售心態","信任建立","開發策略","提問式銷售","銷售流程","異議處理","追蹤技巧","締結成交","市場知識","真實案例","投資心理","轉介紹策略","產品介紹"];
+// ══════════════════════════════════════════════
+// ■ 模組 B 結束（資料層）
+// ══════════════════════════════════════════════
+
+// ══════════════════════════════════════════════
+// ■ 模組 F：考試院系統
+// ══════════════════════════════════════════════
 
 const PERSONAS = [
   {
@@ -1261,32 +1285,83 @@ const ANTHROPIC_API_KEY = _k.join('');
 function getApiKey() { return ANTHROPIC_API_KEY; }
 function openApiKeyModal(cb) { if(cb) cb(); } // 不再需要 modal，直接執行
 
-// 統一 Anthropic API 呼叫函數
-async function callAnthropicAPI(systemPrompt, messages, maxTokens = 500) {
+// ══════════════════════════════════════════════
+// ■ 模組 A：統一 AI API 呼叫層（穩定性強化版）
+//   - 正確 model name（claude-sonnet-4-6）
+//   - timeout 保護（30 秒）
+//   - 友善錯誤訊息分類（網路/憑證/額度/格式）
+//   - retry 1 次（只對網路錯誤）
+// ══════════════════════════════════════════════
+const API_MODEL = 'claude-sonnet-4-6';
+const API_TIMEOUT_MS = 30000;
+
+async function callAnthropicAPI(systemPrompt, messages, maxTokens = 500, retryCount = 0) {
   const apiKey = getApiKey();
-  const resp = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true'
-    },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: maxTokens,
-      system: systemPrompt,
-      messages: messages
-    })
-  });
-  if (!resp.ok) {
-    const err = await resp.json().catch(() => ({}));
-    throw new Error(err.error?.message || `HTTP ${resp.status}`);
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+
+  let resp;
+  try {
+    resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: API_MODEL,
+        max_tokens: maxTokens,
+        system: systemPrompt,
+        messages: messages
+      }),
+      signal: controller.signal
+    });
+  } catch (fetchErr) {
+    clearTimeout(timeoutId);
+    if (fetchErr.name === 'AbortError') {
+      throw new Error('⏱ 連線逾時（30秒），請確認網路狀態後重試');
+    }
+    // 網路錯誤 retry 一次
+    if (retryCount === 0) {
+      await new Promise(r => setTimeout(r, 1500));
+      return callAnthropicAPI(systemPrompt, messages, maxTokens, 1);
+    }
+    throw new Error('🌐 網路連線失敗：' + fetchErr.message);
   }
-  const data = await resp.json();
-  if (data.content && data.content[0]) return data.content[0].text;
-  throw new Error('回應格式錯誤');
+  clearTimeout(timeoutId);
+
+  if (!resp.ok) {
+    let errMsg = `HTTP ${resp.status}`;
+    try {
+      const errData = await resp.json();
+      const raw = errData.error?.message || '';
+      if (resp.status === 401) errMsg = '🔑 API 金鑰無效，請聯繫管理員';
+      else if (resp.status === 429) errMsg = '⚠️ API 使用額度暫時超限，請稍後再試';
+      else if (resp.status === 529) errMsg = '🔧 AI 服務暫時過載，請稍後再試';
+      else if (resp.status >= 500) errMsg = '🔧 AI 伺服器異常（' + resp.status + '），請稍後再試';
+      else if (raw) errMsg = raw;
+    } catch (_) { /* ignore parse error */ }
+    throw new Error(errMsg);
+  }
+
+  let data;
+  try {
+    data = await resp.json();
+  } catch (_) {
+    throw new Error('⚠️ AI 回應解析失敗，請重試');
+  }
+
+  if (data.content && data.content[0] && data.content[0].text) {
+    return data.content[0].text;
+  }
+  throw new Error('⚠️ AI 回應格式異常，請重試');
 }
+// ══════════════════════════════════════════════
+// ■ 模組 A 結束
+// ══════════════════════════════════════════════
 
 // 確認有 API Key 再執行
 function requireApiKey(fn) { fn(); }
@@ -1396,7 +1471,12 @@ ${scriptSummary}
     `;
   } catch(e) {
     const el = document.getElementById('coach-report-content');
-    if (el) el.innerHTML = `<div style="color:#c0392b;padding:16px;background:rgba(192,57,43,0.06);border-radius:8px">連線失敗：${e.message}</div>`;
+    if (el) el.innerHTML = `
+      <div style="padding:20px;background:rgba(192,57,43,0.06);border:1px solid rgba(192,57,43,0.2);border-radius:12px">
+        <div style="font-size:14px;font-weight:700;color:#c0392b;margin-bottom:8px">⚠️ 無法生成報告</div>
+        <div style="font-size:13px;color:var(--text-sub);line-height:1.7">${esc(e.message)}</div>
+        <div style="margin-top:14px;font-size:12px;color:var(--text-dim)">建議：確認網路連線後，關閉此視窗重新點擊「AI 跟進報告」。</div>
+      </div>`;
   }
 }
 
@@ -1450,6 +1530,7 @@ async function initExam(p) {
   const systemPrompt = buildExamSystemPrompt(p);
   // AI 先說第一句（客戶開場）
   const opening = await callExamAPI(systemPrompt, [], '你現在開始，說出你的開場白（1-2句，符合你的角色設定）');
+  if (!opening) return; // 錯誤已在 callExamAPI 內顯示
   addExamMessage('ai', opening, p.name);
   examState.messages.push({ role: 'assistant', content: opening });
 }
@@ -1471,6 +1552,7 @@ async function sendExamMsg() {
   const hint = msgCount >= 8 ? '（如果業務已經做對幾件事，你可以開始軟化；如果都踩陷阱，繼續防禦）' : '';
 
   const reply = await callExamAPI(systemPrompt, examState.messages, hint);
+  if (!reply) return; // 錯誤已在 callExamAPI 內顯示
   addExamMessage('ai', reply, p.name);
   examState.messages.push({ role: 'assistant', content: reply });
 }
@@ -1539,6 +1621,7 @@ ${p.trap}
 - 保持角色，不要跳出來解釋`;
 }
 
+// ── 考試院 API 呼叫（帶友善 fallback）──
 async function callExamAPI(systemPrompt, messages, extraInstruction) {
   try {
     const msgs = [...messages];
@@ -1548,10 +1631,12 @@ async function callExamAPI(systemPrompt, messages, extraInstruction) {
     if (msgs.length === 0) {
       msgs.push({ role: 'user', content: '開始' });
     }
-
     return await callAnthropicAPI(systemPrompt, msgs, 500);
   } catch(e) {
-    return '（連線失敗：' + e.message + '）';
+    // 在考試聊天視窗內顯示友善錯誤，不中斷整個系統
+    const errMsg = e.message || '未知錯誤';
+    addExamMessage('system', '⚠️ AI 暫時無法回應：' + errMsg + '　請稍後點「送出」重試，或重新整理頁面。', '系統');
+    return null; // 讓呼叫端處理 null
   }
 }
 
@@ -2958,6 +3043,9 @@ const LIB_ACCOUNTS = {
   yfy:  { name:'游馥宇', pw:'3320', role:'sales' },
 };
 
+// ══════════════════════════════════════════════
+// ■ 模組 B2：登入 & 用戶系統
+// ══════════════════════════════════════════════
 let libCurrentUser = null;
 let libUserData = null;
 
@@ -3299,7 +3387,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<footer style="text-align:center;padding:20px;font-size:11px;color:#9E9285;letter-spacing:.08em;border-top:1px solid #E0D8CC;margin-top:20px;">Richtime © 2026 &nbsp;◆&nbsp; 內部版僅供團隊使用 &nbsp;◆&nbsp; AI DECISION ENGINE · V 1.5</footer>
+<footer style="text-align:center;padding:20px;font-size:11px;color:#9E9285;letter-spacing:.08em;border-top:1px solid #E0D8CC;margin-top:20px;">Richtime © 2026 &nbsp;◆&nbsp; 內部版僅供團隊使用 &nbsp;◆&nbsp; <span id="adminTrigger" onclick="openAdminPanel()" style="cursor:pointer;user-select:none;opacity:0.4;transition:opacity .2s" onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='0.4'" title="管理員入口">AI DECISION ENGINE · V 2.0</span></footer>
 
 <!-- ══════════════════════════════════════════
      SOS 異議話術救援 — 浮動按鈕 + Modal
@@ -3652,6 +3740,320 @@ async function syncLibToKV() {
     }, 5000);
   }
 }
+</script>
+
+<!-- ══════════════════════════════════════════════════
+     ■ 模組 C：題庫管理後台
+     入口：點擊 footer 版本號
+     功能：新增 / 編輯 / 刪除 話術考試院題目
+     儲存：localStorage（key: rt_quiz_custom）
+     ══════════════════════════════════════════════════ -->
+
+<div id="adminBg" style="display:none;position:fixed;inset:0;z-index:9500;background:rgba(0,0,0,0.75);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:16px" onclick="if(event.target===this)closeAdminPanel()">
+  <div style="background:var(--bg);border:1px solid var(--border);border-radius:18px;width:100%;max-width:720px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 16px 60px rgba(0,0,0,0.3)">
+
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 22px 14px;border-bottom:1px solid var(--border);background:var(--olive);flex-shrink:0">
+      <div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:.15em;color:rgba(255,255,255,0.6);margin-bottom:3px">🛠 管理員後台</div>
+        <div style="font-family:'Noto Serif TC',serif;font-size:17px;font-weight:700;color:#fff">話術考試院 · 題庫管理</div>
+      </div>
+      <button onclick="closeAdminPanel()" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);color:#fff;border-radius:8px;padding:6px 14px;font-size:12px;cursor:pointer;font-family:inherit">✕ 關閉</button>
+    </div>
+
+    <!-- Tabs -->
+    <div style="display:flex;border-bottom:1px solid var(--border);background:var(--surface2);flex-shrink:0">
+      <button class="admin-tab active" id="atab-list" onclick="adminShowTab('list')" style="flex:1;padding:10px;font-size:13px;font-weight:700;font-family:inherit;background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;color:var(--text-sub);transition:all .15s">📋 現有題目</button>
+      <button class="admin-tab" id="atab-add" onclick="adminShowTab('add')" style="flex:1;padding:10px;font-size:13px;font-weight:700;font-family:inherit;background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;color:var(--text-sub);transition:all .15s">➕ 新增題目</button>
+    </div>
+
+    <!-- Tab: 現有題目 -->
+    <div id="admin-tab-list" style="overflow-y:auto;flex:1;padding:16px">
+      <div style="font-size:12px;color:var(--text-dim);margin-bottom:12px">共 <span id="admin-total-cnt">0</span> 題（內建 + 自訂）· 自訂題目儲存在此裝置，可匯出備份</div>
+      <div id="admin-q-list"></div>
+      <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
+        <button onclick="adminExportJSON()" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:12px;color:var(--text-sub);cursor:pointer;font-family:inherit">📤 匯出自訂題目 JSON</button>
+        <button onclick="adminImportJSON()" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:12px;color:var(--text-sub);cursor:pointer;font-family:inherit">📥 匯入 JSON</button>
+        <input type="file" id="adminImportFile" accept=".json" style="display:none" onchange="adminDoImport(this)">
+      </div>
+    </div>
+
+    <!-- Tab: 新增/編輯題目 -->
+    <div id="admin-tab-add" style="display:none;overflow-y:auto;flex:1;padding:20px">
+      <input type="hidden" id="admin-edit-id" value="">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--text-dim);margin-bottom:16px" id="admin-form-mode-label">新增題目</div>
+
+      <div style="margin-bottom:14px">
+        <div style="font-size:11px;font-weight:700;color:var(--text-sub);margin-bottom:5px">情境說明 <span style="color:#c0392b">*</span></div>
+        <textarea id="af-situation" rows="3" placeholder="描述客戶的情境（例：你剛花了45分鐘介紹完案子，對方說...）" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:13px;color:var(--text);font-family:inherit;resize:vertical;outline:none;line-height:1.7"></textarea>
+      </div>
+
+      <div style="margin-bottom:14px">
+        <div style="font-size:11px;font-weight:700;color:var(--text-sub);margin-bottom:5px">題目問句 <span style="color:#c0392b">*</span></div>
+        <input type="text" id="af-question" placeholder="問客戶的問題（例：客戶說「我再想想」，他最可能的狀態是？）" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:13px;color:var(--text);font-family:inherit;outline:none">
+      </div>
+
+      <div style="font-size:11px;font-weight:700;color:var(--text-sub);margin-bottom:10px">選項（至少2個，其中一個標為正確答案）<span style="color:#c0392b">*</span></div>
+
+      <div id="admin-options-wrap" style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px"></div>
+
+      <button onclick="adminAddOption()" style="background:var(--surface2);border:1px dashed var(--border);border-radius:8px;padding:8px 16px;font-size:12px;color:var(--text-dim);cursor:pointer;font-family:inherit;width:100%;margin-bottom:16px">＋ 加入選項</button>
+
+      <div style="display:flex;gap:10px">
+        <button onclick="adminSaveQuestion()" style="flex:1;background:var(--olive);color:#fff;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">💾 儲存題目</button>
+        <button onclick="adminCancelEdit()" style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 18px;font-size:13px;color:var(--text-sub);cursor:pointer;font-family:inherit">取消</button>
+      </div>
+      <div id="admin-form-err" style="margin-top:10px;font-size:12px;color:#c0392b;min-height:16px"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+// ■ 模組 C：題庫管理後台 JS
+// ══════════════════════════════════════════════
+const ADMIN_STORAGE_KEY = 'rt_quiz_custom';
+const ADMIN_PW = 'richtime2026'; // 管理員密碼（可改）
+
+let _adminAuthenticated = false;
+let _adminEditingIdx = null; // null = 新增, number = 編輯 index in custom array
+
+function openAdminPanel() {
+  if (!_adminAuthenticated) {
+    const pw = prompt('管理員驗證：');
+    if (pw !== ADMIN_PW) { if (pw !== null) alert('密碼錯誤'); return; }
+    _adminAuthenticated = true;
+  }
+  document.getElementById('adminBg').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  adminShowTab('list');
+}
+
+function closeAdminPanel() {
+  document.getElementById('adminBg').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+// ─ Tab 切換 ─
+function adminShowTab(tab) {
+  document.getElementById('admin-tab-list').style.display = tab === 'list' ? 'block' : 'none';
+  document.getElementById('admin-tab-add').style.display = tab === 'add' ? 'block' : 'none';
+  document.querySelectorAll('.admin-tab').forEach(el => {
+    el.style.borderBottomColor = 'transparent';
+    el.style.color = 'var(--text-sub)';
+  });
+  const activeTab = document.getElementById('atab-' + tab);
+  if (activeTab) { activeTab.style.borderBottomColor = 'var(--olive)'; activeTab.style.color = 'var(--olive)'; }
+  if (tab === 'list') adminRenderList();
+  if (tab === 'add') adminInitForm();
+}
+
+// ─ 讀取/儲存自訂題庫 ─
+function loadCustomQuestions() {
+  try { return JSON.parse(localStorage.getItem(ADMIN_STORAGE_KEY) || '[]'); } catch { return []; }
+}
+function saveCustomQuestions(arr) {
+  localStorage.setItem(ADMIN_STORAGE_KEY, JSON.stringify(arr));
+  // 同步到 QUIZ_QUESTIONS（讓答題模式也能用）
+  syncQuizQuestions();
+}
+function syncQuizQuestions() {
+  const custom = loadCustomQuestions();
+  // 重建：內建題目 + 自訂題目
+  while (QUIZ_QUESTIONS.length > _QUIZ_BUILTIN_COUNT) QUIZ_QUESTIONS.pop();
+  custom.forEach(q => QUIZ_QUESTIONS.push(q));
+}
+
+// 記住內建題目數量（在 JS 載入時固定）
+const _QUIZ_BUILTIN_COUNT = QUIZ_QUESTIONS.length;
+// 載入時同步自訂題目
+syncQuizQuestions();
+
+// ─ 渲染題目列表 ─
+function adminRenderList() {
+  const custom = loadCustomQuestions();
+  const all = [
+    ...QUIZ_QUESTIONS.slice(0, _QUIZ_BUILTIN_COUNT).map((q, i) => ({ q, source: 'builtin', idx: i })),
+    ...custom.map((q, i) => ({ q, source: 'custom', idx: i }))
+  ];
+  document.getElementById('admin-total-cnt').textContent = all.length;
+  const el = document.getElementById('admin-q-list');
+  if (!all.length) { el.innerHTML = '<div style="text-align:center;padding:32px;color:var(--text-dim)">尚無題目</div>'; return; }
+
+  el.innerHTML = all.map(({ q, source, idx }) => `
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:8px;display:flex;gap:12px;align-items:flex-start">
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;background:${source === 'builtin' ? 'rgba(61,90,64,0.12)' : 'rgba(184,148,60,0.15)'};color:${source === 'builtin' ? 'var(--olive)' : 'var(--gold)'};">${source === 'builtin' ? '內建' : '自訂'}</span>
+          <span style="font-size:11px;color:var(--text-dim)">${q.options ? q.options.length : 0} 個選項</span>
+        </div>
+        <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(q.question || '（無題目）')}</div>
+        <div style="font-size:11px;color:var(--text-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc((q.situation || '').substring(0, 60))}${(q.situation||'').length > 60 ? '...' : ''}</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0">
+        ${source === 'custom' ? `
+          <button onclick="adminEditQuestion(${idx})" style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-family:inherit;color:var(--text-sub)">✏️ 編輯</button>
+          <button onclick="adminDeleteQuestion(${idx})" style="background:rgba(192,57,43,0.08);border:1px solid rgba(192,57,43,0.2);border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-family:inherit;color:#c0392b">🗑 刪除</button>
+        ` : '<span style="font-size:11px;color:var(--text-dim);padding:5px 4px">（唯讀）</span>'}
+      </div>
+    </div>
+  `).join('');
+}
+
+// ─ 新增/編輯 form ─
+let _adminOptionCount = 0;
+
+function adminInitForm(editQ) {
+  _adminEditingIdx = null;
+  _adminOptionCount = 0;
+  document.getElementById('admin-edit-id').value = '';
+  document.getElementById('af-situation').value = editQ ? editQ.situation || '' : '';
+  document.getElementById('af-question').value = editQ ? editQ.question || '' : '';
+  document.getElementById('admin-form-mode-label').textContent = editQ ? '✏️ 編輯題目' : '新增題目';
+  document.getElementById('admin-form-err').textContent = '';
+  document.getElementById('admin-options-wrap').innerHTML = '';
+
+  if (editQ && editQ.options) {
+    editQ.options.forEach(opt => adminAddOption(opt.text, opt.correct, opt.feedback));
+  } else {
+    adminAddOption('', false, '');
+    adminAddOption('', false, '');
+    adminAddOption('', false, '');
+  }
+}
+
+function adminAddOption(text = '', isCorrect = false, feedback = '') {
+  _adminOptionCount++;
+  const i = _adminOptionCount;
+  const wrap = document.getElementById('admin-options-wrap');
+  const div = document.createElement('div');
+  div.id = 'admin-opt-' + i;
+  div.style.cssText = 'background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px';
+  div.innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <span style="font-size:12px;font-weight:700;color:var(--olive);min-width:20px">選項 ${i}</span>
+      <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-sub);cursor:pointer;margin-left:auto">
+        <input type="radio" name="admin-correct-opt" value="${i}" ${isCorrect ? 'checked' : ''} style="accent-color:var(--olive)"> 正確答案
+      </label>
+      <button onclick="document.getElementById('admin-opt-${i}').remove()" style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:14px;padding:2px 4px">✕</button>
+    </div>
+    <input type="text" id="aopt-text-${i}" value="${text.replace(/"/g,'&quot;')}" placeholder="選項文字" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:13px;color:var(--text);font-family:inherit;outline:none;margin-bottom:8px">
+    <textarea id="aopt-fb-${i}" rows="2" placeholder="選這個選項時的解說（答對/答錯都要有）" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:12px;color:var(--text);font-family:inherit;outline:none;resize:vertical;line-height:1.6">${feedback.replace(/</g,'&lt;')}</textarea>
+  `;
+  wrap.appendChild(div);
+}
+
+function adminSaveQuestion() {
+  const err = document.getElementById('admin-form-err');
+  err.textContent = '';
+  const situation = document.getElementById('af-situation').value.trim();
+  const question = document.getElementById('af-question').value.trim();
+  if (!situation) { err.textContent = '請填寫情境說明'; return; }
+  if (!question) { err.textContent = '請填寫題目問句'; return; }
+
+  const wrap = document.getElementById('admin-options-wrap');
+  const optDivs = wrap.querySelectorAll('[id^="admin-opt-"]');
+  const correctRadio = document.querySelector('input[name="admin-correct-opt"]:checked');
+
+  if (optDivs.length < 2) { err.textContent = '請至少填寫 2 個選項'; return; }
+  if (!correctRadio) { err.textContent = '請勾選正確答案'; return; }
+
+  const options = [];
+  let hasEmpty = false;
+  optDivs.forEach(div => {
+    const idNum = div.id.replace('admin-opt-', '');
+    const text = (document.getElementById('aopt-text-' + idNum) || {}).value?.trim() || '';
+    const fb = (document.getElementById('aopt-fb-' + idNum) || {}).value?.trim() || '';
+    const isCorrect = correctRadio.value === idNum;
+    if (!text) hasEmpty = true;
+    options.push({ text, correct: isCorrect, feedback: fb });
+  });
+  if (hasEmpty) { err.textContent = '選項文字不可為空'; return; }
+  if (!options.some(o => o.correct)) { err.textContent = '請確認正確答案已勾選'; return; }
+
+  const newQ = {
+    id: 'custom_' + Date.now(),
+    situation,
+    question,
+    options
+  };
+
+  const custom = loadCustomQuestions();
+  if (_adminEditingIdx !== null) {
+    custom[_adminEditingIdx] = newQ;
+  } else {
+    custom.push(newQ);
+  }
+  saveCustomQuestions(custom);
+  toast('✅ 題目已儲存！現在有 ' + QUIZ_QUESTIONS.length + ' 題');
+  adminShowTab('list');
+}
+
+function adminEditQuestion(idx) {
+  const custom = loadCustomQuestions();
+  const q = custom[idx];
+  if (!q) return;
+  _adminEditingIdx = idx;
+  adminShowTab('add');
+  adminInitForm(q);
+  document.getElementById('admin-form-mode-label').textContent = '✏️ 編輯題目（自訂 #' + (idx + 1) + '）';
+}
+
+function adminDeleteQuestion(idx) {
+  const custom = loadCustomQuestions();
+  if (!confirm('確定刪除：「' + (custom[idx]?.question || '此題目') + '」？')) return;
+  custom.splice(idx, 1);
+  saveCustomQuestions(custom);
+  adminRenderList();
+  toast('🗑 已刪除題目');
+}
+
+function adminCancelEdit() {
+  _adminEditingIdx = null;
+  adminShowTab('list');
+}
+
+// ─ 匯出/匯入 JSON ─
+function adminExportJSON() {
+  const custom = loadCustomQuestions();
+  if (!custom.length) { alert('尚無自訂題目可匯出'); return; }
+  const blob = new Blob([JSON.stringify(custom, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'richtime_quiz_custom_' + new Date().toISOString().split('T')[0] + '.json';
+  a.click();
+}
+
+function adminImportJSON() {
+  document.getElementById('adminImportFile').click();
+}
+
+function adminDoImport(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const arr = JSON.parse(e.target.result);
+      if (!Array.isArray(arr)) throw new Error('格式錯誤：需為 JSON 陣列');
+      const custom = loadCustomQuestions();
+      arr.forEach(q => {
+        q.id = 'custom_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+        custom.push(q);
+      });
+      saveCustomQuestions(custom);
+      adminRenderList();
+      toast('✅ 成功匯入 ' + arr.length + ' 題');
+    } catch (err) {
+      alert('匯入失敗：' + err.message);
+    }
+    input.value = '';
+  };
+  reader.readAsText(file);
+}
+// ══════════════════════════════════════════════
+// ■ 模組 C 結束
+// ══════════════════════════════════════════════
 </script>
 </body>
 </html>
