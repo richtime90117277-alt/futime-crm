@@ -112,6 +112,16 @@ body{
 .sva{font-size:12px;color:#c9922b;font-weight:bold;white-space:nowrap;display:flex;align-items:center;gap:3px}
 .mini{width:68px;border:1px solid rgba(160,120,60,.2);border-radius:5px;padding:4px 7px;font-size:12px;background:#faf8f4;color:#2c1f0e;text-align:right;font-family:sans-serif}
 
+/* ── 快選按鈕 ── */
+.qs-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.qs-btn{padding:7px 13px;border-radius:20px;border:1px solid rgba(160,120,60,.2);background:#faf8f4;color:rgba(44,31,14,.65);font-size:12px;cursor:pointer;font-family:sans-serif;transition:all .18s;white-space:nowrap;line-height:1.3}
+.qs-btn:hover{border-color:rgba(201,146,43,.4);background:rgba(201,146,43,.06)}
+.qs-btn.on{background:linear-gradient(135deg,rgba(201,146,43,.15),rgba(201,146,43,.08));border-color:rgba(201,146,43,.6);color:#9a6820;font-weight:bold}
+.qs-label{font-size:10px;color:rgba(120,80,20,.75);margin-bottom:5px;font-weight:bold;letter-spacing:1.5px;font-family:'DM Mono',Menlo,Consolas,monospace;display:block}
+.qs-custom-row{display:flex;align-items:center;gap:8px;margin-top:8px}
+.qs-custom-row input{flex:1;background:#faf8f4;border:1px solid rgba(160,120,60,.2);border-radius:8px;padding:7px 10px;color:#2c1f0e;font-size:13px;font-family:sans-serif}
+.qs-custom-row span{font-size:11px;color:rgba(44,31,14,.55);white-space:nowrap}
+
 /* ── 底部按鈕列 ── */
 .gbar{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(to top,#f4f0e8 55%,transparent);padding:18px 16px 16px;display:flex;gap:10px;justify-content:center;z-index:98}
 .bgen{flex:1;max-width:360px;background:linear-gradient(135deg,#c9922b,#e8b84b);border:none;border-radius:12px;padding:14px;color:#fff;font-size:14px;font-weight:bold;cursor:pointer;font-family:sans-serif;box-shadow:0 4px 20px rgba(201,146,43,.35);transition:all .2s}
@@ -897,6 +907,223 @@ body{
 
 <!-- INPUT -->
 <div id="vI" class="main">
+
+<!-- ══ 快速模式 ══ -->
+<div class="card" id="quickModeCard" style="border:2px solid rgba(201,146,43,.35);background:linear-gradient(135deg,#fffdf6,#faf6ea)">
+  <div class="ch" style="background:linear-gradient(90deg,rgba(201,146,43,.12),rgba(201,146,43,.04));border-bottom-color:rgba(201,146,43,.2)">
+    <span class="cn" style="border-color:#c9922b;color:#9a6820">⚡</span>
+    <span class="ct" style="color:#7a5010">快速填表模式（2 分鐘完成）</span>
+    <button onclick="toggleQuickMode()" id="qmToggle" style="margin-left:auto;font-size:11px;background:rgba(201,146,43,.15);border:1px solid rgba(201,146,43,.4);color:#9a6820;border-radius:8px;padding:4px 12px;cursor:pointer">收起 ▲</button>
+  </div>
+  <div id="quickModeBody" class="cb" style="gap:16px">
+
+    <!-- Step 1: 客戶名 + 顧問 -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div>
+        <span class="qs-label">👤 客戶姓名</span>
+        <input type="text" id="qmName" placeholder="王小明" oninput="syncQM('iName',this.value)" style="width:100%;background:#faf8f4;border:1px solid rgba(160,120,60,.2);border-radius:8px;padding:8px 10px;color:#2c1f0e;font-size:14px;font-family:sans-serif">
+      </div>
+      <div>
+        <span class="qs-label">👔 諮詢顧問</span>
+        <input type="text" id="qmAdv" placeholder="玉如副總" oninput="syncQM('iAdv',this.value)" style="width:100%;background:#faf8f4;border:1px solid rgba(160,120,60,.2);border-radius:8px;padding:8px 10px;color:#2c1f0e;font-size:14px;font-family:sans-serif">
+      </div>
+    </div>
+
+    <!-- Step 2: 購房動機 -->
+    <div>
+      <span class="qs-label">🏠 購房動機（可複選）</span>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px">
+        <button class="qs-btn" style="padding:10px 4px;display:flex;flex-direction:column;align-items:center;gap:3px" onclick="qmFn(0,this)"><span>🏠</span><span style="font-size:10px">自住自用</span></button>
+        <button class="qs-btn" style="padding:10px 4px;display:flex;flex-direction:column;align-items:center;gap:3px" onclick="qmFn(1,this)"><span>🏦</span><span style="font-size:10px">強迫儲蓄</span></button>
+        <button class="qs-btn" style="padding:10px 4px;display:flex;flex-direction:column;align-items:center;gap:3px" onclick="qmFn(2,this)"><span>📈</span><span style="font-size:10px">投資理財</span></button>
+        <button class="qs-btn" style="padding:10px 4px;display:flex;flex-direction:column;align-items:center;gap:3px" onclick="qmFn(3,this)"><span>🌅</span><span style="font-size:10px">退休規劃</span></button>
+        <button class="qs-btn" style="padding:10px 4px;display:flex;flex-direction:column;align-items:center;gap:3px" onclick="qmFn(4,this)"><span>🧓</span><span style="font-size:10px">以房養老</span></button>
+        <button class="qs-btn" style="padding:10px 4px;display:flex;flex-direction:column;align-items:center;gap:3px" onclick="qmFn(5,this)"><span>💱</span><span style="font-size:10px">資金調度</span></button>
+      </div>
+    </div>
+
+    <!-- Step 3: 本人年收入 -->
+    <div>
+      <span class="qs-label">💰 本人年收入（含年終）</span>
+      <div class="qs-row" id="qmSalRow">
+        <button class="qs-btn" onclick="qmSal(400000,this)">40萬</button>
+        <button class="qs-btn" onclick="qmSal(500000,this)">50萬</button>
+        <button class="qs-btn" onclick="qmSal(600000,this)">60萬</button>
+        <button class="qs-btn" onclick="qmSal(700000,this)">70萬</button>
+        <button class="qs-btn" onclick="qmSal(800000,this)">80萬</button>
+        <button class="qs-btn" onclick="qmSal(1000000,this)">100萬</button>
+        <button class="qs-btn" onclick="qmSal(1200000,this)">120萬</button>
+        <button class="qs-btn" onclick="qmSal(1500000,this)">150萬+</button>
+      </div>
+      <div class="qs-custom-row" style="margin-top:6px">
+        <span>或自填：</span>
+        <input type="number" placeholder="年收入（元）" oninput="qmSalCustom(this.value)" style="flex:1;background:#faf8f4;border:1px solid rgba(160,120,60,.2);border-radius:8px;padding:7px 10px;color:#2c1f0e;font-size:13px;font-family:sans-serif">
+        <span>元</span>
+      </div>
+    </div>
+
+    <!-- Step 4: 配偶收入 -->
+    <div>
+      <span class="qs-label">👫 配偶年收入</span>
+      <div class="qs-row" id="qmSpoRow">
+        <button class="qs-btn on" onclick="qmSpo(0,this)">無</button>
+        <button class="qs-btn" onclick="qmSpo(300000,this)">30萬</button>
+        <button class="qs-btn" onclick="qmSpo(400000,this)">40萬</button>
+        <button class="qs-btn" onclick="qmSpo(500000,this)">50萬</button>
+        <button class="qs-btn" onclick="qmSpo(600000,this)">60萬</button>
+        <button class="qs-btn" onclick="qmSpo(800000,this)">80萬</button>
+        <button class="qs-btn" onclick="qmSpo(1000000,this)">100萬+</button>
+      </div>
+    </div>
+
+    <!-- Step 5: 現有房租 -->
+    <div>
+      <span class="qs-label">🏠 現有房租</span>
+      <div class="qs-row" id="qmRntRow">
+        <button class="qs-btn" onclick="qmRnt(0,this)">沒有</button>
+        <button class="qs-btn" onclick="qmRnt(5000,this)">$5,000</button>
+        <button class="qs-btn" onclick="qmRnt(8000,this)">$8,000</button>
+        <button class="qs-btn" onclick="qmRnt(10000,this)">$10,000</button>
+        <button class="qs-btn" onclick="qmRnt(12000,this)">$12,000</button>
+        <button class="qs-btn" onclick="qmRnt(15000,this)">$15,000</button>
+        <button class="qs-btn" onclick="qmRnt(20000,this)">$20,000</button>
+        <button class="qs-btn" onclick="qmRnt(25000,this)">$25,000+</button>
+      </div>
+    </div>
+
+    <!-- Step 6: 生活水平 (一鍵帶入支出組合) -->
+    <div>
+      <span class="qs-label">🧾 生活水平（自動帶入各項支出）</span>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:6px">
+        <button class="qs-btn" id="qmLvl1" onclick="qmLifestyle('lean',this)" style="padding:12px 6px;display:flex;flex-direction:column;align-items:center;gap:3px">
+          <span style="font-size:18px">🌱</span>
+          <span style="font-size:11px;font-weight:bold">精簡</span>
+          <span style="font-size:9px;color:inherit;opacity:.7">三餐200、交通2k、娛樂1k</span>
+        </button>
+        <button class="qs-btn on" id="qmLvl2" onclick="qmLifestyle('normal',this)" style="padding:12px 6px;display:flex;flex-direction:column;align-items:center;gap:3px">
+          <span style="font-size:18px">☕</span>
+          <span style="font-size:11px;font-weight:bold">一般</span>
+          <span style="font-size:9px;color:inherit;opacity:.7">三餐300、交通3k、娛樂3k</span>
+        </button>
+        <button class="qs-btn" id="qmLvl3" onclick="qmLifestyle('comfort',this)" style="padding:12px 6px;display:flex;flex-direction:column;align-items:center;gap:3px">
+          <span style="font-size:18px">✨</span>
+          <span style="font-size:11px;font-weight:bold">舒適</span>
+          <span style="font-size:9px;color:inherit;opacity:.7">三餐400、交通5k、娛樂8k</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 7: 有無孩子 & 孝親 -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div>
+        <span class="qs-label">👶 育兒費</span>
+        <div class="qs-row" id="qmKidRow" style="gap:5px">
+          <button class="qs-btn on" style="font-size:11px;padding:6px 10px" onclick="qmKid(0,this)">無</button>
+          <button class="qs-btn" style="font-size:11px;padding:6px 10px" onclick="qmKid(5000,this)">5千</button>
+          <button class="qs-btn" style="font-size:11px;padding:6px 10px" onclick="qmKid(10000,this)">1萬</button>
+          <button class="qs-btn" style="font-size:11px;padding:6px 10px" onclick="qmKid(20000,this)">2萬+</button>
+        </div>
+      </div>
+      <div>
+        <span class="qs-label">🧓 孝親費</span>
+        <div class="qs-row" id="qmParRow" style="gap:5px">
+          <button class="qs-btn on" style="font-size:11px;padding:6px 10px" onclick="qmPar(0,this)">無</button>
+          <button class="qs-btn" style="font-size:11px;padding:6px 10px" onclick="qmPar(3000,this)">3千</button>
+          <button class="qs-btn" style="font-size:11px;padding:6px 10px" onclick="qmPar(5000,this)">5千</button>
+          <button class="qs-btn" style="font-size:11px;padding:6px 10px" onclick="qmPar(10000,this)">1萬+</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 8: 保險費 -->
+    <div>
+      <span class="qs-label">🛡️ 保險費</span>
+      <div class="qs-row" id="qmInsRow">
+        <button class="qs-btn on" onclick="qmIns(0,this)">幾乎無</button>
+        <button class="qs-btn" onclick="qmIns(2000,this)">$2,000</button>
+        <button class="qs-btn" onclick="qmIns(3000,this)">$3,000</button>
+        <button class="qs-btn" onclick="qmIns(5000,this)">$5,000</button>
+        <button class="qs-btn" onclick="qmIns(8000,this)">$8,000</button>
+        <button class="qs-btn" onclick="qmIns(10000,this)">$10,000+</button>
+      </div>
+    </div>
+
+    <!-- Step 9: 存款 + 自備款預覽 -->
+    <div style="background:rgba(201,146,43,.05);border:1px solid rgba(201,146,43,.15);border-radius:10px;padding:12px">
+      <span class="qs-label" style="margin-bottom:8px">💎 現有存款（基金＋定存＋存簿合計，萬元）</span>
+      <div class="qs-row" id="qmCashRow" style="margin-bottom:8px">
+        <button class="qs-btn" onclick="qmCash(0,this)">幾乎無</button>
+        <button class="qs-btn" onclick="qmCash(50,this)">50萬</button>
+        <button class="qs-btn" onclick="qmCash(100,this)">100萬</button>
+        <button class="qs-btn" onclick="qmCash(150,this)">150萬</button>
+        <button class="qs-btn" onclick="qmCash(200,this)">200萬</button>
+        <button class="qs-btn" onclick="qmCash(300,this)">300萬</button>
+        <button class="qs-btn" onclick="qmCash(500,this)">500萬+</button>
+      </div>
+      <div class="qs-custom-row">
+        <span>或自填：</span>
+        <input type="number" placeholder="萬" oninput="qmCashCustom(this.value)" style="flex:1;background:#faf8f4;border:1px solid rgba(160,120,60,.2);border-radius:8px;padding:7px 10px;color:#2c1f0e;font-size:13px;font-family:sans-serif">
+        <span>萬元</span>
+      </div>
+    </div>
+
+    <!-- Step 10: 目標物件 -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div>
+        <span class="qs-label">🏗️ 目標總價</span>
+        <div class="qs-row" id="qmPrcRow" style="gap:5px">
+          <button class="qs-btn" style="font-size:11px" onclick="qmPrc(800,this)">800萬</button>
+          <button class="qs-btn" style="font-size:11px" onclick="qmPrc(1000,this)">1,000萬</button>
+          <button class="qs-btn" style="font-size:11px" onclick="qmPrc(1200,this)">1,200萬</button>
+          <button class="qs-btn" style="font-size:11px" onclick="qmPrc(1500,this)">1,500萬</button>
+          <button class="qs-btn" style="font-size:11px" onclick="qmPrc(1800,this)">1,800萬</button>
+          <button class="qs-btn" style="font-size:11px" onclick="qmPrc(2000,this)">2,000萬</button>
+          <button class="qs-btn" style="font-size:11px" onclick="qmPrc(2500,this)">2,500萬+</button>
+        </div>
+      </div>
+      <div>
+        <span class="qs-label">📐 成數</span>
+        <div class="qs-row" id="qmLtvRow" style="gap:5px">
+          <button class="qs-btn" style="font-size:11px" onclick="qmLtv(70,this)">七成</button>
+          <button class="qs-btn on" style="font-size:11px" onclick="qmLtv(75,this)">七五成</button>
+          <button class="qs-btn" style="font-size:11px" onclick="qmLtv(80,this)">八成</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 即時預覽 -->
+    <div id="qmPreview" style="background:rgba(201,146,43,.08);border:1.5px solid rgba(201,146,43,.3);border-radius:12px;padding:14px">
+      <div style="font-size:9px;letter-spacing:2px;color:rgba(160,100,30,.6);font-weight:bold;margin-bottom:10px;font-family:'DM Mono',monospace">⚡ 即時預覽</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center">
+        <div>
+          <div style="font-size:9px;color:rgba(44,31,14,.5);margin-bottom:3px">月收入</div>
+          <div style="font-size:18px;font-weight:900;color:#c9922b;font-family:'DM Mono',monospace" id="qmDispInc">—</div>
+        </div>
+        <div>
+          <div style="font-size:9px;color:rgba(44,31,14,.5);margin-bottom:3px">月支出</div>
+          <div style="font-size:18px;font-weight:900;color:#e07a5a;font-family:'DM Mono',monospace" id="qmDispExp">—</div>
+        </div>
+        <div>
+          <div style="font-size:9px;color:rgba(44,31,14,.5);margin-bottom:3px">月結餘</div>
+          <div style="font-size:20px;font-weight:900;color:#1a7a3a;font-family:'DM Mono',monospace" id="qmDispRem">—</div>
+        </div>
+      </div>
+      <div style="margin-top:10px;border-top:1px solid rgba(201,146,43,.15);padding-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px">
+        <div>🏦 月房貸：<strong id="qmDispMn" style="color:#2c1f0e">—</strong></div>
+        <div>💵 自備款：<strong id="qmDispDw" style="color:#2c1f0e">—</strong></div>
+        <div>💰 備用金：<strong id="qmDispRes" style="color:#2c1f0e">—</strong></div>
+        <div>📊 月付/收：<strong id="qmDispRat" style="color:#2c1f0e">—</strong></div>
+      </div>
+    </div>
+
+    <!-- 快速產生報告按鈕 -->
+    <button onclick="doGen()" style="width:100%;background:linear-gradient(135deg,#c9922b,#e8b84b);border:none;border-radius:12px;padding:16px;color:#fff;font-size:15px;font-weight:bold;cursor:pointer;font-family:sans-serif;box-shadow:0 4px 20px rgba(201,146,43,.35)">
+      📊 立即產生專屬報告
+    </button>
+    <div style="text-align:center;font-size:11px;color:rgba(44,31,14,.4);margin-top:-8px">需要更精確數據？展開下方各卡片細填</div>
+  </div>
+</div>
+
   <div class="card">
     <div class="ch"><span class="cn">01</span><span class="ct">客戶資訊</span></div>
     <div class="cb">
@@ -1158,35 +1385,76 @@ body{
     <div class="ch"><span class="cn">03</span><span class="ct">年收入</span></div>
     <div class="cb">
 
-      <!-- ── 薪資類（有扣憑→銀行全額認列）── -->
-      <div style="font-size:9px;color:#fbbf24;letter-spacing:2px;font-weight:bold;margin-bottom:6px;font-family:'DM Mono',Menlo,Consolas,monospace">📄 薪資類（有扣繳憑單 → 銀行全額認列）</div>
-      <div style="font-size:10px;color:rgba(44,31,14,.8);margin-bottom:8px;padding:6px 8px;background:rgba(160,100,10,.04);border-radius:6px">
-        💡 請填入<strong>年收入</strong>（含年終，系統自動換算月均）
+      <!-- ── 本人年收入快選 ── -->
+      <div>
+        <span class="qs-label">📄 本人年收入（含年終）★ — 銀行全額認列</span>
+        <div class="qs-row" id="qsSalRow">
+          <button class="qs-btn" onclick="qsSal(400000)">40萬</button>
+          <button class="qs-btn" onclick="qsSal(500000)">50萬</button>
+          <button class="qs-btn" onclick="qsSal(600000)">60萬</button>
+          <button class="qs-btn" onclick="qsSal(700000)">70萬</button>
+          <button class="qs-btn" onclick="qsSal(800000)">80萬</button>
+          <button class="qs-btn" onclick="qsSal(1000000)">100萬</button>
+          <button class="qs-btn" onclick="qsSal(1200000)">120萬</button>
+          <button class="qs-btn" onclick="qsSal(1500000)">150萬+</button>
+        </div>
+        <div class="qs-custom-row">
+          <span>或自填：</span>
+          <input type="number" id="iSalYear" placeholder="輸入年收入（元）" oninput="qsSalCustom(this.value)">
+          <span>元</span>
+        </div>
+        <div style="font-size:9px;color:rgba(44,31,14,.6);margin-top:4px" id="iSalYearHint">月均：—</div>
       </div>
-      <div class="g2">
-        <div class="fl">
-          <label>本人年收入（含年終）★</label>
-          <input type="number" id="iSalYear" placeholder="例：800000" oninput="ca()">
-          <div style="font-size:9px;color:rgba(44,31,14,.6);margin-top:2px" id="iSalYearHint">月均：—</div>
+
+      <!-- ── 配偶年收入快選 ── -->
+      <div>
+        <span class="qs-label">配偶年收入（含年終）</span>
+        <div class="qs-row" id="qsSpoRow">
+          <button class="qs-btn" onclick="qsSpo(0)">無 / 不填</button>
+          <button class="qs-btn" onclick="qsSpo(300000)">30萬</button>
+          <button class="qs-btn" onclick="qsSpo(400000)">40萬</button>
+          <button class="qs-btn" onclick="qsSpo(500000)">50萬</button>
+          <button class="qs-btn" onclick="qsSpo(600000)">60萬</button>
+          <button class="qs-btn" onclick="qsSpo(800000)">80萬</button>
+          <button class="qs-btn" onclick="qsSpo(1000000)">100萬+</button>
         </div>
-        <div class="fl">
-          <label>配偶年收入（含年終）</label>
-          <input type="number" id="iSpoYear" placeholder="例：500000" oninput="ca()">
-          <div style="font-size:9px;color:rgba(44,31,14,.6);margin-top:2px" id="iSpoYearHint">月均：—</div>
+        <div class="qs-custom-row">
+          <span>或自填：</span>
+          <input type="number" id="iSpoYear" placeholder="輸入年收入（元）" oninput="qsSpoCustom(this.value)">
+          <span>元</span>
+        </div>
+        <div style="font-size:9px;color:rgba(44,31,14,.6);margin-top:4px" id="iSpoYearHint">月均：—</div>
+      </div>
+
+      <!-- ── 其他收入（簡化） ── -->
+      <div style="background:rgba(224,122,90,.04);border:1px solid rgba(224,122,90,.15);border-radius:8px;padding:12px">
+        <div style="font-size:9px;color:#e07a5a;letter-spacing:1.5px;font-weight:bold;margin-bottom:10px">⚠️ 其他收入（非薪資，銀行約 7 折認列）</div>
+        <div class="g2">
+          <div>
+            <span class="qs-label">兼職年收入</span>
+            <input type="number" id="iPartTimeYear" placeholder="0（元/年）" oninput="ca()" style="width:100%;background:#faf8f4;border:1px solid rgba(160,120,60,.2);border-radius:8px;padding:8px 10px;color:#2c1f0e;font-size:13px;font-family:sans-serif">
+            <div style="font-size:9px;color:rgba(44,31,14,.6);margin-top:2px" id="iPartTimeYearHint">月均：—</div>
+          </div>
+          <div>
+            <span class="qs-label">自營 / 執業年收入</span>
+            <input type="number" id="iSelfEmpYear" placeholder="0（元/年）" oninput="ca()" style="width:100%;background:#faf8f4;border:1px solid rgba(160,120,60,.2);border-radius:8px;padding:8px 10px;color:#2c1f0e;font-size:13px;font-family:sans-serif">
+            <div style="font-size:9px;color:#e07a5a;margin-top:2px" id="iSelfEmpYearHint">月均：— <span style="color:#c87040">（7折認列）</span></div>
+          </div>
+          <div>
+            <span class="qs-label">租金收入（元/月）</span>
+            <input type="number" id="iRen" placeholder="0" oninput="ca()" style="width:100%;background:#faf8f4;border:1px solid rgba(160,120,60,.2);border-radius:8px;padding:8px 10px;color:#2c1f0e;font-size:13px;font-family:sans-serif">
+          </div>
+          <div>
+            <span class="qs-label">投資配息（元/月）</span>
+            <input type="number" id="iInv" placeholder="0" oninput="ca()" style="width:100%;background:#faf8f4;border:1px solid rgba(160,120,60,.2);border-radius:8px;padding:8px 10px;color:#2c1f0e;font-size:13px;font-family:sans-serif">
+          </div>
+        </div>
+        <div class="fl" style="margin-top:8px">
+          <label>其他收入（元/月）</label>
+          <input type="number" id="iOtI" placeholder="0" oninput="ca()">
         </div>
       </div>
-      <div class="g2">
-        <div class="fl">
-          <label>兼職年收入（有薪轉紀錄）</label>
-          <input type="number" id="iPartTimeYear" placeholder="例：120000" oninput="ca()">
-          <div style="font-size:9px;color:rgba(44,31,14,.6);margin-top:2px" id="iPartTimeYearHint">月均：—</div>
-        </div>
-        <div class="fl">
-          <label>執行業務／自營年收入</label>
-          <input type="number" id="iSelfEmpYear" placeholder="例：1300000" oninput="ca()">
-          <div style="font-size:9px;color:#e07a5a;margin-top:2px" id="iSelfEmpYearHint">月均：— <span style="color:#c87040">（銀行約7折認列）</span></div>
-        </div>
-      </div>
+
       <!-- 隱藏欄位供舊版計算相容 -->
       <input type="hidden" id="iSal">
       <input type="hidden" id="iBon">
@@ -1194,40 +1462,15 @@ body{
       <input type="hidden" id="iPartTime">
       <input type="hidden" id="iSelfEmp">
 
-      <!-- ── 非薪資類（銀行認列約 6~7 折）── -->
-      <div style="font-size:9px;color:#e07a5a;letter-spacing:2px;font-weight:bold;margin-top:12px;margin-bottom:4px;font-family:'DM Mono',Menlo,Consolas,monospace">⚠️ 其他非薪資收入（銀行約 7 折認列，依銀行不同）</div>
-      <div style="font-size:10px;color:rgba(44,31,14,.6);margin-bottom:8px;line-height:1.5;padding:6px 8px;background:rgba(224,122,90,.06);border-radius:6px;border-left:2px solid rgba(224,122,90,.3)">
-        租金收入：需有租賃合約，銀行通常認列 7~8 折。<br>
-        投資配息：需有交割明細，銀行通常只參考，不全額認列。
-      </div>
-      <div class="g2">
-        <div class="fl">
-          <label>租金收入（元／月）</label>
-          <input type="number" id="iRen" placeholder="0" oninput="ca()">
-          <div style="font-size:9px;color:rgba(44,31,14,.6);margin-top:2px">銀行認列約 70~80%</div>
-        </div>
-        <div class="fl">
-          <label>投資配息（月均）</label>
-          <input type="number" id="iInv" placeholder="0" oninput="ca()">
-          <div style="font-size:9px;color:rgba(44,31,14,.6);margin-top:2px">銀行參考，非全額認列</div>
-        </div>
-      </div>
-      <div class="g2">
-        <div class="fl">
-          <label>其他收入（月均）</label>
-          <input type="number" id="iOtI" placeholder="0" oninput="ca()">
-        </div>
-      </div>
-
-      <!-- ── 銀行估計核貸收入 vs 實際月收入 ── -->
-      <div style="margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <!-- ── 月收入小計 ── -->
+      <div style="margin-top:4px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
         <div class="st" style="margin:0"><span class="stl">實際月收入</span><span class="stv" id="stI">$0</span></div>
         <div class="st" style="margin:0;background:rgba(224,122,90,.06);border-color:rgba(224,122,90,.2)">
           <span class="stl" style="color:#c87040">銀行估認所得</span>
           <span class="stv" id="stIBank" style="color:#c87040">$0</span>
         </div>
       </div>
-      <div style="font-size:9px;color:rgba(44,31,14,.8);margin-top:4px">★ 銀行估認所得影響核貸金額上限，建議對照實際貸款申請再確認</div>
+      <div style="font-size:9px;color:rgba(44,31,14,.8);margin-top:4px">★ 銀行估認所得影響核貸金額上限</div>
 
     </div>
   </div>
@@ -1236,34 +1479,133 @@ body{
     <div class="ch"><span class="cn">04</span><span class="ct">每月支出明細</span></div>
     <div class="cb">
       <!-- 貸款月付：自動帶入（從資產卡計算） -->
-      <div style="background:rgba(224,122,90,.06);border:1px solid rgba(224,122,90,.2);border-radius:8px;padding:10px 12px;margin-bottom:10px">
+      <div style="background:rgba(224,122,90,.06);border:1px solid rgba(224,122,90,.2);border-radius:8px;padding:10px 12px">
         <div style="font-size:9px;color:#e07a5a;font-weight:bold;letter-spacing:1px;margin-bottom:6px">💳 每月貸款還款（從「資產」卡自動帶入）</div>
         <div class="g2">
           <div class="fl"><label>信貸月付合計</label><input type="number" id="iOLn" placeholder="0（自動帶入）" oninput="ca()" style="background:rgba(224,122,90,.04);cursor:default" readonly></div>
           <div class="fl"><label>車貸月付合計</label><input type="number" id="iCar" placeholder="0（自動帶入）" oninput="ca()" style="background:rgba(224,122,90,.04);cursor:default" readonly></div>
         </div>
-        <div style="font-size:9px;color:rgba(44,31,14,.8);margin-top:4px">如需調整，請到「資產」卡修改各筆信貸 / 車貸的月付金額</div>
       </div>
+
+      <!-- 現有房租快選 -->
+      <div>
+        <span class="qs-label">🏠 現有房租</span>
+        <div class="qs-row" id="qsRntRow">
+          <button class="qs-btn on" onclick="qsPick('iRnt',0,this,'qsRntRow')">沒有</button>
+          <button class="qs-btn" onclick="qsPick('iRnt',5000,this,'qsRntRow')">$5,000</button>
+          <button class="qs-btn" onclick="qsPick('iRnt',8000,this,'qsRntRow')">$8,000</button>
+          <button class="qs-btn" onclick="qsPick('iRnt',10000,this,'qsRntRow')">$10,000</button>
+          <button class="qs-btn" onclick="qsPick('iRnt',12000,this,'qsRntRow')">$12,000</button>
+          <button class="qs-btn" onclick="qsPick('iRnt',15000,this,'qsRntRow')">$15,000</button>
+          <button class="qs-btn" onclick="qsPick('iRnt',20000,this,'qsRntRow')">$20,000</button>
+          <button class="qs-btn" onclick="qsPick('iRnt',25000,this,'qsRntRow')">$25,000+</button>
+        </div>
+        <input type="hidden" id="iRnt" value="0">
+      </div>
+
+      <!-- 保險費快選 -->
+      <div>
+        <span class="qs-label">🛡️ 保險費</span>
+        <div class="qs-row" id="qsInsRow">
+          <button class="qs-btn on" onclick="qsPick('iIns',0,this,'qsInsRow')">幾乎沒有</button>
+          <button class="qs-btn" onclick="qsPick('iIns',1000,this,'qsInsRow')">$1,000</button>
+          <button class="qs-btn" onclick="qsPick('iIns',2000,this,'qsInsRow')">$2,000</button>
+          <button class="qs-btn" onclick="qsPick('iIns',3000,this,'qsInsRow')">$3,000</button>
+          <button class="qs-btn" onclick="qsPick('iIns',5000,this,'qsInsRow')">$5,000</button>
+          <button class="qs-btn" onclick="qsPick('iIns',8000,this,'qsInsRow')">$8,000</button>
+          <button class="qs-btn" onclick="qsPick('iIns',10000,this,'qsInsRow')">$10,000+</button>
+        </div>
+        <input type="hidden" id="iIns" value="0">
+      </div>
+
+      <!-- 三餐快選 -->
+      <div>
+        <span class="qs-label">🍱 三餐（每天）</span>
+        <div class="qs-row" id="qsMelRow">
+          <button class="qs-btn" onclick="qsMel(150,this)">$150</button>
+          <button class="qs-btn" onclick="qsMel(200,this)">$200</button>
+          <button class="qs-btn on" onclick="qsMel(300,this)">$300</button>
+          <button class="qs-btn" onclick="qsMel(350,this)">$350</button>
+          <button class="qs-btn" onclick="qsMel(400,this)">$400</button>
+          <button class="qs-btn" onclick="qsMel(500,this)">$500</button>
+          <button class="qs-btn" onclick="qsMel(600,this)">$600+</button>
+        </div>
+        <div style="font-size:11px;color:rgba(44,31,14,.55);margin-top:5px" id="mMo">= $9,000 /月</div>
+        <input type="hidden" id="iMel" value="300">
+      </div>
+
+      <!-- 交通費快選 -->
+      <div>
+        <span class="qs-label">🚇 交通費</span>
+        <div class="qs-row" id="qsTrnRow">
+          <button class="qs-btn on" onclick="qsPick('iTrn',0,this,'qsTrnRow')">幾乎沒有</button>
+          <button class="qs-btn" onclick="qsPick('iTrn',1000,this,'qsTrnRow')">$1,000</button>
+          <button class="qs-btn" onclick="qsPick('iTrn',2000,this,'qsTrnRow')">$2,000</button>
+          <button class="qs-btn" onclick="qsPick('iTrn',3000,this,'qsTrnRow')">$3,000</button>
+          <button class="qs-btn" onclick="qsPick('iTrn',5000,this,'qsTrnRow')">$5,000</button>
+          <button class="qs-btn" onclick="qsPick('iTrn',8000,this,'qsTrnRow')">$8,000+</button>
+        </div>
+        <input type="hidden" id="iTrn" value="0">
+      </div>
+
+      <!-- 娛樂購物快選 -->
+      <div>
+        <span class="qs-label">🎮 娛樂／購物</span>
+        <div class="qs-row" id="qsEntRow">
+          <button class="qs-btn on" onclick="qsPick('iEnt',0,this,'qsEntRow')">幾乎沒有</button>
+          <button class="qs-btn" onclick="qsPick('iEnt',2000,this,'qsEntRow')">$2,000</button>
+          <button class="qs-btn" onclick="qsPick('iEnt',3000,this,'qsEntRow')">$3,000</button>
+          <button class="qs-btn" onclick="qsPick('iEnt',5000,this,'qsEntRow')">$5,000</button>
+          <button class="qs-btn" onclick="qsPick('iEnt',8000,this,'qsEntRow')">$8,000</button>
+          <button class="qs-btn" onclick="qsPick('iEnt',10000,this,'qsEntRow')">$10,000</button>
+          <button class="qs-btn" onclick="qsPick('iEnt',15000,this,'qsEntRow')">$15,000+</button>
+        </div>
+        <input type="hidden" id="iEnt" value="0">
+      </div>
+
+      <!-- 下方固定支出：孝親、育兒、訂閱、其他 用小型按鈕快選 -->
       <div class="g2">
-        <div class="fl"><label>現有房租</label><input type="number" id="iRnt" placeholder="0" oninput="ca()"></div>
-        <div class="fl"><label>保險費</label><input type="number" id="iIns" placeholder="0" oninput="ca()"></div>
+        <div>
+          <span class="qs-label">👨‍👩‍👧 孝親費</span>
+          <div class="qs-row" id="qsParRow" style="gap:4px">
+            <button class="qs-btn on" style="padding:5px 10px;font-size:11px" onclick="qsPick('iPar',0,this,'qsParRow')">無</button>
+            <button class="qs-btn" style="padding:5px 10px;font-size:11px" onclick="qsPick('iPar',3000,this,'qsParRow')">3千</button>
+            <button class="qs-btn" style="padding:5px 10px;font-size:11px" onclick="qsPick('iPar',5000,this,'qsParRow')">5千</button>
+            <button class="qs-btn" style="padding:5px 10px;font-size:11px" onclick="qsPick('iPar',8000,this,'qsParRow')">8千</button>
+            <button class="qs-btn" style="padding:5px 10px;font-size:11px" onclick="qsPick('iPar',10000,this,'qsParRow')">1萬</button>
+            <button class="qs-btn" style="padding:5px 10px;font-size:11px" onclick="qsPick('iPar',15000,this,'qsParRow')">1.5萬+</button>
+          </div>
+          <input type="hidden" id="iPar" value="0">
+        </div>
+        <div>
+          <span class="qs-label">👶 育兒費</span>
+          <div class="qs-row" id="qsKidRow" style="gap:4px">
+            <button class="qs-btn on" style="padding:5px 10px;font-size:11px" onclick="qsPick('iKid',0,this,'qsKidRow')">無</button>
+            <button class="qs-btn" style="padding:5px 10px;font-size:11px" onclick="qsPick('iKid',3000,this,'qsKidRow')">3千</button>
+            <button class="qs-btn" style="padding:5px 10px;font-size:11px" onclick="qsPick('iKid',5000,this,'qsKidRow')">5千</button>
+            <button class="qs-btn" style="padding:5px 10px;font-size:11px" onclick="qsPick('iKid',8000,this,'qsKidRow')">8千</button>
+            <button class="qs-btn" style="padding:5px 10px;font-size:11px" onclick="qsPick('iKid',10000,this,'qsKidRow')">1萬</button>
+            <button class="qs-btn" style="padding:5px 10px;font-size:11px" onclick="qsPick('iKid',20000,this,'qsKidRow')">2萬+</button>
+          </div>
+          <input type="hidden" id="iKid" value="0">
+        </div>
+        <div>
+          <span class="qs-label">📱 訂閱費</span>
+          <div class="qs-row" id="qsSubRow" style="gap:4px">
+            <button class="qs-btn on" style="padding:5px 10px;font-size:11px" onclick="qsPick('iSub',0,this,'qsSubRow')">無</button>
+            <button class="qs-btn" style="padding:5px 10px;font-size:11px" onclick="qsPick('iSub',500,this,'qsSubRow')">500</button>
+            <button class="qs-btn" style="padding:5px 10px;font-size:11px" onclick="qsPick('iSub',1000,this,'qsSubRow')">1千</button>
+            <button class="qs-btn" style="padding:5px 10px;font-size:11px" onclick="qsPick('iSub',2000,this,'qsSubRow')">2千</button>
+            <button class="qs-btn" style="padding:5px 10px;font-size:11px" onclick="qsPick('iSub',3000,this,'qsSubRow')">3千+</button>
+          </div>
+          <input type="hidden" id="iSub" value="0">
+        </div>
+        <div>
+          <span class="qs-label">💼 其他固定</span>
+          <input type="number" id="iOtE" placeholder="0" oninput="ca()" style="width:100%;background:#faf8f4;border:1px solid rgba(160,120,60,.2);border-radius:8px;padding:8px 10px;color:#2c1f0e;font-size:13px;font-family:sans-serif;margin-top:6px">
+        </div>
       </div>
-      <div class="fl">
-        <label>三餐（每天多少元）★ 細問</label>
-        <div class="mw"><input type="number" id="iMel" placeholder="300" oninput="ca()"><span class="mc" id="mMo">= $0 /月</span></div>
-      </div>
-      <div class="g2">
-        <div class="fl"><label>交通費</label><input type="number" id="iTrn" placeholder="0" oninput="ca()"></div>
-        <div class="fl"><label>娛樂／購物</label><input type="number" id="iEnt" placeholder="0" oninput="ca()"></div>
-      </div>
-      <div class="g2">
-        <div class="fl"><label>孝親費</label><input type="number" id="iPar" placeholder="0" oninput="ca()"></div>
-        <div class="fl"><label>育兒費（托育/補習）</label><input type="number" id="iKid" placeholder="0" oninput="ca()"></div>
-      </div>
-      <div class="g2">
-        <div class="fl"><label>訂閱費（串流/軟體）</label><input type="number" id="iSub" placeholder="0" oninput="ca()"></div>
-        <div class="fl"><label>其他固定</label><input type="number" id="iOtE" placeholder="0" oninput="ca()"></div>
-      </div>
+
       <div class="st"><span class="stl">生活總支出</span><span class="stv" id="stE">$0</span></div>
     </div>
   </div>
@@ -2158,8 +2500,8 @@ body{
   <div style="background:linear-gradient(155deg,#1a0802,#2c0c06);border:none;border-radius:18px;padding:20px;margin-bottom:14px;box-shadow:0 8px 32px rgba(0,0,0,.3);position:relative;overflow:hidden">
     <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,rgba(176,48,16,.6),transparent)"></div>
     <div style="font-size:9px;letter-spacing:4px;color:#f87171;margin-bottom:8px;font-family:'DM Mono',Menlo,Consolas,monospace">COST OF HESITATION</div>
-    <div style="font-size:18px;font-weight:900;color:#3a1008;margin-bottom:8px">你猶豫的成本</div>
-    <div style="font-size:12px;color:#6a2010;line-height:1.9">輸入你打算再等幾年——<br>系統告訴你，那段時間你究竟損失了什麼。</div>
+    <div style="font-size:18px;font-weight:900;color:#fde8e0;margin-bottom:8px">你猶豫的成本</div>
+    <div style="font-size:12px;color:#f0b8a0;line-height:1.9">輸入你打算再等幾年——<br>系統告訴你，那段時間你究竟損失了什麼。</div>
   </div>
 
   <!-- ─ BLOCK A：工程款資金流追蹤（保留，預售用） ─ -->
@@ -2309,7 +2651,7 @@ body{
     <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(139,92,246,.8),rgba(167,139,250,.5),transparent)"></div>
     <div style="position:absolute;bottom:-40px;right:-30px;width:180px;height:180px;background:radial-gradient(circle,rgba(139,92,246,.08) 0%,transparent 70%);pointer-events:none"></div>
     <div style="font-size:9px;letter-spacing:5px;color:rgba(167,139,250,.8);margin-bottom:10px;font-family:'DM Mono',Menlo,Consolas,monospace;font-weight:bold">INHERITANCE RISK — 傳承風險</div>
-    <div style="font-size:22px;font-weight:900;color:#2c1f0e;margin-bottom:10px;line-height:1.3">你的資產，<br>身後會變成什麼狀況？</div>
+    <div style="font-size:22px;font-weight:900;color:#e8d5ff;margin-bottom:10px;line-height:1.3">你的資產，<br>身後會變成什麼狀況？</div>
     <div style="font-size:12px;color:rgba(167,139,250,.75);line-height:1.9">很多人花了一輩子累積資產，<br>卻從未認真想過：<strong style="color:rgba(196,181,253,.9)">不規劃，孩子會為了財產打架。</strong><br>這個工具，讓你先看見風險，再決定要不要行動。</div>
   </div>
 
@@ -2761,6 +3103,202 @@ var SEGS=[
 function setSeg(i){SEG=i;for(var j=0;j<=10;j++){var el=g('sg'+j);if(el)el.className='seg-btn'+(j===i?' on':'');}}
 function ts(i){SK[i]=!SK[i];g('sk'+i).className='sck'+(SK[i]?' on':'');ca()}
 
+// ── 快速模式輔助函數 ──────────────────────────────────────────
+var _qmPrc = 1200, _qmLtv = 75, _qmCash = 0, _qmSal = 0, _qmSpo = 0, _qmRnt = 0, _qmIns = 0, _qmKid = 0, _qmPar = 0;
+
+function toggleQuickMode(){
+  var body = g('quickModeBody'), btn = g('qmToggle');
+  if(body.style.display==='none'){ body.style.display=''; btn.textContent='收起 ▲'; }
+  else { body.style.display='none'; btn.textContent='展開 ▼'; }
+}
+
+function syncQM(targetId, val){
+  var el = g(targetId); if(el) el.value = val;
+}
+
+function qmFn(i, btn){ toggleFn(i); btn.classList.toggle('on'); }
+
+function _qmSelRow(rowId, btn){
+  var row = g(rowId);
+  if(row) Array.from(row.querySelectorAll('.qs-btn')).forEach(function(b){ b.classList.remove('on'); });
+  if(btn) btn.classList.add('on');
+}
+
+function qmSal(val, btn){
+  _qmSal = val;
+  _qmSelRow('qmSalRow', btn);
+  var el = g('iSalYear'); if(el) el.value = val;
+  qmUpdate(); ca();
+}
+function qmSalCustom(val){
+  _qmSal = parseFloat(val)||0;
+  _qmSelRow('qmSalRow', null);
+  var el = g('iSalYear'); if(el) el.value = _qmSal;
+  qmUpdate(); ca();
+}
+function qmSpo(val, btn){
+  _qmSpo = val;
+  _qmSelRow('qmSpoRow', btn);
+  var el = g('iSpoYear'); if(el) el.value = val;
+  qmUpdate(); ca();
+}
+function qmRnt(val, btn){
+  _qmRnt = val;
+  _qmSelRow('qmRntRow', btn);
+  var el = g('iRnt'); if(el) el.value = val;
+  qmUpdate(); ca();
+}
+function qmIns(val, btn){
+  _qmIns = val;
+  _qmSelRow('qmInsRow', btn);
+  var el = g('iIns'); if(el) el.value = val;
+  qmUpdate(); ca();
+}
+function qmKid(val, btn){
+  _qmKid = val;
+  _qmSelRow('qmKidRow', btn);
+  var el = g('iKid'); if(el) el.value = val;
+  qmUpdate(); ca();
+}
+function qmPar(val, btn){
+  _qmPar = val;
+  _qmSelRow('qmParRow', btn);
+  var el = g('iPar'); if(el) el.value = val;
+  qmUpdate(); ca();
+}
+function qmCash(val, btn){
+  _qmCash = val;
+  _qmSelRow('qmCashRow', btn);
+  // 帶入 a_bankbal
+  var el = g('a_bankbal'); if(el){ el.value = val; }
+  var fLiq = g('fLiquid'); if(fLiq) fLiq.value = val;
+  calcAssets(); qmUpdate(); ca();
+}
+function qmCashCustom(val){
+  _qmCash = parseFloat(val)||0;
+  _qmSelRow('qmCashRow', null);
+  var el = g('a_bankbal'); if(el) el.value = _qmCash;
+  var fLiq = g('fLiquid'); if(fLiq) fLiq.value = _qmCash;
+  calcAssets(); qmUpdate(); ca();
+}
+function qmPrc(val, btn){
+  _qmPrc = val;
+  _qmSelRow('qmPrcRow', btn);
+  var el = g('iPrc'); if(el) el.value = val;
+  qmCalcDwn(); qmUpdate(); ca();
+}
+function qmLtv(val, btn){
+  _qmLtv = val;
+  _qmSelRow('qmLtvRow', btn);
+  qmCalcDwn(); qmUpdate(); ca();
+}
+function qmCalcDwn(){
+  var dw = Math.ceil(_qmPrc * (100 - _qmLtv) / 100);
+  var el = g('iDwn'); if(el) el.value = dw;
+}
+function qmLifestyle(type, btn){
+  _qmSelRow(null, null);
+  ['qmLvl1','qmLvl2','qmLvl3'].forEach(function(id){ var el=g(id); if(el) el.classList.remove('on'); });
+  if(btn) btn.classList.add('on');
+  var presets = {
+    lean:    { mel:200, trn:2000, ent:1000, sub:300  },
+    normal:  { mel:300, trn:3000, ent:3000, sub:1000 },
+    comfort: { mel:400, trn:5000, ent:8000, sub:2000 }
+  };
+  var p = presets[type];
+  if(!p) return;
+  var mel=g('iMel'), trn=g('iTrn'), ent=g('iEnt'), sub=g('iSub');
+  if(mel) mel.value = p.mel;
+  if(trn) trn.value = p.trn;
+  if(ent) ent.value = p.ent;
+  if(sub) sub.value = p.sub;
+  // 同步卡片4快選按鈕高亮
+  ['qsMelRow','qsTrnRow','qsEntRow','qsSubRow'].forEach(function(rid){
+    var row=g(rid); if(!row) return;
+    Array.from(row.querySelectorAll('.qs-btn')).forEach(function(b){ b.classList.remove('on'); });
+  });
+  qmUpdate(); ca();
+}
+function qmUpdate(){
+  var sal = (_qmSal||parseFloat((g('iSalYear')||{}).value)||0) / 12;
+  var spo = (_qmSpo||parseFloat((g('iSpoYear')||{}).value)||0) / 12;
+  var inc = Math.round(sal + spo);
+  var mel = (parseFloat((g('iMel')||{value:'300'}).value)||300) * 30;
+  var exp = (_qmRnt||0) + (_qmIns||0) + mel +
+            (parseFloat((g('iTrn')||{value:'0'}).value)||0) +
+            (parseFloat((g('iEnt')||{value:'0'}).value)||0) +
+            (_qmKid||0) + (_qmPar||0) +
+            (parseFloat((g('iSub')||{value:'0'}).value)||0);
+  var prc = _qmPrc * 10000;
+  var dw  = Math.ceil(_qmPrc * (100 - _qmLtv) / 100) * 10000;
+  var ln  = prc - dw;
+  var rt  = 2.5/100/12, nm = 30*12;
+  var mn  = ln > 0 ? Math.round(ln*rt*Math.pow(1+rt,nm)/(Math.pow(1+rt,nm)-1)) : 0;
+  var rem = inc - exp - mn;
+  var cash = _qmCash * 10000;
+  var res  = cash - dw;
+  var dispInc = g('qmDispInc'), dispExp = g('qmDispExp'), dispRem = g('qmDispRem');
+  var dispMn = g('qmDispMn'), dispDw = g('qmDispDw'), dispRes = g('qmDispRes'), dispRat = g('qmDispRat');
+  if(dispInc) dispInc.textContent = inc > 0 ? '$'+Math.round(inc).toLocaleString('zh-TW') : '—';
+  if(dispExp) dispExp.textContent = exp > 0 ? '$'+Math.round(exp).toLocaleString('zh-TW') : '—';
+  if(dispRem){ var r=Math.round(rem); dispRem.textContent=(inc>0||exp>0)?(r>=0?'+':'')+r.toLocaleString('zh-TW'):'—'; dispRem.style.color=rem>=0?'#1a7a3a':'#c03010'; }
+  if(dispMn)  dispMn.textContent  = mn > 0  ? '$'+mn.toLocaleString('zh-TW')+'/月' : '—';
+  if(dispDw)  dispDw.textContent  = dw > 0  ? Math.ceil(_qmPrc*(100-_qmLtv)/100)+'萬' : '—';
+  if(dispRes){ var rv=Math.round(res/10000); dispRes.textContent=_qmCash>0?(rv>=0?'+':'')+rv+'萬':'—'; dispRes.style.color=rv>=20?'#1a7a3a':rv>=0?'#c9922b':'#c03010'; }
+  if(dispRat) dispRat.textContent = inc > 0 && mn > 0 ? Math.round(mn/inc*100)+'%' : '—';
+}
+
+// ── 快選按鈕輔助函數 ──────────────────────────────────────────
+function qsPick(fieldId, val, btn, rowId){
+  // 更新隱藏欄位值
+  var el = g(fieldId);
+  if(el){ el.value = val; }
+  // 更新按鈕高亮
+  var row = g(rowId);
+  if(row){ Array.from(row.querySelectorAll('.qs-btn')).forEach(function(b){ b.classList.remove('on'); }); }
+  if(btn){ btn.classList.add('on'); }
+  ca();
+}
+
+function qsMel(val, btn){
+  g('iMel').value = val;
+  var row = document.getElementById('qsMelRow');
+  if(row){ Array.from(row.querySelectorAll('.qs-btn')).forEach(function(b){ b.classList.remove('on'); }); }
+  if(btn){ btn.classList.add('on'); }
+  ca();
+}
+
+function qsSal(val){
+  g('iSalYear').value = val;
+  var row = g('qsSalRow');
+  if(row){ Array.from(row.querySelectorAll('.qs-btn')).forEach(function(b){ b.classList.remove('on'); if(parseInt(b.getAttribute('data-val'))==val) b.classList.add('on'); }); }
+  // mark selected button
+  if(row){ Array.from(row.querySelectorAll('.qs-btn')).forEach(function(b){
+    var onclick = b.getAttribute('onclick')||'';
+    if(onclick.indexOf(val+')') !== -1) b.classList.add('on'); else b.classList.remove('on');
+  });}
+  ca();
+}
+function qsSalCustom(val){
+  var row = g('qsSalRow');
+  if(row){ Array.from(row.querySelectorAll('.qs-btn')).forEach(function(b){ b.classList.remove('on'); }); }
+  ca();
+}
+function qsSpo(val){
+  g('iSpoYear').value = val;
+  var row = g('qsSpoRow');
+  if(row){ Array.from(row.querySelectorAll('.qs-btn')).forEach(function(b){
+    var onclick = b.getAttribute('onclick')||'';
+    if(onclick.indexOf('('+val+')') !== -1) b.classList.add('on'); else b.classList.remove('on');
+  });}
+  ca();
+}
+function qsSpoCustom(val){
+  var row = g('qsSpoRow');
+  if(row){ Array.from(row.querySelectorAll('.qs-btn')).forEach(function(b){ b.classList.remove('on'); }); }
+  ca();
+}
+
 function ca(){
   // ── 年收入換算月均 ──────────────────────────────────────────
   var salYear      = nv('iSalYear') || 0;
@@ -2847,7 +3385,7 @@ function ca(){
   window._C={inc:inc,exp:exp,mn:mn,ratio:ratio,ts:s0+s1+s2+s3+s4+s5,pr:pr,dw:dw,ln:ln,rent:rentInc,effMn:effMn};
   lsSave(); // 自動記憶
   // 更新整合方案總結卡的「現有月付」顯示
-  syncConsoSummary();
+  if(typeof syncConsoSummary==="function") syncConsoSummary();
   // 預售試算
   if(MORTGAGE_MODE==='presale') calcPresale();
 }
@@ -4803,7 +5341,7 @@ function calcAssets() {
     rBox.style.display = 'none';
   }
   lsSave(); // ★ 不動產變動後自動記憶
-  syncConsoSummary(); // 同步整合總結卡月付顯示
+  if(typeof syncConsoSummary==="function") syncConsoSummary(); // 同步整合總結卡月付顯示
 }
 
 function toggleGuarantor() {
@@ -4892,6 +5430,20 @@ document.addEventListener('DOMContentLoaded',function(){
       if(e.target===s) closeSplash();
     });
   }
+  // 快選預設值初始化
+  var mel = g('iMel'); if(mel && !mel.value) mel.value = '300';
+  var rnt = g('iRnt'); if(rnt && !rnt.value) rnt.value = '0';
+  var ins = g('iIns'); if(ins && !ins.value) ins.value = '0';
+  var trn = g('iTrn'); if(trn && !trn.value) trn.value = '0';
+  var ent = g('iEnt'); if(ent && !ent.value) ent.value = '0';
+  var par = g('iPar'); if(par && !par.value) par.value = '0';
+  var kid = g('iKid'); if(kid && !kid.value) kid.value = '0';
+  var sub = g('iSub'); if(sub && !sub.value) sub.value = '0';
+  // 快速模式預設：一般生活水平
+  qmLifestyle('normal', g('qmLvl2'));
+  // 預設成數 75
+  _qmLtv = 75;
+  setTimeout(function(){ ca(); qmUpdate(); }, 50);
 });
 
 function clr(){
@@ -4910,6 +5462,14 @@ function clr(){
   for(var i=0;i<6;i++){var sk=g('sk'+i);if(sk)sk.className='sck';}
   for(var i=0;i<=10;i++){var sg=g('sg'+i);if(sg)sg.className='seg-btn';}
   for(var i=0;i<6;i++){var fn=g('fn'+i);if(fn)fn.className='seg-btn fn-btn';}
+  // 重置快選按鈕
+  ['qsRntRow','qsInsRow','qsTrnRow','qsEntRow','qsParRow','qsKidRow','qsSubRow','qsMelRow','qsSalRow','qsSpoRow'].forEach(function(rowId){
+    var row = g(rowId);
+    if(row){ Array.from(row.querySelectorAll('.qs-btn')).forEach(function(b){ b.classList.remove('on'); }); var first = row.querySelector('.qs-btn'); if(first) first.classList.add('on'); }
+  });
+  // 重置隱藏欄位預設值
+  var mel = g('iMel'); if(mel) mel.value='300';
+  ['iRnt','iIns','iTrn','iEnt','iPar','iKid','iSub'].forEach(function(id){ var el=g(id); if(el) el.value='0'; });
   ca();
 }
 
@@ -6344,7 +6904,7 @@ function updateConsoCalc() {
     scriptBox.style.display = 'none';
   }
   // 同步整合總結卡
-  syncConsoSummary();
+  if(typeof syncConsoSummary==="function") syncConsoSummary();
 }
 </script>
 </body>
