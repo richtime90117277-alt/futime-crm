@@ -826,6 +826,25 @@ async function generate() {
     if (!pain)   { showError('請填寫主要痛點'); return; }
     if (!target) { showError('請選擇本次要成交的節點'); return; }
 
+    // ── 財務欄位即時提醒（送出前，不擋送出，只提示）──
+    const warnings = [];
+    if (!finance || finance.length < 5) {
+      warnings.push('💰 財務欄位空白——報告準確度會下降，建議補填');
+    } else if (!/[\d,]+萬|[\d,]+元/.test(finance)) {
+      warnings.push('💰 財務欄位沒有數字——填入具體金額（如：存款80萬）效果更好');
+    }
+    if (!supportValue) warnings.push('🤝 家人支持度未選');
+    if (!keyman)       warnings.push('👤 Keyman 欄位空白');
+
+    if (warnings.length > 0) {
+      const go = confirm(
+        '⚠️ 以下欄位空白，報告可能比較不準確：\n\n' +
+        warnings.join('\n') +
+        '\n\n確定要繼續送出嗎？（按取消可以補填）'
+      );
+      if (!go) return;
+    }
+
     // ── v5：直接送原始欄位，讓 Worker 做 preProcess + buildPrompt ──
     const payload = {
       name, age, group, pain, status, keyman,
