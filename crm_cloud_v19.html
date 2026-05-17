@@ -951,6 +951,59 @@ select:focus,input:focus,textarea:focus {
 }
 
 /* ── 預約系統 CSS ── */
+/* ── 流程快篩按鈕 ── */
+.funnel-chip {
+  padding: .375rem .875rem;
+  border-radius: 20px;
+  border: 1.5px solid var(--cream2);
+  background: #fff;
+  color: var(--navy);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.funnel-chip:hover { border-color: var(--navy); }
+.funnel-chip.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+.funnel-chip-hot.active { background: #c0392b; border-color: #c0392b; }
+
+/* ── 漏斗卡片 ── */
+.funnel-row {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: .75rem;
+  text-align: center;
+}
+.funnel-step {
+  padding: 1rem .5rem;
+  border-radius: 10px;
+  background: #f9f5ef;
+  border: 1.5px solid var(--cream2);
+  position: relative;
+}
+.funnel-step-num { font-size: 28px; font-weight: 900; color: var(--navy); line-height: 1; }
+.funnel-step-label { font-size: 11px; color: var(--text-muted); margin-top: .25rem; font-weight: 700; }
+.funnel-step-rate { font-size: 12px; color: #2e7d32; font-weight: 700; margin-top: .35rem; }
+.funnel-step-sem { border-top: 3px solid var(--gold); }
+.funnel-step-consult { border-top: 3px solid #e67e22; }
+.funnel-step-close { border-top: 3px solid #2e7d32; }
+
+/* ── 待約諮詢名單列 ── */
+.pending-item {
+  display: flex;
+  align-items: center;
+  padding: .625rem 0;
+  border-bottom: 1px solid var(--cream2);
+  gap: .75rem;
+  font-size: 13px;
+}
+.pending-item:last-child { border-bottom: none; }
+.pending-name { font-weight: 700; color: var(--navy); flex: 1; }
+.pending-days { font-size: 11px; color: #c0392b; font-weight: 700; white-space: nowrap; }
+.pending-sp { font-size: 11px; color: var(--text-muted); }
+
 /* 儀表板摘要卡片 */
 .booking-summary-card{background:#fff;border:1px solid var(--cream2);border-radius:var(--radius);overflow:hidden;margin-bottom:1rem;box-shadow:var(--shadow)}
 .bsc-header{display:flex;justify-content:space-between;align-items:center;padding:.875rem 1.25rem;background:linear-gradient(135deg,var(--navy),var(--navy-light))}
@@ -1095,11 +1148,11 @@ function claimSeminarLead() {}
     <button onclick="showPage('newCustomer',this)">➕ 新增</button>
     <button onclick="showPage('customerList',this)">📋 列表</button>
     <button onclick="showPage('leaderboard',this)" id="reportsTab">🏆 排行榜</button>
-
-    <button onclick="showPage('staffMgmt',this)" id="staffTab">👥 業務</button>
-    <button onclick="showPage('followupJournal',this)" id="journalTab">📝 日誌</button>
-    <button onclick="showPage('bossDashboard',this)" id="bossTab" style="display:none">🧠 決策</button>
     <button onclick="showPage('booking',this)" id="bookingTab">📅 預約</button>
+    <!-- 管理員專用，JS 依權限顯示 -->
+    <button onclick="showPage('staffMgmt',this)" id="staffTab" style="display:none">👥 業務</button>
+    <button onclick="showPage('followupJournal',this)" id="journalTab" style="display:none">📝 日誌</button>
+    <button onclick="showPage('bossDashboard',this)" id="bossTab" style="display:none">🧠 決策</button>
   </nav>
 
   <!-- 浮動按鈕（已停用） -->
@@ -1156,31 +1209,25 @@ function claimSeminarLead() {}
         <div class="card-body" id="salesPerformanceGrid"></div>
       </div>
 
-      <!-- 來源轉換率 -->
+      <!-- ✅ 核心漏斗：新名單→研討會→顧問諮詢→成交 -->
       <div class="card" style="margin-bottom:1rem">
-        <div class="card-header"><div class="card-icon">📊</div><h3>名單來源 × 成交轉換率</h3></div>
-        <div class="card-body" id="sourceConversionGrid"></div>
+        <div class="card-header"><div class="card-icon">🔽</div><h3>銷售漏斗</h3></div>
+        <div class="card-body" id="funnelGrid"></div>
       </div>
 
-      <!-- 八部曲瓶頸 -->
+      <!-- ✅ 研討會後待約諮詢（每日必追） -->
       <div class="card" style="margin-bottom:1rem">
-        <div class="card-header"><div class="card-icon">🎯</div><h3>八部曲客戶分布</h3></div>
-        <div class="card-body">
-          <div id="bottleneckHint" style="background:linear-gradient(135deg,#fff3cd,#fff8e1);border:1.5px solid #ffc107;border-radius:8px;padding:.75rem 1rem;font-size:13px;font-weight:700;color:#856404;margin-bottom:1rem"></div>
-          <div class="stats-grid" id="stagesGrid"></div>
-        </div>
+        <div class="card-header"><div class="card-icon">🎯</div><h3>研討會後待約諮詢 <span id="pendingConsultCount" style="background:#c0392b;color:#fff;font-size:11px;padding:2px 8px;border-radius:20px;margin-left:.5rem">—</span></h3></div>
+        <div class="card-body" id="pendingConsultList"></div>
       </div>
 
-      <!-- 購買時間軸分布 -->
-      <div class="card" style="margin-bottom:1rem">
-        <div class="card-header"><div class="card-icon">⏳</div><h3>客戶購買時間軸分布</h3></div>
-        <div class="card-body" id="timelineGrid"></div>
-      </div>
-
-      <!-- 研討會效益 -->
-      <div class="card" style="margin-bottom:1rem">
-        <div class="card-header"><div class="card-icon">🎓</div><h3>研討會效益分析</h3></div>
-        <div class="card-body" id="seminarGrid"></div>
+      <!-- 隱藏舊元素（JS 仍會寫入，保持相容） -->
+      <div style="display:none">
+        <div id="sourceConversionGrid"></div>
+        <div id="bottleneckHint"></div>
+        <div id="stagesGrid"></div>
+        <div id="timelineGrid"></div>
+        <div id="seminarGrid"></div>
       </div>
 
       <!-- 預約摘要卡片（來自研討會/QRCode） -->
@@ -1195,30 +1242,14 @@ function claimSeminarLead() {}
         </div>
       </div>
 
-      <!-- 最新動態 -->
-      <div class="card" id="recentCard">
-        <div class="card-header"><div class="card-icon">🕐</div><h3>最新客戶動態</h3></div>
-        <div id="recentList"><div class="empty-state"><div class="empty-icon">📋</div>載入中...</div></div>
-      </div>
-
-
-      <!-- 趨勢比較（本月 vs 上月） -->
-      <div class="card" style="margin-bottom:1rem" id="trendCard">
-        <div class="card-header"><div class="card-icon">📈</div><h3>趨勢比較 本月 vs 上月</h3></div>
-        <div class="card-body" id="trendGrid"></div>
-      </div>
-
-      <!-- 資料完整度警示 -->
-      <div class="card" id="completenessCard">
-        <div class="card-header"><div class="card-icon">🔍</div><h3>客戶資料完整度</h3></div>
-        <div class="card-body" id="completenessGrid"></div>
-      </div>
-
-      <!-- 隱藏舊元素相容 -->
+      <!-- 隱藏舊元素相容（JS 仍會寫入） -->
       <div style="display:none">
         <span id="companyLeadCount"></span>
         <span id="selfLeadCount"></span>
         <span id="leadSourceBreakdown"></span>
+        <div id="recentList"></div>
+        <div id="trendGrid"></div>
+        <div id="completenessGrid"></div>
       </div>
     </div>
 
@@ -1660,9 +1691,9 @@ function claimSeminarLead() {}
             <select id="filterStage" onchange="renderCustomers()">
               <option value="">全部階段</option>
               <option value="1">一部曲：客戶開發</option><option value="2">二部曲：初步接觸</option>
-              <option value="3">三部曲：需求分析</option><option value="4">四部曲：產品匹配</option>
-              <option value="5">五部曲：異議處理</option><option value="6">六部曲：成交締結</option>
-              <option value="7">七部曲：售後服務</option><option value="8">八部曲：轉介紹</option>
+              <option value="3">💡 需求分析</option><option value="4">🏠 產品匹配</option>
+              <option value="5">🛡️ 異議處理</option><option value="6">✅ 成交締結</option>
+              <option value="7">🤝 售後服務</option><option value="8">八部曲：轉介紹</option>
             </select>
           </div>
           <div class="form-group" style="flex:1;min-width:120px">
@@ -1704,6 +1735,14 @@ function claimSeminarLead() {}
               <option value="基礎信任">🔴 基礎信任</option>
             </select>
           </div>
+        </div>
+        <!-- ✅ 流程快篩按鈕列 -->
+        <div style="padding:.625rem 1.25rem;border-bottom:1px solid var(--cream2);display:flex;gap:.5rem;flex-wrap:wrap">
+          <button class="funnel-chip active" onclick="setFunnelFilter('all',this)">全部</button>
+          <button class="funnel-chip" onclick="setFunnelFilter('sem',this)">🎓 研討會名單</button>
+          <button class="funnel-chip funnel-chip-hot" onclick="setFunnelFilter('pendingConsult',this)">🔥 待約諮詢</button>
+          <button class="funnel-chip" onclick="setFunnelFilter('consulted',this)">✅ 已諮詢</button>
+          <button class="funnel-chip" onclick="setFunnelFilter('closed',this)">🏆 已成交</button>
         </div>
         <div style="padding:.75rem 1.5rem;border-bottom:1px solid var(--cream2);display:flex;align-items:center;justify-content:space-between">
           <span id="listCount" style="font-size:13px;color:var(--text-muted)">載入中...</span>
@@ -2223,16 +2262,19 @@ function initApp() {
     fs.innerHTML = '<option value="">全部業務</option>';
     SALES.forEach(function(s){ fs.innerHTML += '<option>'+s+'</option>'; });
     document.getElementById('reportsTab').style.display = '';
-    document.getElementById('staffTab').style.display = '';
-    document.getElementById('bossTab').style.display = '';
+    document.getElementById('staffTab').style.display = '';   // 管理員看業務管理
+    document.getElementById('journalTab').style.display = ''; // 管理員看日誌
+    document.getElementById('bossTab').style.display = '';    // 管理員看決策
     var expEl=document.getElementById('exportScope'); if(expEl) expEl.innerHTML='<option value="all">全部客戶</option><option value="mine">我的客戶</option>';
     var histPanel = document.getElementById('lbHistoryPanel'); if(histPanel) histPanel.style.display = 'block';
   } else {
     sp.innerHTML = '<option value="'+currentUser+'" selected>'+currentUser+'</option>';
     sp.disabled = true;
-    // 業務可以看排行榜，但不能看業務管理
+    // 業務只看核心五個頁籤，管理功能全隱藏
     document.getElementById('reportsTab').style.display = '';
     document.getElementById('staffTab').style.display = 'none';
+    document.getElementById('journalTab').style.display = 'none';
+    document.getElementById('bossTab').style.display = 'none';
     var histPanel2 = document.getElementById('lbHistoryPanel'); if(histPanel2) histPanel2.style.display = 'none';
   }
   var _cd=document.getElementById('creationDate'); if(_cd) _cd.value=new Date().toISOString().split('T')[0];
@@ -3262,11 +3304,13 @@ function renderDashboard() {
   var semEl = document.getElementById('seminarGrid');
   if (semEl) semEl.innerHTML = semHtml;
 
-  // ── 最新動態 ──
+  // ── 銷售漏斗（新名單→研討會→顧問諮詢→成交）──
+  renderFunnel();
+  // ── 研討會後待約諮詢名單 ──
+  renderPendingConsult();
+  // ── 相容性呼叫（元素已隱藏） ──
   renderRecent();
-  // ── 趨勢比較 ──
   renderTrend();
-  // ── 資料完整度 ──
   renderCompleteness();
   // ── 公司整體業績目標卡片 ──
   renderCompanyTargetCard();
@@ -5317,7 +5361,6 @@ function saveCustomer() {
   if (!v('contactInfo'))     missing.push('聯絡方式');
   if (!v('leadSource'))      missing.push('名單來源');
   if (!v('buyingTimeline'))  missing.push('購買時間軸');
-  if (!v('painPoints'))      missing.push('痛點分析');
   if (!v('budget'))          missing.push('自有資金');
 
   if (missing.length > 0) {
@@ -5419,6 +5462,14 @@ function renderCustomers() {
   var fsem = document.getElementById('filterSeminar') ? document.getElementById('filterSeminar').value : '';
   var ftrust = document.getElementById('filterTrust') ? document.getElementById('filterTrust').value : '';
   if (fsem) mc = mc.filter(function(c){ var sa = (c.seminarAttended==='是'||c.seminarAttended==='已邀請參加2026') ? '已邀請並參加' : (c.seminarAttended||''); return sa === fsem; });
+
+  // ── 流程快篩過濾 ──
+  var isSemF = function(c) { return c.seminarAttended==='已邀請並參加'||c.seminarAttended==='是'||c.seminarAttended==='已邀請參加2026'; };
+  var isConsultedF = function(c) { var v=c.consult2026||c.viewingStatus||''; return v==='已完成諮詢'||v==='已完成諮詢過往'||v==='已預約待諮詢'||v==='已預約諮詢'; };
+  if (_funnelFilter === 'sem')           mc = mc.filter(isSemF);
+  else if (_funnelFilter === 'pendingConsult') mc = mc.filter(function(c){ return isSemF(c) && !isConsultedF(c) && isActive(c); });
+  else if (_funnelFilter === 'consulted')mc = mc.filter(isConsultedF);
+  else if (_funnelFilter === 'closed')   mc = mc.filter(function(c){ return !isActive(c); });
   if (ftrust) mc = mc.filter(function(c){ return c.currentStatus && c.currentStatus.indexOf(ftrust) !== -1; });
   if (sr) mc = mc.filter(function(c){ return (c.customerName+' '+(c.contactInfo||'')+' '+(c.notes||'')).toLowerCase().indexOf(sr) !== -1; });
   // 預設按成交機率排序
@@ -5731,7 +5782,7 @@ function showEdit(id) {
   }
 
   html += '<div style="background:var(--cream2);border-radius:10px;padding:.875rem;font-size:13px;color:var(--text-soft)">📝 編輯後點「儲存更新」即時同步到雲端</div>';
-  html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem">一部曲：基本資料</div>';
+  html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem">📋 基本資料</div>';
   if (isSalesLocked) {
     html += '<div><div style="font-size:11px;font-weight:700;color:var(--navy);letter-spacing:.06em;margin-bottom:.3rem">負責業務</div><div style="padding:.6rem .875rem;background:#f0f0f0;border-radius:8px;font-size:14px;color:var(--text-soft)">'+c.salesPerson+'</div></div>';
   } else {
@@ -5801,7 +5852,7 @@ function showEdit(id) {
   var cdVal = c.creationDate ? (function(raw){ try { var d=new Date(raw); if(!isNaN(d.getTime())){ var y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),dd=String(d.getDate()).padStart(2,'0'); return y+'-'+m+'-'+dd; } return raw; } catch(e){ return raw||''; } })(c.creationDate) : '';
   html += ef('創建日期','creationDate',cdVal,'date');
 
-  html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem;margin-top:.25rem">二部曲：初步接觸</div>';
+  html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem;margin-top:.25rem">🎯 流程狀態（研討會 → 諮詢）</div>';
   html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
   html += ef('家庭成員','familyMembers',c.familyMembers);
   html += ef('KEY MAN（決策者）','keyMan',c.keyMan);
@@ -5817,7 +5868,7 @@ function showEdit(id) {
   html += '<div class="form-group"><label>專業形象檢核（已達成項目）</label><div class="ms-wrap" id="e_ms_proCheck"><div class="ms-display" onclick="toggleMs(\'e_ms_proCheck\')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div><div class="ms-dropdown"><label class="ms-opt"><input type="checkbox" value="有針對市場產品貸款提出數據與案例">有針對市場、產品或貸款方案，提出客觀數據與案例</label><label class="ms-opt"><input type="checkbox" value="客戶回應原來如此等學習性語句">客戶回應「原來如此」、「我不知道這個」等學習性語句</label><label class="ms-opt"><input type="checkbox" value="客戶聽完後能重複或理解重點">客戶聽完後能重複或理解重點</label><label class="ms-opt"><input type="checkbox" value="提出客戶沒想到但很有幫助的建議">提出「客戶沒有想到但很有幫助」的提醒或建議</label><label class="ms-opt"><input type="checkbox" value="客戶產生更高的依賴感">客戶因此產生更高的依賴感</label></div></div></div>';
   html += sel('當前信任狀態','currentStatus',statusOpts);
 
-  html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem;margin-top:.25rem">三部曲：需求分析</div>';
+  html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem;margin-top:.25rem">💡 需求分析</div>';
   var purposeOpts = ['','🏠 自住','💰 投資','🏠💰 自住兼投資','🏢 以租養房','👴 退休安置','🎁 傳承規劃'].map(function(s){ return '<option value="'+s+'"'+(s===(c.purchasePurpose||'')?' selected':'')+'>'+( s===''?'請選擇':s)+'</option>'; }).join('');
   var tlOpts = ['','1個月內','3個月內','半年內','1年以上','純詢問觀望'].map(function(s){ return '<option'+(s===(c.buyingTimeline||'')?' selected':'')+'>'+( s===''?'請選擇':s)+'</option>'; }).join('');
   html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
@@ -5826,25 +5877,22 @@ function showEdit(id) {
   html += '</div>';
   html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
   html += ef('自有資金＆來源','budget',c.budget);
-  html += ef('每月可儲蓄（萬元）','monthlyPayment',c.monthlyPayment);
   html += '</div>';
-  html += ta('痛點分析（可直接修改）','painPointsEdit',c.painPoints);
-  html += ta('痛點補充說明','painPoints',c.painPointsNote);
+  html += ta('痛點分析','painPointsEdit',c.painPoints||c.painPointsNote);
   html += ta('看過哪些案子？（區域／格局／價格）','viewedProperties',c.viewedProperties);
   html += ta('為什麼沒有買？','whyNotBought',c.whyNotBought);
   html += '<input type="hidden" id="e_blueprintCompletion" value="'+(c.blueprintCompletion||'')+'">';
   html += '<input type="hidden" id="e_customerNeeds" value="'+(c.customerNeeds||'')+'">';
 
-  html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem;margin-top:.25rem">四部曲：產品匹配</div>';
-  html += ta('推薦物件','recommendedProperty',c.recommendedProperty);
-  html += ta('建議配對物件','matchedProperty',c.matchedProperty);
+  html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem;margin-top:.25rem">🏠 產品匹配</div>';
+  html += ta('推薦/配對物件','matchedProperty',c.matchedProperty||c.recommendedProperty);
   html += '<input type="hidden" id="e_productAdvantages" value="'+(c.productAdvantages||'')+'">';
 
-  html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem;margin-top:.25rem">五部曲：異議處理</div>';
+  html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem;margin-top:.25rem">🛡️ 異議處理</div>';
   html += ta('客戶異議','objections',c.objections);
   html += ta('解決方案','solutions',c.solutions);
 
-  html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem;margin-top:.25rem">六部曲：成交締結</div>';
+  html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem;margin-top:.25rem">✅ 成交締結</div>';
   html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
   html += sel('簽約狀態','contractStatus',contractOpts);
   html += sel('🏷️ 客戶狀態','customerActive',caOpts);
@@ -5854,29 +5902,21 @@ function showEdit(id) {
   html += ef('簽約日期','contractDate',c.contractDate,'date');
   html += '</div>';
 
-  html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem;margin-top:.25rem">七部曲：售後服務</div>';
+  html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem;margin-top:.25rem">🤝 售後服務</div>';
   html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
-  html += ef('貸款協助（銀行+專員）','loanHelp',c.loanHelp);
-  html += ef('租賃代管服務業務','rentalMgmt',c.rentalMgmt);
-  html += '</div>';
-  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
-  html += sel('裝潢建議','decorAdvice',decorOpts);
-  html += sel('定期資產檢視','assetReview',assetOpts);
+
   html += '</div>';
   html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
   html += ef('滿意度 (1-10)','satisfactionScore',c.satisfactionScore,'number');
-  html += ef('客戶滿意度調查表分數','satisfactionSurvey',c.satisfactionSurvey,'number');
   html += '</div>';
   html += ta('售後服務記錄','afterSalesService',c.afterSalesService);
 
-  html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem;margin-top:.25rem">八部曲：轉介紹裂變</div>';
+  html += '<div style="font-weight:700;color:var(--navy);font-size:13px;border-bottom:2px solid var(--cream2);padding-bottom:.4rem;margin-top:.25rem">🔗 轉介紹</div>';
   html += ta('邀請朋友參加活動（活動名+日期+人名）','referralEvent',c.referralEvent);
   html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">';
   html += sel('保持聯繫','keepInTouch',keepOpts);
-  html += ef('轉介紹獎勵','referralReward',c.referralReward);
   html += '</div>';
   html += ta('轉介紹名單','referralList',c.referralList);
-  html += ef('轉介紹數量','referralCount',c.referralCount,'number');
   html += '<div class="form-group"><label>轉介紹效果</label><div class="ms-wrap" id="e_ms_referralEffect"><div class="ms-display" onclick="toggleMs(\'e_ms_referralEffect\')"><span class="ms-placeholder">點選展開</span><span class="ms-arrow">▾</span></div><div class="ms-dropdown"><label class="ms-opt"><input type="checkbox" value="客戶已聯繫">客戶已聯繫</label><label class="ms-opt"><input type="checkbox" value="已形成">已形成</label><label class="ms-opt"><input type="checkbox" value="已購買">已購買</label><label class="ms-opt"><input type="checkbox" value="持續追蹤中">持續追蹤中</label></div></div></div>';
   html += ef('備註','notes',c.notes);
   // 新增：跟進系統
@@ -6184,6 +6224,103 @@ function buildConsultantFilter() {
 }
 
 // 儀表板摘要區塊
+// ── 銷售漏斗渲染 ──
+function renderFunnel() {
+  var el = document.getElementById('funnelGrid');
+  if (!el) return;
+
+  var isSem = function(c) {
+    return c.seminarAttended === '已邀請並參加' || c.seminarAttended === '是' || c.seminarAttended === '已邀請參加2026';
+  };
+  var isConsulted = function(c) {
+    var v = c.consult2026 || c.viewingStatus || '';
+    return v === '已完成諮詢' || v === '已完成諮詢過往' || v === '已預約待諮詢' || v === '已預約諮詢';
+  };
+
+  var all      = customers.length;
+  var semCnt   = customers.filter(isSem).length;
+  var consCnt  = customers.filter(isConsulted).length;
+  var closeCnt = customers.filter(function(c){ return !isActive(c); }).length;
+
+  // 轉換率（對前一階段）
+  var r1 = all > 0      ? Math.round(semCnt   / all     * 100) : 0;
+  var r2 = semCnt > 0   ? Math.round(consCnt  / semCnt  * 100) : 0;
+  var r3 = consCnt > 0  ? Math.round(closeCnt / consCnt * 100) : 0;
+
+  var steps = [
+    { num: all,      label: '總名單', rate: '',       cls: '' },
+    { num: semCnt,   label: '參加研討會', rate: r1+'%', cls: 'funnel-step-sem' },
+    { num: consCnt,  label: '完成顧問諮詢', rate: r2+'%', cls: 'funnel-step-consult' },
+    { num: closeCnt, label: '成交', rate: r3+'%',   cls: 'funnel-step-close' },
+  ];
+
+  el.innerHTML = '<div class="funnel-row">' + steps.map(function(s) {
+    return '<div class="funnel-step ' + s.cls + '">'
+      + '<div class="funnel-step-num">' + s.num + '</div>'
+      + '<div class="funnel-step-label">' + s.label + '</div>'
+      + (s.rate ? '<div class="funnel-step-rate">↑ ' + s.rate + '</div>' : '')
+      + '</div>';
+  }).join('<div style="display:flex;align-items:center;color:var(--text-muted);font-size:18px">→</div>')
+    + '</div>';
+}
+
+// ── 研討會後待約諮詢名單 ──
+function renderPendingConsult() {
+  var el = document.getElementById('pendingConsultList');
+  var badge = document.getElementById('pendingConsultCount');
+  if (!el) return;
+
+  var isSem = function(c) {
+    return c.seminarAttended === '已邀請並參加' || c.seminarAttended === '是' || c.seminarAttended === '已邀請參加2026';
+  };
+  var isConsulted = function(c) {
+    var v = c.consult2026 || c.viewingStatus || '';
+    return v === '已完成諮詢' || v === '已完成諮詢過往' || v === '已預約待諮詢' || v === '已預約諮詢';
+  };
+
+  // 過濾：參加研討會 但尚未完成諮詢 且仍在跟進
+  var pending = customers.filter(function(c) {
+    return isSem(c) && !isConsulted(c) && isActive(c);
+  });
+
+  // 按建檔日期排序（舊的先追）
+  pending.sort(function(a, b) {
+    return new Date(a.creationDate) - new Date(b.creationDate);
+  });
+
+  if (badge) badge.textContent = pending.length;
+
+  if (!pending.length) {
+    el.innerHTML = '<div style="color:#2e7d32;font-size:13px;padding:.5rem;font-weight:600">✅ 所有研討會名單均已約到諮詢！</div>';
+    return;
+  }
+
+  var today = new Date();
+  el.innerHTML = pending.slice(0, 10).map(function(c) {
+    var days = Math.floor((today - new Date(c.creationDate)) / 86400000);
+    var daysLabel = days >= 7 ? '<span class="pending-days">⚠️ ' + days + '天未約</span>'
+                              : '<span class="pending-days" style="color:#e67e22">' + days + '天</span>';
+    return '<div class="pending-item">'
+      + '<span class="pending-name">' + c.customerName + '</span>'
+      + '<span class="pending-sp">' + (c.salesPerson || '') + '</span>'
+      + daysLabel
+            + '<button onclick="openCustomerDetail(\"' + c.id + '\")" style="background:var(--navy);color:#fff;border:none;border-radius:6px;padding:3px 10px;font-size:11px;cursor:pointer;font-family:inherit">追蹤</button>'
+      + '</div>';
+  }).join('') + (pending.length > 10 ? '<div style="font-size:12px;color:var(--text-muted);padding:.5rem 0">…還有 ' + (pending.length - 10) + ' 人</div>' : '');
+}
+
+// ── 流程快篩（列表頁）──
+var _funnelFilter = 'all'; // 目前快篩狀態
+
+function setFunnelFilter(type, btn) {
+  _funnelFilter = type;
+  // 更新按鈕樣式
+  document.querySelectorAll('.funnel-chip').forEach(function(b) { b.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+  renderCustomers();
+}
+
+
 function renderDashboardBookingSummary() {
   var pending = allBookings.filter(function(b){ return b['狀態']==='待聯繫' || b['狀態']==='待確認'; });
   var countEl = document.getElementById('bscCount');
