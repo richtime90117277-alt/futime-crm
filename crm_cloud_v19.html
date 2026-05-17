@@ -1367,7 +1367,7 @@ function claimSeminarLead() {}
             <div class="quick-intake-icon">⚡</div>
             <div>
               <div class="quick-intake-title">快速建檔</div>
-              <div class="quick-intake-sub">按鈕選完就存，30秒一個客戶</div>
+              <div class="quick-intake-sub">姓名＋電話＋研討會狀態，30秒建完</div>
             </div>
           </div>
 
@@ -1377,93 +1377,29 @@ function claimSeminarLead() {}
             <input type="text" id="qi_name" placeholder="稱呼 / 姓名（選填）" autocomplete="off">
           </div>
 
-          <!-- 名單類型 + 購買目的 同區 -->
+          <!-- 研討會狀態（快速建檔核心欄位）-->
           <div class="qi-section">
-            <div class="qi-label">🏷️ 名單類型</div>
+            <div class="qi-label">🎓 研討會狀態</div>
+            <div class="qi-btns" id="qi_seminar_btns">
+              <button type="button" class="qi-btn" onclick="qiSelect('seminar',this,'已邀請並參加')">✅ 已參加</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('seminar',this,'已邀請未參加')">📩 已邀未參加</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('seminar',this,'尚未邀請')">⏳ 尚未邀請</button>
+            </div>
+          </div>
+
+          <!-- 名單來源（簡化）-->
+          <div class="qi-section">
+            <div class="qi-label">📌 名單來源</div>
             <div class="qi-btns" id="qi_ctype_btns">
               <button type="button" class="qi-btn" onclick="qiSelect('ctype',this,'業務自開發')">👤 自開發</button>
               <button type="button" class="qi-btn" onclick="qiSelect('ctype',this,'公司名單')">🏢 公司名單</button>
+              <button type="button" class="qi-btn" onclick="qiSelect('ctype',this,'客戶轉介紹')">🤝 轉介紹</button>
             </div>
           </div>
 
-          <div class="qi-section">
-            <div class="qi-label">🏠 購屋目的</div>
-            <div class="qi-btns" id="qi_purpose_btns">
-              <button type="button" class="qi-btn" onclick="qiSelect('purpose',this,'自住')">🏠 自住</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('purpose',this,'投資')">💰 投資</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('purpose',this,'自住兼投資')">🏠💰 自住兼投資</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('purpose',this,'以租養房')">🏢 以租養房</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('purpose',this,'退休安置')">👴 退休安置</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('purpose',this,'傳承規劃')">🎁 傳承規劃</button>
-            </div>
-          </div>
 
-          <!-- 客戶族群 -->
-          <div class="qi-section">
-            <div class="qi-label">🎭 客戶族群</div>
-            <div class="qi-btns" id="qi_type_btns">
-              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'新鮮人')">🟡 新鮮人</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'雙薪無殼')">👫 雙薪無殼</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'月光族')">🔵 月光族</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'高資產')">🔴 高資產</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'退休規劃')">🌅 退休規劃</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'租屋族')">🟠 租屋族</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'有老屋')">🟢 有老屋</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'換屋族')">🔄 換屋族</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'股票族')">📈 股票族</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'定存族')">🏦 定存族</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('type',this,'包租公')">🏢 包租公/婆</button>
-            </div>
-          </div>
 
-          <!-- 家人支持度 -->
-          <div class="qi-section">
-            <div class="qi-label">👨‍👩‍👧 家人支持度</div>
-            <div class="qi-btns" id="qi_family_btns">
-              <button type="button" class="qi-btn" onclick="qiSelect('family',this,'完全支持')">✅ 完全支持</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('family',this,'部分支持')">🟡 部分支持</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('family',this,'觀望')">👀 觀望中</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('family',this,'反對')">❌ 反對</button>
-            </div>
-          </div>
 
-          <!-- 卡點（多選） -->
-          <div class="qi-section">
-            <div class="qi-label">🚧 當前卡點（可多選）</div>
-            <div class="qi-btns" id="qi_block_btns">
-              <button type="button" class="qi-btn" onclick="qiToggle('block',this,'需要問家人')">需要問家人</button>
-              <button type="button" class="qi-btn" onclick="qiToggle('block',this,'覺得時機未到')">時機未到</button>
-              <button type="button" class="qi-btn" onclick="qiToggle('block',this,'頭期款不足')">頭期款不足</button>
-              <button type="button" class="qi-btn" onclick="qiToggle('block',this,'擔心貸款')">擔心貸款</button>
-              <button type="button" class="qi-btn" onclick="qiToggle('block',this,'股票未出場')">股票未出場</button>
-              <button type="button" class="qi-btn" onclick="qiToggle('block',this,'觀念未對齊')">觀念未對齊</button>
-              <button type="button" class="qi-btn" onclick="qiToggle('block',this,'數字不安心')">數字不安心</button>
-            </div>
-          </div>
-
-          <!-- 購買時間軸 -->
-          <div class="qi-section">
-            <div class="qi-label">⏳ 購買時間軸</div>
-            <div class="qi-btns" id="qi_timeline_btns">
-              <button type="button" class="qi-btn" onclick="qiSelect('timeline',this,'1個月內')">🔴 1個月內</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('timeline',this,'3個月內')">🟠 3個月內</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('timeline',this,'半年內')">🟡 半年內</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('timeline',this,'1年以上')">🔵 1年以上</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('timeline',this,'純詢問觀望')">⚪ 純觀望</button>
-            </div>
-          </div>
-
-          <!-- 自備款 -->
-          <div class="qi-section">
-            <div class="qi-label">💰 自備款區間</div>
-            <div class="qi-btns" id="qi_budget_btns">
-              <button type="button" class="qi-btn" onclick="qiSelect('budget',this,'100萬以下')">100萬以下</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('budget',this,'100–300萬')">100–300萬</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('budget',this,'300–500萬')">300–500萬</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('budget',this,'500萬以上')">500萬以上</button>
-              <button type="button" class="qi-btn" onclick="qiSelect('budget',this,'不確定')">不確定</button>
-            </div>
-          </div>
 
           <!-- 負責業務（暗色版） -->
           <div class="qi-section">
@@ -5269,7 +5205,7 @@ function fillFormFromVoice(data) {
 // ══════════════════════════════════════════════
 // ⚡ 快速建檔邏輯 v27
 // ══════════════════════════════════════════════
-var _qi = { type: null, ctype: null, purpose: null, budget: null, block: [], timeline: null, family: null };
+var _qi = { type: null, ctype: null, purpose: null, budget: null, block: [], timeline: null, family: null, seminar: null };
 
 function qiSelect(group, btn, val) {
   // 單選：清除同組所有 selected
@@ -5320,6 +5256,7 @@ function quickIntakeSave() {
                                    _qi.family === '觀望'     ? '👀 觀望'     : '❌ 反對') : '',
     budget:        _qi.budget   || '',
     buyingTimeline: _qi.timeline || '',
+    seminarAttended: _qi.seminar || '',
     decisionBlock: _qi.block.join('、'),
     creationDate:  today,
     customerActive: '進行中',
@@ -5342,7 +5279,7 @@ function quickIntakeSave() {
       var qn = document.getElementById('qi_name'); if(qn) qn.value = '';
       var nn = document.getElementById('notes');   if(nn) nn.value = '';
       document.querySelectorAll('.qi-btn.selected').forEach(function(b){ b.classList.remove('selected'); });
-      _qi = { type: null, ctype: null, purpose: null, budget: null, block: [], timeline: null, family: null };
+      _qi = { type: null, ctype: null, purpose: null, budget: null, block: [], timeline: null, family: null, seminar: null };
       fetchCustomers();
       // 跳到客戶列表頁
       var listTab = document.querySelector('[onclick*="customerList"]') || document.querySelector('[onclick*="clientList"]');
@@ -5490,11 +5427,30 @@ function renderCustomers() {
     var risk = getRiskLevel(c);
     if (risk === 'critical') riskBadge = '<span style="font-size:10px;color:#c0392b;background:#fdf0ee;padding:2px 6px;border-radius:20px;font-weight:700">🔴停滯</span>';
     else if (risk === 'high') riskBadge = '<span style="font-size:10px;color:#856404;background:#fffbf0;padding:2px 6px;border-radius:20px;font-weight:700">🟡注意</span>';
+    // ── 流程狀態列（核心資訊）──
+    var isSemCard = c.seminarAttended==='已邀請並參加'||c.seminarAttended==='是'||c.seminarAttended==='已邀請參加2026';
+    var consultVal = c.consult2026 || c.viewingStatus || '';
+    var isConsultedCard = consultVal==='已完成諮詢'||consultVal==='已完成諮詢過往'||consultVal==='已預約待諮詢'||consultVal==='已預約諮詢';
+
+    // 距建檔天數
+    var daysSince = c.creationDate ? Math.floor((new Date() - new Date(c.creationDate)) / 86400000) : null;
+
+    // 研討會badge
+    var semTag = isSemCard
+      ? '<span style="background:#e8f5e9;color:#2e7d32;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:700">🎓 研討會</span>'
+      : '';
+
+    // 諮詢狀態badge
+    var consultTag = isConsultedCard
+      ? '<span style="background:#e3f2fd;color:#1565c0;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:700">📋 '+(consultVal==='已預約待諮詢'||consultVal==='已預約諮詢'?'待諮詢':'已諮詢')+'</span>'
+      : (isSemCard && isActive(c)
+        ? '<span style="background:#fff3e0;color:#e65100;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:700">⚠️ 待約諮詢'+(daysSince!==null?' '+daysSince+'天':'')+'</span>'
+        : '');
+
     return '<div class="customer-item" onclick="showDetail(\''+c.id.toString()+'\')">' +
-      '<div class="customer-head"><span class="customer-name">'+c.customerName+'</span><span style="display:flex;gap:.375rem;align-items:center;flex-wrap:wrap"><span class="badge badge-'+s+'">'+s+'️⃣ '+STAGE_NAMES[s]+'</span>'+((c.seminarAttended==='已邀請並參加'||c.seminarAttended==='是'||c.seminarAttended==='已邀請參加2026'||c.seminarAttended==='已邀請未參加')?'<span style="background:#e8f5e9;color:#2e7d32;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600">🎓 研討會</span>':'')+probBadge+riskBadge+'</span></div>'+
+      '<div class="customer-head"><span class="customer-name">'+c.customerName+'</span><span style="display:flex;gap:.375rem;align-items:center;flex-wrap:wrap">'+semTag+consultTag+riskBadge+'</span></div>'+
       manInfo+
-      '<div class="customer-meta">📞 '+(c.contactInfo||'—')+' ｜ 來源：'+(c.leadSource||'—')+'</div>'+
-      '<div class="customer-meta">信任：'+(c.trustScore?c.trustScore+'/10':'—')+' ｜ '+(c.contractStatus||'未簽約')+(c.dealAmount?' ｜ '+c.dealAmount+'萬':'')+'</div>'+
+      '<div class="customer-meta">📞 '+(c.contactInfo||'—')+' ｜ '+(c.salesPerson||'未指定')+'</div>'+
       '</div>';
   }).join('');
 }
