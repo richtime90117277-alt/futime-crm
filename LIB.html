@@ -5771,101 +5771,215 @@ function showQuizResult() {
 // 📌 話術庫 → 考試連動：快速出題
 // ══════════════════════════════════════
 
-// 從 SCRIPTS 動態生成該話術的測驗題
+
+// ══════════════════════════════════════
+// 靜態話術測驗題庫（零API費用）
+// ══════════════════════════════════════
+const SCRIPT_QUIZ_DB = {
+  'S160': {
+    scriptId: 'S160',
+    situation: '你和客戶談了50分鐘，他說「你介紹的我都聽懂了，覺得方向對，但讓我再想想。」然後站起來要走。',
+    question: '這種情況下，「我再想想」最可能代表什麼，你的第一個動作應該是？',
+    options: [
+      { text: 'A — 他還有卡點沒解，繼續補充更多資料給他', correct: false, feedback: '他說「都聽懂了、方向對」代表資訊層面通了，再補資料只是讓他更煩。問題不在資訊不夠。' },
+      { text: 'B — 先問清楚他「在想的」是對方向本身有疑慮，還是有人或條件要確認', correct: true, feedback: '正確！這才是驗證問句。「再想想」有三種版本，要先判斷是哪一種才知道怎麼推進。直接問：「你現在在想的，是對方向還有疑慮，還是有什麼條件需要確認？」' },
+      { text: 'C — 給他主導感：「好，你回去睡一覺，明天問你A戶還是C戶」', correct: false, feedback: '這是確認他是B版本（快動了）才用的收法。還沒驗證是哪個版本就直接用假設成交，如果他其實是A版本（卡點沒解），這招會讓他覺得被推銷。' }
+    ]
+  },
+  'S001': {
+    scriptId: 'S001',
+    situation: '客戶一進來就說：「我今天只是來看看，我現有的資金不想動，你跟我介紹一下就好。」',
+    question: '「不想動資金」這句話，最可能是什麼訊號？',
+    options: [
+      { text: 'A — 他真的不想買，純粹來逛逛', correct: false, feedback: '如果他真的不想買，他不需要特別強調「不想動資金」——他直接說「隨便看看」就好了。主動說這句代表他在設條件，不是在拒絕。' },
+      { text: 'B — 他想買，但希望有不需要動現有資金的方式', correct: true, feedback: '對！這是最常見的版本。「不想動資金」不是拒絕，是在問「有沒有槓桿方式」。驗證問句：「你說不想動資金——是時機不對，還是希望有一種不需要動現有資金就能進場的方式？」' },
+      { text: 'C — 他資金不夠，擔心被問尷尬所以先說', correct: false, feedback: '可能有，但「不想動」和「沒有」是不同訊號。說「不想動」代表他有資金，只是不想用——這是槓桿需求，不是資金不足。' }
+    ]
+  },
+  'S002': {
+    scriptId: 'S002',
+    situation: '你介紹完後，客戶說：「我覺得方向不錯，但我家人不太同意，可能要再等等。」眼神往旁邊看。',
+    question: '聽到這句話，你最重要的第一個動作是什麼？',
+    options: [
+      { text: 'A — 馬上說「那你把家人帶來，我幫你說服他們」', correct: false, feedback: '最常見的錯誤。你不知道家人是哪種角色，可能根本不需要帶來——如果家人只是精神支持，你說「帶來說服」反而讓客戶有壓力，覺得你要「對付」他家人。' },
+      { text: 'B — 先問清楚家人的角色：他們是實際出錢的，還是只是給意見的？', correct: true, feedback: '這是關鍵第一步。家人的角色決定解法：如果是Keyman（出錢），必須讓他來。如果是精神支持，就幫客戶找到怎麼「報告」而不是「請示」的方式。搞錯角色，後面全部白費。' },
+      { text: 'C — 繼續介紹更多優點，讓客戶自己去說服家人', correct: false, feedback: '你說越多，他轉述給家人的內容就越失真。傳話必失真，最後家人聽到的跟你說的完全不一樣。先確認家人角色，才決定下一步。' }
+    ]
+  },
+  'S007': {
+    scriptId: 'S007',
+    situation: '客戶昨天剛下訂，今天打電話來說：「我家人說不要，我想退訂。」聲音平靜，語氣還算客氣。',
+    question: '你的第一句話應該是？',
+    options: [
+      { text: 'A — 立刻說「你家人又沒幫你買，幹嘛聽他的！」', correct: false, feedback: '這是最直接讓客戶站到家人那邊的說法。志偉哥說：擔心的背後叫做愛。家人反對是因為在乎他，你說這句等於在攻擊他的家人，他只會更確定要退。' },
+      { text: 'B — 「我聽到了。你說想退訂——讓我先了解一下，是發生什麼事了？」然後閉嘴聽他說。', correct: true, feedback: '正確。退訂那通電話是客戶在告訴你最大的卡點。先讓他說完，你才知道是情緒反應（A）、具體疑慮（B），還是現實條件改變（C）。說完之前不要急著說服。' },
+      { text: 'C — 馬上重新介紹案子優點，讓他想起當初為什麼決定買', correct: false, feedback: '他還沒說完卡點在哪，你就開始說服，他會覺得你在護業績而不是幫他。這樣他退訂的決心反而會更強。' }
+    ]
+  },
+  'S010': {
+    scriptId: 'S010',
+    situation: '你解釋了槓桿邏輯三次，客戶每次都點頭說「對對，我知道，我知道」，但就是不動。',
+    question: '客戶一直說「我知道」，這是什麼訊號？你下一步應該怎麼做？',
+    options: [
+      { text: 'A — 他真的懂了，只是還在考慮，繼續補充更多數據幫助他決定', correct: false, feedback: '繼續說等於跟他對抗。他說「我知道」是在關門——不管是真懂還是假懂，繼續塞資訊只會讓他更煩，對話越走越死。' },
+      { text: 'B — 立刻停止解釋，轉成提問：「你說還不確定，最不確定的是哪一塊？」', correct: true, feedback: '正確！「我知道」是危險訊號，要馬上停止解釋，把球丟回給他。讓他說出真正的卡點，你才能真正幫到他。繼續說你一定輸。' },
+      { text: 'C — 換個角度，用故事或案例代替數字，感性打動他', correct: false, feedback: '如果他是B版本（腦子通了心沒到），這個做法對。但你還沒確認是哪個版本，先問出卡點再決定用什麼方法。' }
+    ]
+  },
+  'S015': {
+    scriptId: 'S015',
+    situation: '客戶拿出手機給你看股票App的漲幅，笑著說：「你看我股票都漲得不錯，放著就好，報酬也不差。」',
+    question: '這個動作最可能代表什麼？你的第一個回應應該是？',
+    options: [
+      { text: 'A — 說「但房地產的報酬率其實比股票更穩定」，用數據反駁他', correct: false, feedback: '你進了他最熟悉的戰場，必輸。他比你更了解他的股票，比報酬率你一定輸。永遠不要跟股票族比報酬率。' },
+      { text: 'B — 破框架：「我不是要你放棄股票——你聽過讓600萬控制5000萬資產的方法嗎？」', correct: true, feedback: '正確！他拿手機出來是在防禦——他以為你要他換掉股票。先破這個框架，把房地產定位成槓桿器而不是替代品，他的防禦才會降下來。' },
+      { text: 'C — 認同他：「你股票做得很好！那我們今天就聊聊你有沒有不安穩的部位」', correct: false, feedback: '如果他拿手機出來炫耀，表示他在建立立場、在防禦，不是在展示弱點。從不安穩的部位切入是B版本的做法，要先確認他的狀態。' }
+    ]
+  },
+  'S020': {
+    scriptId: 'S020',
+    situation: '客戶聽完介紹後說：「你說的我覺得還不錯，但我還想去看看別的案子比較一下再決定。」',
+    question: '你應該怎麼回應？',
+    options: [
+      { text: 'A — 直接說這個案子比競品好在哪裡，替他省時間', correct: false, feedback: '直接攻擊競品或替他做比較，是最容易引起反感的做法。他自己說出競品缺點，比你說有力十倍。而且你根本不知道他去看哪個案子。' },
+      { text: 'B — 先問他的評分標準：「你說要比較，最重要的前三個條件是什麼？我照這三個幫你對。」', correct: true, feedback: '對！這樣做兩件事：第一，讓他說出自己的標準（幫你掌握他的決策邏輯）；第二，你主動幫他對照，讓他沒有理由再去別處比。讓客戶說出競品優缺點，威力遠大於你說。' },
+      { text: 'C — 說「好沒關係，你去比較看看，有問題再聯絡我」', correct: false, feedback: '這是最輕鬆的做法，也是放棄主動權。他出門之後你就失去節奏，等他比完回來，熱度已經掉了，你又要重新燒。' }
+    ]
+  },
+  'S040': {
+    scriptId: 'S040',
+    situation: '你和客戶聊了一個多小時，感覺他認同了，最後他說：「這個我要跟家人討論一下才能決定。」',
+    question: '在問「什麼時候可以帶家人來」之前，你最重要的一步是？',
+    options: [
+      { text: 'A — 直接說「好，那什麼時候可以帶家人來？」', correct: false, feedback: '這是最常見的跳步錯誤。你還沒確認他自己有沒有被說服，就急著約家人，可能家人來了也沒用——因為連他自己都沒被說服。' },
+      { text: 'B — 先問他自己的認同度：「如果是你自己的話，你對今天聊的這些，幾分認同？」', correct: true, feedback: '正確！這是最關鍵的一步。如果他自己都沒被說服，帶家人來也是白費。如果他認同了，你才知道家人的角色是Keyman還是只需要「祝福」。' },
+      { text: 'C — 給他一個帶家人來的理由：「帶她來看看環境，不做決定，讓她幫你把把關」', correct: false, feedback: '這個說法很好用，但要在確認他自己認同之後才用。如果他自己都有疑慮，家人來了反而多一個反對的聲音。' }
+    ]
+  },
+  'S044': {
+    scriptId: 'S044',
+    situation: '你自我介紹完，還沒開始介紹案子，客戶就說：「你們業務都這樣說，我不太相信你們說的東西。」',
+    question: '最危險的回應是什麼？你應該怎麼做？',
+    options: [
+      { text: 'A — 馬上說「我跟別的業務不一樣！」然後繼續介紹', correct: false, feedback: '說「我跟別的業務不一樣」的業務，聽起來全都一樣。而且你說了這句之後繼續介紹，正好證明你跟其他業務沒什麼不同——都是先說這句再推銷。' },
+      { text: 'B — 不辯解，用問句回應：「你說業務都這樣說——你是有遇過讓你不舒服的經驗，還是你覺得我說的哪個地方有問題？」', correct: true, feedback: '對！這句話做兩件事：讓他說出真正的原因（你才能對症下藥），同時展示你跟別的業務不同（你不急著辯解）。先讓他說，再用行動證明，比說任何話都有力。' },
+      { text: 'C — 用數據證明：「我給你看客戶成交的記錄，這樣你相信嗎？」', correct: false, feedback: '他說「不相信業務說的」，你立刻拿出「業務的資料」讓他看，邏輯上沒有解決他的疑慮。而且他說這句話可能只是在試探你的反應，你急著自證反而中陷阱。' }
+    ]
+  },
+  'S097': {
+    scriptId: 'S097',
+    situation: '客戶一進門，還沒坐下就說：「我今天不會做決定，就只是來看看，你不要給我壓力。」',
+    question: '這句話代表什麼？你的第一個動作？',
+    options: [
+      { text: 'A — 說「沒關係，今天我也不需要你決定，我們就聊聊。」然後繼續像平常一樣介紹案子', correct: false, feedback: '說了「不需要你決定」，然後繼續像推銷一樣介紹，是矛盾的。他一感覺到你還是在推銷，防禦就回來了。嘴上說不強迫，行動上還是在推，他看得出來。' },
+      { text: 'B — 接受這個設定，把今天的目標降一級：成交一個觀念，或成交「下次見面」', correct: true, feedback: '正確！志偉哥說：他說今天不做決定，你就接受。目標降一級，你的能量場就變了——你不是在賣，是在給他價值。第一句問：「你今天來，最想帶走的是什麼資訊？」讓他說目的。' },
+      { text: 'C — 直接說「我今天就是要讓你做決定，因為這個機會不等人」', correct: false, feedback: '他開場就設了防線，你如果硬衝，他立刻關門。開場就施壓，是讓他永遠不想跟你談的最快方法。' }
+    ]
+  },
+  'S143': {
+    scriptId: 'S143',
+    situation: '客戶在今天的對話裡，已經說了三次「這件事我可以做主，不需要問另一半」——分別在你問資金、問時間點、問要不要帶家人來時。',
+    question: '志偉哥說，客戶重複說同一句話代表什麼？你應該怎麼解讀？',
+    options: [
+      { text: 'A — 他真的可以做主，只是說話習慣喜歡強調，可以放心不再確認Keyman', correct: false, feedback: '說一次可能是習慣，說三次而且每次都在資金和家人的敏感話題出現，這就是訊號了。C的機率在三次之後已經很低。' },
+      { text: 'B — 他內心對「能不能做主」這件事沒有安全感，才需要一直強調', correct: true, feedback: '志偉哥的核心洞察：一個人不斷強調的事，代表他對這件事是沒信心的。說了三次，代表他自己也不確定能不能做主。要繼續確認Keyman：「如果今天就定下來，你需不需要讓另一半知道一下？」' },
+      { text: 'C — 他在暗示你不要再問家人相關問題，你應該換話題', correct: false, feedback: '他可能有這個意圖，但這正是因為他對「能否做主」沒安全感。不去確認Keyman，等他回去之後另一半一句話就否決，你談了半天全白費。' }
+    ]
+  },
+  'S151': {
+    scriptId: 'S151',
+    situation: '聊了一個多小時，你感覺客戶差不多認同了，這時他說：「聽起來不錯，但我要回去問一下我另一半，她比較了解我們的財務狀況。」',
+    question: '在決定「要不要約另一半來」之前，最關鍵的一步是？',
+    options: [
+      { text: 'A — 馬上說「那什麼時候方便帶另一半一起來？」', correct: false, feedback: '這是最常見的跳步錯誤。你還沒確認他自己被說服了沒，就急著約另一半，如果他自己都有疑慮，另一半來了也沒用，甚至多一個反對的聲音。' },
+      { text: 'B — 先確認他自己的認同度：「如果是你自己的話，你對今天聊的這些，幾分認同？」', correct: true, feedback: '正確！S151核心：沒收到足夠的YES就問假設成交，是冷刀。先確認他自己認同了，你才知道另一半是Keyman（需要來）還是只需要「祝福」（給他帶回家說的話就好）。' },
+      { text: 'C — 給他帶回家說的話：「你回去跟她說，你今天聽到一個方向，想讓她也了解一下」', correct: false, feedback: '這是C版本（習慣性需要背書）才用的方法。要先確認他自己的認同度，才能判斷另一半的角色，再選對應的做法。' }
+    ]
+  },
+  'S162': {
+    scriptId: 'S162',
+    situation: '客戶說：「我覺得方向對，但我要跟我媽媽討論一下，她比較有經驗。」你不確定媽媽的角色。',
+    question: '最關鍵的驗證問句是？',
+    options: [
+      { text: 'A — 「你媽媽這邊，她是實際上會出錢幫你，還是只是給你意見的？」', correct: true, feedback: '正確！這是整個家人處理的核心問句。媽媽的角色決定一切：如果她是出錢的Keyman，必須讓她來；如果只是給意見，幫客戶找到「報告」而不是「請示」的方式。搞錯角色，後面全部白費。' },
+      { text: 'B — 「你覺得媽媽會支持嗎？她對房地產投資的看法怎樣？」', correct: false, feedback: '這個問題沒有問到關鍵：媽媽是出錢的還是給意見的。你問她的看法，但如果她只是精神支持，她的看法根本不是問題的核心。' },
+      { text: 'C — 「那你先回去跟媽媽說，有問題再找我」', correct: false, feedback: '傳話必失真。你說的和客戶轉述給媽媽的，跟媽媽真正聽到的，三個版本都不一樣。而且你不知道媽媽的角色就讓他回去，完全失去掌控。' }
+    ]
+  },
+  'S163': {
+    scriptId: 'S163',
+    situation: '高薪工程師客戶說：「我現在每個月定期定額買ETF，報酬很穩定，我覺得這樣就夠了，不需要再做其他配置。」',
+    question: '面對股票族，最關鍵的框架是什麼？',
+    options: [
+      { text: 'A — 告訴他房地產的歷史報酬率比ETF更高，說服他調整配置', correct: false, feedback: '你進了他最熟悉的戰場，必輸。他買ETF買了多年，比你更了解報酬數字。跟他比報酬率你一定輸，這個戰場不要進。' },
+      { text: 'B — 先破框架，把房地產定位成槓桿器而不是替代品：「我不是要你放棄ETF——你聽過讓600萬去控制5000萬資產的方法嗎？」', correct: true, feedback: '正確！他以為你要他換掉ETF，所以在防禦。先破這個框架——房地產不是「代替品」，是「槓桿器」。框架一破，他的防禦才會降下來，你才有機會繼續談。' },
+      { text: 'C — 認同他的ETF做法，然後問他「有沒有哪筆讓你有點不安穩」', correct: false, feedback: '這是B版本（有筆不安穩不想承認）的做法，適合在他表現出些許焦慮時用。但他說「很穩定、夠了」，應該先破框架，確認他的狀態再決定切入點。' }
+    ]
+  },
+  'S164': {
+    scriptId: 'S164',
+    situation: '客戶皺眉說：「我頭期款差很多，我買不起這種案子，你給我介紹便宜一點的吧。」',
+    question: '聽到「買不起」，你的第一步應該是？',
+    options: [
+      { text: 'A — 立刻介紹更便宜的案子選項', correct: false, feedback: '他說「買不起」，但你不知道他有多少可以動用的錢，就直接換案子，等於接受了他的自我評估。10個說「買不起」的人裡，有7個其實是被自己想像的數字嚇到，根本沒算清楚。' },
+      { text: 'B — 先陪他一起把數字算清楚：「你說頭期款差很多，我們一起算一下——你手邊現在大概有多少可以動的？」', correct: true, feedback: '正確！算清楚之前不要推任何案子，說了也沒用，他自己都不知道能不能買。很多人算完發現根本可以：「預售屋簽約只要8%，後面24個月緩衝。」陪他算，不是說服他。' },
+      { text: 'C — 接受他的說法，換話題說「那以後有機會再聯絡」', correct: false, feedback: '這是最輕鬆的放棄方式。說「買不起」可能是C版本（其實有錢但保護自己），也可能是B版本（沒算清楚）。放棄之前至少要問一句：「你說差很多，我們一起算一下——你現在手邊大概有多少可以動的？」' }
+    ]
+  },
+  'S171': {
+    scriptId: 'S171',
+    situation: '客戶昨天下訂，今天打電話說：「我後悔了，我想退訂。」你不知道具體原因。',
+    question: '退訂電話打來，你的第一個動作應該是？',
+    options: [
+      { text: 'A — 立刻重申案子的優點，讓他想起當初為什麼決定買', correct: false, feedback: '他還沒說完原因，你就開始說服，他會感覺你在護業績而不是幫他。這樣他退訂的決心反而更強，可能直接掛電話。' },
+      { text: 'B — 先接住、讓他說完：「我聽到了，讓我先了解一下，是發生什麼事了？」然後閉嘴。', correct: true, feedback: '正確！退訂那通電話是客戶在告訴你最大的卡點。先讓他說完，才知道是情緒反應（家人施壓）、具體疑慮，還是現實條件改變。卡點不同，解法完全不同。先聽，再找原因。' },
+      { text: 'C — 說「退訂會損失違約金，你先冷靜一下再決定」', correct: false, feedback: '用損失來威脅，是讓他更確定要退的最快方法。他本來可能只是情緒反應，你這樣說，他反而覺得被脅迫，態度會更強硬。' }
+    ]
+  }
+};
+
+// 從 SCRIPTS 靜態查詢話術測驗題（零API費用）
 function quickQuizFromScript(scriptId) {
-  _testedScriptIds.add(scriptId); // 記錄已測過，供今日任務卡去重
+  if (typeof _testedScriptIds !== 'undefined') _testedScriptIds.add(scriptId);
   const s = SCRIPTS.find(x => x.id === scriptId);
   if (!s) return;
 
-  // 先從現有 QUIZ_QUESTIONS 找有沒有對應的題目
-  const existingQ = QUIZ_QUESTIONS.filter(q => q.scriptId === scriptId || (q.situation && q.situation.includes(s.title.slice(0,10))));
+  // 優先從靜態題庫找
+  const staticQ = SCRIPT_QUIZ_DB[scriptId];
+  if (staticQ) {
+    quizState = { current: 0, score: 0, answers: [], sourceScriptId: scriptId, questions: [staticQ] };
+    renderDynamicQuiz();
+    return;
+  }
 
+  // 再從 QUIZ_QUESTIONS 找有沒有對應的固定題目
+  const existingQ = QUIZ_QUESTIONS.filter(q => q.scriptId === scriptId);
   if (existingQ.length > 0) {
-    // 有現成題目，直接跑那題
     quizState = { current: 0, score: 0, answers: [], sourceScriptId: scriptId, questions: existingQ };
     renderDynamicQuiz();
     return;
   }
 
-  // 沒有現成題目，用 AI 動態生成
+  // 其他話術：跳到完整解碼練習
   renderMain(`
-    <button class="back-btn" onclick="history.back()">← 返回</button>
-    <div style="text-align:center;padding:48px 24px">
-      <div style="font-size:32px;margin-bottom:16px">🧠</div>
-      <div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:8px">正在為這條話術出題...</div>
-      <div style="font-size:13px;color:var(--text-sub)">「${esc(s.title.slice(0,30))}」</div>
+    <button class="back-btn" onclick="showOverview()">← 返回</button>
+    <div style="background:rgba(184,148,60,0.08);border:1px solid rgba(184,148,60,0.25);border-radius:16px;padding:24px;margin-bottom:20px;text-align:center">
+      <div style="font-size:28px;margin-bottom:12px">🧠</div>
+      <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px">這條話術的專屬題目還在製作中</div>
+      <div style="font-size:12px;color:var(--text-sub);margin-bottom:16px">先去做「解碼練習」6題，都跟這條同類型的訊號！</div>
+      <div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:16px;text-align:left">
+        <div style="font-size:11px;color:var(--text-dim);margin-bottom:4px">你剛才看的話術</div>
+        <div style="font-size:13px;font-weight:700;color:var(--text)">[${s.id}] ${esc(s.title.slice(0,40))}</div>
+        <div style="font-size:12px;color:var(--text-sub);margin-top:4px">${esc(s.trigger.slice(0,50))}</div>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:center">
+        <button onclick="showQuizMode()" style="background:var(--olive);color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">🧠 解碼練習 6題</button>
+        <button onclick="showDecodeSingle('${scriptId}')" style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 20px;font-size:13px;color:var(--text-sub);cursor:pointer;font-family:inherit">← 回話術</button>
+      </div>
     </div>
   `);
-
-  generateQuizFromScript(s);
 }
 
-async function generateQuizFromScript(s) {
-  const systemPrompt = `你是富時代房地產銷售訓練系統的出題老師。
-根據提供的話術內容，出一道選擇題來測驗業務是否真正理解這條話術的核心邏輯。
-
-輸出格式為嚴格 JSON（不要有任何 markdown、解釋或前後綴）：
-{
-  "situation": "情境描述（1-2句，設定客戶說了什麼或發生什麼狀況）",
-  "question": "測驗問題（考核這條話術最關鍵的判斷或做法）",
-  "options": [
-    {"text": "A — 選項文字", "correct": false, "feedback": "為什麼不對的解釋（2-3句）"},
-    {"text": "B — 選項文字", "correct": true, "feedback": "為什麼對的解釋，對應到話術核心邏輯（2-3句）"},
-    {"text": "C — 選項文字", "correct": false, "feedback": "為什麼不對的解釋（2-3句）"}
-  ],
-  "scriptId": "${s.id}"
-}
-
-規則：
-1. 只有一個正確答案（correct: true）
-2. 三個選項都要合理，不能有明顯的干擾項
-3. 題目要測驗「理解深度」而不是「記憶內容」
-4. situation 要有具體場景，不要太抽象
-5. feedback 要引用話術的核心邏輯，讓業務知道為什麼`;
-
-  const userMsg = `話術ID: ${s.id}
-話術標題: ${s.title}
-觸發句: ${s.trigger}
-情境: ${s.situation}
-核心內容: ${s.content}`;
-
-  try {
-    const apiKey = getApiKey();
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: userMsg }]
-      })
-    });
-    if (!resp.ok) throw new Error('API error');
-    const data = await resp.json();
-    const raw = (data.content && data.content[0]) ? data.content[0].text : '';
-    const clean = raw.replace(/```json|```/g, '').trim();
-    const q = JSON.parse(clean);
-    q.scriptId = s.id;
-    // 動態出題跑一題 quiz
-    quizState = { current: 0, score: 0, answers: [], sourceScriptId: s.id, questions: [q] };
-    renderDynamicQuiz();
-  } catch(e) {
-    renderMain(`
-      <div style="text-align:center;padding:40px 24px">
-        <div style="font-size:32px;margin-bottom:12px">⚠️</div>
-        <div style="font-size:14px;color:var(--text);margin-bottom:8px">出題失敗，請再試一次</div>
-        <div style="font-size:12px;color:var(--text-sub);margin-bottom:24px">${e.message}</div>
-        <button onclick="quickQuizFromScript('${s.id}')" style="background:var(--olive);color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">🔄 重試</button>
-      </div>
-    `);
-  }
-}
 
 // 渲染動態出題（支援單題 or 多題）
 function renderDynamicQuiz() {
