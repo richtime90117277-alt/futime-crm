@@ -482,6 +482,14 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
       <div class="growth-stat-card"><div class="growth-stat-num" id="g-stat-exams">0</div><div class="growth-stat-label">考試場次</div></div>
       <div class="growth-stat-card"><div class="growth-stat-num" id="g-stat-streak">0</div><div class="growth-stat-label">連續天數</div></div>
     </div>
+    <!-- 升級任務清單 -->
+    <div class="growth-section" style="margin-top:16px">
+      <div class="growth-section-title" style="display:flex;align-items:center;justify-content:space-between">
+        <span>🚀 升級任務</span>
+        <span style="font-size:10px;color:var(--text-dim);font-weight:400;letter-spacing:0">完成這幾件事，升到下一級</span>
+      </div>
+      <div id="g-next-tasks"></div>
+    </div>
     <div class="growth-section" style="margin-top:16px">
       <div class="growth-section-title">🏆 里程碑進度</div>
       <div id="g-milestone-list"></div>
@@ -4626,6 +4634,7 @@ async function endExam() {
   const p = examState.persona;
   addExamMessage('system', '⏹ 對話結束，AI 正在評分...', '系統');
 
+  const scriptHints = p.painPoints || '';
   const scorePrompt = `你剛才扮演了「${p.name}」客戶，跟業務進行了一場對話練習。
 
 現在切換回教練角色，給這位業務打分數並給出具體回饋。
@@ -4645,12 +4654,51 @@ async function endExam() {
 - 問句品質：XX分
 - 讓客戶說：XX分
 
-✅ 做得好的：（具體說1-2件事）
-⚠️ 下次改：（具體說1-2件事）
-💡 如果換做是你，第一句話會說：「___」`;
+✅ 做得好的：（具體說1-2件事，引用對話中的原句）
+⚠️ 下次改：（具體說1-2件事，引用對話中的問題句）
+💡 如果換做是你，第一句話會說：「___」
+
+📚 補強話術：根據業務這場犯的錯，列出2-3個最應該回去複習的話術主題（用「→ 主題：XXX」格式，每個主題1行，例如「→ 主題：異議處理－家人反對」）`;
 
   const scoreReply = await callExamAPI(scorePrompt, examState.messages, '');
   addExamMessage('score', scoreReply, '教練評分');
+
+  // ── 評分完畢後：解析話術主題，串接話術庫回連 ──
+  setTimeout(() => {
+    const chat = document.getElementById('exam-chat');
+    if (!chat || !scoreReply) return;
+    const topicMatches = scoreReply.match(/→\s*主題[：:]\s*(.+)/g);
+    if (!topicMatches || !topicMatches.length) return;
+
+    const topics = topicMatches.map(m => m.replace(/→\s*主題[：:]\s*/, '').trim());
+
+    // 根據主題關鍵字找相關話術
+    const relatedScripts = [];
+    topics.forEach(topic => {
+      const keywords = topic.split(/[－\-\s、]/);
+      const matches = SCRIPTS.filter(s => {
+        const haystack = (s.title + s.situation + s.trigger + s.category).toLowerCase();
+        return keywords.some(k => k.length >= 2 && haystack.includes(k));
+      }).slice(0, 2);
+      matches.forEach(s => { if (!relatedScripts.find(r => r.id === s.id)) relatedScripts.push(s); });
+    });
+
+    if (!relatedScripts.length) return;
+
+    const linkDiv = document.createElement('div');
+    linkDiv.style.cssText = 'background:rgba(184,148,60,0.08);border:1px solid rgba(184,148,60,0.25);border-radius:12px;padding:14px;margin-top:4px';
+    linkDiv.innerHTML = `
+      <div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--gold);margin-bottom:10px">📖 這場考試後，去複習這幾條</div>
+      ${relatedScripts.map(s => `
+        <div onclick="closeGrowthPanel();showScriptFromQuiz('${s.id}')" style="display:flex;align-items:center;gap:10px;padding:9px 12px;background:#fff;border:1px solid var(--border);border-radius:8px;margin-bottom:6px;cursor:pointer">
+          <span style="font-size:11px;color:var(--text-dim);flex-shrink:0;font-weight:700">${s.id}</span>
+          <span style="font-size:13px;color:var(--text);flex:1">${esc(s.title.slice(0,36))}${s.title.length>36?'…':''}</span>
+          <span style="font-size:11px;color:var(--olive);flex-shrink:0">去看 →</span>
+        </div>`).join('')}
+    `;
+    chat.appendChild(linkDiv);
+    chat.scrollTop = chat.scrollHeight;
+  }, 500);
 }
 
 function buildExamSystemPrompt(p) {
@@ -4872,16 +4920,13 @@ function showSearch(q) {
 function showOverview() {
   setActive('nav-overview');
   setTotal(SCRIPTS.length);
+  const todayMissionHTML = buildTodayMission();
   renderMain(`
-    <div class="view-eyebrow">富時代 · 客戶解碼系統 v4.0</div>
+    <div class="view-eyebrow">富時代 · 客戶解碼系統 v7.0</div>
     <div class="view-title">你想練什麼？</div>
-    <div class="view-desc" style="margin-bottom:24px">兩個核心能力，缺一不可</div>
-
-    <div style="display:grid;grid-template-columns:1fr;gap:12px">
-
-      <!-- 兩大能力卡：桌面並排，手機堆疊 -->
+    ${todayMissionHTML}
+    <div style="display:grid;grid-template-columns:1fr;gap:12px;margin-top:16px">
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px">
-
         <div style="background:linear-gradient(135deg,rgba(61,90,64,0.1) 0%,rgba(184,148,60,0.06) 100%);border:2px solid rgba(61,90,64,0.3);border-radius:16px;padding:22px;cursor:pointer;display:flex;flex-direction:column" onclick="showDecodeHome()">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
             <span style="font-size:20px">🔍</span>
@@ -4893,13 +4938,12 @@ function showOverview() {
           </div>
           <div style="font-size:12px;color:var(--text-sub);line-height:1.7;margin-bottom:12px;flex:1">聽到客戶說一句話，先解讀他背後的A/B/C可能性，再決定怎麼回。這才是帶得走的能力。</div>
           <div style="display:flex;flex-wrap:wrap;gap:8px">
-            <div style="background:rgba(61,90,64,0.08);border-radius:8px;padding:8px 12px;font-size:11px;color:var(--olive);font-weight:700">🗂️ 47筆解碼卡</div>
-            <div style="background:rgba(184,148,60,0.08);border-radius:8px;padding:8px 12px;font-size:11px;color:var(--gold);font-weight:700">🧠 6題練習</div>
-            <div style="background:rgba(61,90,64,0.08);border-radius:8px;padding:8px 12px;font-size:11px;color:var(--olive);font-weight:700">🎬 3個複盤</div>
+            <div style="background:rgba(61,90,64,0.08);border-radius:8px;padding:8px 12px;font-size:11px;color:var(--olive);font-weight:700">🗂️ ${Object.keys(DECODE_DB).length}筆解碼卡</div>
+            <div style="background:rgba(184,148,60,0.08);border-radius:8px;padding:8px 12px;font-size:11px;color:var(--gold);font-weight:700">🧠 ${QUIZ_QUESTIONS.length}題練習</div>
+            <div style="background:rgba(61,90,64,0.08);border-radius:8px;padding:8px 12px;font-size:11px;color:var(--olive);font-weight:700">🎬 ${REPLAY_CASES.length}個複盤</div>
           </div>
         </div>
-
-        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:22px;cursor:pointer;display:flex;flex-direction:column" onclick="showPersona('p01')">
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:22px;cursor:pointer;display:flex;flex-direction:column" onclick="showPersona(PERSONAS[0].id)">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
             <span style="font-size:20px">👁️</span>
             <div>
@@ -4907,13 +4951,10 @@ function showOverview() {
               <div style="font-size:15px;font-weight:700;color:var(--text)">這個人是什麼類型？</div>
             </div>
           </div>
-          <div style="font-size:12px;color:var(--text-sub);margin-bottom:12px;flex:1">20種客戶辨識卡，找到這個人的心理模型，進入考試院陪練。</div>
+          <div style="font-size:12px;color:var(--text-sub);margin-bottom:12px;flex:1">${PERSONAS.length}種客戶辨識卡，找到這個人的心理模型，進入考試院陪練。</div>
           <div style="display:flex;flex-wrap:wrap;gap:4px">${PERSONAS.slice(0,8).map(p=>`<span style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:2px 8px;font-size:10px;color:var(--text-sub)">${p.icon} ${p.name}</span>`).join('')}<span style="font-size:10px;color:var(--text-dim);padding:2px 4px">+${PERSONAS.length-8}個</span></div>
         </div>
-
       </div>
-
-      <!-- 底部工具列：速查 + Top話術 -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
         <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px;cursor:pointer" onclick="showSlimCat(SLIM_CATS[0])">
           <div style="font-size:16px;margin-bottom:4px">⚡</div>
@@ -4926,9 +4967,77 @@ function showOverview() {
           <div style="font-size:11px;color:var(--text-sub)">${SCRIPTS.filter(s=>s.level==='Top').length}筆 · 高難度必學</div>
         </div>
       </div>
-
     </div>
   `);
+}
+
+// ── 今日任務卡 ──
+const _testedScriptIds = new Set();
+
+function buildTodayMission() {
+  const today = new Date().toISOString().split('T')[0];
+  const seed = parseInt(today.replace(/-/g,'').slice(-4));
+  const dayNum = seed % SCRIPTS.length;
+
+  const readIds = [
+    SCRIPTS[dayNum % SCRIPTS.length],
+    SCRIPTS[(dayNum + Math.floor(SCRIPTS.length/3)) % SCRIPTS.length],
+    SCRIPTS[(dayNum + Math.floor(SCRIPTS.length*2/3)) % SCRIPTS.length]
+  ].filter(Boolean);
+
+  const _testedSet = (typeof _testedScriptIds !== 'undefined') ? _testedScriptIds : new Set();
+  const untestedDecodeIds = Object.keys(DECODE_DB).filter(id => !_testedSet.has(id));
+  const quizTargetId = untestedDecodeIds.length > 0
+    ? untestedDecodeIds[dayNum % untestedDecodeIds.length]
+    : Object.keys(DECODE_DB)[dayNum % Object.keys(DECODE_DB).length];
+  const quizTarget = SCRIPTS.find(s => s.id === quizTargetId);
+
+  const isLoggedIn = (typeof libCurrentUser !== 'undefined') && !!libCurrentUser;
+  const _userCheckins = isLoggedIn && (typeof libUserData !== 'undefined') && libUserData && libUserData.checkinDates ? libUserData.checkinDates : [];
+  const todayChecked = _userCheckins.includes(today);
+  const _readSet = (typeof _readScriptIds !== 'undefined') ? _readScriptIds : new Set();
+
+  const readHTML = readIds.map(s => `
+    <div onclick="showScriptFromQuiz('${s.id}')" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:#fff;border:1px solid var(--border);border-radius:10px;cursor:pointer;margin-bottom:6px">
+      <span style="font-size:10px;color:var(--text-dim);flex-shrink:0;font-weight:700;min-width:36px">${s.id}</span>
+      <span style="font-size:13px;color:var(--text);flex:1;line-height:1.4">${esc(s.title.slice(0,30))}${s.title.length>30?'…':''}</span>
+      <span style="font-size:10px;font-weight:700;color:${s.level==='Top'?'var(--gold)':'var(--olive)'};flex-shrink:0">${s.level}</span>
+      <span style="font-size:11px;color:var(--olive);flex-shrink:0">${_readSet.has(s.id)?'✅':'去讀 →'}</span>
+    </div>`).join('');
+
+  return `
+  <div style="background:linear-gradient(135deg,rgba(184,148,60,0.08),rgba(61,90,64,0.05));border:1.5px solid rgba(184,148,60,0.3);border-radius:16px;padding:18px;margin-top:4px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--gold)">📅 今日任務</div>
+        <div style="font-size:15px;font-weight:700;color:var(--text);margin-top:2px">${today} · 今天做這3件事</div>
+      </div>
+      ${isLoggedIn ? `<div style="font-size:11px;color:${todayChecked?'var(--olive)':'var(--text-dim)'};font-weight:700">${todayChecked?'✅ 已打卡':'📅 未打卡'}</div>` : ''}
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:12px;${todayChecked?'opacity:0.55':'cursor:pointer'}" onclick="${todayChecked||!isLoggedIn?'':'openGrowthPanel(\'checkin\')'}">
+        <span style="font-size:20px">📅</span>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:700;color:var(--text)">今日打卡</div>
+          <div style="font-size:11px;color:var(--text-sub)">每天打卡 +2pt，連續7天 +20pt</div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:${todayChecked?'var(--olive)':'var(--gold)'}">${todayChecked?'✅ 完成':'+2 pt →'}</div>
+      </div>
+      <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px 14px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--olive);margin-bottom:10px">📖 今日推薦閱讀（各 +1pt）</div>
+        ${readHTML}
+      </div>
+      <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px 14px;cursor:pointer;display:flex;align-items:center;gap:12px" onclick="${quizTarget?`quickQuizFromScript('${quizTarget.id}')`:'showQuizMode()'}">
+        <span style="font-size:20px">🧠</span>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:700;color:var(--text)">今日快測</div>
+          <div style="font-size:11px;color:var(--text-sub);margin-top:2px">${quizTarget?`「${esc(quizTarget.title.slice(0,28))}」`:'解碼練習 6 題'}</div>
+          ${untestedDecodeIds.length > 0 ? `<div style="font-size:10px;color:var(--gold);margin-top:2px">還有 ${untestedDecodeIds.length} 條沒測過</div>` : '<div style="font-size:10px;color:var(--olive);margin-top:2px">全部都測過了 🎉</div>'}
+        </div>
+        <div style="font-size:12px;font-weight:700;color:var(--gold)">+2 pt →</div>
+      </div>
+    </div>
+  </div>`;
 }
 
 function moduleCard(m) {
@@ -5023,6 +5132,7 @@ function card(s, hl='') {
         <button class="action-btn primary" onclick="copyScript('${s.id}')">📋 複製話術</button>
         <button class="action-btn" onclick="copyTrig('${s.id}')">💬 複製觸發句</button>
         <button class="action-btn" onclick="openDrillModal('${s.id}')" style="background:rgba(138,43,226,.15);border-color:rgba(138,43,226,.4);color:#b06eff">🎭 豆包演練</button>
+        <button class="action-btn" onclick="quickQuizFromScript('${s.id}')" style="background:rgba(184,148,60,0.15);border-color:rgba(184,148,60,0.5);color:var(--gold)">🧠 測一下這條</button>
       </div>
     </div>
   </div>`;
@@ -5472,6 +5582,7 @@ function selectABC(id, idx) {
 const QUIZ_QUESTIONS = [
   {
     id: 'q1',
+    scriptId: 'S160',
     situation: '你剛剛花了45分鐘介紹完案子，對方說：「我覺得不錯，你說的我都聽懂了。」然後站起來準備走，說了這句話。',
     question: '客戶說「我再想想」，他最可能的狀態是？',
     options: [
@@ -5482,6 +5593,7 @@ const QUIZ_QUESTIONS = [
   },
   {
     id: 'q2',
+    scriptId: 'S097',
     situation: '初次見面，你還沒介紹什麼，對方一進門就說這句話。',
     question: '客戶說「我今天不會做決定，就只是來看看」，他最可能的狀態是？',
     options: [
@@ -5492,6 +5604,7 @@ const QUIZ_QUESTIONS = [
   },
   {
     id: 'q3',
+    scriptId: 'S143',
     situation: '客戶在聊天中，已經說了三次「這件事我可以做主」——第一次在討論資金時，第二次在討論時間點時，第三次在你問他需不需要帶家人來時。',
     question: '這個「重複說同一句話」的訊號，志偉哥說最可能代表什麼？',
     options: [
@@ -5502,6 +5615,7 @@ const QUIZ_QUESTIONS = [
   },
   {
     id: 'q4',
+    scriptId: 'S163',
     situation: '你問客戶對投資的看法，他說這句話，同時翻出手機給你看股票App裡的漲幅。',
     question: '客戶說「我股票放著就好，報酬也不差」，他最可能的狀態是？',
     options: [
@@ -5512,6 +5626,7 @@ const QUIZ_QUESTIONS = [
   },
   {
     id: 'q5',
+    scriptId: 'S002',
     situation: '客戶說完這句話後，眼神往旁邊看，沒有繼續說話。',
     question: '客戶說「我家人不太同意，可能要再等等」，最重要的下一步是？',
     options: [
@@ -5522,6 +5637,7 @@ const QUIZ_QUESTIONS = [
   },
   {
     id: 'q6',
+    scriptId: 'S160',
     situation: '志偉哥昨天介入，25分鐘內，他的第一句話是介紹完天空樹和文化新站後問了一個問題。',
     question: '志偉哥問了哪種問題，為什麼？',
     options: [
@@ -5616,16 +5732,277 @@ function showQuizResult() {
     saveGrowthUser(libCurrentUser.id, libUserData);
   }
 
+  // 找到答錯的題目對應的話術（透過scriptId或從DECODE_DB比對）
+  const wrongReview = quizState.answers
+    .map((a, i) => ({ ...a, qObj: QUIZ_QUESTIONS[i] }))
+    .filter(a => !a.correct && a.qObj && a.qObj.scriptId)
+    .map(a => {
+      const ws = SCRIPTS.find(x => x.id === a.qObj.scriptId);
+      return ws ? { id: ws.id, title: ws.title } : null;
+    }).filter(Boolean);
+
+  const wrongHtml = wrongReview.length > 0 ? `
+    <div style="background:rgba(192,57,43,0.05);border:1px solid rgba(192,57,43,0.15);border-radius:12px;padding:16px;margin:0 0 20px;text-align:left">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.1em;color:#c0392b;margin-bottom:10px">❌ 這幾條要回去複習</div>
+      ${wrongReview.map(w => `
+        <div onclick="showScriptFromQuiz('${w.id}')" style="padding:10px 12px;background:#fff;border:1px solid var(--border);border-radius:8px;margin-bottom:6px;cursor:pointer;display:flex;align-items:center;gap:10px">
+          <span style="font-size:11px;color:var(--text-dim);flex-shrink:0">${w.id}</span>
+          <span style="font-size:13px;color:var(--text);flex:1">${esc(w.title.slice(0,40))}</span>
+          <span style="font-size:11px;color:var(--olive)">去看 →</span>
+        </div>`).join('')}
+    </div>` : (pct === 100 ? `<div style="background:rgba(61,90,64,0.06);border:1px solid rgba(61,90,64,0.2);border-radius:12px;padding:14px;margin-bottom:20px;font-size:13px;color:var(--olive);text-align:center">🎉 全對！解碼力滿分！</div>` : '');
+
   renderMain(`
     <div class="view-eyebrow">🧠 解碼練習結果</div>
-    <div style="text-align:center;padding:32px 0">
+    <div style="text-align:center;padding:32px 0 20px">
       <div class="quiz-score">${score}/${total}</div>
       <div style="font-size:18px;color:var(--text);margin:8px 0">${level}</div>
-      <div style="font-size:13px;color:var(--text-sub);margin-bottom:28px">答對率 ${pct}%</div>
-      <div style="display:flex;gap:12px;justify-content:center">
-        <button onclick="showQuizMode()" style="background:var(--olive);color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">🔄 再練一次</button>
-        <button onclick="showDecodeHome()" style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 24px;font-size:13px;color:var(--text-sub);cursor:pointer;font-family:inherit">← 回解碼主頁</button>
+      <div style="font-size:13px;color:var(--text-sub);margin-bottom:24px">答對率 ${pct}%</div>
+    </div>
+    ${wrongHtml}
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <button onclick="showQuizMode()" style="background:var(--olive);color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">🔄 再練一次</button>
+      <button onclick="showDecodeHome()" style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 24px;font-size:13px;color:var(--text-sub);cursor:pointer;font-family:inherit">← 回解碼主頁</button>
+    </div>
+  `);
+}
+
+// ══════════════════════════════════════
+// 📌 話術庫 → 考試連動：快速出題
+// ══════════════════════════════════════
+
+// 從 SCRIPTS 動態生成該話術的測驗題
+function quickQuizFromScript(scriptId) {
+  _testedScriptIds.add(scriptId); // 記錄已測過，供今日任務卡去重
+  const s = SCRIPTS.find(x => x.id === scriptId);
+  if (!s) return;
+
+  // 先從現有 QUIZ_QUESTIONS 找有沒有對應的題目
+  const existingQ = QUIZ_QUESTIONS.filter(q => q.scriptId === scriptId || (q.situation && q.situation.includes(s.title.slice(0,10))));
+
+  if (existingQ.length > 0) {
+    // 有現成題目，直接跑那題
+    quizState = { current: 0, score: 0, answers: [], sourceScriptId: scriptId, questions: existingQ };
+    renderDynamicQuiz();
+    return;
+  }
+
+  // 沒有現成題目，用 AI 動態生成
+  renderMain(`
+    <button class="back-btn" onclick="history.back()">← 返回</button>
+    <div style="text-align:center;padding:48px 24px">
+      <div style="font-size:32px;margin-bottom:16px">🧠</div>
+      <div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:8px">正在為這條話術出題...</div>
+      <div style="font-size:13px;color:var(--text-sub)">「${esc(s.title.slice(0,30))}」</div>
+    </div>
+  `);
+
+  generateQuizFromScript(s);
+}
+
+async function generateQuizFromScript(s) {
+  const systemPrompt = `你是富時代房地產銷售訓練系統的出題老師。
+根據提供的話術內容，出一道選擇題來測驗業務是否真正理解這條話術的核心邏輯。
+
+輸出格式為嚴格 JSON（不要有任何 markdown、解釋或前後綴）：
+{
+  "situation": "情境描述（1-2句，設定客戶說了什麼或發生什麼狀況）",
+  "question": "測驗問題（考核這條話術最關鍵的判斷或做法）",
+  "options": [
+    {"text": "A — 選項文字", "correct": false, "feedback": "為什麼不對的解釋（2-3句）"},
+    {"text": "B — 選項文字", "correct": true, "feedback": "為什麼對的解釋，對應到話術核心邏輯（2-3句）"},
+    {"text": "C — 選項文字", "correct": false, "feedback": "為什麼不對的解釋（2-3句）"}
+  ],
+  "scriptId": "${s.id}"
+}
+
+規則：
+1. 只有一個正確答案（correct: true）
+2. 三個選項都要合理，不能有明顯的干擾項
+3. 題目要測驗「理解深度」而不是「記憶內容」
+4. situation 要有具體場景，不要太抽象
+5. feedback 要引用話術的核心邏輯，讓業務知道為什麼`;
+
+  const userMsg = `話術ID: ${s.id}
+話術標題: ${s.title}
+觸發句: ${s.trigger}
+情境: ${s.situation}
+核心內容: ${s.content}`;
+
+  try {
+    const apiKey = getApiKey();
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userMsg }]
+      })
+    });
+    if (!resp.ok) throw new Error('API error');
+    const data = await resp.json();
+    const raw = (data.content && data.content[0]) ? data.content[0].text : '';
+    const clean = raw.replace(/```json|```/g, '').trim();
+    const q = JSON.parse(clean);
+    q.scriptId = s.id;
+    // 動態出題跑一題 quiz
+    quizState = { current: 0, score: 0, answers: [], sourceScriptId: s.id, questions: [q] };
+    renderDynamicQuiz();
+  } catch(e) {
+    renderMain(`
+      <div style="text-align:center;padding:40px 24px">
+        <div style="font-size:32px;margin-bottom:12px">⚠️</div>
+        <div style="font-size:14px;color:var(--text);margin-bottom:8px">出題失敗，請再試一次</div>
+        <div style="font-size:12px;color:var(--text-sub);margin-bottom:24px">${e.message}</div>
+        <button onclick="quickQuizFromScript('${s.id}')" style="background:var(--olive);color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">🔄 重試</button>
       </div>
+    `);
+  }
+}
+
+// 渲染動態出題（支援單題 or 多題）
+function renderDynamicQuiz() {
+  const qs = quizState.questions || QUIZ_QUESTIONS;
+  const idx = quizState.current;
+  const q = qs[idx];
+  if (!q) { showDynamicQuizResult(); return; }
+  const total = qs.length;
+  const progress = Math.round((idx / total) * 100);
+  const isSingleFromScript = qs.length === 1 && quizState.sourceScriptId;
+
+  renderMain(`
+    <div class="view-eyebrow">🧠 快速測驗</div>
+    <div class="view-title">${isSingleFromScript ? '這條你學會了嗎？' : '先猜，再對照'}</div>
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:20px;height:6px;margin-bottom:20px;overflow:hidden">
+      <div style="height:100%;background:var(--olive);border-radius:20px;width:${total === 1 ? 0 : progress}%;transition:width .3s"></div>
+    </div>
+    <div class="quiz-container">
+      <div style="font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--text-dim);margin-bottom:12px">
+        ${total > 1 ? `題目 ${idx + 1} / ${total}` : '單題測驗'}
+      </div>
+      <div class="quiz-situation">${esc(q.situation)}</div>
+      <div class="quiz-q">${esc(q.question)}</div>
+      <div class="quiz-options" id="dquiz-opts">
+        ${q.options.map((opt, i) => `
+          <div class="quiz-opt" id="dquiz-opt-${i}" onclick="answerDynamicQuiz(${i})">${esc(opt.text)}</div>
+        `).join('')}
+      </div>
+      <div class="quiz-feedback" id="dquiz-feedback"></div>
+      <div id="dquiz-next" style="display:none;margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+        ${quizState.sourceScriptId ? `<button onclick="showScriptFromQuiz('${quizState.sourceScriptId}')" style="background:rgba(184,148,60,0.15);border:1px solid rgba(184,148,60,0.5);color:var(--gold);border-radius:10px;padding:10px 18px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">📖 回去看話術</button>` : ''}
+        <button id="dquiz-main-btn" onclick="advanceDynamicQuiz()" style="display:none;background:var(--olive);color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">下一題 →</button>
+      </div>
+    </div>
+  `);
+}
+
+function answerDynamicQuiz(idx) {
+  const qs = quizState.questions || QUIZ_QUESTIONS;
+  const q = qs[quizState.current];
+  const opt = q.options[idx];
+
+  document.querySelectorAll('.quiz-opt').forEach((el, i) => {
+    el.onclick = null;
+    if (q.options[i].correct) el.classList.add('correct');
+    else if (i === idx && !opt.correct) el.classList.add('wrong');
+  });
+
+  const fb = document.getElementById('dquiz-feedback');
+  fb.innerHTML = `<strong>${opt.correct ? '✅ 答對了！' : '❌ 不是這個。'}</strong><br><br>${esc(opt.feedback)}`;
+  fb.classList.add('show');
+  if (opt.correct) quizState.score++;
+  quizState.answers.push({ correct: opt.correct, scriptId: q.scriptId });
+
+  // 積分 + 快測計數
+  if (opt.correct && typeof growthAddPts === 'function' && libCurrentUser) {
+    growthAddPts(2, '話術快速測驗答對');
+    if (libUserData) {
+      libUserData.quickTestCount = (libUserData.quickTestCount || 0) + 1;
+      saveGrowthUser(libCurrentUser.id, libUserData);
+    }
+  }
+
+  const nextDiv = document.getElementById('dquiz-next');
+  if (nextDiv) nextDiv.style.display = 'flex';
+  const mainBtn = document.getElementById('dquiz-main-btn');
+  if (mainBtn) {
+    mainBtn.style.display = 'inline-block';
+    const isLast = quizState.current + 1 >= (qs.length);
+    mainBtn.textContent = isLast ? '看結果 →' : '下一題 →';
+  }
+}
+
+function advanceDynamicQuiz() {
+  const qs = quizState.questions || QUIZ_QUESTIONS;
+  quizState.current++;
+  if (quizState.current >= qs.length) {
+    showDynamicQuizResult();
+  } else {
+    renderDynamicQuiz();
+  }
+}
+
+function showDynamicQuizResult() {
+  const qs = quizState.questions || QUIZ_QUESTIONS;
+  const total = qs.length;
+  const score = quizState.score;
+  const pct = Math.round((score / total) * 100);
+  const srcId = quizState.sourceScriptId;
+  const s = srcId ? SCRIPTS.find(x => x.id === srcId) : null;
+
+  // 找到答錯的題目對應的話術
+  const wrongItems = quizState.answers
+    .map((a, i) => ({ ...a, q: qs[i] }))
+    .filter(a => !a.correct && a.scriptId);
+
+  const wrongLinksHtml = wrongItems.length > 0 ? `
+    <div style="background:rgba(192,57,43,0.05);border:1px solid rgba(192,57,43,0.15);border-radius:12px;padding:16px;margin-top:20px;text-align:left">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.1em;color:#c0392b;margin-bottom:10px">❌ 這幾條要回去複習</div>
+      ${wrongItems.map(w => {
+        const ws = SCRIPTS.find(x => x.id === w.scriptId);
+        if (!ws) return '';
+        return `<div onclick="showScriptFromQuiz('${ws.id}')" style="padding:10px 12px;background:#fff;border:1px solid var(--border);border-radius:8px;margin-bottom:6px;cursor:pointer;display:flex;align-items:center;gap:10px">
+          <span style="font-size:11px;color:var(--text-dim);flex-shrink:0">${ws.id}</span>
+          <span style="font-size:13px;color:var(--text);flex:1">${esc(ws.title.slice(0,40))}</span>
+          <span style="font-size:11px;color:var(--olive)">去看 →</span>
+        </div>`;
+      }).join('')}
+    </div>` : `<div style="background:rgba(61,90,64,0.06);border:1px solid rgba(61,90,64,0.2);border-radius:12px;padding:14px;margin-top:16px;font-size:13px;color:var(--olive);text-align:center">🎉 全對！這條話術你已掌握</div>`;
+
+  renderMain(`
+    <div class="view-eyebrow">🧠 測驗結果</div>
+    <div style="text-align:center;padding:28px 0 16px">
+      <div class="quiz-score">${score}/${total}</div>
+      <div style="font-size:15px;color:var(--text);margin:8px 0">${pct >= 100 ? '🏆 完全掌握' : pct >= 66 ? '💪 理解不錯' : '🌱 需要複習'}</div>
+    </div>
+    ${wrongLinksHtml}
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:20px;flex-wrap:wrap">
+      ${s ? `<button onclick="quickQuizFromScript('${s.id}')" style="background:rgba(184,148,60,0.15);border:1px solid rgba(184,148,60,0.5);color:var(--gold);border-radius:10px;padding:12px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">🔄 再測一次</button>` : ''}
+      ${s ? `<button onclick="showScriptFromQuiz('${s.id}')" style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 20px;font-size:13px;color:var(--olive);font-weight:700;cursor:pointer;font-family:inherit">📖 回去看話術</button>` : ''}
+      <button onclick="showQuizMode()" style="background:var(--olive);color:#fff;border:none;border-radius:10px;padding:12px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">🧠 完整練習</button>
+    </div>
+  `);
+}
+
+// 從測驗結果跳回對應話術（展開那張卡）
+function showScriptFromQuiz(scriptId) {
+  const s = SCRIPTS.find(x => x.id === scriptId);
+  if (!s) return;
+  // 展開那張卡，渲染在單卡頁面
+  expandedCards.add(scriptId);
+  renderMain(`
+    <button class="back-btn" onclick="history.go(-1)">← 返回</button>
+    <div style="font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--gold);margin-bottom:12px;text-transform:uppercase">📖 複習這條話術</div>
+    <div class="script-list">${card(s)}</div>
+    <div style="margin-top:16px">
+      <button onclick="quickQuizFromScript('${scriptId}')" style="background:rgba(184,148,60,0.15);border:1px solid rgba(184,148,60,0.5);color:var(--gold);border-radius:10px;padding:12px 24px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;width:100%">🧠 再測一次這條</button>
     </div>
   `);
 }
@@ -6355,7 +6732,7 @@ function growthStorageKey(uid, key){ return 'rt_'+uid+'_'+key; }
 function loadGrowthUser(uid) {
   var raw = localStorage.getItem(growthStorageKey(uid,'data'));
   if(raw) return JSON.parse(raw);
-  return { pts:0, totalExams:0, totalCheckins:0, maxStreak:0, currentStreak:0, lastCheckin:null, checkinDates:[], hasPerfect:false, achievedMilestones:[], earnedBadges:[] };
+  return { pts:0, totalExams:0, totalCheckins:0, maxStreak:0, currentStreak:0, lastCheckin:null, checkinDates:[], hasPerfect:false, achievedMilestones:[], earnedBadges:[], quickTestCount:0 };
 }
 
 function saveGrowthUser(uid, data) {
@@ -6436,6 +6813,133 @@ function renderGrowthProfile() {
     div.innerHTML = '<div class="badge-icon">'+b.icon+'</div><div class="badge-name">'+b.name+'</div>';
     bg.appendChild(div);
   });
+
+  // ── 升級任務清單（任務化成長地圖）──
+  renderNextLevelTasks(u, lv, next);
+}
+
+function renderNextLevelTasks(u, lv, next) {
+  var container = document.getElementById('g-next-tasks');
+  if (!container) return;
+
+  if (!next) {
+    container.innerHTML = '<div style="text-align:center;padding:20px;font-size:14px;color:var(--gold);font-weight:700">👑 你已達到最高等級！富時代傳承</div>';
+    return;
+  }
+
+  // 根據當前等級定義要升到下一級的具體任務
+  var ptsNeeded = next.ptReq - u.pts;
+  var tasks = getLevelUpTasks(lv.lv, u, ptsNeeded);
+
+  var html = '<div style="margin-bottom:10px;display:flex;align-items:center;justify-content:space-between">';
+  html += '<div style="font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--text)">升到 '+next.icon+' '+next.name+' 還需</div>';
+  html += '<div style="font-size:13px;font-weight:900;color:var(--olive)">'+ptsNeeded+' pt</div>';
+  html += '</div>';
+
+  tasks.forEach(function(t) {
+    var done = t.done;
+    var pct = Math.min(100, Math.round((t.current / t.target) * 100));
+    html += '<div onclick="'+(t.action ? t.action+'()' : '')+'" style="background:#fff;border:1px solid '+(done?'rgba(61,90,64,0.3)':t.urgent?'rgba(184,148,60,0.4)':'var(--border)')+';border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:'+(t.action?'pointer':'default')+';">';
+    html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:'+(done?'0':'8px')+'">';
+    html += '<span style="font-size:18px">'+t.icon+'</span>';
+    html += '<div style="flex:1">';
+    html += '<div style="font-size:13px;font-weight:700;color:'+(done?'var(--text-dim)':'var(--text)')+'">'+t.label+'</div>';
+    html += '<div style="font-size:11px;color:var(--text-dim);margin-top:1px">'+t.desc+'</div>';
+    html += '</div>';
+    html += '<div style="font-size:12px;font-weight:700;color:'+(done?'var(--olive)':t.urgent?'var(--gold)':'var(--text-dim)')+'">'+( done?'✅ 完成':(t.pts?'+'+t.pts+' pt':''))+'</div>';
+    html += '</div>';
+    if (!done) {
+      html += '<div style="background:var(--surface2);border-radius:10px;height:5px;overflow:hidden">';
+      html += '<div style="height:100%;background:'+(t.urgent?'var(--gold)':'var(--olive)')+';border-radius:10px;width:'+pct+'%;transition:width .4s"></div>';
+      html += '</div>';
+      html += '<div style="font-size:10px;color:var(--text-dim);text-align:right;margin-top:3px">'+t.current+' / '+t.target+'</div>';
+    }
+    html += '</div>';
+  });
+
+  container.innerHTML = html;
+}
+
+function getLevelUpTasks(currentLv, u, ptsNeeded) {
+  // 共用任務
+  var tasks = [];
+
+  // 打卡任務
+  var streakTarget = currentLv <= 2 ? 3 : currentLv <= 4 ? 7 : 14;
+  tasks.push({
+    icon: '📅',
+    label: '連續打卡 '+streakTarget+' 天',
+    desc: '每天 +2pt，連續7天額外 +20pt',
+    current: Math.min(u.currentStreak, streakTarget),
+    target: streakTarget,
+    pts: streakTarget * 2 + (streakTarget >= 7 ? 20 : 0),
+    done: u.currentStreak >= streakTarget,
+    urgent: u.currentStreak >= streakTarget - 1,
+    action: 'closeGrowthPanel'
+  });
+
+  // 考試院任務
+  var examTarget = currentLv <= 2 ? 1 : currentLv <= 4 ? 3 : 5;
+  tasks.push({
+    icon: '🎯',
+    label: '完成 '+examTarget+' 場考試院',
+    desc: '每場 +5pt，80分以上額外 +5pt',
+    current: Math.min(u.totalExams, examTarget),
+    target: examTarget,
+    pts: examTarget * 5,
+    done: u.totalExams >= examTarget,
+    urgent: u.totalExams >= examTarget - 1,
+    action: 'closeGrowthPanel'
+  });
+
+  // 話術閱讀任務
+  var readTarget = currentLv <= 2 ? 5 : currentLv <= 4 ? 15 : 30;
+  var readCurrent = Math.min(u.pts, readTarget); // 估算已讀（用閱讀pt近似）
+  tasks.push({
+    icon: '📖',
+    label: '閱讀 '+readTarget+' 條話術',
+    desc: '每條話術展開 +1pt（每session計一次）',
+    current: readCurrent,
+    target: readTarget,
+    pts: readTarget,
+    done: readCurrent >= readTarget,
+    urgent: false,
+    action: 'closeGrowthPanel'
+  });
+
+  // 滿分任務（Lv3以上才顯示）
+  if (currentLv >= 3 && !u.hasPerfect) {
+    tasks.push({
+      icon: '💯',
+      label: '解碼練習拿滿分',
+      desc: '6題全對，額外 +10pt',
+      current: 0,
+      target: 1,
+      pts: 10,
+      done: u.hasPerfect,
+      urgent: false,
+      action: 'closeGrowthPanel'
+    });
+  }
+
+  // 快速測驗任務（鼓勵使用新功能）
+  var quickTestTarget = currentLv <= 2 ? 3 : 5;
+  var quickTestDone = u.quickTestCount || 0;
+  if (currentLv >= 2) {
+    tasks.push({
+      icon: '🧠',
+      label: '話術快測 '+quickTestTarget+' 題答對',
+      desc: '話術卡片按「測一下這條」，每題答對 +2pt',
+      current: Math.min(quickTestDone, quickTestTarget),
+      target: quickTestTarget,
+      pts: quickTestTarget * 2,
+      done: quickTestDone >= quickTestTarget,
+      urgent: false,
+      action: 'closeGrowthPanel'
+    });
+  }
+
+  return tasks;
 }
 
 function renderGrowthLB() {
