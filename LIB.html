@@ -5750,12 +5750,19 @@ function showReplaySingle(id) {
 
 init();
 
-// 從 CRM 跳過來時自動帶入客戶並開啟 AI Modal
+// 從 CRM 跳過來時自動帶入客戶並觸發推薦
 (function() {
   try {
     var raw = sessionStorage.getItem('crm_launch_customer');
     if (!raw) return;
     sessionStorage.removeItem('crm_launch_customer');
+    var c = JSON.parse(raw);
+    // 等頁面 init() 完成後再渲染推薦區塊
+    setTimeout(function() {
+      _activeClient = c;
+      renderRecommendedScripts(c);
+      showToast('📌 已為 ' + (c.customerName || '客戶') + ' 推薦話術');
+    }, 200);
   } catch(e) {}
 })();
 
@@ -5860,13 +5867,123 @@ function selectCrmCustomer(jsonStr) {
   closeCrmPicker();
 
   if (_crmPickerTarget === 'futime') {
-    showToast('✅ 已選取 ' + c.customerName);
+    // 儲存客戶，觸發話術推薦
+    _activeClient = c;
+    renderRecommendedScripts(c);
+    showToast('📌 已為 ' + c.customerName + ' 推薦話術');
   }
 }
 
 function setVal(id, val) {
   const el = document.getElementById(id);
   if (el) { el.value = val; }
+}
+
+// ── 當前帶入的客戶 ──
+let _activeClient = null;
+
+/**
+ * 計算每筆話術對當前客戶的相關分數
+ * 第一層：部曲/族群 → 分類硬對應
+ * 第二層：異議關鍵字模糊比對
+ */
+function calcScriptRelevance(s, c) {
+  let score = 0;
+
+  // 部曲 → 話術分類對應
+  const stageMap = {
+    '第一部曲': ['開發策略', '信任建立'],
+    '第二部曲': ['信任建立', '銷售流程'],
+    '第三部曲': ['提問式銷售', '銷售流程'],
+    '第四部曲': ['提問式銷售', '市場知識'],
+    '第五部曲': ['異議處理', '提問式銷售'],
+    '第六部曲': ['締結成交', '異議處理'],
+    '第七部曲': ['締結成交', '追蹤技巧'],
+    '第八部曲': ['追蹤技巧', '轉介紹策略']
+  };
+  const bp = c.blueprintCompletion || '';
+  if (bp && stageMap[bp] && stageMap[bp].includes(s.category)) score += 40;
+
+  // 族群 → 話術分類對應
+  const seg = (c.clientSegment || c.clientType || '').toLowerCase();
+  const segMap = [
+    { keys: ['股票', '投資'], cats: ['投資心理', '提問式銷售'] },
+    { keys: ['雙薪', '夫妻', '家庭'], cats: ['信任建立', '銷售流程'] },
+    { keys: ['長輩', '媽媽', '父母', '退休'], cats: ['信任建立', '開發策略'] },
+    { keys: ['租屋', '租房', '首購'], cats: ['市場知識', '締結成交'] },
+    { keys: ['外商', '高薪', '工程師'], cats: ['投資心理', '提問式銷售'] }
+  ];
+  segMap.forEach(function(row) {
+    if (row.keys.some(function(k){ return seg.includes(k); }) && row.cats.includes(s.category)) score += 30;
+  });
+
+  // 異議/痛點關鍵字 → 比對 trigger + situation
+  const objText = (c.painPointsNote || c.objections || '').toLowerCase();
+  if (objText) {
+    const scriptText = (s.trigger + ' ' + s.situation).toLowerCase();
+    objText.split(/[\s,，、。！？]+/).filter(function(w){ return w.length >= 2; }).forEach(function(w) {
+      if (scriptText.includes(w)) score += 15;
+    });
+  }
+
+  // 銷售心態兜底
+  if (s.category === '銷售心態') score += 5;
+
+  return Math.min(score, 100);
+}
+
+/**
+ * 在 main 頂部插入推薦話術區塊（最多 6 筆）
+ */
+function renderRecommendedScripts(c) {
+  const scored = SCRIPTS
+    .map(function(s){ return { s: s, score: calcScriptRelevance(s, c) }; })
+    .filter(function(x){ return x.score > 0; })
+    .sort(function(a, b){ return b.score - a.score; })
+    .slice(0, 6);
+
+  if (!scored.length) return;
+
+  const name = c.customerName || '此客戶';
+  const bp   = c.blueprintCompletion ? '· ' + c.blueprintCompletion : '';
+  const seg  = c.clientSegment || c.clientType || '';
+
+  const recHtml =
+    '<div id="rec-block" style="' +
+      'background:linear-gradient(135deg,rgba(61,90,64,0.07),rgba(184,148,60,0.05));' +
+      'border:1.5px solid rgba(61,90,64,0.25);' +
+      'border-radius:14px;padding:20px;margin-bottom:28px;">' +
+      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">' +
+        '<span style="font-size:16px">📌</span>' +
+        '<span style="font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--olive)">為此客戶推薦話術</span>' +
+      '</div>' +
+      '<div style="font-size:18px;font-weight:700;color:var(--text);margin-bottom:4px">' + name + '</div>' +
+      '<div style="font-size:12px;color:var(--text-sub);margin-bottom:16px">' +
+        (seg ? '<span style="background:rgba(61,90,64,0.1);border-radius:20px;padding:2px 10px;margin-right:6px">' + seg + '</span>' : '') +
+        (bp  ? '<span style="background:rgba(184,148,60,0.12);border-radius:20px;padding:2px 10px">' + bp + '</span>' : '') +
+      '</div>' +
+      '<div class="script-list">' + scored.map(function(x){ return card(x.s); }).join('') + '</div>' +
+      '<div style="margin-top:12px;text-align:right">' +
+        '<button onclick="clearRecommend()" style="background:none;border:1px solid var(--border);border-radius:8px;padding:5px 14px;font-size:11px;color:var(--text-dim);cursor:pointer;font-family:inherit;">' +
+          '✕ 清除推薦</button>' +
+      '</div>' +
+    '</div>';
+
+  const main = document.getElementById('main');
+  const oldWrapper = document.getElementById('rec-wrapper');
+  if (oldWrapper) oldWrapper.remove();
+
+  const wrapper = document.createElement('div');
+  wrapper.id = 'rec-wrapper';
+  wrapper.innerHTML = recHtml;
+  main.prepend(wrapper);
+}
+
+/** 清除推薦並重置 */
+function clearRecommend() {
+  _activeClient = null;
+  const w = document.getElementById('rec-wrapper');
+  if (w) w.remove();
 }
 </script>
 <!-- ═══ 豆包演練 Prompt 產生器 Modal ═══ -->
