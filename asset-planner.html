@@ -1857,7 +1857,7 @@ body{
     </div>
 
     <!-- 橋接過渡 -->
-    <div id="bridgeText" style="text-align:center;padding:6px 8px 14px;font-size:12px;color:rgba(44,31,14,.8);line-height:1.8;display:none">
+    <div id="bridgeText" style="text-align:center;padding:14px 16px 16px;font-size:14px;color:rgba(44,31,14,.75);line-height:2;display:none;font-style:italic;border-left:3px solid rgba(201,146,43,.3);margin:0 4px 14px;border-radius:0 8px 8px 0;background:rgba(201,146,43,.03)">
       <span id="bridgeMsg"></span>
     </div>
 
@@ -1929,7 +1929,7 @@ body{
         <div style="font-size:26px;font-weight:900;color:#6ee7b7;font-family:'DM Mono',monospace" id="rConsoReleaseVal">—</div>
         <div style="font-size:11px;color:rgba(52,211,153,.8);margin-top:4px" id="rConsoReleaseNote">—</div>
       </div>
-      <!-- 核心話術 -->
+      <!-- 整合說明 -->
       <div id="rConsoScript" style="margin-top:12px;padding:12px 14px;background:rgba(201,146,43,.06);border:1px dashed rgba(201,146,43,.3);border-radius:8px;font-size:13px;color:#2c1f0e;line-height:2;font-style:italic;display:none"></div>
     </div>
 
@@ -1971,7 +1971,7 @@ body{
 
       <!-- PART 2：交屋後月結餘（簡化版，只顯示結論） -->
       <div id="part2Section" style="background:rgba(201,146,43,.05);border:1px solid rgba(160,120,60,.12);border-radius:14px;padding:16px;margin-bottom:10px">
-        <div style="font-size:8px;letter-spacing:2px;color:#c9922b;margin-bottom:10px;font-family:'DM Mono',Menlo,Consolas,monospace">PART 2 — 交屋後每月現金流（細項）</div>
+        <div style="font-size:8px;letter-spacing:2px;color:#c9922b;margin-bottom:10px;font-family:'DM Mono',Menlo,Consolas,monospace">PART 2 — 交屋後月現金流</div>
         <!-- 月收入 / 生活支出 兩格（參考資訊） -->
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
           <div style="padding:10px;background:rgba(160,100,10,.04);border-radius:8px">
@@ -2179,14 +2179,36 @@ body{
       </div>
     </div>
 
-        <!-- ⑤ 等待代價：已移至「等待代價」tab，報告頁僅保留 JS 相容隱藏元素 -->
-    <span id="waitCostSection" style="display:none"></span>
-    <span id="waitSubtitle" style="display:none">—</span>
-    <span id="waitMonthly" style="display:none">—</span>
-    <span id="waitDaily" style="display:none">—</span>
-    <span id="lost6m" style="display:none">—</span>
-    <span id="lost1y" style="display:none">—</span>
-    <span id="lost2y" style="display:none">—</span>
+        <!-- ⑤ 等待代價 -->
+    <div id="waitCostSection" style="display:none;background:#fff;border:1px solid rgba(248,113,113,.18);border-radius:14px;padding:18px;margin-bottom:14px;box-shadow:0 2px 16px rgba(120,80,20,.07)">
+      <div style="font-size:8px;letter-spacing:5px;color:rgba(248,113,113,.7);margin-bottom:4px;font-weight:bold;font-family:'DM Mono',monospace">COST OF WAITING</div>
+      <div style="font-size:14px;font-weight:bold;color:#2c1f0e;margin-bottom:6px">「再等一年」的真實代價</div>
+      <div style="font-size:11px;color:rgba(44,31,14,.55);line-height:1.8;margin-bottom:14px" id="waitSubtitle">—</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+        <div style="text-align:center;padding:14px;background:rgba(248,113,113,.06);border:1px solid rgba(248,113,113,.15);border-radius:10px">
+          <div style="font-size:9px;color:rgba(248,113,113,.7);letter-spacing:1px;font-weight:bold;margin-bottom:6px">每月漲幅</div>
+          <div style="font-size:24px;font-weight:900;color:#f87171;font-family:'DM Mono',monospace" id="waitMonthly">—</div>
+        </div>
+        <div style="text-align:center;padding:14px;background:rgba(248,113,113,.06);border:1px solid rgba(248,113,113,.15);border-radius:10px">
+          <div style="font-size:9px;color:rgba(248,113,113,.7);letter-spacing:1px;font-weight:bold;margin-bottom:6px">每天漲幅</div>
+          <div style="font-size:24px;font-weight:900;color:#f87171;font-family:'DM Mono',monospace" id="waitDaily">—</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+        <div style="text-align:center;padding:12px;background:rgba(248,113,113,.05);border-radius:8px">
+          <div style="font-size:9px;color:rgba(248,113,113,.6);margin-bottom:4px">等半年多付</div>
+          <div style="font-size:18px;font-weight:900;color:#f87171;font-family:'DM Mono',monospace" id="lost6m">—</div>
+        </div>
+        <div style="text-align:center;padding:12px;background:rgba(248,113,113,.07);border-radius:8px">
+          <div style="font-size:9px;color:rgba(248,113,113,.6);margin-bottom:4px">等一年多付</div>
+          <div style="font-size:18px;font-weight:900;color:#f87171;font-family:'DM Mono',monospace" id="lost1y">—</div>
+        </div>
+        <div style="text-align:center;padding:12px;background:rgba(248,113,113,.1);border-radius:8px">
+          <div style="font-size:9px;color:rgba(248,113,113,.6);margin-bottom:4px">等兩年多付</div>
+          <div style="font-size:18px;font-weight:900;color:#f87171;font-family:'DM Mono',monospace" id="lost2y">—</div>
+        </div>
+      </div>
+    </div>
     <span id="waitYearly" style="display:none">—</span>
     <span id="buy10" style="display:none">—</span>
     <span id="nobuy10" style="display:none">—</span>
@@ -2200,13 +2222,14 @@ body{
     <div id="youCanDoThis" style="background:#fff;border:1px solid rgba(160,120,60,.12);border-radius:14px;padding:18px;margin-bottom:14px;box-shadow:0 2px 16px rgba(120,80,20,.07)">
       <div style="font-size:9px;letter-spacing:3px;color:#c9922b;margin-bottom:14px;font-weight:bold;font-family:'DM Mono',Menlo,Consolas,monospace" id="youCanTitle">YOU CAN DO THIS — 你完全可以</div>
 
-      <!-- 4張數字卡 -->
-      <div class="ng" style="margin-bottom:12px">
+      <!-- 2張核心數字卡（精簡版）-->
+      <div class="ng" style="margin-bottom:12px;grid-template-columns:1fr 1fr">
         <div class="nc i"><div class="ncl">MONTHLY INCOME</div><div class="ncv" id="nI">—</div><div class="ncu">每月總收入</div></div>
-        <div class="nc e"><div class="ncl">LIVING EXPENSES</div><div class="ncv" id="nE">—</div><div class="ncu">每月生活支出</div></div>
-        <div class="nc l"><div class="ncl">MORTGAGE/MONTH</div><div class="ncv" id="nL">—</div><div class="ncu">購屋每月攤還</div></div>
         <div class="nc s" id="rentSavedCard"><div class="ncl">RENT SAVED</div><div class="ncv" id="nS">—</div><div class="ncu">省下原房租</div></div>
       </div>
+      <!-- 隱藏但保留 ID 相容 -->
+      <span id="nE" style="display:none">—</span>
+      <span id="nL" style="display:none">—</span>
 
       <!-- 每月剩餘大數字 -->
       <div class="sp" style="margin-bottom:12px">
@@ -2267,9 +2290,18 @@ body{
       </div>
     </div>
 
+    <!-- ⑦ 投資分析三連 - 包裝標題 -->
+    <div id="investAnalysisGroup" style="display:none">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:0 4px">
+        <div style="flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(201,146,43,.3))"></div>
+        <div style="font-size:9px;letter-spacing:4px;color:rgba(201,146,43,.6);font-family:'DM Mono',monospace;white-space:nowrap">INVESTMENT ANALYSIS</div>
+        <div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(201,146,43,.3),transparent)"></div>
+      </div>
+    </div>
     <!-- ⑦ 投資報酬分析（富時代算法，取代圖表） -->
     <div id="roiSection" style="display:none;background:#fff;border:1px solid rgba(160,120,60,.12);border-radius:14px;padding:20px;margin-bottom:14px;box-shadow:0 2px 16px rgba(120,80,20,.07)">
-      <div style="font-size:8px;letter-spacing:5px;color:rgba(46,180,80,.7);margin-bottom:16px;font-weight:bold;font-family:'DM Mono',monospace">RETURN ON INVESTMENT — 投資報酬分析</div>
+      <div style="font-size:8px;letter-spacing:5px;color:rgba(46,180,80,.7);margin-bottom:8px;font-weight:bold;font-family:'DM Mono',monospace">RETURN ON INVESTMENT — 投資報酬分析</div>
+      <div style="font-size:12px;color:rgba(44,31,14,.55);line-height:1.8;margin-bottom:14px">你用自備款當槓桿，控制整間房的增值。看看這筆錢，到底幫你賺了多少。</div>
       <!-- 三格核心數字 -->
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px;text-align:center">
         <div style="background:rgba(201,146,43,.05);border:1px solid rgba(201,146,43,.12);border-radius:14px;padding:16px">
@@ -2296,7 +2328,8 @@ body{
 
     <!-- ⑦-B 風險下限分析 -->
     <div id="riskFloorSection" style="display:none;background:#fff;border:1px solid rgba(248,113,113,.15);border-radius:14px;padding:20px;margin-bottom:14px;box-shadow:0 2px 16px rgba(120,80,20,.07)">
-      <div style="font-size:8px;letter-spacing:5px;color:rgba(248,113,113,.7);margin-bottom:16px;font-weight:bold;font-family:'DM Mono',monospace">RISK FLOOR — 最壞情況我虧多少？</div>
+      <div style="font-size:8px;letter-spacing:5px;color:rgba(248,113,113,.7);margin-bottom:8px;font-weight:bold;font-family:'DM Mono',monospace">RISK FLOOR — 最壞情況我虧多少？</div>
+      <div style="font-size:12px;color:rgba(44,31,14,.55);line-height:1.8;margin-bottom:14px">台灣史上最大單年跌幅約 15%。我們把最壞的情況攤開來，讓你知道底在哪裡。</div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px;text-align:center">
         <div style="background:rgba(248,113,113,.05);border:1px solid rgba(248,113,113,.15);border-radius:12px;padding:14px">
           <div style="font-size:9px;color:rgba(248,113,113,.7);margin-bottom:6px;letter-spacing:1px;font-family:'DM Mono',monospace">跌 10%</div>
@@ -2319,16 +2352,17 @@ body{
 
     <!-- ⑦-C 報酬對比基準 -->
     <div id="benchmarkSection" style="display:none;background:#fff;border:1px solid rgba(160,120,60,.12);border-radius:14px;padding:20px;margin-bottom:14px;box-shadow:0 2px 16px rgba(120,80,20,.07)">
-      <div style="font-size:8px;letter-spacing:5px;color:rgba(201,146,43,.6);margin-bottom:16px;font-weight:bold;font-family:'DM Mono',monospace">BENCHMARK — 跟別的選擇比，怎麼樣？</div>
+      <div style="font-size:8px;letter-spacing:5px;color:rgba(201,146,43,.6);margin-bottom:8px;font-weight:bold;font-family:'DM Mono',monospace">BENCHMARK — 跟別的選擇比，怎麼樣？</div>
+      <div style="font-size:12px;color:rgba(44,31,14,.55);line-height:1.8;margin-bottom:8px">同樣的錢，放在不同地方，差距有多大？</div>
       <div style="font-size:11px;color:rgba(44,31,14,.6);margin-bottom:12px">同樣的自備款 <span id="bmkPrincipal" style="color:#e8b84b;font-weight:bold">—</span>，放在不同地方，10年後：</div>
       <div id="benchmarkBars" style="display:flex;flex-direction:column;gap:10px"></div>
       <div style="font-size:10px;color:rgba(44,31,14,.4);margin-top:12px;text-align:right">※ 定存/債券以近5年均值估算；股票以大盤長期平均估算</div>
     </div>
 
     <!-- ⑦-D 真實案例佐證 -->
-    <div style="background:#fff;border:1px solid rgba(201,146,43,.2);border-radius:14px;padding:20px;margin-bottom:14px;box-shadow:0 2px 16px rgba(120,80,20,.07)">
+    <div id="realCasesSection" style="display:none;background:#fff;border:1px solid rgba(201,146,43,.2);border-radius:14px;padding:20px;margin-bottom:14px;box-shadow:0 2px 16px rgba(120,80,20,.07)">
       <div style="font-size:8px;letter-spacing:5px;color:rgba(201,146,43,.7);margin-bottom:6px;font-weight:bold;font-family:'DM Mono',monospace">REAL CASES — 真實發生過的故事</div>
-      <div style="font-size:11px;color:rgba(44,31,14,.5);margin-bottom:16px">這不是預測。這些是我們客戶的真實數字。</div>
+      <div style="font-size:12px;color:rgba(44,31,14,.55);line-height:1.9;margin-bottom:16px">不只是你，他們也曾經猶豫過。後來他們做了決定——數字告訴我們，那個決定是對的。</div>
 
       <!-- 案例一：八德雲湧 -->
       <div style="background:rgba(52,211,153,.05);border:1px solid rgba(52,211,153,.15);border-radius:12px;padding:16px;margin-bottom:10px">
@@ -2429,22 +2463,24 @@ body{
 
     <!-- ⑨ 顧問區：收尾話術 + 動態問句 -->
     <!-- 對客戶說的話 -->
-    <div id="clientMsgBox" style="display:none;background:linear-gradient(155deg,#1a1208,#2c1a06);border:none;border-radius:18px;padding:20px;margin-bottom:14px;box-shadow:0 8px 32px rgba(0,0,0,.3)">
-      <div style="font-size:8px;letter-spacing:5px;color:rgba(201,146,43,.6);margin-bottom:14px;font-family:'DM Mono',monospace;font-weight:bold">A MESSAGE FOR YOU</div>
-      <div id="clientMsg" style="font-size:15px;color:#2c1f0e;line-height:2.2;font-style:italic"></div>
+    <div id="clientMsgBox" style="display:none;background:linear-gradient(155deg,#1a1208,#2c1a06);border:1px solid rgba(201,146,43,.2);border-radius:18px;padding:20px;margin-bottom:14px;box-shadow:0 8px 32px rgba(0,0,0,.3)">
+      <div style="font-size:9px;letter-spacing:3px;color:rgba(201,146,43,.5);margin-bottom:12px;font-family:'DM Mono',monospace">— 給 <span id="clientMsgName" style="color:rgba(201,146,43,.8)">你</span> 的一句話 —</div>
+      <div id="clientMsg" style="font-size:15px;color:#f4f0e8;line-height:2.3;font-style:italic"></div>
     </div>
 
-    <div class="sh"><div class="shl">💬 建議收尾話術（顧問參考）</div><div class="sht" id="shT">—</div></div>
+
+
+    <!-- ⑩ 下一步行動 -->
+    <div id="nextStepsBox" style="display:none;background:linear-gradient(155deg,#0d1f14,#0a1a1e);border:1px solid rgba(52,211,153,.2);border-radius:18px;padding:24px 20px;margin-bottom:14px;box-shadow:0 8px 32px rgba(0,0,0,.3)">
+      <div style="font-size:8px;letter-spacing:5px;color:rgba(52,211,153,.7);margin-bottom:6px;font-weight:bold;font-family:'DM Mono',monospace">NEXT STEPS — 接下來，你只要做這三件事</div>
+      <div style="font-size:12px;color:rgba(52,211,153,.5);margin-bottom:16px" id="nextStepsSub">報告完成了。下面是最近一步。</div>
+      <div style="display:flex;flex-direction:column;gap:10px" id="nextStepsList"></div>
+    </div>
 
     <!-- 動態問句已移至顧問內部參考，不顯示於客戶報告 -->
     <span style="display:none"><div id="dynQBox"></div><span id="dynQSub"></span><div id="dynQ1"></div><div id="dynQ2"></div><div id="dynQ3"></div></span>
 
-    <!-- ⑩ 下一步行動 -->
-    <div id="nextStepsBox" style="display:none;background:linear-gradient(155deg,#0d1f14,#0a1a1e);border:1px solid rgba(52,211,153,.2);border-radius:18px;padding:24px 20px;margin-bottom:14px;box-shadow:0 8px 32px rgba(0,0,0,.3)">
-      <div style="font-size:8px;letter-spacing:5px;color:rgba(52,211,153,.7);margin-bottom:6px;font-weight:bold;font-family:'DM Mono',monospace">NEXT STEPS — 現在，你可以做這些</div>
-      <div style="font-size:12px;color:rgba(44,31,14,.6);margin-bottom:16px" id="nextStepsSub">報告已完成。以下是建議的下一步。</div>
-      <div style="display:flex;flex-direction:column;gap:10px" id="nextStepsList"></div>
-    </div>
+        <span id="shT" style="display:none">—</span>
 
     <!-- ══ 反對意見處理工具 ══════════════════════════════ -->
     <div id="objectionBox" style="background:linear-gradient(155deg,#1a0e00,#2d1800);border:1.5px solid rgba(201,146,43,.25);border-radius:18px;padding:0;margin-bottom:14px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.25)">
@@ -2452,8 +2488,8 @@ body{
       <!-- 標題列 -->
       <div style="padding:16px 20px 14px;border-bottom:1px solid rgba(201,146,43,.15);display:flex;align-items:center;justify-content:space-between">
         <div>
-          <div style="font-size:8px;letter-spacing:4px;color:rgba(201,146,43,.6);margin-bottom:4px;font-family:'DM Mono',monospace">OBJECTION HANDLER</div>
-          <div style="font-size:14px;font-weight:bold;color:#e8b84b">客戶說了什麼？</div>
+          <div style="font-size:8px;letter-spacing:4px;color:rgba(201,146,43,.6);margin-bottom:4px;font-family:'DM Mono',monospace">YOUR CONCERNS</div>
+          <div style="font-size:14px;font-weight:bold;color:#e8b84b">你還有什麼顧慮？</div>
         </div>
         <div style="font-size:22px">🛡️</div>
       </div>
@@ -2462,27 +2498,27 @@ body{
       <div style="padding:14px 16px;display:grid;grid-template-columns:1fr 1fr;gap:8px" id="objBtnGroup">
         <button onclick="showObj('wait')" class="obj-trigger-btn" id="objBtn-wait"
           style="padding:10px 8px;border-radius:10px;border:1px solid rgba(201,146,43,.2);background:rgba(201,146,43,.06);color:#c9922b;font-size:11px;font-weight:bold;cursor:pointer;font-family:sans-serif;text-align:left;line-height:1.5;transition:all .2s">
-          ⏳ 我再想想<br><span style="font-size:9px;font-weight:normal;color:rgba(201,146,43,.5)">再等一等</span>
+          ⏳ 我想再考慮看看<br><span style="font-size:9px;font-weight:normal;color:rgba(201,146,43,.5)">還沒決定好</span>
         </button>
         <button onclick="showObj('money')" class="obj-trigger-btn" id="objBtn-money"
           style="padding:10px 8px;border-radius:10px;border:1px solid rgba(201,146,43,.2);background:rgba(201,146,43,.06);color:#c9922b;font-size:11px;font-weight:bold;cursor:pointer;font-family:sans-serif;text-align:left;line-height:1.5;transition:all .2s">
-          💰 自備款不夠<br><span style="font-size:9px;font-weight:normal;color:rgba(201,146,43,.5)">錢的問題</span>
+          💰 我的自備款好像不太夠<br><span style="font-size:9px;font-weight:normal;color:rgba(201,146,43,.5)">資金有缺口</span>
         </button>
         <button onclick="showObj('family')" class="obj-trigger-btn" id="objBtn-family"
           style="padding:10px 8px;border-radius:10px;border:1px solid rgba(201,146,43,.2);background:rgba(201,146,43,.06);color:#c9922b;font-size:11px;font-weight:bold;cursor:pointer;font-family:sans-serif;text-align:left;line-height:1.5;transition:all .2s">
-          👨‍👩‍👧 要跟家人商量<br><span style="font-size:9px;font-weight:normal;color:rgba(201,146,43,.5)">決策者不在場</span>
+          👨‍👩‍👧 我需要跟家人討論<br><span style="font-size:9px;font-weight:normal;color:rgba(201,146,43,.5)">家人還沒點頭</span>
         </button>
         <button onclick="showObj('price')" class="obj-trigger-btn" id="objBtn-price"
           style="padding:10px 8px;border-radius:10px;border:1px solid rgba(201,146,43,.2);background:rgba(201,146,43,.06);color:#c9922b;font-size:11px;font-weight:bold;cursor:pointer;font-family:sans-serif;text-align:left;line-height:1.5;transition:all .2s">
-          📉 怕買在高點<br><span style="font-size:9px;font-weight:normal;color:rgba(201,146,43,.5)">市場風險疑慮</span>
+          📉 萬一買在高點怎麼辦<br><span style="font-size:9px;font-weight:normal;color:rgba(201,146,43,.5)">怕市場跌</span>
         </button>
         <button onclick="showObj('income')" class="obj-trigger-btn" id="objBtn-income"
           style="padding:10px 8px;border-radius:10px;border:1px solid rgba(201,146,43,.2);background:rgba(201,146,43,.06);color:#c9922b;font-size:11px;font-weight:bold;cursor:pointer;font-family:sans-serif;text-align:left;line-height:1.5;transition:all .2s">
-          📊 貸款壓力太大<br><span style="font-size:9px;font-weight:normal;color:rgba(201,146,43,.5)">還款能力疑慮</span>
+          📊 每個月這樣繳，壓力很大<br><span style="font-size:9px;font-weight:normal;color:rgba(201,146,43,.5)">怕還不起</span>
         </button>
         <button onclick="showObj('compare')" class="obj-trigger-btn" id="objBtn-compare"
           style="padding:10px 8px;border-radius:10px;border:1px solid rgba(201,146,43,.2);background:rgba(201,146,43,.06);color:#c9922b;font-size:11px;font-weight:bold;cursor:pointer;font-family:sans-serif;text-align:left;line-height:1.5;transition:all .2s">
-          🔍 想再看看其他<br><span style="font-size:9px;font-weight:normal;color:rgba(201,146,43,.5)">貨比三家</span>
+          🔍 我想再多看幾間比較<br><span style="font-size:9px;font-weight:normal;color:rgba(201,146,43,.5)">還想比較看看</span>
         </button>
       </div>
 
@@ -2492,11 +2528,11 @@ body{
           <div style="font-size:9px;letter-spacing:2px;color:#e8b84b;margin-bottom:10px;font-family:'DM Mono',monospace" id="objTag">—</div>
           <!-- 核心回應 -->
           <div style="font-size:13px;color:#f4f0e8;line-height:2.1;font-style:italic;margin-bottom:14px" id="objScript">—</div>
-          <!-- 數字佐證 -->
+          <!-- 數據說明 -->
           <div id="objData" style="background:rgba(201,146,43,.06);border-radius:8px;padding:12px;margin-bottom:12px;font-size:12px;color:rgba(232,184,75,.8);line-height:1.9"></div>
           <!-- 收尾問句 -->
           <div style="border-top:1px solid rgba(201,146,43,.15);padding-top:12px">
-            <div style="font-size:9px;letter-spacing:2px;color:rgba(201,146,43,.5);margin-bottom:6px;font-family:'DM Mono',monospace">CLOSING QUESTION</div>
+            <div style="font-size:9px;letter-spacing:2px;color:rgba(201,146,43,.5);margin-bottom:6px;font-family:'DM Mono',monospace">給你一個問題想想</div>
             <div style="font-size:13px;color:#e8b84b;font-weight:bold;line-height:1.8" id="objClose">—</div>
           </div>
         </div>
@@ -3513,32 +3549,7 @@ var WZ_STEPS = [
       {label:'🏢 公司或信託持有',  val:'elder',  field:'_wzFamily'}
     ]
   },
-  {
-    phase:'需求 NEEDS', phaseIdx:1,
-    q:'選物件時，您最重視哪些？',
-    sub:'這些條件直接影響物件的增值潛力和出租率。',
-    type:'chips', single:false,
-    opts:[
-      {label:'🚇 捷運宅，好租好售', val:'mrt',    field:'_wzPref'},
-      {label:'🏫 學區，長期保值',       val:'school', field:'_wzPref'},
-      {label:'🌳 低公設，實坪划算',   val:'low',    field:'_wzPref'},
-      {label:'🅿️ 含車位，加分項',    val:'park',   field:'_wzPref'},
-      {label:'🆕 新成屋，好出租',     val:'new',    field:'_wzPref'},
-      {label:'💰 總價控制，槓桿最大化',   val:'price',  field:'_wzPref'}
-    ]
-  },
   // ══ 條件：收入 ════════════════════════════════════════════
-  {
-    phase:'條件 FINANCIALS', phaseIdx:2,
-    q:'這筆貸款，幾個人的收入來還款？',
-    sub:'還款來源越多，銀行核貸成數通常越高。',
-    type:'chips', single:true, showPreview:true,
-    opts:[
-      {label:'👤 本人收入', val:1, field:'_wzEarners'},
-      {label:'👫 兩人收入合計',     val:2, field:'_wzEarners'},
-      {label:'👨‍👩‍👧 三人以上', val:3, field:'_wzEarners'}
-    ]
-  },
   {
     phase:'條件 FINANCIALS', phaseIdx:2,
     q:'您的年收入大概是？',
@@ -3681,7 +3692,7 @@ var WZ_STEPS = [
     type:'chips', single:true, showPreview:true,
     skipKey:'_wzNoDebt',
     opts:[
-      {label:'✅ 完全乾淨', val:'none', field:'_wzDebt', skipTo: 19},
+      {label:'✅ 完全乾淨', val:'none', field:'_wzDebt', skipTo: 17},
       {label:'📚 學貸在繳', val:'student', field:'_wzDebt'},
       {label:'💳 信貸在繳',   val:'personal', field:'_wzDebt'},
       {label:'🚗 車貸在繳',   val:'car', field:'_wzDebt'},
@@ -3730,7 +3741,7 @@ var WZ_STEPS = [
       {label:'🏠 本人名下有',     val:'self',   field:'_wzProperty'},
       {label:'👨‍👩 家人名下有', val:'family', field:'_wzProperty'},
       {label:'🏠👨‍👩 本人+家人都有',   val:'both',   field:'_wzProperty'},
-      {label:'✅ 目前完全沒有（首購）',       val:'none',   field:'_wzProperty', skipTo: 21}
+      {label:'✅ 目前完全沒有（首購）',       val:'none',   field:'_wzProperty', skipTo: 19}
     ]
   },
   {
@@ -4085,7 +4096,7 @@ function wzLifestyle(type, btn) {
 
 // 多組快選
 function wzMultiChip(fieldId, val, btn, grpClass) {
-  Array.from(document.querySelectorAll('[data-grp=+grpClass+]')).forEach(function(b){
+  Array.from(document.querySelectorAll('[data-grp="'+grpClass+'"]')).forEach(function(b){
     b.style.background='rgba(201,146,43,.05)';
     b.style.borderColor='rgba(201,146,43,.2)';
     b.style.color='#2c1f0e'; b.style.fontWeight='normal';
@@ -4115,6 +4126,10 @@ function wzCustomField(fieldId, val) {
 }
 
 // 導航
+function wzShouldSkip(step) {
+  if(!step || !step.skipIfField) return false;
+  return window['_wz_'+step.skipIfField] === step.skipIfVal;
+}
 function wzNav(dir) {
   if(dir===-1 && WZ_STEP===0) return;
   // 往前：最後一題之後進入確認畫面
@@ -4126,6 +4141,10 @@ function wzNav(dir) {
     WZ_STEP=WZ_STEPS.length-1; wzRender(); return;
   }
   WZ_STEP=Math.max(0,Math.min(WZ_STEPS.length-1,WZ_STEP+dir));
+  // 自動跳過 skipIfField 條件成立的題目
+  while(WZ_STEP>0 && WZ_STEP<WZ_STEPS.length && wzShouldSkip(WZ_STEPS[WZ_STEP])){
+    WZ_STEP=Math.max(0,Math.min(WZ_STEPS.length-1,WZ_STEP+dir));
+  }
   wzRender();
   var card=g('wizardCard');
   if(card) card.scrollIntoView({behavior:'smooth',block:'start'});
@@ -4570,7 +4589,7 @@ function doGen(){
 
   // 4. 異常大值防呆（超過 99999 萬視為輸入錯誤）
   if(nv('iPrc')>99999) _warns.push('⚠️ 總價超過 99999 萬，請確認單位（填「萬」為單位）');
-  if(nv('iSalYear')>50000) _warns.push('⚠️ 年薪超過 5 億，請確認單位（填「元」為單位）');
+  if(nv('iSalYear')>500000000) _warns.push('⚠️ 年薪超過 5 億，請確認單位（填「元」為單位）');
 
   if(_warns.length){
     showToast(_warns.join(' | '),'warn',4000);
@@ -5186,7 +5205,11 @@ function doGen(){
       _p1r.style.color=_res3b>=20?'#2ecc71':_res3b>=0?'#e8b84b':'#e05c4a';
     }
     if(_p1n){
-      _p1n.textContent=_res3b>=30?'✅ 備用金充足，財務穩健':_res3b>=15?'🟡 備用金尚可，建議保留至少20萬':_res3b>=0?'⚠️ 備用金偏低，注意現金流':'🔴 現金不足，建議補充資金';
+      var _rentRebuild = savedRent > 0 ? '　省下房租 '+fmt(savedRent)+'/月，約'+Math.ceil(Math.max(20-_res3b,0)/Math.round(savedRent/10000))+'個月存回備用金' : '';
+      if(_res3b>=30)       { _p1n.textContent='✅ 備用金充足，財務穩健'; }
+      else if(_res3b>=15)  { _p1n.textContent='🟡 備用金尚可，建議保留至少20萬'; }
+      else if(_res3b>=0)   { _p1n.textContent='⚠️ 備用金偏低'+(savedRent>0?'，但省下的房租 '+fmt(savedRent)+'/月，3個月即可補回':'，注意現金流'); }
+      else                 { _p1n.textContent='🔴 現金缺口'+Math.abs(_res3b)+'萬'+(savedRent>0?'，省下房租'+fmt(savedRent)+'/月持續補充':'，建議增加資金來源'); }
       _p1n.style.color=_res3b>=20?'#2ecc71':_res3b>=0?'#e8b84b':'#e05c4a';
     }
 
@@ -5220,7 +5243,7 @@ function doGen(){
       _p2r.textContent=((rem>=0?'+':'')+fmt(Math.abs(rem)));
       _p2r.style.color=rem>=0?'#2ecc71':'#e05c4a';
     }
-    if(_p2rl) _p2rl.textContent='交屋後每月只需存';
+    if(_p2rl) _p2rl.textContent='購屋後每月結餘';
     if(_p2rn){
       var _note2='';
       // note 用實際自付額（mn-rentInc），讓客戶清楚看到自己只需出這些
@@ -5253,9 +5276,9 @@ function doGen(){
     g('waitSubtitle').textContent='你今天簽約，是用現在的價格鎖定這間房。若等半年才決定，同一間房你要多付——';
     var _wmEl=g('waitMonthly'); if(_wmEl){ countUp(_wmEl, risePerMo, 800, '$', ''); }
     if(g('waitDaily')) var _wdEl=g('waitDaily'); if(_wdEl){ countUp(_wdEl, Math.round(risePerMo/30), 800, '$', ' 元/天'); }
-    var _el_lost6m=g('lost6m'); if(_el_lost6m){ countUp(_el_lost6m, Math.round(Math.round(prWan*(Math.pow(1+growth,0.5)-1))), 1000, '+', '萬'); }
-    var _el_lost1y=g('lost1y'); if(_el_lost1y){ countUp(_el_lost1y, Math.round(Math.round(prWan*(Math.pow(1+growth,1)-1))), 1000, '+', '萬'); }
-    var _el_lost2y=g('lost2y'); if(_el_lost2y){ countUp(_el_lost2y, Math.round(Math.round(prWan*(Math.pow(1+growth,2)-1))), 1000, '+', '萬'); }
+    var _el_lost6m=g('lost6m'); if(_el_lost6m){ countUp(_el_lost6m, Math.round(prW_w*(Math.pow(1+growth,0.5)-1)), 1000, '+', '萬'); }
+    var _el_lost1y=g('lost1y'); if(_el_lost1y){ countUp(_el_lost1y, Math.round(prW_w*(Math.pow(1+growth,1)-1)), 1000, '+', '萬'); }
+    var _el_lost2y=g('lost2y'); if(_el_lost2y){ countUp(_el_lost2y, Math.round(prW_w*(Math.pow(1+growth,2)-1)), 1000, '+', '萬'); }
     // 改寫區塊標題和 label
     var _waitTitle=_waitSec.querySelector('[style*="letter-spacing:3px"]');
     if(_waitTitle) _waitTitle.textContent='THE COST OF WAITING — 等愈久，多付愈多';
@@ -5281,23 +5304,22 @@ function doGen(){
     var _waitRowTitle=_waitSec.querySelector('[style*="letter-spacing:2px"]');
     if(_waitRowTitle) _waitRowTitle.textContent='你打算再等幾年？';
   } else {
-    // 成屋邏輯維持原有
-    g('waitSubtitle').textContent='這不是預測，是歷史事實（'+histRef+'）。每多等一年，差距就擴大一年——看看下面的數字，你就知道等待的代價。';
-    g('waitMonthly').textContent=fmt(monthlyRise);
+    // 成屋模式：顯示等待代價卡
+    if(_waitSec) _waitSec.style.display = 'block';
+    g('waitSubtitle').textContent='這不是預測，是歷史事實（'+histRef+'）。每多等一年，差距就擴大一年。';
+    if(g('waitMonthly')) countUp(g('waitMonthly'), monthlyRise, 800, '$', '');
     var savedRentVal=parseFloat((g('iRnt')||{value:'0'}).value)||0;
     var effectiveRentWait=savedRentVal>0?savedRentVal:Math.max(15000,Math.round(C.pr*0.001));
     var yearlyRentLoss=effectiveRentWait*12;
-    var dwInterest=C.dw>0?Math.round(C.dw*0.01):0;
-    var waitYearlyTotal=yearlyRise+yearlyRentLoss-dwInterest;
-    var waitDailyLoss=Math.round(waitYearlyTotal/365);
-    g('waitYearly').textContent=fmt(waitYearlyTotal)+'元';
-    if(g('waitDaily')) g('waitDaily').textContent=fmt(waitDailyLoss)+' 元/天';
+    var waitDailyLoss=Math.round((yearlyRise+yearlyRentLoss)/365);
+    g('waitYearly').textContent=fmt(yearlyRise+yearlyRentLoss)+'元';
+    if(g('waitDaily')) g('waitDaily').textContent='$'+fmt(waitDailyLoss)+'/天';
     var l6m=Math.round(C.pr*growth*0.5);
     var l1y=Math.round(C.pr*growth);
     var l2y=Math.round(C.pr*growth*2);
-    g('lost6m').textContent=fmtW(l6m);
-    g('lost1y').textContent=fmtW(l1y);
-    g('lost2y').textContent=fmtW(l2y);
+    if(g('lost6m')) countUp(g('lost6m'), Math.round(l6m/10000), 900, '+', '萬');
+    if(g('lost1y')) countUp(g('lost1y'), Math.round(l1y/10000), 1000, '+', '萬');
+    if(g('lost2y')) countUp(g('lost2y'), Math.round(l2y/10000), 1100, '+', '萬');
   }
 
   // ── ⑥ 你能做到（YOU CAN DO THIS）────────────────────
@@ -5319,7 +5341,7 @@ function doGen(){
     if(_rentSavedCard) _rentSavedCard.style.display='none';
   } else if(_freed > 0){
     if(g('nS')) g('nS').textContent = fmt(_freed);
-  var _n_nS=g('nS'); if(_n_nS && C.rent>0){ setTimeout(function(){ countUp(_n_nS, Math.round(C.rent), 850, '$', ''); },200); }
+  var _n_nS=g('nS'); if(_n_nS && _freed>0){ setTimeout(function(){ countUp(_n_nS, Math.round(_freed), 850, '$', ''); },200); }
     if(_rentSavedCard){
       _rentSavedCard.style.display='';
       var _rentLabel = _rentSavedCard.querySelector('.ncu');
@@ -5473,8 +5495,15 @@ function doGen(){
         sh.textContent='「'+nm+'，我問你一個問題——如果今天這套房不是你在買，而是你的錢在替你買，你還會猶豫嗎？」（等對方回答）「其實，這就是房貸的本質。」';
       } else if(r<50&&rem>0){
         vb.className='vd gw';
-        vb.innerHTML='<span class="vdh">✅ '+nm+'，數字顯示你能做到。</span>房貸佔月收入 <b>'+r.toFixed(1)+'%</b>，每月還剩 <b style="color:#e8b84b">'+fmt(rem)+'</b>。'+_roiStr+'<br><br>⚠️ 這是<b>最保守</b>的算法。年終、獎金一分沒算。真實的你，比這個數字更從容。<br><br><span style="font-size:12px;color:#fbbf24">▶ 你願意讓這個數字幫你做決定嗎？</span>';
-        sh.textContent='「'+nm+'，這個數字是最壞情況。我故意算保守，是要確保你在最壞的月份也能安心睡覺。連最壞的情況都還剩 '+fmt(rem)+'，你還有什麼好擔心的？」';
+        var _rentNote2 = savedRent>0
+          ? '你現在每個月付 <b>'+fmt(savedRent)+'</b> 租金——買了之後這筆直接省下來，已經算進這個結餘裡了。<br>'
+          : '';
+        vb.innerHTML='<span class="vdh">✅ '+nm+'，數字站在你這邊。</span>'
+          +_rentNote2
+          +'月收 <b>'+fmt(C.inc)+'</b>，扣掉所有開銷和房貸，每個月還剩 <b style="color:#e8b84b">'+fmt(rem)+'</b>。'+_roiStr+'<br><br>'
+          +'這還是<b>最保守的算法</b>——年終、季獎金一分沒算進來。<br><br>'
+          +'<span style="font-size:12px;color:#fbbf24">▶ 你還有什麼好擔心的？</span>';
+        sh.textContent='「'+nm+'，我故意用最壞的情況算——'+(savedRent>0?'連你現在付的房租 '+fmt(savedRent)+' 我都拿來抵掉了。':'')+' 連最壞的月份都還剩 '+fmt(rem)+'。真實的你，比這個數字更從容。」';
       } else if(rem>0){
         vb.className='vd gw';
         vb.innerHTML='<span class="vdh">⚠️ 負擔比偏高，但每月仍有盈餘。</span>'+nm+' 房貸佔月收入 <b>'+r.toFixed(1)+'%</b>。建議拉長貸款年限或提高自備款。每月剩 <b>'+fmt(rem)+'</b>。';
@@ -5514,6 +5543,9 @@ function doGen(){
     // 跨區塊共用（含 profit=毛獲利，netProfit 同值，interest=0）
     window._roi={profit:_houseProfit,netProfit:_houseProfit,interest:0,principal:_dwWan,ann:_roiPerYr};
     if(_roiSec) _roiSec.style.display='block';
+    var _iag=g('investAnalysisGroup'); if(_iag) _iag.style.display='block';
+    // 真實案例：月結餘正才顯示（強化信心，不在負數時挖苦）
+    var _rcSec=g('realCasesSection'); if(_rcSec) _rcSec.style.display=(rem>0&&!isPresale)?'block':'none';
     if(g('roiPrincipal')) g('roiPrincipal').textContent=_dwWan+'萬';
     if(g('roiProfit'))    g('roiProfit').textContent='+'+_houseProfit+'萬';
     if(g('roiYrsLabel'))  g('roiYrsLabel').textContent=_roiYrs+'年增值獲利';
@@ -5558,14 +5590,15 @@ function doGen(){
   // 用 window._roi 跨區塊傳遞
   var _cm=g('clientMsg'), _cmBox=g('clientMsgBox');
   if(_cm&&_cmBox){
+    var _cmN=g('clientMsgName'); if(_cmN) _cmN.textContent=nm;
     var _roi=window._roi||{};
     var _cMsg='';
     if(r<30&&rem>0&&_roi.profit>0){
-      _cMsg=nm+'，<br><br>這份報告是你的數字，不是我的說法。<br><br>你用 <b>'+_roi.principal+'萬</b> 本金，10年讓房子幫你賺了 <b style="color:#2ecc71">'+_roi.profit+'萬</b>。<br>年化投報率 <b style="color:#2ecc71">'+_roi.ann+'%</b>——這不是預測，這是算術。<br><br>你已經準備好了，剩下的只是一個決定。';
+      _cMsg='你來這裡，不是因為衝動。<br><br>你願意坐下來把數字攤開，是因為你認真對待這件事。<br><br>數字已經說了它該說的。<br>剩下那個決定，只有你能做。';
     } else if(rem>0){
-      _cMsg=nm+'，<br><br>你來這裡，不是因為衝動。<br>你是因為認真想過這件事，才願意坐下來把數字算清楚。<br><br>這份報告的每一個數字，都是你的真實狀況。<br>下一步，只需要你做一個決定。';
+      _cMsg='你今天把數字算清楚了。<br><br>這不是一個衝動，這是一個計畫。<br><br>每個月的結餘告訴你：你有能力。<br>等待，才是最大的風險。';
     } else {
-      _cMsg=nm+'，<br><br>現在的數字還有調整空間。<br>但你今天來到這裡，已經比大多數人前進了一步。<br><br>讓我們找到那個適合你的方案，<br>而不是等到準備好了才發現窗口已經關了。';
+      _cMsg='數字還有調整空間，但方向是對的。<br><br>你今天願意把問題攤開來看，<br>已經比大多數人早一步了。<br><br>讓我們一起找到那個適合你的時機點。';
     }
     _cmBox.style.display='block';
     _cm.innerHTML=_cMsg;
@@ -5588,7 +5621,7 @@ function doGen(){
 
   // ── ⑦-B 風險下限分析 ────────────────────────────────
   var _riskSec = g('riskFloorSection');
-  if(_riskSec && C.pr > 0 && C.dw > 0){
+  if(_riskSec && C.pr > 0 && (C.dw > 0 || MORTGAGE_MODE==='presale')){
     _riskSec.style.display = 'block';
     var _prWan = Math.round(C.pr/10000);
     var _dwWanR = Math.round(C.dw/10000);
@@ -5686,7 +5719,9 @@ function doGen(){
         '</div>'+
       '</div>';
     }).join('');
-    if(g('nextStepsSub')) g('nextStepsSub').textContent = nm+'，報告已完成。接下來建議這 '+_steps.length+' 個動作：';
+    if(g('nextStepsSub')) g('nextStepsSub').textContent = nm+'，報告完成了。下面是最近一步。';
+    var _nextTitle=g('nextStepsBox')&&g('nextStepsBox').querySelector('[style*="letter-spacing:5px"]');
+    if(_nextTitle) _nextTitle.textContent='NEXT STEPS — 接下來，你只要做這 '+_steps.length+' 件事';
   }
 
   // ── ★ 家族財力支援摘要（成屋模式才渲染；預售已整合進 csSolvedBox）
@@ -6953,63 +6988,63 @@ function showObj(type) {
   var tag, script, data, close;
 
   if(type === 'wait') {
-    tag = '⏳ 「我再想想 / 再等一等」';
-    script = '「' + nm + '，等是你的權利，但我必須告訴你等的代價。你現在看到的這個數字——這間房，每一天漲 ' + Math.round(rise1yDay).toLocaleString('zh-TW') + ' 元。你今天回去想三個月，光房價就多付了 ' + Math.round(rise1yDay*90/10000) + ' 萬。這筆錢不是你賺的，是你送給下一個進場的人的。」';
+    tag = '⏳ 我們來把「等」這件事算清楚';
+    script = nm+'，等是你的權利，但你知道等的代價嗎？\n\n這間房每一天漲 $'+Math.round(rise1yDay).toLocaleString('zh-TW')+'。你今天回去想三個月，光房價就多付了 '+Math.round(rise1yDay*90/10000)+' 萬。\n\n這筆錢不是你省的，是你多送給市場的。';
     data = prWan > 0
       ? '📊 你今天看的這間：' + prWan + '萬　|　每天漲 $' + Math.round(rise1yDay).toLocaleString('zh-TW') + '　|　等一年多付 ' + rise1y + '萬\n你的月結餘 $' + Math.round(rem).toLocaleString('zh-TW') + '，供房是還得起的。等待的風險，比買下去更大。'
       : '📊 請先在輸入頁填入物件總價，系統將自動帶入等待代價數字。';
-    close = '「' + nm + '，你說你在等什麼？等利率降？等房價跌？還是等你自己準備好？我們把這三個等，一個一個來看。」';
+    close = nm+'，你說說看，你在等什麼？等利率降、等房價跌、還是等自己準備好？我們把這三個，一個一個算清楚。';
   }
   else if(type === 'money') {
     var gap = dwWan > 0 ? 0 : (prWan > 0 ? Math.round(prWan * 0.2) : 0);
     var monthSave = Math.round(rem / 10000 * 10) / 10;
     var monthsNeeded = (rem > 0 && gap > 0) ? Math.ceil(gap / (rem / 10000)) : 0;
-    tag = '💰 「自備款還差一點」';
-    script = '「自備款的問題，我們來解決，不是來放棄。你現在每個月結餘' + (remWan > 0 ? ' ' + remWan + ' 萬' : '有正數') + '，這是你的儲彈能力。同時，我們可以從三個方向補足缺口：家人支援、信貸搭配、或調整物件條件。你告訴我哪個方向你覺得可行？」';
+    tag = '💰 資金缺口，有三個方法補';
+    script = '自備款有缺口，這不是放棄的理由，是找解法的起點。\n\n你現在每個月結餘'+(remWan > 0 ? ' '+remWan+' 萬' : '是正數')+'，這是你的實力。缺口可以從三個方向補：\n① 家人支援\n② 信貸搭配\n③ 調整物件條件\n\n哪個方向你覺得最可行？';
     data = (dwWan > 0
       ? '💡 已填自備款：' + dwWan + '萬　|　月結餘：$' + Math.round(rem).toLocaleString('zh-TW')
       : '💡 月結餘：$' + Math.round(rem).toLocaleString('zh-TW')) +
       '\n整合方案（信貸補缺口）：請切換至「整合」功能查看試算\n家族支援：父母名下資產可作保，提升銀行核貸上限';
-    close = '「你覺得，家人這邊有沒有可能出一部分？或者我幫你算一下，信貸補缺口的月付差多少，你覺得可以接受嗎？」';
+    close = '家人這邊有沒有可能出一部分？或者我幫你算一下，信貸補缺口的月付差多少——你覺得可以接受嗎？';
   }
   else if(type === 'family') {
-    tag = '👨‍👩‍👧 「要跟家人商量」';
-    script = '「完全理解，這是大事，家人的意見很重要。我有個建議——這份報告你帶回去給家人看，裡面有所有的數字：月繳多少、結餘多少、風險在哪裡。你不需要自己解釋，讓數字替你說話。如果家人有任何問題，我也可以直接跟他們說明。」';
+    tag = '👨‍👩‍👧 帶這份數字回去，讓家人一起看';
+    script = '家人的意見很重要，這完全正確。\n\n這份報告你帶回去讓家人看，裡面有所有數字：月繳多少、結餘多少、最壞情況是什麼。你不需要自己解釋，讓數字替你說話。\n\n如果家人有問題，我們可以一起再約一次，讓大家都清楚。';
     data = '📋 報告已包含：\n・月繳金額 $' + Math.round(mn).toLocaleString('zh-TW') + '　・月結餘 $' + Math.round(rem).toLocaleString('zh-TW') + '\n・負擔比 ' + ratio.toFixed(1) + '%　・等待一年代價 ' + rise1y + '萬\n建議：把這份報告的截圖或 PDF 帶回去，讓家人一起看數字。';
-    close = '「你覺得家人最擔心的是哪一塊？是還款壓力、還是市場風險？我們現在就把那塊數字講清楚，你回去就有答案了。」';
+    close = '家人最擔心的是哪一塊？還款壓力、市場風險、還是別的顧慮？把問題說出來，我們現在就把它解決。';
   }
   else if(type === 'price') {
-    tag = '📉 「怕買在高點 / 市場要跌」';
-    script = '「這個擔心很合理，我尊重。但我們來看一件事：台灣房市歷史最大單年跌幅是 15%，發生在 2015 年。那一年，' + (prWan > 0 ? '這間 ' + prWan + ' 萬的房跌了約 ' + Math.round(prWan * 0.15) + ' 萬，' : '') + '但五年後，它漲回來了，還超過了。真正的風險不是帳面跌，是你在低點恐慌賣出。持有，才是對抗跌幅的武器。」';
+    tag = '📉 把最壞的情況，一起攤開來看';
+    script = '怕買在高點，這個擔心很合理。我們來看歷史數字。\n\n台灣房市歷史最大單年跌幅是 15%，發生在 2015 年。那一年，'+(prWan > 0 ? '這間 '+prWan+' 萬的房跌了約 '+Math.round(prWan * 0.15)+' 萬。' : '房市跌了。')+' 但五年後，它漲回來了，還超過了。\n\n真正的風險不是帳面跌，是你在低點恐慌賣出。只要不在最低點出場，時間站在你這邊。';
     data = (prWan > 0
       ? '📊 若跌 15%（歷史最大）：帳面損失 ' + Math.round(prWan*0.15) + '萬\n若跌 20%（極端情境）：帳面損失 ' + Math.round(prWan*0.2) + '萬\n'
       : '') +
       '✅ 關鍵：只要不在低點出場，帳面虧損不等於實現虧損\n每月持續還本，淨值逐年回升，持有就是最好的防禦';
-    close = '「你覺得，你買這間的目的是長住還是短期？如果是長住，短期的漲跌對你的影響其實很有限——我們把時間拉長來看，你覺得呢？」';
+    close = '你買這間的目的是長住還是短期投資？如果是長住，短期漲跌對你的影響其實很有限。我們把時間拉長來看——你覺得呢？';
   }
   else if(type === 'income') {
-    tag = '📊 「貸款壓力太大 / 還不起怎麼辦」';
-    script = '「月繳的壓力，我完全理解。但我們看一個數字：你現在每個月結餘是 ' + (rem > 0 ? '$' + Math.round(rem).toLocaleString('zh-TW') : '正數') + '，扣掉房貸之後' + (rem > 0 && mn > 0 ? '還剩 $' + Math.round(rem - mn).toLocaleString('zh-TW') : '') + '。這不是把你壓垮，這是你在建立一個月月都在累積的資產。你現在的租金，是每個月把錢送給房東；換成房貸，是每個月把錢存進自己的資產裡。」';
+    tag = '📊 月繳壓力，數字說話';
+    script = '每個月這樣繳，確實是壓力。我們來把數字看清楚。\n\n你的月結餘是 $'+(rem > 0 ? Math.round(rem).toLocaleString('zh-TW') : '正數')+'。這筆錢扣掉房貸，你每個月是在幫自己建立資產，不是在替房東繳房租。\n\n現在你的租金每個月出去就不見了。換成房貸，每個月少一點、但那是你自己的。';
     data = '💰 月收入：$' + Math.round(C.inc||0).toLocaleString('zh-TW') +
       '　月支出：$' + Math.round(C.exp||0).toLocaleString('zh-TW') +
       '\n月房貸：$' + Math.round(mn).toLocaleString('zh-TW') +
       '　負擔比：' + ratio.toFixed(1) + '%（銀行建議上限 35%）' +
       '\n✅ 負擔比' + (ratio <= 35 ? '在安全範圍內' : '稍高，建議搭配整合方案調整');
-    close = '「如果每個月的壓力可以降到你覺得 OK 的數字，你願意今天做決定嗎？我們來看看有哪些方式可以調整月繳金額。」';
+    close = '如果每個月的壓力可以調整到你覺得 OK 的數字，你願意今天做決定嗎？我們來看看有哪些方式可以調整月繳金額。';
   }
   else if(type === 'compare') {
-    tag = '🔍 「想再看看其他選擇 / 貨比三家」';
-    script = '「看更多是對的，你應該確認這是最適合你的選擇。但我想請你注意一件事——你在看其他物件的期間，這間的條件是今天。你看完再回來，價格、貸款條件、甚至這個戶別可能都變了。如果你今天對這間已經有七、八分的感覺，那個二、三分的猶豫，我們現在就來解決。你最在意的是哪一塊？」';
+    tag = '🔍 你在意的那二三分，我們現在解決';
+    script = '多看幾間很正常，你應該確認這是最適合你的選擇。\n\n但你在看其他物件的這段時間，這間的條件是今天的。等你看完再回來，價格、貸款條件、甚至這個戶別——可能都變了。\n\n如果你現在對這間已經有七八分的感覺，那個二三分的顧慮，我們現在就把它解決掉。你最在意的是哪一塊？';
     data = prWan > 0
       ? '📊 本物件核心數字：總價 ' + prWan + '萬　|　月繳 $' + Math.round(mn).toLocaleString('zh-TW') + '　|　負擔比 ' + ratio.toFixed(1) + '%\n今天保留 vs 等看完再回來：風險是條件不再，不是比較本身'
       : '📊 請先產生完整報告，系統將帶入本物件核心數字供比較。';
-    close = '「你今天看的這間，有哪裡是你確定喜歡的？我們先確認這個，再來討論你還在看哪裡。」';
+    close = '你今天看的這間，有哪裡是你確定喜歡的？先確認這個，再來談你還在考慮哪裡。';
   }
 
   if(g('objTag')) g('objTag').textContent = tag;
-  if(g('objScript')) g('objScript').textContent = script;
+  if(g('objScript')) g('objScript').innerHTML = (script||'').replace(/\n/g,'<br>');
   if(g('objData')) g('objData').innerHTML = (data||'').replace(/\n/g,'<br>');
-  if(g('objClose')) g('objClose').textContent = close;
+  if(g('objClose')) g('objClose').innerHTML = (close||'').replace(/\n/g,'<br>');
   g('objResponse').style.display = 'block';
   // 滾動到話術區
   setTimeout(function(){ g('objResponse').scrollIntoView({behavior:'smooth',block:'center'}); }, 100);
