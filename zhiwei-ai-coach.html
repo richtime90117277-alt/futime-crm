@@ -846,18 +846,6 @@
           <div class="chip" onclick="toggleFamiliarity(this)" data-value="熟識，像朋友一樣">👫 熟識如朋友</div>
         </div>
       </div>
-      <div class="field span2">
-        <label>客戶提出的異議（他說什麼讓你卡住）</label>
-        <input type="text" id="objection" placeholder="例：現在房價這麼高配置房地產不會立刻有收益 / 等一下再說…" />
-      </div>
-      <div class="field span2">
-        <label>痛點補充（CRM 額外記錄）</label>
-        <textarea id="painDetail" placeholder="例：太太58年次，自己60年次，貸款條件越來越難，資產配置需加快…" style="min-height:60px;"></textarea>
-      </div>
-      <div class="field span2">
-        <label>上次提的解決方案</label>
-        <input type="text" id="solution" placeholder="例：邀請帶太太一起來研討會，之後再來算物件細節…" />
-      </div>
     </div>
 
     <div class="submit-wrap">
@@ -954,9 +942,6 @@ async function generate() {
     const lastResult = document.getElementById('lastResult').value.trim();
     const target     = document.getElementById('target').value;
     const extra      = document.getElementById('extra').value.trim();
-    const objection  = (document.getElementById('objection')  || {value:''}).value.trim();
-    const solution   = (document.getElementById('solution')   || {value:''}).value.trim();
-    const painDetail = (document.getElementById('painDetail') || {value:''}).value.trim();
     const familiarity = selectedFamiliarity || '未填';
 
     const errorMsg = document.getElementById('errorMsg');
@@ -989,7 +974,7 @@ async function generate() {
     const payload = {
       name, age, group, pain, status, keyman,
       support: supportValue, finance, lastResult,
-      target, extra, familiarity, objection, solution, painDetail
+      target, extra, familiarity
     };
 
     document.getElementById('formCard').style.display = 'none';
@@ -1486,15 +1471,6 @@ function pickCustomer(jsonStr) {
 
   // ── 補充說明（下次跟進行動第一行）──
   sv('extra', c.nextFollowupAction ? c.nextFollowupAction.split('\n')[0] : '');
-
-  // ── 客戶異議 ──
-  sv('objection', c.customerObjection || c.objection || '');
-
-  // ── 痛點補充 ──
-  sv('painDetail', c.painPointDetail || c.painPointsDetail || c.additionalPainPoints || '');
-
-  // ── 上次提的解決方案 ──
-  sv('solution', c.solutionProvided || c.solution || c.recommendedSolution || '');
 
   // ── 族群 chip ──
   selectedChips = [];
