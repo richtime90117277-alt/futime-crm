@@ -575,7 +575,64 @@
     .field-grid { grid-template-columns: 1fr; }
     .field.span2 { grid-column: span 1; }
     .form-card { padding: 24px 18px; }
-    .result-header { flex-direction: column; align-items: flex-start; }
+
+    /* Header：手機改成上下排列，貼圖縮小 */
+    .header-sticker-wrap {
+      flex-direction: column;
+      gap: 8px;
+    }
+    .header-sticker-wrap > div { text-align: center; }
+    .header-sticker-wrap .sticker { width: 72px; height: 72px; }
+    /* 手機只顯示左邊那張貼圖，右邊隱藏省空間 */
+    .header-sticker-wrap .sticker:last-child { display: none; }
+
+    /* h1 字體縮小 */
+    h1 { font-size: 22px !important; }
+
+    /* Result header 改為垂直排列 */
+    .result-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .result-header > div { width: 100%; }
+
+    /* 三顆 action button 換行、等寬 */
+    .result-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      width: 100%;
+    }
+    /* LINE 版按鈕跨兩欄放最下面 */
+    .result-actions button:nth-child(2) {
+      grid-column: span 2;
+      order: 3;
+    }
+    .result-actions button:nth-child(1) { order: 1; }
+    .result-actions button:nth-child(3) { order: 2; }
+
+    /* 卡片 body padding 縮小 */
+    .result-body { padding: 12px 14px 20px; }
+    .sec-header { padding: 11px 14px; }
+    .sec-body { padding: 4px 14px 14px; }
+
+    /* 提交按鈕全寬 */
+    .submit-btn { width: 100%; }
+
+    /* AI 狀態列：歷史按鈕縮小 */
+    .history-trigger { font-size: 11px; padding: 6px 10px; }
+
+    /* LINE modal 全螢幕 */
+    .line-modal { max-height: 95vh; border-radius: 12px; }
+
+    /* 區塊標題文字縮小 */
+    .sec-title { font-size: 13px; }
+  }
+
+  /* 超小螢幕 375px 以下 */
+  @media (max-width: 375px) {
+    .container { padding: 16px 12px; }
+    .form-card { padding: 18px 14px; }
+    .badge { font-size: 10px; padding: 5px 12px; }
+    h1 { font-size: 19px !important; }
+    .sec-body p, .sec-body li { font-size: 13px; }
   }
 
   /* ── LINE 版 Modal ── */
@@ -846,6 +903,18 @@
           <div class="chip" onclick="toggleFamiliarity(this)" data-value="熟識，像朋友一樣">👫 熟識如朋友</div>
         </div>
       </div>
+      <div class="field span2">
+        <label>客戶提出的異議（他說什麼讓你卡住）</label>
+        <input type="text" id="objection" placeholder="例：現在房價這麼高配置房地產不會立刻有收益 / 等一下再說…" />
+      </div>
+      <div class="field span2">
+        <label>痛點補充（CRM 額外記錄）</label>
+        <textarea id="painDetail" placeholder="例：太太58年次，自己60年次，貸款條件越來越難，資產配置需加快…" style="min-height:60px;"></textarea>
+      </div>
+      <div class="field span2">
+        <label>上次提的解決方案</label>
+        <input type="text" id="solution" placeholder="例：邀請帶太太一起來研討會，之後再來算物件細節…" />
+      </div>
     </div>
 
     <div class="submit-wrap">
@@ -942,6 +1011,9 @@ async function generate() {
     const lastResult = document.getElementById('lastResult').value.trim();
     const target     = document.getElementById('target').value;
     const extra      = document.getElementById('extra').value.trim();
+    const objection  = (document.getElementById('objection')  || {value:''}).value.trim();
+    const solution   = (document.getElementById('solution')   || {value:''}).value.trim();
+    const painDetail = (document.getElementById('painDetail') || {value:''}).value.trim();
     const familiarity = selectedFamiliarity || '未填';
 
     const errorMsg = document.getElementById('errorMsg');
@@ -974,7 +1046,7 @@ async function generate() {
     const payload = {
       name, age, group, pain, status, keyman,
       support: supportValue, finance, lastResult,
-      target, extra, familiarity
+      target, extra, familiarity, objection, solution, painDetail
     };
 
     document.getElementById('formCard').style.display = 'none';
@@ -1471,6 +1543,15 @@ function pickCustomer(jsonStr) {
 
   // ── 補充說明（下次跟進行動第一行）──
   sv('extra', c.nextFollowupAction ? c.nextFollowupAction.split('\n')[0] : '');
+
+  // ── 客戶異議 ──
+  sv('objection', c.customerObjection || c.objection || '');
+
+  // ── 痛點補充 ──
+  sv('painDetail', c.painPointDetail || c.painPointsDetail || c.additionalPainPoints || '');
+
+  // ── 上次提的解決方案 ──
+  sv('solution', c.solutionProvided || c.solution || c.recommendedSolution || '');
 
   // ── 族群 chip ──
   selectedChips = [];
