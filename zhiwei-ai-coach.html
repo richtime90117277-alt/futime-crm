@@ -657,6 +657,7 @@
     font-family: 'Manrope', sans-serif; font-size: 13px;
     line-height: 1.8; color: var(--text); white-space: pre-wrap;
     background: #f0f0f0; border-radius: 0;
+    user-select: text; -webkit-user-select: text;
   }
   .line-modal-foot {
     padding: 14px 20px; border-top: 1px solid var(--border);
@@ -838,16 +839,16 @@
       </div>
     </div>
 
-    <div class="section-label" style="margin-top:32px;">Step 2｜他說了什麼、做了什麼</div>
+    <div class="section-label" style="margin-top:32px;">Step 2｜她說了什麼、做了什麼</div>
 
     <div class="field-grid full">
       <div class="field">
         <label>客戶說了什麼、重複說了什麼 <span class="req">*</span></label>
-        <textarea id="pain" placeholder="例：說了三次「我媽反對」；說「再想想」但又主動問了交屋時間；LINE已讀不回但朋友說他有在看房…"></textarea>
+        <textarea id="pain" placeholder="例：說想幫兒子存錢買房、主動問高雄有沒有物件；說「還沒準備好」；說老公說「你決定就好」…&#10;&#10;把她說過的話盡量照原句寫，越具體越好。"></textarea>
       </div>
       <div class="field">
-        <label>做了什麼行為（出現了什麼動作）</label>
-        <textarea id="status" placeholder="例：諮詢過一次說要回去想；上週傳訊息已讀不回；之前說老婆支持但老婆從沒出現過…"></textarea>
+        <label>做了什麼行為、你觀察到什麼</label>
+        <textarea id="status" placeholder="例：主動從FB看到你發文後私訊詢問；諮詢過一次說要回去想；上週傳訊息已讀不回…&#10;&#10;她是主動來還是被動跟進？這很重要。"></textarea>
       </div>
     </div>
 
@@ -872,13 +873,9 @@
       </div>
     </div>
 
-    <div class="section-label" style="margin-top:32px;">Step 4｜這次你想弄清楚什麼</div>
+    <div class="section-label" style="margin-top:32px;">Step 4｜這一局的關鍵</div>
 
     <div class="field-grid">
-      <div class="field">
-        <label>上次跟進結果</label>
-        <textarea id="lastResult" placeholder="例：已讀不回 / 說需要和家人商量 / 已約好下週諮詢…" style="min-height:60px;"></textarea>
-      </div>
       <div class="field">
         <label>本次要成交的節點 <span class="req">*</span></label>
         <select id="target">
@@ -889,11 +886,7 @@
           <option value="收訂（收取訂金 / 斡旋金）">💰 收訂</option>
         </select>
       </div>
-      <div class="field span2">
-        <label>你這次最想弄清楚的事</label>
-        <input type="text" id="extra" placeholder="例：她媽媽特別在意建商信譽 / 下週要出國，這週是最後機會…" />
-      </div>
-      <div class="field span2">
+      <div class="field">
         <label>業務與客戶熟悉度</label>
         <div class="chip-group" id="familiarityChips">
           <div class="chip" onclick="toggleFamiliarity(this)" data-value="第一次見面">🆕 第一次見面</div>
@@ -904,17 +897,20 @@
         </div>
       </div>
       <div class="field span2">
+        <label>上次聊到哪、她的反應是什麼</label>
+        <textarea id="lastResult" placeholder="例：上次說了富時代的概念，她說「聽起來不錯但要想想」；上次已讀不回，沒有下文…" style="min-height:60px;"></textarea>
+      </div>
+      <div class="field span2" style="border:1.5px solid var(--gold);border-radius:12px;padding:16px;background:var(--gold-dim);">
+        <label style="color:var(--gold);font-weight:700;">⚡ 這次要突破的點——她說的跟你要帶她去的方向，差在哪裡？<span class="req">*</span></label>
+        <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px">這個填好，報告才會有方向。不填這個，AI 只能寫通用的話。</div>
+        <textarea id="extra" placeholder="例：她問高雄有沒有物件，但我們主力在雙北桃園——要先翻轉她「買房一定要買在熟悉的地方」這個觀念，帶她往先投資置產、後自住的邏輯走。&#10;例：她說「等兒子有工作再說」，但兒子已經上班了——她其實是自己還沒想清楚，要讓她說出真正卡的是什麼。&#10;例：她一直說「現在房價太高」，但她有100萬閒錢——要讓她自己算出繼續等的代價。" style="min-height:100px;"></textarea>
+      </div>
+      <div class="field span2">
         <label>客戶提出的異議（他說什麼讓你卡住）</label>
-        <input type="text" id="objection" placeholder="例：現在房價這麼高配置房地產不會立刻有收益 / 等一下再說…" />
+        <input type="text" id="objection" placeholder="例：高雄比較熟悉，不想買外地 / 要先問兒子 / 再看看…" />
       </div>
-      <div class="field span2">
-        <label>痛點補充（CRM 額外記錄）</label>
-        <textarea id="painDetail" placeholder="例：太太58年次，自己60年次，貸款條件越來越難，資產配置需加快…" style="min-height:60px;"></textarea>
-      </div>
-      <div class="field span2">
-        <label>上次提的解決方案</label>
-        <input type="text" id="solution" placeholder="例：邀請帶太太一起來研討會，之後再來算物件細節…" />
-      </div>
+      <input type="hidden" id="painDetail" value="" />
+      <input type="hidden" id="solution" value="" />
     </div>
 
     <div class="submit-wrap">
@@ -1176,11 +1172,12 @@ async function generate() {
       .replace(/`(.+?)`/g,'<code>$1</code>')
       .replace(/^---$/gm,'<hr>')
       .replace(/^&gt; (.+)$/gm,'<blockquote><p>$1</p></blockquote>');
-    h = h.replace(/(\|.+\|\n)+/g, tableBlock => {
+    h = h.replace(/(\|.+\|[ \t]*\n?)+/g, tableBlock => {
       const rows = tableBlock.trim().split('\n');
+      const dataRows = rows.filter(r => !/^\|[\s\-|]+\|$/.test(r.trim()));
+      if (!dataRows.length) return tableBlock;
       let out = '<table>';
-      rows.forEach((row, i) => {
-        if (/^\|[-| ]+\|$/.test(row)) return;
+      dataRows.forEach((row, i) => {
         const cells = row.split('|').filter((_,j,a) => j>0 && j<a.length-1);
         const tag = i === 0 ? 'th' : 'td';
         out += '<tr>' + cells.map(c => `<${tag}>${c.trim()}</${tag}>`).join('') + '</tr>';
@@ -1292,15 +1289,36 @@ function closeLineModal() {
 }
 
 function copyLineVersion() {
-  navigator.clipboard.writeText(_lineText).then(() => {
-    const btn = document.getElementById('lineCopyBtn');
+  const btn = document.getElementById('lineCopyBtn');
+  function onSuccess() {
     btn.textContent = '✅ 已複製！貼到 LINE 吧';
     btn.style.background = '#059f44';
     setTimeout(() => {
       btn.textContent = '📋 複製，貼到 LINE';
       btn.style.background = '#06C755';
     }, 2500);
-  });
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(_lineText).then(onSuccess).catch(() => fallbackCopy());
+  } else {
+    fallbackCopy();
+  }
+  function fallbackCopy() {
+    const el = document.getElementById('lineModalBody');
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+    try {
+      document.execCommand('copy');
+      sel.removeAllRanges();
+      onSuccess();
+    } catch(e) {
+      btn.textContent = '⚠️ 請長按文字手動複製';
+      setTimeout(() => { btn.textContent = '📋 複製，貼到 LINE'; }, 3000);
+    }
+  }
 }
 
 // ════════════════════════════════════════
