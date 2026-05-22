@@ -3,24 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>富時代｜客戶解碼系統 v9.0</title>
+<title>富時代｜客戶解碼系統 v5.0</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:#F5F0E8;--surface:#FFFFFF;--surface2:#F9F6F1;--surface3:#F2EDE4;
-  --border:#E0D8CC;--gold:#B8943C;--gold-light:#4E7053;--gold-dim:rgba(61,90,64,0.10);
-  --olive:#3D5A40;--olive-light:#4E7053;--olive-dim:rgba(61,90,64,0.10);
-  --text:#1E1A14;--text-sub:#6B6358;--text-dim:#9E9285;--radius:12px;--sidebar-w:240px;
-  --shadow-card:0 1px 4px rgba(61,45,20,0.06),0 4px 16px rgba(61,45,20,0.06);
+  /* ── 純白灰階 Design System ── */
+  --bg:#F4F5F7;--surface:#FFFFFF;--surface2:#F8F9FA;--surface3:#F0F1F3;
+  --border:#E4E6EA;--border-light:#EDEEF1;
+  --gold:#9A7B2E;--gold-light:#B8943C;--gold-dim:rgba(154,123,46,0.10);
+  --olive:#2A5934;--olive-light:#3D6B45;--olive-dim:rgba(42,89,52,0.09);
+  --text:#111318;--text-sub:#5A6070;--text-dim:#9EA8B5;
+  --radius:10px;--radius-sm:7px;--sidebar-w:232px;
+  --shadow-sm:0 1px 3px rgba(0,0,0,0.06);
+  --shadow-card:0 1px 2px rgba(0,0,0,0.04),0 3px 12px rgba(0,0,0,0.07);
+  --shadow-topbar:0 1px 0 rgba(0,0,0,0.08);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
-body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.6;}
+body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;}
 
 /* ── LOGIN SCREEN ── */
-#lib-login{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:32px 24px;background:#111318;position:fixed;inset:0;z-index:9000;overflow-y:auto;}
-
-
+#lib-login{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:32px 24px;background:#111318;position:fixed;inset:0;z-index:9000;}
 .lib-login-logo{font-family:'Noto Serif TC',serif;font-size:26px;font-weight:700;color:#fff;letter-spacing:.08em;margin-bottom:4px;position:relative;z-index:1;}
 .lib-login-sub{font-size:11px;color:rgba(255,255,255,0.35);letter-spacing:.2em;margin-bottom:40px;position:relative;z-index:1;}
 .lib-login-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:28px 24px;width:100%;max-width:320px;position:relative;z-index:1;}
@@ -32,45 +35,45 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 .lib-login-card input::placeholder{color:rgba(255,255,255,0.2);}
 .lib-login-btn{width:100%;margin-top:24px;background:#fff;color:#111318;border:none;border-radius:8px;padding:13px;font-size:14px;font-weight:900;font-family:inherit;letter-spacing:.04em;cursor:pointer;transition:opacity 0.2s,transform 0.1s;}
 .lib-login-btn:active{opacity:0.85;transform:scale(0.98);}
-.lib-login-err{margin-top:14px;font-size:12px;color:#ff7f7f;text-align:center;min-height:18px;}
+.lib-login-err{margin-top:12px;font-size:12px;color:#ff7f7f;text-align:center;min-height:18px;}
 /* topbar user badge */
-.topbar-user{display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 8px;border-radius:20px;transition:background .2s;}
-.topbar-user:hover{background:rgba(61,90,64,0.1);}
-.topbar-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#d4a84b);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#1A1714;}
-.topbar-uname{font-size:12px;font-weight:700;color:var(--olive);}
-.topbar-logout{background:none;border:1px solid var(--border);border-radius:12px;padding:4px 10px;font-size:11px;color:var(--text-dim);cursor:pointer;font-family:inherit;transition:all .2s;}
-.topbar-logout:hover{border-color:var(--olive);color:var(--olive);}
+.topbar-user{display:flex;align-items:center;gap:7px;cursor:pointer;padding:4px 8px;border-radius:8px;transition:background .15s;}
+.topbar-user:hover{background:var(--surface2);}
+.topbar-avatar{width:27px;height:27px;border-radius:50%;background:var(--olive);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:#fff;}
+.topbar-uname{font-size:12px;font-weight:700;color:var(--text);}
+.topbar-logout{background:none;border:1.5px solid var(--border);border-radius:7px;padding:4px 10px;font-size:11px;color:var(--text-dim);cursor:pointer;font-family:inherit;transition:all .15s;}
+.topbar-logout:hover{border-color:var(--text-sub);color:var(--text-sub);}
 /* 成長系統頁面 */
 #growth-panel{display:none;position:fixed;inset:0;z-index:500;background:var(--bg);overflow-y:auto;padding-bottom:80px;}
-.growth-header{background:var(--olive);padding:16px 20px 14px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
-.growth-header-brand{font-family:'Noto Serif TC',serif;font-size:16px;font-weight:700;color:#fff;letter-spacing:0.06em;}
+.growth-header{background:#fff;padding:14px 20px 12px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;border-bottom:1.5px solid var(--border);}
+.growth-header-brand{font-family:'Noto Serif TC',serif;font-size:14px;font-weight:700;color:var(--text);letter-spacing:.04em;}
 .growth-header-user{display:flex;align-items:center;gap:8px;}
-.growth-header-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#d4a84b);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#1A1714;}
-.growth-header-name{font-size:13px;font-weight:700;color:rgba(255,255,255,0.9);}
-.growth-back-btn{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:6px 14px;border-radius:20px;cursor:pointer;font-size:12px;font-family:inherit;white-space:nowrap;}
+.growth-header-avatar{width:30px;height:30px;border-radius:50%;background:var(--olive);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#fff;}
+.growth-header-name{font-size:13px;font-weight:700;color:var(--text);}
+.growth-back-btn{background:var(--surface2);border:1.5px solid var(--border);color:var(--text-sub);padding:5px 14px;border-radius:7px;cursor:pointer;font-size:12px;font-family:inherit;white-space:nowrap;}
 .growth-page{display:none;padding:0 0 80px;}
 .growth-page.active{display:block;}
-.growth-bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);display:flex;z-index:200;padding-bottom:env(safe-area-inset-bottom);}
-.growth-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;background:none;border:none;cursor:pointer;color:var(--text-dim);font-size:10px;font-family:inherit;gap:3px;transition:color .15s;}
+.growth-bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1.5px solid var(--border);display:flex;z-index:200;padding-bottom:env(safe-area-inset-bottom);}
+.growth-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;background:none;border:none;cursor:pointer;color:var(--text-dim);font-size:10px;font-family:inherit;gap:3px;transition:color .12s;}
 .growth-nav-item.active{color:var(--olive);font-weight:700;}
-.growth-nav-icon{font-size:20px;line-height:1;}
+.growth-nav-icon{font-size:19px;line-height:1;}
 /* profile cards */
 .profile-hero{background:var(--olive);padding:24px 20px 28px;text-align:center;}
-.profile-rank-badge{display:inline-block;background:rgba(184,148,60,0.25);border:1px solid rgba(184,148,60,0.5);border-radius:20px;padding:4px 16px;font-size:12px;font-weight:700;color:var(--gold);letter-spacing:0.1em;margin-bottom:12px;}
-.profile-name{font-family:'Noto Serif TC',serif;font-size:22px;font-weight:700;color:#fff;margin-bottom:4px;}
+.profile-rank-badge{display:inline-block;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);border-radius:20px;padding:4px 16px;font-size:11px;font-weight:700;color:#fff;letter-spacing:.1em;margin-bottom:12px;}
+.profile-name{font-family:'Noto Serif TC',serif;font-size:20px;font-weight:700;color:#fff;margin-bottom:4px;}
 .profile-title{font-size:12px;color:rgba(255,255,255,0.6);margin-bottom:16px;}
-.xp-bar-wrap{background:rgba(255,255,255,0.15);border-radius:10px;height:8px;margin:0 0 8px;}
-.xp-bar-fill{background:linear-gradient(90deg,var(--gold),#d4a84b);height:8px;border-radius:10px;transition:width 0.6s ease;}
+.xp-bar-wrap{background:rgba(255,255,255,0.2);border-radius:6px;height:6px;margin:0 0 7px;}
+.xp-bar-fill{background:#fff;height:6px;border-radius:6px;transition:width 0.6s ease;opacity:.9;}
 .xp-label{display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,0.6);}
-.growth-stats-row{display:flex;gap:12px;padding:16px 16px 0;}
-.growth-stat-card{flex:1;background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;}
-.growth-stat-num{font-size:28px;font-weight:900;color:var(--olive);}
-.growth-stat-label{font-size:11px;color:var(--text-dim);margin-top:2px;}
-.growth-section{padding:16px 16px 0;}
-.growth-section-title{font-size:12px;font-weight:700;letter-spacing:0.1em;color:var(--text-dim);text-transform:uppercase;margin-bottom:10px;}
-.milestone-item{display:flex;align-items:center;gap:12px;padding:12px;background:#fff;border:1px solid var(--border);border-radius:12px;margin-bottom:8px;}
-.milestone-item.achieved{border-color:rgba(61,90,64,0.3);background:rgba(61,90,64,0.04);}
-.milestone-icon-wrap{width:36px;height:36px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.growth-stats-row{display:flex;gap:10px;padding:14px 14px 0;}
+.growth-stat-card{flex:1;background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);padding:14px;text-align:center;}
+.growth-stat-num{font-size:26px;font-weight:900;color:var(--olive);}
+.growth-stat-label{font-size:10px;color:var(--text-dim);margin-top:2px;}
+.growth-section{padding:14px 14px 0;}
+.growth-section-title{font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--text-dim);text-transform:uppercase;margin-bottom:10px;}
+.milestone-item{display:flex;align-items:center;gap:10px;padding:11px 12px;background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);margin-bottom:7px;}
+.milestone-item.achieved{border-color:rgba(42,89,52,0.3);background:var(--olive-dim);}
+.milestone-icon-wrap{width:34px;height:34px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
 .milestone-info{flex:1;min-width:0;}
 .milestone-name{font-size:13px;font-weight:700;color:var(--text);}
 .milestone-desc{font-size:11px;color:var(--text-dim);margin-top:2px;line-height:1.4;}
@@ -79,139 +82,146 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 .badges-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
 .badge-item{text-align:center;padding:10px 4px;}
 .badge-item.locked{opacity:0.3;}
-.badge-icon{font-size:24px;margin-bottom:4px;}
+.badge-icon{font-size:22px;margin-bottom:4px;}
 .badge-name{font-size:10px;color:var(--text-dim);}
 /* leaderboard */
 .lb-header-section{background:var(--olive);padding:20px;text-align:center;}
-.lb-title-text{font-family:'Noto Serif TC',serif;font-size:20px;font-weight:700;color:#fff;margin-bottom:4px;}
+.lb-title-text{font-family:'Noto Serif TC',serif;font-size:18px;font-weight:700;color:#fff;margin-bottom:4px;}
 .lb-subtitle-text{font-size:12px;color:rgba(255,255,255,0.6);}
-.lb-podium{display:flex;align-items:flex-end;justify-content:center;gap:8px;padding:20px 16px;background:#fff;border-bottom:1px solid var(--border);}
+.lb-podium{display:flex;align-items:flex-end;justify-content:center;gap:8px;padding:18px 16px;background:#fff;border-bottom:1.5px solid var(--border);}
 .lb-podium-item{text-align:center;flex:1;}
-.lb-podium-icon{font-size:24px;margin-bottom:4px;}
+.lb-podium-icon{font-size:22px;margin-bottom:4px;}
 .lb-podium-name{font-size:12px;font-weight:700;color:var(--text);margin-bottom:2px;}
 .lb-podium-pts{font-size:11px;color:var(--text-dim);}
-.lb-podium-bar{border-radius:8px 8px 0 0;margin:0 auto;width:60%;}
-.lb-list{padding:12px 16px;}
-.lb-item{display:flex;align-items:center;gap:12px;padding:12px;background:#fff;border:1px solid var(--border);border-radius:12px;margin-bottom:8px;}
-.lb-item.me{border-color:var(--olive);background:rgba(61,90,64,0.04);}
+.lb-podium-bar{border-radius:6px 6px 0 0;margin:0 auto;width:60%;}
+.lb-list{padding:12px 14px;}
+.lb-item{display:flex;align-items:center;gap:10px;padding:11px 12px;background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);margin-bottom:6px;}
+.lb-item.me{border-color:var(--olive);background:var(--olive-dim);}
 .lb-rank{font-size:16px;font-weight:900;color:var(--text-dim);width:24px;text-align:center;flex-shrink:0;}
-.lb-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#d4a84b);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#1A1714;flex-shrink:0;}
+.lb-avatar{width:34px;height:34px;border-radius:50%;background:var(--olive);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:#fff;flex-shrink:0;}
 .lb-info{flex:1;min-width:0;}
 .lb-name{font-size:13px;font-weight:700;color:var(--text);}
 .lb-level{font-size:11px;color:var(--text-dim);}
-.lb-pts-num{font-size:15px;font-weight:900;color:var(--olive);}
+.lb-pts-num{font-size:14px;font-weight:900;color:var(--olive);}
 /* checkin */
 .checkin-hero{background:var(--olive);padding:28px 20px;text-align:center;}
-.checkin-streak-num{font-size:64px;font-weight:900;color:#fff;line-height:1;}
+.checkin-streak-num{font-size:60px;font-weight:900;color:#fff;line-height:1;}
 .checkin-streak-label{font-size:13px;color:rgba(255,255,255,0.6);margin:8px 0 20px;}
-.checkin-btn-el{background:linear-gradient(135deg,var(--gold),#d4a84b);color:#1A1714;border:none;border-radius:16px;padding:16px 32px;font-size:15px;font-weight:900;font-family:inherit;cursor:pointer;letter-spacing:0.05em;}
+.checkin-btn-el{background:#fff;color:var(--olive);border:none;border-radius:10px;padding:14px 32px;font-size:14px;font-weight:900;font-family:inherit;cursor:pointer;letter-spacing:.03em;}
 .checkin-btn-el:disabled{opacity:0.5;cursor:not-allowed;}
-.checkin-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;padding:4px 0;}
-.checkin-day{aspect-ratio:1;border-radius:8px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text-dim);}
+.checkin-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;padding:4px 0;}
+.checkin-day{aspect-ratio:1;border-radius:7px;background:var(--surface2);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--text-dim);}
 .checkin-day.done{background:var(--olive);border-color:var(--olive);color:#fff;}
-.checkin-day.today{border-color:var(--gold);font-weight:700;}
+.checkin-day.today{border-color:var(--olive-light);font-weight:700;}
 /* reward popup */
-.growth-reward-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9100;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(4px);}
+.growth-reward-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:9100;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(4px);}
 .growth-reward-overlay.show{display:flex;}
-.growth-reward-card{background:#fff;border-radius:24px;padding:36px 28px;text-align:center;max-width:320px;width:100%;animation:rewardPop .4s cubic-bezier(0.22,1,0.36,1);}
-@keyframes rewardPop{from{transform:scale(0.8);opacity:0}to{transform:scale(1);opacity:1}}
-.growth-toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#1E1A14;color:#fff;border-radius:12px;padding:10px 20px;font-size:13px;font-weight:700;white-space:nowrap;pointer-events:none;transition:opacity .3s;z-index:9200;}
+.growth-reward-card{background:#fff;border-radius:16px;padding:32px 24px;text-align:center;max-width:300px;width:100%;animation:rewardPop .35s cubic-bezier(0.22,1,0.36,1);}
+@keyframes rewardPop{from{transform:scale(0.85);opacity:0}to{transform:scale(1);opacity:1}}
+.growth-toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#111318;color:#fff;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;white-space:nowrap;pointer-events:none;transition:opacity .3s;z-index:9200;}
 
 /* topbar */
-.topbar{position:fixed;top:0;left:0;right:0;z-index:100;height:52px;background:rgba(245,240,232,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:16px;}
-.topbar-logo{font-family:'Noto Serif TC',serif;font-size:15px;font-weight:700;color:var(--olive);letter-spacing:.06em;white-space:nowrap;}
-.topbar-sep{color:var(--border);}
-.topbar-title{font-size:13px;color:var(--text-sub);letter-spacing:.08em;font-weight:300;}
+.topbar{position:fixed;top:0;left:0;right:0;z-index:100;height:52px;background:#fff;box-shadow:var(--shadow-topbar);display:flex;align-items:center;padding:0 16px;gap:12px;}
+.topbar-logo{font-family:'Noto Serif TC',serif;font-size:14px;font-weight:700;color:var(--text);letter-spacing:.04em;white-space:nowrap;}
+.topbar-sep{width:1px;height:16px;background:var(--border);flex-shrink:0;}
+.topbar-title{font-size:12px;color:var(--text-dim);letter-spacing:.06em;font-weight:400;}
 .topbar-right{margin-left:auto;display:flex;gap:8px;align-items:center;}
 
 .search-wrap{position:relative;}
-.search-input{background:var(--surface2);border:1px solid var(--border);border-radius:20px;color:var(--text);padding:5px 14px 5px 32px;font-size:13px;width:200px;outline:none;transition:all .2s;font-family:'Noto Sans TC',sans-serif;}
+.search-input{background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;color:var(--text);padding:6px 12px 6px 32px;font-size:13px;width:180px;outline:none;transition:all .2s;font-family:'Noto Sans TC',sans-serif;}
 .search-input::placeholder{color:var(--text-dim);}
-.search-input:focus{border-color:var(--olive);width:260px;background:var(--surface2);}
-.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text-dim);font-size:13px;pointer-events:none;}
+.search-input:focus{border-color:var(--olive);width:220px;background:#fff;box-shadow:0 0 0 3px var(--olive-dim);}
+.search-icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--text-dim);font-size:13px;pointer-events:none;}
 
-.mode-toggle{display:flex;background:var(--surface2);border:1px solid var(--border);border-radius:20px;overflow:hidden;}
-.mode-btn{background:none;border:none;cursor:pointer;color:var(--text-sub);padding:5px 14px;font-size:12px;font-family:'Noto Sans TC',sans-serif;font-weight:500;letter-spacing:.04em;transition:all .2s;}
-.mode-btn.active{background:var(--olive);color:#fff;font-weight:700;}
-.count-badge{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:4px 10px;font-size:11px;color:var(--text-sub);}
+.mode-toggle{display:flex;background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;overflow:hidden;padding:2px;gap:2px;}
+.mode-btn{background:none;border:none;cursor:pointer;color:var(--text-sub);padding:4px 12px;font-size:12px;font-family:'Noto Sans TC',sans-serif;font-weight:500;letter-spacing:.02em;transition:all .15s;border-radius:6px;}
+.mode-btn.active{background:#fff;color:var(--text);font-weight:700;box-shadow:var(--shadow-sm);}
+.count-badge{background:var(--surface2);border:1.5px solid var(--border);border-radius:7px;padding:4px 10px;font-size:11px;color:var(--text-sub);}
 .count-badge span{color:var(--olive);font-weight:700;}
 
 /* layout */
 .layout{display:flex;margin-top:52px;min-height:calc(100vh - 52px);}
 
 /* sidebar */
-.sidebar{width:var(--sidebar-w);position:fixed;top:52px;left:0;bottom:0;overflow-y:auto;overflow-x:hidden;background:var(--surface2);border-right:1px solid var(--border);padding:12px 0;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+.sidebar{width:var(--sidebar-w);position:fixed;top:52px;left:0;bottom:0;overflow-y:auto;overflow-x:hidden;background:#fff;border-right:1.5px solid var(--border);padding:8px 0 20px;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
 .sidebar::-webkit-scrollbar{width:3px;}
 .sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
-.sidebar-label{font-size:9px;font-weight:700;letter-spacing:.12em;color:var(--text-dim);text-transform:uppercase;padding:8px 16px 4px;}
-.sidebar-item{display:flex;align-items:center;gap:8px;padding:7px 16px;cursor:pointer;border-left:2px solid transparent;transition:all .15s;color:var(--text-sub);font-size:13px;}
-.sidebar-item:hover{background:var(--surface3);color:var(--text);}
+.sidebar-label{font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--text-dim);text-transform:uppercase;padding:12px 16px 4px;display:flex;align-items:center;gap:6px;}
+.sidebar-item{display:flex;align-items:center;gap:8px;padding:7px 14px;cursor:pointer;border-left:2px solid transparent;transition:all .12s;color:var(--text-sub);font-size:13px;margin:0 6px;border-radius:0 6px 6px 0;}
+.sidebar-item:hover{background:var(--surface2);color:var(--text);}
 .sidebar-item.active{border-left-color:var(--olive);background:var(--olive-dim);color:var(--olive);}
 .sidebar-item .s-icon{font-size:13px;flex-shrink:0;width:18px;text-align:center;}
-.sidebar-item .s-name{flex:1;font-size:12px;}
-.sidebar-item .s-cnt{font-size:10px;color:var(--text-dim);background:var(--surface3);border-radius:10px;padding:1px 6px;flex-shrink:0;}
+.sidebar-item .s-name{flex:1;font-size:12.5px;}
+.sidebar-item .s-cnt{font-size:10px;color:var(--text-dim);background:var(--surface2);border-radius:8px;padding:1px 6px;flex-shrink:0;}
 .sidebar-item.active .s-cnt{background:var(--olive-dim);color:var(--olive);}
-.sidebar-divider{height:1px;background:var(--border);margin:8px 16px;}
+.sidebar-divider{height:1px;background:var(--border-light);margin:6px 16px;}
 
 /* main */
-.main{margin-left:var(--sidebar-w);flex:1;padding:24px 28px;min-width:0;}
+.main{margin-left:var(--sidebar-w);flex:1;padding:24px 28px 48px;min-width:0;}
 
 /* headers */
-.view-eyebrow{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--olive);font-weight:700;margin-bottom:6px;}
-.view-title{font-family:'Noto Serif TC',serif;font-size:22px;font-weight:700;color:var(--text);letter-spacing:.02em;}
-.view-desc{font-size:13px;color:var(--text-sub);margin-top:4px;margin-bottom:24px;}
+.view-eyebrow{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--olive);font-weight:700;margin-bottom:4px;}
+.view-title{font-family:'Noto Serif TC',serif;font-size:20px;font-weight:700;color:var(--text);letter-spacing:.01em;}
+.view-desc{font-size:12px;color:var(--text-dim);margin-top:3px;margin-bottom:20px;}
 
 /* module grid */
-.module-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-bottom:32px;}
-.module-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;box-shadow:0 1px 4px rgba(61,45,20,0.05);}
-.module-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--olive);transform:scaleX(0);transform-origin:left;transition:transform .25s;}
-.module-card:hover{border-color:var(--olive);background:var(--surface3);box-shadow:var(--shadow-card);}
+.module-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin-bottom:28px;}
+.module-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:16px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden;}
+.module-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--olive);transform:scaleX(0);transform-origin:left;transition:transform .2s;}
+.module-card:hover{border-color:rgba(42,89,52,0.35);box-shadow:var(--shadow-card);}
 .module-card:hover::before{transform:scaleX(1);}
-.mc-no{font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--olive);margin-bottom:8px;}
-.mc-icon{font-size:24px;margin-bottom:6px;}
-.mc-name{font-family:'Noto Serif TC',serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:4px;}
-.mc-desc{font-size:12px;color:var(--text-sub);margin-bottom:10px;line-height:1.5;}
-.mc-chips{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;}
-.mc-chip{font-size:10px;padding:2px 8px;background:var(--surface3);border:1px solid var(--border);border-radius:10px;color:var(--text-sub);}
+.mc-no{font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--olive);margin-bottom:6px;}
+.mc-icon{font-size:22px;margin-bottom:5px;}
+.mc-name{font-family:'Noto Serif TC',serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:3px;}
+.mc-desc{font-size:11.5px;color:var(--text-sub);margin-bottom:8px;line-height:1.5;}
+.mc-chips{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:7px;}
+.mc-chip{font-size:10px;padding:2px 7px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text-dim);}
 .mc-cnt{font-size:11px;color:var(--olive);font-weight:700;}
 
 /* section header */
-.section-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid var(--olive-dim);}
-.section-icon{font-size:20px;}
-.section-name{font-family:'Noto Serif TC',serif;font-size:18px;font-weight:700;}
-.section-cnt{margin-left:auto;font-size:11px;color:var(--text-sub);background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:2px 10px;}
-.back-btn{display:inline-flex;align-items:center;gap:6px;color:var(--text-sub);font-size:12px;cursor:pointer;margin-bottom:16px;border:none;background:none;font-family:'Noto Sans TC',sans-serif;transition:color .15s;padding:0;}
+.section-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:10px;border-bottom:1.5px solid var(--border);}
+.section-icon{font-size:18px;}
+.section-name{font-family:'Noto Serif TC',serif;font-size:17px;font-weight:700;}
+.section-cnt{margin-left:auto;font-size:10px;color:var(--text-dim);background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:2px 9px;}
+.back-btn{display:inline-flex;align-items:center;gap:5px;color:var(--text-dim);font-size:12px;cursor:pointer;margin-bottom:14px;border:none;background:none;font-family:'Noto Sans TC',sans-serif;transition:color .12s;padding:0;}
 .back-btn:hover{color:var(--olive);}
 
-/* script cards */
-.script-list{display:flex;flex-direction:column;gap:8px;}
-.script-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:all .15s;box-shadow:0 1px 3px rgba(61,45,20,0.04);}
-.script-card:hover{border-color:#E0D8CC;}
-.script-card.expanded{border-color:var(--olive);}
-.script-header{display:flex;align-items:center;gap:10px;padding:12px 16px;cursor:pointer;user-select:none;}
-.script-id{font-size:10px;font-weight:700;letter-spacing:.06em;color:var(--olive);background:var(--olive-dim);border-radius:4px;padding:2px 7px;flex-shrink:0;min-width:46px;text-align:center;}
-.script-title{font-size:14px;font-weight:700;color:var(--text);flex:1;}
-.script-cat{font-size:10px;color:var(--text-dim);background:var(--surface2);border-radius:10px;padding:2px 8px;flex-shrink:0;}
-.script-chevron{color:var(--text-dim);font-size:11px;flex-shrink:0;transition:transform .2s;}
-.script-card.expanded .script-chevron{transform:rotate(180deg);}
-.script-body{display:none;padding:0 16px 16px;border-top:1px solid var(--border);}
+/* script cards — 全面重構 */
+.script-list{display:flex;flex-direction:column;gap:6px;}
+.script-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:border-color .15s,box-shadow .15s;}
+.script-card:hover{border-color:rgba(42,89,52,0.3);box-shadow:var(--shadow-sm);}
+.script-card.expanded{border-color:rgba(42,89,52,0.45);box-shadow:0 2px 10px rgba(42,89,52,0.1);}
+.script-header{display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;user-select:none;}
+.script-id{font-size:9.5px;font-weight:700;letter-spacing:.06em;color:var(--text-dim);background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:2px 7px;flex-shrink:0;min-width:42px;text-align:center;}
+.script-card.expanded .script-id{background:var(--olive-dim);color:var(--olive);border-color:rgba(42,89,52,0.2);}
+.script-title{font-size:13.5px;font-weight:700;color:var(--text);flex:1;line-height:1.35;}
+.script-cat{font-size:10px;color:var(--text-dim);background:var(--surface2);border-radius:6px;padding:2px 7px;flex-shrink:0;border:1px solid var(--border-light);}
+.script-chevron{color:var(--text-dim);font-size:10px;flex-shrink:0;transition:transform .18s;}
+.script-card.expanded .script-chevron{transform:rotate(180deg);color:var(--olive);}
+
+/* script body — 清晰分層設計 */
+.script-body{display:none;border-top:1.5px solid var(--border);}
 .script-card.expanded .script-body{display:block;}
-.sf{margin-top:12px;}
-.sf-label{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:5px;}
-.sf-situation{font-size:12px;color:var(--text-sub);background:var(--surface2);border-radius:4px;padding:7px 10px;}
-.sf-trigger{font-size:13px;color:var(--olive);font-style:italic;border-left:2px solid var(--olive);padding:7px 12px;background:var(--olive-dim);border-radius:0 4px 4px 0;line-height:1.6;}
-.sf-content{font-size:13px;color:var(--text);line-height:1.85;white-space:pre-wrap;}
-.sf-note{font-size:11px;color:var(--text-dim);padding:4px 10px;background:var(--surface2);border-radius:4px;border-left:2px solid var(--border);}
-.script-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;}
-.action-btn{font-size:11px;padding:5px 14px;border-radius:4px;border:1px solid var(--border);background:var(--surface2);color:var(--text-sub);cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:all .15s;}
-.action-btn:hover{border-color:var(--olive);color:var(--olive);}
+.sf{padding:12px 14px 0;}
+.sf:last-of-type{padding-bottom:0;}
+.sf-label{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px;}
+
+/* 觸發句 — 最突出元素 */
+.sf-trigger{font-size:14px;font-weight:700;color:var(--text);border-left:3px solid var(--olive);padding:10px 14px;background:var(--olive-dim);border-radius:0 var(--radius-sm) var(--radius-sm) 0;line-height:1.55;}
+.sf-situation{font-size:12px;color:var(--text-sub);background:var(--surface2);border-radius:var(--radius-sm);padding:8px 11px;line-height:1.55;}
+.sf-content{font-size:13px;color:var(--text);line-height:1.9;white-space:pre-wrap;}
+.sf-note{font-size:11px;color:var(--text-dim);padding:6px 10px;background:var(--surface2);border-radius:var(--radius-sm);border-left:2px solid var(--border);}
+
+.script-actions{display:flex;gap:6px;padding:12px 14px 14px;flex-wrap:wrap;border-top:1px solid var(--border-light);margin-top:12px;}
+.action-btn{font-size:11px;padding:5px 12px;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:var(--surface2);color:var(--text-sub);cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:all .12s;font-weight:500;}
+.action-btn:hover{border-color:var(--olive);color:var(--olive);background:#fff;}
 .action-btn.primary{background:var(--olive);color:#fff;border-color:var(--olive);font-weight:700;}
 .action-btn.primary:hover{background:var(--olive-light);}
 
-.hl{background:rgba(61,90,64,0.10);border-radius:2px;padding:0 1px;}
+.hl{background:rgba(154,123,46,0.15);border-radius:2px;padding:0 1px;}
 .empty-state{text-align:center;padding:60px 20px;color:var(--text-dim);}
-.empty-icon{font-size:36px;margin-bottom:12px;}
-.toast{position:fixed;bottom:24px;right:24px;background:var(--surface);border:1px solid var(--olive);color:var(--text);padding:10px 18px;border-radius:6px;font-size:13px;transform:translateY(80px);opacity:0;transition:all .3s;z-index:999;pointer-events:none;box-shadow:0 4px 16px rgba(61,45,20,0.12);}
+.empty-icon{font-size:32px;margin-bottom:10px;}
+.toast{position:fixed;bottom:24px;right:24px;background:#111318;color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;transform:translateY(80px);opacity:0;transition:all .25s;z-index:999;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,0.18);}
 .toast.show{transform:translateY(0);opacity:1;}
 
 
@@ -223,35 +233,34 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 @media (max-width: 768px) {
 
   /* ── Topbar 手機版 ── */
-  .topbar { padding: 0 14px; gap: 10px; height: 50px; }
+  .topbar { padding: 0 12px; gap: 8px; height: 50px; }
   .topbar-sep { display: none; }
-  .topbar-title { display: none; } /* 節省空間，標題已在 sidebar 可見 */
+  .topbar-title { display: none; }
   .topbar-right { gap: 6px; }
-  .count-badge { display: none; } /* 手機不顯示筆數 */
-  .mode-toggle { border-radius: 16px; }
+  .count-badge { display: none; }
+  .mode-toggle { padding: 2px; }
   .mode-btn { font-size: 11px; padding: 4px 8px; }
-  /* 手機版：搜尋框縮短，模式切換縮小 */
-  .search-wrap { max-width: 130px; }
-  .search-input { width: 100px; font-size: 12px; }
-  .mode-btn span, .mode-btn { font-size: 10px; padding: 3px 7px; }
+  .search-wrap { max-width: 120px; }
+  .search-input { width: 90px; font-size: 12px; padding:5px 10px 5px 28px; }
+  .search-input:focus { width: 120px; }
+  .mode-btn { font-size: 10px; padding: 3px 7px; }
 
   /* ── Hamburger 按鈕 ── */
   .hamburger {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 36px; height: 36px;
-    background: var(--surface3);
-    border: 1px solid var(--border);
+    width: 34px; height: 34px;
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
     border-radius: 8px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 15px;
     flex-shrink: 0;
-    order: -1; /* 擺最左 */
+    order: -1;
     color: var(--text-sub);
-    transition: background .15s;
+    transition: background .12s;
   }
-  .hamburger:hover { background: var(--surface3); }
 
   /* ── Sidebar 抽屜模式 ── */
   .sidebar {
@@ -261,8 +270,9 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
     z-index: 200;
     transform: translateX(-100%);
     transition: transform .25s ease;
-    border-right: 1px solid var(--border);
-    padding-top: 60px; /* 留出 close btn 空間 */
+    border-right: 1.5px solid var(--border);
+    padding-top: 60px;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.12);
   }
   .sidebar.open { transform: translateX(0); }
 
@@ -271,8 +281,9 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,.55);
+    background: rgba(0,0,0,.45);
     z-index: 199;
+    backdrop-filter: blur(2px);
   }
   .sidebar-overlay.show { display: block; }
 
@@ -284,26 +295,25 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
     width: 30px; height: 30px;
     align-items: center;
     justify-content: center;
-    background: var(--surface3);
-    border: 1px solid var(--border);
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
     border-radius: 8px;
     cursor: pointer;
     font-size: 14px;
     color: var(--text-sub);
   }
 
-  /* ── Main 內容區：不再預留 sidebar 寬度 ── */
+  /* ── Main 內容區 ── */
   .main {
     margin-left: 0;
-    padding: 16px 14px;
+    padding: 14px 12px 60px;
     margin-top: 50px;
   }
 
-  /* ── 卡片標題：避免直排 ── */
+  /* ── 卡片標題 ── */
   .script-title {
     font-size: 13px;
-    line-height: 1.4;
-    /* 讓標題自然換行但不直排 */
+    line-height: 1.35;
     word-break: keep-all;
     overflow-wrap: break-word;
   }
@@ -311,39 +321,35 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
   .script-header {
     padding: 10px 12px;
     gap: 8px;
-    flex-wrap: nowrap;
-    align-items: flex-start; /* 多行時對齊頂部 */
+    align-items: flex-start;
   }
 
   .script-id {
-    font-size: 10px;
-    min-width: 42px;
-    padding: 2px 6px;
-    margin-top: 1px; /* 視覺對齊 */
+    font-size: 9.5px;
+    min-width: 38px;
+    padding: 2px 5px;
+    margin-top: 1px;
   }
 
-  /* 分類標籤手機版不顯示（節省空間，header 已很擠） */
   .script-cat { display: none; }
-
   .script-chevron { margin-top: 2px; flex-shrink: 0; }
 
   /* ── Script body 手機調整 ── */
-  .script-body { padding: 0 12px 14px; }
+  .sf { padding: 10px 12px 0; }
+  .script-actions { padding: 10px 12px 12px; gap: 5px; }
   .sf-content { font-size: 12px; line-height: 1.8; }
-  .sf-trigger { font-size: 12px; }
+  .sf-trigger { font-size: 13px; }
   .sf-situation { font-size: 11px; }
-
-  .script-actions { gap: 6px; }
-  .action-btn { font-size: 11px; padding: 5px 12px; }
+  .action-btn { font-size: 10.5px; padding: 5px 10px; }
 
   /* ── Module grid：手機改單欄 ── */
-  .module-grid { grid-template-columns: 1fr; gap: 10px; }
+  .module-grid { grid-template-columns: 1fr; gap: 8px; }
   .module-card { padding: 14px; }
   .mc-name { font-size: 14px; }
 
   /* ── View header ── */
-  .view-title { font-size: 18px; }
-  .view-desc { font-size: 12px; margin-bottom: 16px; }
+  .view-title { font-size: 17px; }
+  .view-desc { font-size: 11px; margin-bottom: 14px; }
 }
 
 /* 桌面版隱藏手機專屬元素 */
@@ -355,515 +361,53 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* ══ DECODE MODE CSS ══ */
-.decode-hero{background:linear-gradient(135deg,rgba(61,90,64,0.08) 0%,rgba(184,148,60,0.06) 100%);border:2px solid rgba(61,90,64,0.2);border-radius:16px;padding:24px;margin-bottom:24px;}
-.decode-signal{font-size:18px;font-weight:700;color:var(--text);font-family:'Noto Serif TC',serif;margin-bottom:6px;}
-.decode-signal-quote{font-size:14px;color:var(--text-sub);background:var(--surface);border-left:3px solid var(--olive);padding:10px 14px;border-radius:0 8px 8px 0;margin-bottom:16px;font-style:italic;}
-.abc-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px;}
+.decode-hero{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:20px;}
+.decode-signal{font-size:17px;font-weight:700;color:var(--text);font-family:'Noto Serif TC',serif;margin-bottom:5px;}
+.decode-signal-quote{font-size:14px;font-weight:700;color:var(--text);background:var(--olive-dim);border-left:3px solid var(--olive);padding:10px 14px;border-radius:0 var(--radius-sm) var(--radius-sm) 0;margin-bottom:14px;}
+.abc-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px;}
 @media(max-width:600px){.abc-grid{grid-template-columns:1fr;}}
-.abc-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;transition:all .2s;position:relative;}
-.abc-card:hover{border-color:var(--olive);transform:translateY(-1px);}
-.abc-card.selected{border-color:var(--olive);background:rgba(61,90,64,0.06);}
+.abc-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);padding:12px;cursor:pointer;transition:all .15s;position:relative;}
+.abc-card:hover{border-color:rgba(42,89,52,0.4);}
+.abc-card.selected{border-color:var(--olive);background:var(--olive-dim);}
 .abc-card.correct{border-color:#27ae60;background:rgba(39,174,96,0.06);}
-.abc-card.wrong{border-color:#c0392b;background:rgba(192,57,43,0.06);}
-.abc-label{font-size:20px;font-weight:900;color:var(--olive);margin-bottom:6px;font-family:'Noto Serif TC',serif;}
-.abc-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.abc-card.wrong{border-color:#c0392b;background:rgba(192,57,43,0.05);}
+.abc-label{font-size:18px;font-weight:900;color:var(--olive);margin-bottom:5px;font-family:'Noto Serif TC',serif;}
+.abc-title{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:3px;}
 .abc-desc{font-size:11px;color:var(--text-sub);line-height:1.5;}
-.abc-reveal{background:rgba(61,90,64,0.06);border:1px solid rgba(61,90,64,0.2);border-radius:12px;padding:16px;margin-bottom:16px;display:none;}
+.abc-reveal{background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px;display:none;}
 .abc-reveal.show{display:block;}
-.verify-box{background:rgba(184,148,60,0.08);border:1px solid rgba(184,148,60,0.25);border-radius:10px;padding:14px;margin-bottom:12px;}
-.verify-label{font-size:9px;font-weight:700;letter-spacing:.12em;color:var(--gold);margin-bottom:6px;}
-.verify-text{font-size:13px;color:var(--text);line-height:1.7;font-style:italic;}
-.key-insight{background:var(--surface2);border-left:3px solid var(--olive);padding:12px 14px;border-radius:0 8px 8px 0;font-size:12px;color:var(--text-sub);line-height:1.7;margin-bottom:12px;}
-.wrong-move{background:rgba(192,57,43,0.05);border-left:3px solid #c0392b;padding:10px 14px;border-radius:0 8px 8px 0;font-size:12px;color:#c0392b;margin-bottom:16px;}
-.decode-nav-pill{display:inline-flex;align-items:center;gap:6px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:4px 14px;font-size:11px;color:var(--text-sub);cursor:pointer;transition:all .15s;margin-bottom:4px;}
-.decode-nav-pill:hover{border-color:var(--olive);color:var(--olive);}
+.verify-box{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:14px;margin-bottom:12px;}
+.verify-label{font-size:9px;font-weight:700;letter-spacing:.12em;color:var(--text-dim);margin-bottom:5px;text-transform:uppercase;}
+.verify-text{font-size:13px;color:var(--text);line-height:1.7;}
+.key-insight{background:var(--surface2);border-left:3px solid var(--olive);padding:11px 14px;border-radius:0 var(--radius-sm) var(--radius-sm) 0;font-size:12px;color:var(--text-sub);line-height:1.7;margin-bottom:10px;}
+.wrong-move{background:#fff;border-left:3px solid #c0392b;padding:10px 14px;border-radius:0 var(--radius-sm) var(--radius-sm) 0;font-size:12px;color:#c0392b;margin-bottom:14px;}
+.decode-nav-pill{display:inline-flex;align-items:center;gap:5px;background:#fff;border:1.5px solid var(--border);border-radius:7px;padding:4px 12px;font-size:11px;color:var(--text-sub);cursor:pointer;transition:all .12s;margin-bottom:4px;}
+.decode-nav-pill:hover{border-color:rgba(42,89,52,0.4);color:var(--olive);}
 .decode-nav-pill.active{background:var(--olive);color:#fff;border-color:var(--olive);}
-.decode-tag{font-size:9px;font-weight:700;letter-spacing:.1em;padding:2px 8px;border-radius:10px;text-transform:uppercase;}
-.decode-tag.decode{background:rgba(61,90,64,0.12);color:var(--olive);}
-.decode-tag.mindset{background:rgba(184,148,60,0.12);color:var(--gold);}
-.decode-tag.script{background:var(--surface3);color:var(--text-dim);}
+.decode-tag{font-size:9px;font-weight:700;letter-spacing:.1em;padding:2px 7px;border-radius:8px;text-transform:uppercase;}
+.decode-tag.decode{background:var(--olive-dim);color:var(--olive);}
+.decode-tag.mindset{background:var(--gold-dim);color:var(--gold);}
+.decode-tag.script{background:var(--surface2);color:var(--text-dim);}
 
 /* Quiz mode */
-.quiz-container{max-width:580px;}
-.quiz-q{font-family:'Noto Serif TC',serif;font-size:16px;font-weight:700;color:var(--text);margin-bottom:8px;line-height:1.5;}
-.quiz-situation{font-size:12px;color:var(--text-sub);background:var(--surface2);border-radius:8px;padding:10px 12px;margin-bottom:16px;border-left:3px solid var(--border);}
-.quiz-options{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
-.quiz-opt{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;cursor:pointer;transition:all .2s;font-size:13px;color:var(--text);}
-.quiz-opt:hover{border-color:var(--olive);background:rgba(61,90,64,0.04);}
-.quiz-opt.correct{border-color:#27ae60;background:rgba(39,174,96,0.08);color:#1e8449;}
-.quiz-opt.wrong{border-color:#c0392b;background:rgba(192,57,43,0.06);color:#c0392b;}
-.quiz-feedback{background:var(--surface2);border-radius:10px;padding:14px;font-size:12px;line-height:1.7;color:var(--text-sub);display:none;}
+.quiz-container{max-width:560px;}
+.quiz-q{font-family:'Noto Serif TC',serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:8px;line-height:1.5;}
+.quiz-situation{font-size:12px;color:var(--text-sub);background:var(--surface2);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:14px;border-left:2px solid var(--border);}
+.quiz-options{display:flex;flex-direction:column;gap:7px;margin-bottom:14px;}
+.quiz-opt{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:11px 14px;cursor:pointer;transition:all .15s;font-size:13px;color:var(--text);}
+.quiz-opt:hover{border-color:rgba(42,89,52,0.4);background:var(--olive-dim);}
+.quiz-opt.correct{border-color:#27ae60;background:rgba(39,174,96,0.07);color:#1e8449;}
+.quiz-opt.wrong{border-color:#c0392b;background:rgba(192,57,43,0.05);color:#c0392b;}
+.quiz-feedback{background:var(--surface2);border-radius:var(--radius-sm);padding:14px;font-size:12px;line-height:1.7;color:var(--text-sub);display:none;border:1px solid var(--border);}
 .quiz-feedback.show{display:block;}
-.quiz-score{font-size:32px;font-weight:900;color:var(--olive);font-family:'Noto Serif TC',serif;}
+.quiz-score{font-size:36px;font-weight:900;color:var(--olive);font-family:'Noto Serif TC',serif;}
 
 /* Replay cards */
-.replay-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:12px;}
+.replay-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:10px;transition:border-color .15s;}
+.replay-card:hover{border-color:rgba(42,89,52,0.3);}
 .replay-header{font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--olive);margin-bottom:8px;}
-.replay-quote{font-size:13px;color:var(--text-sub);background:rgba(61,90,64,0.05);border-radius:6px;padding:8px 10px;margin-bottom:8px;font-style:italic;}
+.replay-quote{font-size:13px;color:var(--text-sub);background:var(--surface2);border-radius:6px;padding:8px 10px;margin-bottom:8px;font-style:italic;}
 .replay-decode{font-size:13px;color:var(--text);line-height:1.7;}
-
-
-/* ══ Mobile Bottom Tab Bar ══ */
-@media (max-width: 768px) {
-  #mobile-tab-bar {
-    display: flex;
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    background: #fff;
-    border-top: 1px solid var(--border);
-    z-index: 150;
-    padding-bottom: env(safe-area-inset-bottom);
-    box-shadow: 0 -2px 12px rgba(61,45,20,0.08);
-  }
-  .mobile-tab-item {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 8px 4px 6px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--text-dim);
-    font-size: 9px;
-    font-family: 'Noto Sans TC', sans-serif;
-    gap: 3px;
-    transition: color .15s;
-    position: relative;
-    min-height: 52px;
-  }
-  .mobile-tab-item.active { color: var(--olive); font-weight: 700; }
-  .mobile-tab-icon { font-size: 22px; line-height: 1; }
-  .mobile-tab-badge {
-    position: absolute;
-    top: 6px; right: calc(50% - 18px);
-    background: #C0392B;
-    color: #fff;
-    font-size: 9px;
-    font-weight: 900;
-    border-radius: 8px;
-    padding: 0px 5px;
-    min-width: 16px;
-    text-align: center;
-    display: none;
-  }
-  /* Push main content up so tab bar doesn't cover it */
-  .main { padding-bottom: 72px !important; }
-  /* Hide the old sidebar entirely on mobile when tab bar active */
-}
-@media (min-width: 769px) {
-  #mobile-tab-bar { display: none !important; }
-}
-
-
-/* ══ AI Multi-turn Chat ══ */
-.ai-chat-wrap {
-  background: linear-gradient(135deg, rgba(61,90,64,0.05), rgba(184,148,60,0.04));
-  border: 1.5px solid rgba(61,90,64,0.2);
-  border-radius: 16px;
-  overflow: hidden;
-  margin-bottom: 20px;
-}
-.ai-chat-header {
-  background: var(--olive);
-  padding: 12px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.ai-chat-title {
-  font-size: 13px;
-  font-weight: 700;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.ai-chat-status {
-  font-size: 10px;
-  color: rgba(255,255,255,0.6);
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-.ai-chat-status-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: #5CDB95;
-  animation: pulse-green 2s infinite;
-}
-@keyframes pulse-green {
-  0%,100%{opacity:1} 50%{opacity:.4}
-}
-.ai-chat-messages {
-  padding: 14px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  max-height: 380px;
-  overflow-y: auto;
-  scroll-behavior: smooth;
-}
-.ai-chat-messages::-webkit-scrollbar { width: 3px; }
-.ai-chat-messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-.chat-bubble-row {
-  display: flex;
-  gap: 8px;
-  align-items: flex-start;
-}
-.chat-bubble-row.user { flex-direction: row-reverse; }
-.chat-avatar {
-  width: 28px; height: 28px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: 700;
-}
-.chat-avatar.ai-av {
-  background: var(--olive);
-  color: #fff;
-}
-.chat-avatar.user-av {
-  background: linear-gradient(135deg, var(--gold), #d4a84b);
-  color: #1A1714;
-}
-.chat-bubble {
-  max-width: 80%;
-  padding: 10px 13px;
-  border-radius: 12px;
-  font-size: 13px;
-  line-height: 1.7;
-  color: var(--text);
-}
-.chat-bubble.ai {
-  background: #fff;
-  border: 1px solid var(--border);
-  border-top-left-radius: 4px;
-}
-.chat-bubble.user {
-  background: var(--olive);
-  color: #fff;
-  border-top-right-radius: 4px;
-}
-.chat-bubble.typing {
-  background: #fff;
-  border: 1px solid var(--border);
-  display: flex;
-  gap: 4px;
-  align-items: center;
-  padding: 14px 16px;
-}
-.typing-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--text-dim);
-  animation: typing-bounce 1.2s infinite;
-}
-.typing-dot:nth-child(2) { animation-delay: .2s; }
-.typing-dot:nth-child(3) { animation-delay: .4s; }
-@keyframes typing-bounce {
-  0%,60%,100%{ transform: translateY(0); opacity: .5; }
-  30%{ transform: translateY(-6px); opacity: 1; }
-}
-.ai-chat-input-area {
-  border-top: 1px solid var(--border);
-  padding: 12px 14px;
-  background: #fff;
-  display: flex;
-  gap: 8px;
-  align-items: flex-end;
-}
-.ai-chat-input {
-  flex: 1;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 9px 14px;
-  font-size: 13px;
-  font-family: 'Noto Sans TC', sans-serif;
-  color: var(--text);
-  outline: none;
-  resize: none;
-  max-height: 96px;
-  line-height: 1.5;
-  transition: border-color .2s;
-}
-.ai-chat-input:focus { border-color: var(--olive); }
-.ai-chat-input::placeholder { color: var(--text-dim); }
-.ai-chat-send-btn {
-  width: 36px; height: 36px;
-  border-radius: 50%;
-  background: var(--olive);
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  font-size: 15px;
-  transition: opacity .2s, transform .1s;
-  color: #fff;
-}
-.ai-chat-send-btn:hover { opacity: .85; }
-.ai-chat-send-btn:active { transform: scale(.92); }
-.ai-chat-send-btn:disabled { opacity: .4; cursor: not-allowed; }
-.ai-chat-suggestions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  padding: 0 16px 12px;
-  background: #fff;
-}
-.ai-chat-suggest-btn {
-  font-size: 11px;
-  padding: 5px 12px;
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  background: var(--surface2);
-  color: var(--text-sub);
-  cursor: pointer;
-  font-family: 'Noto Sans TC', sans-serif;
-  transition: all .15s;
-}
-.ai-chat-suggest-btn:hover {
-  border-color: var(--olive);
-  color: var(--olive);
-  background: var(--olive-dim);
-}
-
-
-/* ══ Search Result Highlight ══ */
-.search-result-preview {
-  font-size: 11px;
-  color: var(--text-sub);
-  margin-top: 5px;
-  line-height: 1.5;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-.search-hl { 
-  background: rgba(184,148,60,0.25);
-  border-radius: 2px;
-  padding: 0 1px;
-  font-weight: 700;
-  color: var(--text);
-}
-.script-card.search-match { border-color: rgba(184,148,60,0.4); }
-
-
-/* ══ Personalized Learning Engine ══ */
-.plearn-panel {
-  background: #fff;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  overflow: hidden;
-  margin-bottom: 20px;
-  box-shadow: var(--shadow-card);
-}
-.plearn-header {
-  background: linear-gradient(135deg, var(--olive) 0%, #4E7053 100%);
-  padding: 16px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.plearn-header-title {
-  font-family: 'Noto Serif TC', serif;
-  font-size: 15px;
-  font-weight: 700;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.plearn-header-sub {
-  font-size: 10px;
-  color: rgba(255,255,255,0.65);
-  margin-top: 2px;
-  letter-spacing: .06em;
-}
-.plearn-refresh-btn {
-  background: rgba(255,255,255,0.12);
-  border: 1px solid rgba(255,255,255,0.2);
-  color: #fff;
-  border-radius: 20px;
-  padding: 5px 12px;
-  font-size: 11px;
-  cursor: pointer;
-  font-family: 'Noto Sans TC', sans-serif;
-  transition: background .2s;
-}
-.plearn-refresh-btn:hover { background: rgba(255,255,255,0.22); }
-
-/* Skill radar row */
-.skill-radar-row {
-  display: flex;
-  gap: 0;
-  padding: 0;
-  border-bottom: 1px solid var(--border);
-  overflow-x: auto;
-}
-.skill-bar-item {
-  flex: 1;
-  min-width: 80px;
-  padding: 12px 10px;
-  text-align: center;
-  border-right: 1px solid var(--border);
-  cursor: pointer;
-  transition: background .15s;
-}
-.skill-bar-item:last-child { border-right: none; }
-.skill-bar-item:hover { background: var(--surface2); }
-.skill-bar-label { font-size: 10px; color: var(--text-dim); margin-bottom: 6px; white-space: nowrap; }
-.skill-bar-track {
-  width: 100%;
-  height: 6px;
-  background: var(--surface3);
-  border-radius: 6px;
-  overflow: hidden;
-  margin-bottom: 4px;
-}
-.skill-bar-fill {
-  height: 100%;
-  border-radius: 6px;
-  transition: width .6s ease;
-}
-.skill-bar-pct {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--olive);
-}
-.skill-bar-count {
-  font-size: 9px;
-  color: var(--text-dim);
-}
-
-/* Recommendation cards */
-.prec-section { padding: 16px 16px 0; }
-.prec-section-label {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: .12em;
-  color: var(--text-dim);
-  text-transform: uppercase;
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.prec-card {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  margin-bottom: 8px;
-  cursor: pointer;
-  transition: all .15s;
-}
-.prec-card:hover {
-  border-color: var(--olive);
-  background: var(--surface);
-  box-shadow: 0 2px 8px rgba(61,45,20,0.06);
-}
-.prec-card.urgent { border-color: rgba(192,57,43,0.3); background: rgba(192,57,43,0.03); }
-.prec-card.urgent:hover { border-color: rgba(192,57,43,0.6); }
-.prec-card-icon { font-size: 22px; flex-shrink: 0; }
-.prec-card-body { flex: 1; min-width: 0; }
-.prec-card-title { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
-.prec-card-reason { font-size: 11px; color: var(--text-sub); line-height: 1.4; }
-.prec-card-tag {
-  font-size: 10px;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 10px;
-  flex-shrink: 0;
-  white-space: nowrap;
-}
-.prec-card-tag.review { background: rgba(192,57,43,0.1); color: #c0392b; }
-.prec-card-tag.new { background: rgba(61,90,64,0.1); color: var(--olive); }
-.prec-card-tag.challenge { background: rgba(184,148,60,0.15); color: var(--gold); }
-.prec-card-tag.weak { background: rgba(192,57,43,0.08); color: #c0392b; }
-
-/* AI insight card */
-.ai-insight-card {
-  margin: 12px 16px 16px;
-  background: linear-gradient(135deg, rgba(61,90,64,0.06), rgba(184,148,60,0.04));
-  border: 1px solid rgba(61,90,64,0.15);
-  border-radius: 12px;
-  padding: 14px 16px;
-}
-.ai-insight-label {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: .1em;
-  color: var(--olive);
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.ai-insight-text {
-  font-size: 12px;
-  color: var(--text-sub);
-  line-height: 1.7;
-}
-.ai-insight-loading {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  color: var(--text-dim);
-}
-
-/* Learning path strip */
-.path-strip {
-  display: flex;
-  gap: 8px;
-  padding: 12px 16px;
-  overflow-x: auto;
-  border-top: 1px solid var(--border);
-  background: var(--surface2);
-}
-.path-step {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  flex-shrink: 0;
-  cursor: pointer;
-}
-.path-step-dot {
-  width: 32px; height: 32px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 13px;
-  font-weight: 700;
-  transition: all .2s;
-  border: 2px solid var(--border);
-  background: var(--surface);
-  color: var(--text-dim);
-}
-.path-step-dot.done { background: var(--olive); border-color: var(--olive); color: #fff; font-size: 12px; }
-.path-step-dot.active { background: var(--gold); border-color: var(--gold); color: #fff; box-shadow: 0 0 0 3px rgba(184,148,60,0.2); }
-.path-step-dot.locked { opacity: .35; }
-.path-step-label { font-size: 9px; color: var(--text-dim); text-align: center; max-width: 44px; line-height: 1.3; }
-.path-step-label.active { color: var(--gold); font-weight: 700; }
-.path-connector {
-  width: 20px; height: 2px;
-  background: var(--border);
-  align-self: center; flex-shrink: 0;
-  margin-top: -12px;
-}
-.path-connector.done { background: var(--olive); }
 
 </style>
 </head>
@@ -1046,7 +590,7 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
       <button class="mode-btn" id="modeLib" onclick="setMode('lib')">🗂 全庫</button>
     </div>
     <div class="count-badge">共 <span id="totalCnt">141</span> 筆</div>
-    <button id="syncBtn" onclick="syncLibToKV()" style="display:flex;align-items:center;gap:6px;background:linear-gradient(135deg,#B8943C,#a07d2e);color:#fff;border:none;border-radius:20px;padding:5px 14px;font-size:12px;font-weight:700;font-family:'Noto Sans TC',sans-serif;cursor:pointer;letter-spacing:.04em;transition:opacity .2s;white-space:nowrap;flex-shrink:0;" title="把最新話術庫同步到 AI 系統" onmouseenter="this.style.opacity='.85'" onmouseleave="this.style.opacity='1'">☁️ 同步話術庫</button>
+    <button id="syncBtn" onclick="syncLibToKV()" style="display:flex;align-items:center;gap:6px;background:var(--surface2);border:1.5px solid var(--border);color:var(--text-sub);border-radius:8px;padding:5px 12px;font-size:11.5px;font-weight:700;font-family:'Noto Sans TC',sans-serif;cursor:pointer;letter-spacing:.02em;transition:all .15s;white-space:nowrap;flex-shrink:0;" title="把最新話術庫同步到 AI 系統" onmouseenter="this.style.borderColor='var(--olive)';this.style.color='var(--olive)'" onmouseleave="this.style.borderColor='var(--border)';this.style.color='var(--text-sub)'">☁ 同步話術庫</button>
     <div id="topbar-user-area" style="display:none;align-items:center;gap:8px">
       <div class="topbar-user" onclick="openGrowthPanel('profile')">
         <div class="topbar-avatar" id="tb-avatar">?</div>
@@ -1058,7 +602,7 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 </header>
 
 <!-- 同步狀態提示 -->
-<div id="syncToast" style="display:none;position:fixed;bottom:24px;right:24px;z-index:9999;background:#1E1A14;color:#fff;border-radius:10px;padding:12px 20px;font-size:13px;font-family:'Noto Sans TC',sans-serif;box-shadow:0 4px 20px rgba(0,0,0,0.3);transition:opacity .3s;">
+<div id="syncToast" style="display:none;position:fixed;bottom:24px;right:24px;z-index:9999;background:#111318;color:#fff;border-radius:8px;padding:12px 20px;font-size:13px;font-family:'Noto Sans TC',sans-serif;box-shadow:0 4px 20px rgba(0,0,0,0.2);transition:opacity .3s;">
   <span id="syncToastMsg">同步中...</span>
 </div>
 
@@ -4511,6 +4055,50 @@ const SCRIPTS = [
     "title": "你要學會銷售，必須先學會被銷售",
     "content": "志偉哥的核心觀念：怕被銷售的人，銷售一定做不好。\n\n「被李嘉誠洗腦就是香港首富，被郭台銘洗腦就是台灣首富——看你被什麼人洗腦。」重點不是要不要被影響，是你讓什麼人影響你。\n\n學話術的正確心態：你自己要先被說服，說出來才有能量。如果你自己都半信半疑，客戶一眼就感覺得到。\n\n解決問題是你的責任：「客戶的異議問題是銷售要解決的，不是建商要解決的。你賺高額獎金，就是因為你能把NO變成YES。別人賣不掉你還賣得掉，那才叫真的厲害。」\n\n不擅長溝通的人怎麼辦：少講話，讓對方多講，見縫插針再出手。安靜的時候就講故事——好的故事比好的道理更容易讓人接受。",
     "note": "20260515早會銷售心態"
+  },
+  {
+    "id": "S406",
+    "category": "銷售心態",
+    "persona": null,
+    "level": "Top",
+    "trigger": "客戶說了一堆邏輯，我不知道怎麼反駁",
+    "situation": "如何讓客戶無法反駁你的邏輯",
+    "title": "邏輯說服的最高境界：用對方的事說對方的事",
+    "content": "邏輯說服的最大優勢：用既定數據和對方無法反駁的論述。\n\n核心秘訣：用對方自己認同的事情、對方的生意和對方的利益來說服對方。當你用對方自己的邏輯時，他若要反駁就等於在反駁自己。\n\n實戰範例（家具店老闆）：「我是用他自己的傢俱生意來跟他講，他如果要反駁我，等於是要認同說他現在傢俱賣不好。他不可能為了反駁我，就讓自己生意不做。」\n\n操作方法：\n1. 先弄清楚對方的職業、投資、收入來源\n2. 用他「懂的語言」和「認同的事實」包裝你的論點\n3. 把你的邏輯嵌進他自己的框架裡\n4. 他反駁你，就等於在打自己\n\n志偉哥金句：「我最喜歡用對方認同的事情——甚至用對方的生意跟對方的利益來邏輯性地打對方，因為他不會反駁我，他反駁我就等於在打他自己。」",
+    "note": "20260522下午銷售溝通培訓"
+  },
+  {
+    "id": "S407",
+    "category": "銷售心態",
+    "persona": null,
+    "level": "Top",
+    "trigger": "高收入客戶主觀意識強，覺得一切都是他在幫我",
+    "situation": "年收入200萬以上、主觀意識強的客戶溝通策略",
+    "title": "高收入客戶人性：他永遠覺得是他在幫你",
+    "content": "人性洞察：年收入超過200萬的人，主觀意識通常很強。他們習慣認為「不管做什麼都是我在幫你」，沒有「你幫我」的概念。\n\n最常見的錯誤：讓他感覺需要「配合你」或「照你公司規定走」。主觀意識強的人不喜歡配合別人，一旦覺得被要求，他就不爽。\n\n正確包裝方式：所有邀約、要求，都要包裝成「因為我站在你的立場，所以我這樣邀約」。讓他感受到你是為他著想，不是要他配合你。\n\n實戰白白案例：\n- 客戶說「我是在支持你、幫忙你」→ 這是主觀意識強的人典型說法\n- 正確回應：「你訂這間房子，是我幫你賺錢，不是你幫我。你這間實價登錄1900萬，你實際只付1800萬，你是現賺100萬的東西——到底是我幫你，還是你幫我？」\n- 進一步拆解：「你現賺100萬，這100萬有要分我嗎？我頂多賺你這個利潤的十分之一。你賺大錢，我賺零錢，到底誰幫誰？」\n\n額外卡點：主觀意識強的人也不喜歡被資訊不同步的人影響。話術：「你是有聽過研討會的人，你的工程師朋友沒有——你居然讓一個資訊不同步的人來改變你已經做對的決定，這讓我很意外。」",
+    "note": "20260522下午銷售溝通培訓"
+  },
+  {
+    "id": "S408",
+    "category": "銷售心態",
+    "persona": null,
+    "level": "Core",
+    "trigger": "客戶有其他財務安排在等，說時機還沒到",
+    "situation": "客戶資金卡在既有計畫，不願提前行動",
+    "title": "股票轉換邏輯：別讓違約金框住你",
+    "content": "核心邏輯突破（彩雲案例）：\n客戶有100萬，等7月20日二胎到期再還，原因是怕付提前還款的15萬違約金。\n\n破框話術：「你現在是因為在意15萬違約金，所以不提前還。但如果提前還掉、現在投資，你可以現賺100萬——一來一回，你等於還了15萬但賺了100萬，實賺85萬。你在意那15萬嗎？」\n\n股票轉換比喻：「你買股票，A股票虧損了，但你看到B股票穩賺，你會不會轉換？不會因為A虧了就不敢換B。那為什麼你要等7月20號？」\n\n聚焦短期目標原則：不要跟客戶談長期夢想（開店、退休）——他短期問題都沒解決，談長期等於在說廢話。只聚焦：「你這100萬，是要還二胎還是要做投資？這一題想清楚，其他都好說。」\n\n行動呼籲收尾：「我不是要徵求你的同意，我是要幫你把時間敲進來。你明天下午還是傍晚哪個時段可以？」——不要問「你有沒有空」，直接敲時間。",
+    "note": "20260522下午銷售溝通培訓"
+  },
+  {
+    "id": "S409",
+    "category": "銷售心態",
+    "persona": null,
+    "level": "Core",
+    "trigger": "客戶因為行程、旅遊、出國等安排拒絕約時間",
+    "situation": "客戶有明確的短期行程，認為沒時間來談",
+    "title": "行程擋不住的邀約：價值大過出去玩",
+    "content": "Sara的台中客戶真實案例：客戶全家要從台中去高雄旅遊三天，最後被Sara邀到當天早上9點先坐高鐵從台中到桃園，談到中午，再下去高雄與家人會合。\n\n核心邏輯：不是時間問題，是價值問題。只要客戶覺得「不來會損失什麼」，他就會來。\n\n話術模板（出國/旅遊版）：「你去大陸這一趟要花錢又花時間，回來問題一樣沒解決。如果在你出發之前，我們先把這個錢的方向確定好，讓錢幫你在你出國的時候繼續賺，你去那邊學技術是不是也更安心？」\n\n行動邀約的關鍵句：「不是要你配合我，是因為這件事情對你有利，所以我才這樣約你。你禮拜幾幾點的時間可以空出來？」\n\n心理設定：客戶今天在基隆玩沒玩到，損失的是半天。但你這邊談成，他可以去九州玩都沒問題。讓他算清楚這個交換值不值得。",
+    "note": "20260522下午銷售溝通培訓"
   }
 ];
 const MODULES = [{"no":0,"name":"話術系統地圖","icon":"🗺️","desc":"共通框架：觸發句→目的→推進","cats":["銷售心態"],"label":"跨部曲｜心法"},{"no":1,"name":"信任與開場","icon":"🤝","desc":"讓客戶對你這個人有感","cats":["信任建立"],"label":"一部曲｜開發名單"},{"no":2,"name":"開發與接觸","icon":"🎯","desc":"找到對的人、打開對話","cats":["開發策略"],"label":"二部曲｜建立信任"},{"no":3,"name":"提問式銷售","icon":"💬","desc":"讓客戶自己說出你要的答案","cats":["提問式銷售"],"label":"三部曲｜需求與痛點"},{"no":4,"name":"銷售流程控制","icon":"🔄","desc":"每一步都要有劇本","cats":["銷售流程"],"label":"四部曲｜物件配對"},{"no":5,"name":"異議處理","icon":"🛡️","desc":"客戶說的不等於真正的卡關點","cats":["異議處理"],"label":"五部曲｜異議處理"},{"no":6,"name":"追蹤與破冰","icon":"📡","desc":"沒有明確說不就是還在考慮","cats":["追蹤技巧"],"label":"六部曲｜締結成交"},{"no":7,"name":"締結成交","icon":"✍️","desc":"確認式推進，把下一步定死","cats":["締結成交","轉介紹策略"],"label":"七部曲｜售後服務"},{"no":8,"name":"市場知識武裝","icon":"📊","desc":"數字武器庫","cats":["市場知識","投資心理","真實案例","產品介紹"],"label":"八部曲｜進階技巧"}];
@@ -5603,21 +5191,15 @@ function buildTodayMission() {
 }
 
 function moduleCard(m) {
-  const scripts = SCRIPTS.filter(s => m.cats.includes(s.category));
-  const cnt = scripts.length;
+  const cnt = SCRIPTS.filter(s => m.cats.includes(s.category)).length;
   const chips = m.cats.map(c=>`<span class="mc-chip">${CAT_ICONS[c]||''} ${c}</span>`).join('');
-  const catsAttr = m.cats.join(',').replace(/"/g,'&quot;');
-  return `<div class="module-card" onclick="showModule(${m.no})" data-module-no="${m.no}">
+  return `<div class="module-card" onclick="showModule(${m.no})">
     <div class="mc-no">MODULE ${String(m.no).padStart(2,'0')}</div>
     <div class="mc-icon">${m.icon}</div>
     <div class="mc-name">${m.name}</div>
     <div class="mc-desc">${m.desc}</div>
     <div class="mc-chips">${chips}</div>
-    <div class="mc-cnt" id="mc-cnt-${m.no}">${cnt} 筆話術</div>
-    <div class="module-progress-bar" id="mpb-${m.no}" data-cats="${catsAttr}" data-total="${cnt}" style="margin-top:10px">
-      <div class="module-progress-fill" style="width:0%"></div>
-    </div>
-    <div class="module-read-count"><span id="mrc-${m.no}">0 / ${cnt} 已讀</span><span id="mrp-${m.no}" style="color:var(--olive);font-size:10px">0%</span></div>
+    <div class="mc-cnt">${cnt} 筆話術</div>
   </div>`;
 }
 
@@ -5689,7 +5271,6 @@ function card(s, hl='') {
       <span class="script-title">${hlText(esc(s.title),hl)}</span>
       <span class="script-cat">${s.category}</span>
       ${s.level ? `<span style="font-size:9px;font-weight:700;padding:1px 6px;border-radius:6px;margin-left:4px;background:${s.level==='Top'?'rgba(184,148,60,0.15)':s.level==='Core'?'rgba(61,90,64,0.12)':'var(--surface3)'};color:${s.level==='Top'?'var(--gold)':s.level==='Core'?'var(--olive)':'var(--text-dim)'}">${s.level}</span>` : ''}
-      <span class="script-read-badge" data-id="${s.id}">✓ 已讀</span>
       <span class="script-chevron">▼</span>
     </div>
     <div class="script-body">
@@ -6273,10 +5854,6 @@ function answerQuiz(idx) {
 
   if (opt.correct) quizState.score++;
   quizState.answers.push({ q: q.question, correct: opt.correct });
-  // Track wrong for personalization
-  if (!opt.correct && q.scriptId && typeof saveWrongScript === 'function') {
-    saveWrongScript(q.scriptId);
-  }
 
   document.getElementById('quiz-next').style.display = 'block';
 }
@@ -6606,10 +6183,6 @@ function answerDynamicQuiz(idx) {
   fb.classList.add('show');
   if (opt.correct) quizState.score++;
   quizState.answers.push({ correct: opt.correct, scriptId: q.scriptId });
-  // Track wrong answers for personalization
-  if (!opt.correct && q.scriptId && typeof saveWrongScript === 'function') {
-    saveWrongScript(q.scriptId);
-  }
 
   // 積分 + 快測計數
   if (opt.correct && typeof growthAddPts === 'function' && libCurrentUser) {
@@ -6862,13 +6435,13 @@ function autoCloseSidebar() {
 </script>
 <!-- CRM 選客戶 Modal -->
 <div id="crmPickerBg" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:700;align-items:center;justify-content:center;padding:16px" onclick="if(event.target===this)closeCrmPicker()">
-  <div style="background:#FFFFFF;border:1px solid #E0D8CC;border-radius:14px;width:100%;max-width:520px;max-height:86vh;display:flex;flex-direction:column;overflow:hidden">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #E0D8CC;flex-shrink:0">
-      <span style="font-size:14px;font-weight:700;color:#1E1A14">📋 選擇客戶</span>
+  <div style="background:#FFFFFF;border:1px solid var(--border);border-radius:14px;width:100%;max-width:520px;max-height:86vh;display:flex;flex-direction:column;overflow:hidden">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);flex-shrink:0">
+      <span style="font-size:14px;font-weight:700;color:var(--text)">📋 選擇客戶</span>
       <button onclick="closeCrmPicker()" style="background:none;border:none;color:#888;font-size:18px;cursor:pointer">✕</button>
     </div>
     <div style="padding:12px 16px;border-bottom:1px solid #1e1e1e;flex-shrink:0">
-      <input id="crmSearchInput" type="text" placeholder="搜尋客戶姓名或業務..." oninput="filterCrmList()" style="width:100%;background:#FFFFFF;border:1px solid #E0D8CC;border-radius:6px;padding:8px 12px;color:#1E1A14;font-size:13px;outline:none;font-family:inherit">
+      <input id="crmSearchInput" type="text" placeholder="搜尋客戶姓名或業務..." oninput="filterCrmList()" style="width:100%;background:#FFFFFF;border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text);font-size:13px;outline:none;font-family:inherit">
     </div>
     <div id="crmPickerList" style="overflow-y:auto;flex:1;padding:8px"></div>
   </div>
@@ -6923,8 +6496,8 @@ function renderCrmList(list) {
   el.innerHTML = list.slice(0,80).map(c => {
     const stage = c.blueprintCompletion || c.currentStatus || '';
     const sp = c.salesPerson || '';
-    return `<div onclick="selectCrmCustomer(${JSON.stringify(JSON.stringify(c))})" style="padding:10px 12px;border-radius:8px;margin-bottom:4px;cursor:pointer;border:1px solid #222;background:#FFFFFF;transition:background .15s" onmouseover="this.style.background='#F9F6F1'" onmouseout="this.style.background='#FFFFFF'">
-      <div style="font-size:13px;font-weight:700;color:#1E1A14">${c.customerName||'（無名稱）'}</div>
+    return `<div onclick="selectCrmCustomer(${JSON.stringify(JSON.stringify(c))})" style="padding:10px 12px;border-radius:8px;margin-bottom:4px;cursor:pointer;border:1px solid #222;background:#FFFFFF;transition:background .15s" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='#FFFFFF'">
+      <div style="font-size:13px;font-weight:700;color:var(--text)">${c.customerName||'（無名稱）'}</div>
       <div style="font-size:11px;color:#888;margin-top:2px">${sp}${stage ? ' ｜ ' + stage : ''}</div>
     </div>`;
   }).join('');
@@ -7074,31 +6647,31 @@ function clearRecommend() {
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
         <div>
           <div style="font-size:11px;color:#888;margin-bottom:4px">族群</div>
-          <input id="drill-族群" type="text" placeholder="例：雙薪家庭" style="width:100%;background:#FFFFFF;border:1px solid #E0D8CC;border-radius:6px;padding:7px 10px;color:#1E1A14;font-size:13px;outline:none;font-family:inherit">
+          <input id="drill-族群" type="text" placeholder="例：雙薪家庭" style="width:100%;background:#FFFFFF;border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--text);font-size:13px;outline:none;font-family:inherit">
         </div>
         <div>
           <div style="font-size:11px;color:#888;margin-bottom:4px">年齡</div>
-          <input id="drill-年齡" type="text" placeholder="例：45 歲" style="width:100%;background:#FFFFFF;border:1px solid #E0D8CC;border-radius:6px;padding:7px 10px;color:#1E1A14;font-size:13px;outline:none;font-family:inherit">
+          <input id="drill-年齡" type="text" placeholder="例：45 歲" style="width:100%;background:#FFFFFF;border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--text);font-size:13px;outline:none;font-family:inherit">
         </div>
         <div style="grid-column:1/-1">
           <div style="font-size:11px;color:#888;margin-bottom:4px">主要卡關 / 異議</div>
-          <input id="drill-卡關" type="text" placeholder="例：說股票還沒賣，現在不想動" style="width:100%;background:#FFFFFF;border:1px solid #E0D8CC;border-radius:6px;padding:7px 10px;color:#1E1A14;font-size:13px;outline:none;font-family:inherit">
+          <input id="drill-卡關" type="text" placeholder="例：說股票還沒賣，現在不想動" style="width:100%;background:#FFFFFF;border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--text);font-size:13px;outline:none;font-family:inherit">
         </div>
         <div>
           <div style="font-size:11px;color:#888;margin-bottom:4px">Keyman</div>
-          <input id="drill-keyman" type="text" placeholder="例：本人、另一半" style="width:100%;background:#FFFFFF;border:1px solid #E0D8CC;border-radius:6px;padding:7px 10px;color:#1E1A14;font-size:13px;outline:none;font-family:inherit">
+          <input id="drill-keyman" type="text" placeholder="例：本人、另一半" style="width:100%;background:#FFFFFF;border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--text);font-size:13px;outline:none;font-family:inherit">
         </div>
         <div>
           <div style="font-size:11px;color:#888;margin-bottom:4px">家人態度</div>
-          <input id="drill-家人" type="text" placeholder="例：另一半保守" style="width:100%;background:#FFFFFF;border:1px solid #E0D8CC;border-radius:6px;padding:7px 10px;color:#1E1A14;font-size:13px;outline:none;font-family:inherit">
+          <input id="drill-家人" type="text" placeholder="例：另一半保守" style="width:100%;background:#FFFFFF;border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--text);font-size:13px;outline:none;font-family:inherit">
         </div>
       </div>
 
       <!-- 難度選擇 -->
       <div style="font-size:11px;font-weight:700;letter-spacing:.12em;color:#b06eff;margin-bottom:10px">⚡ 客戶難度</div>
       <div style="display:flex;gap:8px;margin-bottom:16px" id="drillDiffBtns">
-        <button onclick="selectDiff(this,'normal')" data-diff="normal" class="diff-btn" style="flex:1;padding:8px 4px;font-size:12px;font-weight:700;border-radius:8px;cursor:pointer;border:2px solid #E0D8CC;background:#FFFFFF;color:#888;font-family:inherit;transition:all .2s">😊<br>普通客戶</button>
-        <button onclick="selectDiff(this,'tough')" data-diff="tough" class="diff-btn" style="flex:1;padding:8px 4px;font-size:12px;font-weight:700;border-radius:8px;cursor:pointer;border:2px solid #E0D8CC;background:#FFFFFF;color:#888;font-family:inherit;transition:all .2s">😤<br>比較機車</button>
+        <button onclick="selectDiff(this,'normal')" data-diff="normal" class="diff-btn" style="flex:1;padding:8px 4px;font-size:12px;font-weight:700;border-radius:8px;cursor:pointer;border:2px solid var(--border);background:#FFFFFF;color:#888;font-family:inherit;transition:all .2s">😊<br>普通客戶</button>
+        <button onclick="selectDiff(this,'tough')" data-diff="tough" class="diff-btn" style="flex:1;padding:8px 4px;font-size:12px;font-weight:700;border-radius:8px;cursor:pointer;border:2px solid var(--border);background:#FFFFFF;color:#888;font-family:inherit;transition:all .2s">😤<br>比較機車</button>
         <button onclick="selectDiff(this,'brutal')" data-diff="brutal" class="diff-btn" style="flex:1;padding:8px 4px;font-size:12px;font-weight:700;border-radius:8px;cursor:pointer;border:2px solid #c0392b;background:rgba(192,57,43,.12);color:#C0392B;font-family:inherit;transition:all .2s">🔥<br>超刁鑽</button>
       </div>
 
@@ -7110,10 +6683,10 @@ function clearRecommend() {
       <!-- 結果區 -->
       <div id="drillResult" style="display:none">
         <div style="font-size:11px;font-weight:700;letter-spacing:.12em;color:#b06eff;margin-bottom:8px">📋 複製以下內容，開豆包語音貼上即可開始</div>
-        <div id="drillPromptText" style="background:#F5F0E8;border:1px solid #E0D8CC;border-radius:10px;padding:14px;font-size:12px;color:#9E9285;line-height:1.8;white-space:pre-wrap;word-break:break-word;max-height:280px;overflow-y:auto;margin-bottom:10px"></div>
+        <div id="drillPromptText" style="background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius);padding:14px;font-size:12px;color:var(--text-sub);line-height:1.8;white-space:pre-wrap;word-break:break-word;max-height:280px;overflow-y:auto;margin-bottom:10px"></div>
         <div style="display:flex;gap:8px">
           <button onclick="copyDrillPrompt()" style="flex:2;padding:10px;background:rgba(138,43,226,.2);border:1px solid rgba(138,43,226,.5);border-radius:8px;color:#b06eff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">📋 複製 Prompt</button>
-          <a href="https://www.doubao.com" target="_blank" style="flex:1;padding:10px;background:#FFFFFF;border:1px solid #E0D8CC;border-radius:8px;color:#888;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;text-decoration:none;display:flex;align-items:center;justify-content:center">開豆包 →</a>
+          <a href="https://www.doubao.com" target="_blank" style="flex:1;padding:10px;background:#FFFFFF;border:1px solid var(--border);border-radius:8px;color:#888;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;text-decoration:none;display:flex;align-items:center;justify-content:center">開豆包 →</a>
         </div>
         <div id="drillCopyMsg" style="text-align:center;font-size:12px;color:#55c882;margin-top:8px;display:none">✅ 已複製！開豆包語音貼上開始練習</div>
       </div>
@@ -7145,7 +6718,7 @@ function openDrillModal(scriptId) {
   // 預設選「比較機車」
   document.querySelectorAll('.diff-btn').forEach(b => {
     const isSel = b.dataset.diff === 'tough';
-    b.style.borderColor = isSel ? 'rgba(138,43,226,.8)' : '#E0D8CC';
+    b.style.borderColor = isSel ? 'rgba(138,43,226,.8)' : 'var(--border)';
     b.style.background = isSel ? 'rgba(138,43,226,.2)' : '#FFFFFF';
     b.style.color = isSel ? '#b06eff' : '#888';
   });
@@ -7164,7 +6737,7 @@ function selectDiff(btn, diff) {
   _drillDiff = diff;
   document.querySelectorAll('.diff-btn').forEach(b => {
     const isSel = b.dataset.diff === diff;
-    b.style.borderColor = isSel ? 'rgba(138,43,226,.8)' : '#E0D8CC';
+    b.style.borderColor = isSel ? 'rgba(138,43,226,.8)' : 'var(--border)';
     b.style.background = isSel ? 'rgba(138,43,226,.2)' : '#FFFFFF';
     b.style.color = isSel ? '#b06eff' : '#888';
   });
@@ -7757,7 +7330,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<footer style="text-align:center;padding:20px;font-size:11px;color:#9E9285;letter-spacing:.08em;border-top:1px solid #E0D8CC;margin-top:20px;">Richtime © 2026 &nbsp;◆&nbsp; 內部版僅供團隊使用 &nbsp;◆&nbsp; AI DECISION ENGINE · V 1.5</footer>
+<footer style="text-align:center;padding:20px;font-size:11px;color:var(--text-dim);letter-spacing:.08em;border-top:1px solid var(--border);margin-top:20px;">Richtime © 2026 &nbsp;·&nbsp; 內部版僅供團隊使用 &nbsp;·&nbsp; AI DECISION ENGINE · V 1.5</footer>
 
 <!-- ══════════════════════════════════════════
      SOS 異議話術救援 — 浮動按鈕 + Modal
@@ -7785,21 +7358,21 @@ document.addEventListener('DOMContentLoaded', function() {
 ">
   <!-- SOS Panel -->
   <div id="sosPanel" style="
-    background:#F5F0E8; width:100%; max-width:680px; margin:0 auto;
+    background:#fff; width:100%; max-width:680px; margin:0 auto;
     border-radius:20px 20px 0 0; max-height:92vh;
     display:flex; flex-direction:column; overflow:hidden;
     transform:translateY(100%); transition:transform 0.3s cubic-bezier(.32,.72,0,1);
   ">
     <!-- Panel Header -->
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px 14px;background:#fff;border-bottom:1px solid #E0D8CC;flex-shrink:0;">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px 14px;background:#fff;border-bottom:1px solid var(--border);flex-shrink:0;">
       <div style="display:flex;align-items:center;gap:10px;">
         <div style="background:#C0392B;color:#fff;font-family:'Noto Serif TC',serif;font-weight:900;font-size:13px;letter-spacing:0.05em;padding:4px 10px;border-radius:4px;">SOS</div>
         <div>
-          <div style="font-family:'Noto Serif TC',serif;font-weight:900;font-size:15px;letter-spacing:0.06em;color:#1E1A14;">異議話術救援</div>
-          <div style="font-size:10px;color:#9E9285;letter-spacing:0.1em;">OBJECTION HANDLER · 話術庫</div>
+          <div style="font-family:'Noto Serif TC',serif;font-weight:900;font-size:15px;letter-spacing:0.06em;color:var(--text);">異議話術救援</div>
+          <div style="font-size:10px;color:var(--text-dim);letter-spacing:0.1em;">OBJECTION HANDLER · 話術庫</div>
         </div>
       </div>
-      <button onclick="closeSOS()" style="background:none;border:1px solid #E0D8CC;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:16px;color:#9E9285;display:flex;align-items:center;justify-content:center;">✕</button>
+      <button onclick="closeSOS()" style="background:none;border:1px solid var(--border);border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:16px;color:var(--text-dim);display:flex;align-items:center;justify-content:center;">✕</button>
     </div>
 
     <!-- Scrollable content -->
@@ -7828,10 +7401,10 @@ document.addEventListener('DOMContentLoaded', function() {
         <span>輸入客戶原話（越完整越精準）</span>
       </div>
       <textarea id="sosInput" rows="3" placeholder="例如：「我股票還有200萬，想等賣掉再說，現在不想動」" style="
-        width:100%;background:#fff;border:1.5px solid #E0D8CC;border-radius:10px;
-        padding:12px 14px;font-size:14px;color:#1E1A14;font-family:'Noto Sans TC',sans-serif;
+        width:100%;background:#fff;border:1.5px solid var(--border);border-radius:10px;
+        padding:12px 14px;font-size:14px;color:var(--text);font-family:'Noto Sans TC',sans-serif;
         outline:none;resize:none;line-height:1.7;transition:border-color 0.2s;
-      " onfocus="this.style.borderColor='#3D5A40'" onblur="this.style.borderColor='#E0D8CC'"></textarea>
+      " onfocus="this.style.borderColor='#3D5A40'" onblur="this.style.borderColor='var(--border)'"></textarea>
 
       <!-- 客戶背景 pills -->
       <div style="font-size:11px;letter-spacing:0.1em;color:#3D5A40;font-weight:700;margin:10px 0 6px;">客戶背景</div>
@@ -7847,7 +7420,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <button class="sos-ctx" onclick="toggleSosCtx(this,'已下訂但猶豫')">已下訂</button>
       </div>
 
-      <div style="height:1px;background:linear-gradient(90deg,transparent,#E0D8CC,transparent);margin-bottom:14px;"></div>
+      <div style="height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin-bottom:14px;"></div>
 
       <!-- 救援按鈕 -->
       <button id="sosRunBtn" onclick="runSOS()" style="
@@ -7865,70 +7438,24 @@ document.addEventListener('DOMContentLoaded', function() {
 <style>
 @keyframes sosPulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.85)} }
 .sos-qbtn {
-  padding:8px 6px;background:#fff;border:1px solid #E0D8CC;border-radius:8px;
-  font-size:12px;color:#1E1A14;cursor:pointer;font-family:'Noto Sans TC',sans-serif;
-  transition:all 0.15s;text-align:center;line-height:1.3;
+  padding:7px 5px;background:#fff;border:1.5px solid var(--border);border-radius:7px;
+  font-size:11.5px;color:var(--text);cursor:pointer;font-family:'Noto Sans TC',sans-serif;
+  transition:all 0.12s;text-align:center;line-height:1.3;
 }
-.sos-qbtn:hover { border-color:#3D5A40;color:#3D5A40; }
-.sos-qbtn.active { border-color:#3D5A40;background:rgba(61,90,64,0.08);color:#3D5A40;font-weight:700; }
+.sos-qbtn:hover { border-color:rgba(42,89,52,0.4);color:var(--olive); }
+.sos-qbtn.active { border-color:var(--olive);background:var(--olive-dim);color:var(--olive);font-weight:700; }
 .sos-ctx {
-  padding:5px 12px;background:#fff;border:1px solid #E0D8CC;border-radius:20px;
-  font-size:12px;color:#6B6358;cursor:pointer;font-family:'Noto Sans TC',sans-serif;
-  transition:all 0.15s;
+  padding:5px 11px;background:#fff;border:1.5px solid var(--border);border-radius:20px;
+  font-size:12px;color:var(--text-sub);cursor:pointer;font-family:'Noto Sans TC',sans-serif;
+  transition:all 0.12s;
 }
-.sos-ctx.active { background:rgba(61,90,64,0.1);border-color:#3D5A40;color:#3D5A40;font-weight:700; }
-.sos-rblock { background:#fff;border:1px solid #E0D8CC;border-radius:10px;margin-bottom:10px;overflow:hidden; }
-.sos-rblock-hd { display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid #E0D8CC;background:#F9F6F1; }
-.sos-rblock-title { font-size:11px;color:#3D5A40;letter-spacing:0.12em;font-weight:700; }
-.sos-copy-btn { padding:3px 10px;border:1px solid #E0D8CC;border-radius:4px;background:transparent;color:#9E9285;font-size:10px;font-family:'Noto Sans TC',sans-serif;cursor:pointer;transition:all 0.15s; }
-.sos-copy-btn:hover { border-color:#3D5A40;color:#3D5A40; }
-.sos-rblock-body { padding:12px 14px;font-size:13px;line-height:1.85;color:#1E1A14;white-space:pre-wrap;word-break:break-word; }
-
-/* ══ Read Progress System ══ */
-.module-progress-bar {
-  height: 4px;
-  background: var(--surface3);
-  border-radius: 4px;
-  margin-top: 10px;
-  overflow: hidden;
-}
-.module-progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--olive), #4E7053);
-  border-radius: 4px;
-  transition: width 0.4s ease;
-}
-.module-read-count {
-  font-size: 10px;
-  color: var(--text-dim);
-  margin-top: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.read-dot {
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: var(--olive);
-  display: inline-block;
-  margin-left: 4px;
-  opacity: 0;
-  transition: opacity .3s;
-}
-.read-dot.show { opacity: 1; }
-.script-read-badge {
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--olive);
-  background: var(--olive-dim);
-  border-radius: 10px;
-  padding: 1px 7px;
-  flex-shrink: 0;
-  opacity: 0;
-  transition: opacity .3s;
-}
-.script-read-badge.show { opacity: 1; }
-
+.sos-ctx.active { background:var(--olive-dim);border-color:var(--olive);color:var(--olive);font-weight:700; }
+.sos-rblock { background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);margin-bottom:8px;overflow:hidden; }
+.sos-rblock-hd { display:flex;align-items:center;justify-content:space-between;padding:9px 13px;border-bottom:1px solid var(--border-light);background:var(--surface2); }
+.sos-rblock-title { font-size:10px;color:var(--olive);letter-spacing:0.1em;font-weight:700; }
+.sos-copy-btn { padding:3px 9px;border:1.5px solid var(--border);border-radius:5px;background:transparent;color:var(--text-dim);font-size:10px;font-family:'Noto Sans TC',sans-serif;cursor:pointer;transition:all 0.12s; }
+.sos-copy-btn:hover { border-color:var(--olive);color:var(--olive); }
+.sos-rblock-body { padding:12px 13px;font-size:13px;line-height:1.85;color:var(--text);white-space:pre-wrap;word-break:break-word; }
 </style>
 
 <script>
@@ -8058,7 +7585,7 @@ function runSOS() {
   btn.disabled = true; btn.textContent = '⏳ 比對話術庫中...';
 
   const resultEl = document.getElementById('sosResult');
-  resultEl.innerHTML = '<div style="display:flex;align-items:center;gap:10px;padding:20px 4px;color:#9E9285;font-size:13px;"><div style="width:16px;height:16px;border:1.5px solid #E0D8CC;border-top-color:#C0392B;border-radius:50%;animation:spin 0.7s linear infinite;flex-shrink:0;"></div>正在比對最符合的話術...</div>';
+  resultEl.innerHTML = '<div style="display:flex;align-items:center;gap:10px;padding:20px 4px;color:var(--text-dim);font-size:13px;"><div style="width:16px;height:16px;border:1.5px solid var(--border);border-top-color:#C0392B;border-radius:50%;animation:spin 0.7s linear infinite;flex-shrink:0;"></div>正在比對最符合的話術...</div>';
 
   setTimeout(() => {
     const match = sosFindMatch(input);
@@ -8070,7 +7597,7 @@ function runSOS() {
           <div style="width:20px;height:1px;background:#3D5A40;"></div>
           比對結果：${match.title}
         </div>
-        <button onclick="sosCopyAll(this)" data-text="${encodeURIComponent(allText)}" style="padding:4px 12px;border:1px solid #E0D8CC;border-radius:5px;background:#F9F6F1;color:#9E9285;font-size:11px;font-family:'Noto Sans TC',sans-serif;cursor:pointer;">全部複製</button>
+        <button onclick="sosCopyAll(this)" data-text="${encodeURIComponent(allText)}" style="padding:4px 12px;border:1px solid var(--border);border-radius:5px;background:var(--surface2);color:var(--text-dim);font-size:11px;font-family:'Noto Sans TC',sans-serif;cursor:pointer;">全部複製</button>
       </div>
       ${Object.entries(match.content).map(([k,v], i) => `
         <div class="sos-rblock">
@@ -8091,7 +7618,7 @@ function sosCopyAll(btn) {
   const text = decodeURIComponent(btn.dataset.text);
   navigator.clipboard.writeText(text).then(() => {
     btn.textContent = '已複製 ✓'; btn.style.color = '#3D5A40';
-    setTimeout(() => { btn.textContent = '全部複製'; btn.style.color = '#9E9285'; }, 2000);
+    setTimeout(() => { btn.textContent = '全部複製'; btn.style.color = 'var(--text-dim)'; }, 2000);
   });
 }
 
@@ -8113,7 +7640,7 @@ function showSyncToast(msg, color) {
   const toast = document.getElementById('syncToast');
   const msgEl = document.getElementById('syncToastMsg');
   msgEl.textContent = msg;
-  toast.style.background = color || '#1E1A14';
+  toast.style.background = color || '#111318';
   toast.style.display = 'block';
   toast.style.opacity = '1';
   setTimeout(() => {
@@ -8157,870 +7684,5 @@ async function syncLibToKV() {
   }
 }
 </script>
-
-<!-- ══ Mobile Bottom Tab Bar ══ -->
-<div id="mobile-tab-bar">
-  <button class="mobile-tab-item active" id="mtab-home" onclick="mobileTabNav('home')">
-    <span class="mobile-tab-icon">🏠</span>
-    <span>總覽</span>
-  </button>
-  <button class="mobile-tab-item" id="mtab-decode" onclick="mobileTabNav('decode')">
-    <span class="mobile-tab-icon">🔍</span>
-    <span>解碼</span>
-  </button>
-  <button class="mobile-tab-item" id="mtab-quiz" onclick="mobileTabNav('quiz')">
-    <span class="mobile-tab-icon">🧠</span>
-    <span>練習</span>
-  </button>
-  <button class="mobile-tab-item" id="mtab-replay" onclick="mobileTabNav('replay')">
-    <span class="mobile-tab-icon">🎬</span>
-    <span>複盤</span>
-  </button>
-  <button class="mobile-tab-item" id="mtab-growth" onclick="mobileTabNav('growth')">
-    <span class="mobile-tab-icon">📈</span>
-    <span>成長</span>
-  </button>
-</div>
-
-
-<script>
-// ══════════════════════════════════════════════════════
-// UPGRADE 1: Read Progress Tracking System
-// ══════════════════════════════════════════════════════
-const READ_KEY = 'rt_read_scripts_';
-
-function getReadSet(uid) {
-  if (!uid) return new Set();
-  const raw = localStorage.getItem(READ_KEY + uid);
-  return raw ? new Set(JSON.parse(raw)) : new Set();
-}
-
-function markRead(scriptId) {
-  if (!libCurrentUser) return;
-  const uid = libCurrentUser.id;
-  const readSet = getReadSet(uid);
-  if (readSet.has(scriptId)) return; // already read
-  readSet.add(scriptId);
-  localStorage.setItem(READ_KEY + uid, JSON.stringify([...readSet]));
-  // Award +1pt for first read
-  if (typeof growthAddPts === 'function') {
-    growthAddPts(1, '閱讀話術 ' + scriptId);
-  }
-  updateReadUI();
-}
-
-function updateReadUI() {
-  if (!libCurrentUser) return;
-  const readSet = getReadSet(libCurrentUser.id);
-  // Update all read badges in current view
-  readSet.forEach(id => {
-    const badge = document.querySelector('.script-read-badge[data-id="' + id + '"]');
-    if (badge) badge.classList.add('show');
-  });
-  // Update module progress bars (new data-cats structure)
-  document.querySelectorAll('.module-progress-bar[data-cats]').forEach(bar => {
-    const cats = (bar.dataset.cats || '').split(',').filter(Boolean);
-    const total = parseInt(bar.dataset.total) || 0;
-    const fill = bar.querySelector('.module-progress-fill');
-    const no = bar.id ? bar.id.replace('mpb-','') : '';
-    const countEl = document.getElementById('mrc-' + no);
-    const pctEl = document.getElementById('mrp-' + no);
-    const scripts = SCRIPTS.filter(s => cats.includes(s.category));
-    const readCount = scripts.filter(s => readSet.has(s.id)).length;
-    const pct = total > 0 ? Math.round((readCount/total)*100) : 0;
-    if (fill) fill.style.width = pct + '%';
-    if (countEl) countEl.textContent = readCount + ' / ' + total + ' 已讀';
-    if (pctEl) pctEl.textContent = pct + '%';
-  });
-  // Also update read badges in script cards  
-  document.querySelectorAll('.script-read-badge').forEach(badge => {
-    const id = badge.dataset.id;
-    if (id && readSet.has(id)) badge.classList.add('show');
-  });
-}
-
-// Patch the card() function to inject read badge and auto-mark on expand
-// We hook into toggleCard instead
-const _origToggleCard = window.toggleCard;
-window.toggleCard = function(id) {
-  if (typeof _origToggleCard === 'function') _origToggleCard(id);
-  // After toggle, if it's now expanded, mark read
-  const card = document.getElementById('card-' + id);
-  if (card && card.classList.contains('expanded')) {
-    setTimeout(() => markRead(id), 300);
-  }
-};
-
-// Also hook showDecodeSingle to mark read
-const _origShowDecodeSingle = window.showDecodeSingle;
-window.showDecodeSingle = function(id) {
-  if (typeof _origShowDecodeSingle === 'function') _origShowDecodeSingle(id);
-  setTimeout(() => markRead(id), 500);
-};
-
-// ══════════════════════════════════════════════════════
-// UPGRADE 2: Enhanced Search with Snippet Highlight
-// ══════════════════════════════════════════════════════
-function highlightText(text, query) {
-  if (!query || !text) return text;
-  const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const re = new RegExp('(' + escaped + ')', 'gi');
-  return text.replace(re, '<span class="search-hl">$1</span>');
-}
-
-function getSearchSnippet(script, query) {
-  const fields = [script.content, script.trigger, script.situation, script.title];
-  for (const f of fields) {
-    if (!f) continue;
-    const lower = f.toLowerCase();
-    const idx = lower.indexOf(query.toLowerCase());
-    if (idx !== -1) {
-      const start = Math.max(0, idx - 20);
-      const end = Math.min(f.length, idx + query.length + 60);
-      let snippet = (start > 0 ? '...' : '') + f.slice(start, end) + (end < f.length ? '...' : '');
-      return highlightText(snippet, query);
-    }
-  }
-  return null;
-}
-
-// Intercept the search render to add snippet previews
-// We patch the renderSearch function if it exists, or hook into the search input
-const searchInput = document.getElementById('searchInput');
-if (searchInput) {
-  const origHandler = searchInput.oninput;
-  searchInput.addEventListener('input', function() {
-    const q = this.value.trim();
-    setTimeout(() => {
-      if (q.length >= 2) {
-        // After main search renders, inject snippets
-        document.querySelectorAll('.script-card').forEach(card => {
-          const id = card.id ? card.id.replace('card-', '') : null;
-          if (!id) return;
-          const script = SCRIPTS.find(s => s.id === id);
-          if (!script) return;
-          const header = card.querySelector('.script-header');
-          if (!header) return;
-          // Remove old preview
-          const oldPrev = card.querySelector('.search-result-preview');
-          if (oldPrev) oldPrev.remove();
-          const snippet = getSearchSnippet(script, q);
-          if (snippet) {
-            card.classList.add('search-match');
-            const prev = document.createElement('div');
-            prev.className = 'search-result-preview';
-            prev.innerHTML = snippet;
-            header.after(prev);
-          }
-        });
-      } else {
-        // Clear snippets
-        document.querySelectorAll('.search-result-preview').forEach(el => el.remove());
-        document.querySelectorAll('.script-card.search-match').forEach(el => el.classList.remove('search-match'));
-      }
-    }, 50);
-  });
-}
-
-// ══════════════════════════════════════════════════════
-// UPGRADE 3: AI Multi-turn Chat in Decode Mode
-// ══════════════════════════════════════════════════════
-let aiChatHistory = [];
-let aiChatScriptCtx = null;
-let aiChatIsTyping = false;
-
-function initAIChat(scriptId) {
-  aiChatHistory = [];
-  aiChatScriptCtx = SCRIPTS.find(s => s.id === scriptId) || null;
-  
-  const systemCtx = aiChatScriptCtx ? 
-    `你是「富時代地產」內部AI教練，專門協助房地產業務顧問。\n\n當前解碼情境：\n- 話術標題：${aiChatScriptCtx.title}\n- 觸發句：「${aiChatScriptCtx.trigger}」\n- 情境：${aiChatScriptCtx.situation}\n- 話術內容：${aiChatScriptCtx.content}\n\n你的任務：\n1. 用繁體中文回答，簡潔有力（不超過200字）\n2. 針對這條話術給出實戰建議\n3. 支持多輪追問，保持上下文連貫\n4. 回答要像志偉哥風格：直接、有邏輯、帶點案例\n5. 若業務說出客戶話術，幫他解碼分析`
-    :
-    `你是「富時代地產」內部AI教練。用繁體中文回答房地產銷售問題，簡潔有力，風格像志偉哥：直接、有邏輯、帶案例。不超過200字。`;
-  
-  return systemCtx;
-}
-
-function renderAIChat(scriptId, containerId) {
-  const container = document.getElementById(containerId);
-  if (!container) return;
-  
-  const script = SCRIPTS.find(s => s.id === scriptId);
-  const suggestions = script ? [
-    '如果客戶聽完還是猶豫怎麼辦？',
-    '這句話用在什麼時機最好？',
-    '幫我設計一個追問句',
-    '有沒有類似案例？'
-  ] : ['幫我解釋這個訊號', '實戰怎麼用？'];
-  
-  container.innerHTML = `
-    <div class="ai-chat-wrap" id="ai-chat-${scriptId}">
-      <div class="ai-chat-header">
-        <div class="ai-chat-title">🤖 AI 教練｜追問解析</div>
-        <div class="ai-chat-status">
-          <div class="ai-chat-status-dot"></div>
-          <span>可連續追問</span>
-        </div>
-      </div>
-      <div class="ai-chat-messages" id="ai-chat-msgs-${scriptId}">
-        <div class="chat-bubble-row">
-          <div class="chat-avatar ai-av">AI</div>
-          <div class="chat-bubble ai">
-            這條話術我已讀完了，有任何疑問都可以追問我 👆<br>
-            ${script ? `<br><span style="font-size:11px;color:var(--text-dim)">當前情境：「${script.trigger.slice(0,40)}${script.trigger.length > 40 ? '...' : ''}」</span>` : ''}
-          </div>
-        </div>
-      </div>
-      <div class="ai-chat-suggestions">
-        ${suggestions.map(s => `<button class="ai-chat-suggest-btn" onclick="aiChatSendSuggestion('${scriptId}', this)">${s}</button>`).join('')}
-      </div>
-      <div class="ai-chat-input-area">
-        <textarea class="ai-chat-input" id="ai-chat-input-${scriptId}" 
-          placeholder="追問話術細節、實戰情況..." rows="1"
-          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();aiChatSend('${scriptId}')}"
-          oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,96)+'px'"></textarea>
-        <button class="ai-chat-send-btn" id="ai-chat-send-${scriptId}" onclick="aiChatSend('${scriptId}')">↑</button>
-      </div>
-    </div>
-  `;
-  
-  // Init context
-  initAIChat(scriptId);
-}
-
-function aiChatSendSuggestion(scriptId, btn) {
-  const input = document.getElementById('ai-chat-input-' + scriptId);
-  if (input) {
-    input.value = btn.textContent;
-    aiChatSend(scriptId);
-    btn.style.display = 'none';
-  }
-}
-
-async function aiChatSend(scriptId) {
-  const input = document.getElementById('ai-chat-input-' + scriptId);
-  const msgsEl = document.getElementById('ai-chat-msgs-' + scriptId);
-  const sendBtn = document.getElementById('ai-chat-send-' + scriptId);
-  if (!input || !msgsEl || aiChatIsTyping) return;
-  
-  const text = input.value.trim();
-  if (!text) return;
-  
-  // Add user bubble
-  input.value = '';
-  input.style.height = 'auto';
-  const userAvatar = libCurrentUser ? libCurrentUser.name.slice(-1) : '我';
-  msgsEl.innerHTML += `
-    <div class="chat-bubble-row user">
-      <div class="chat-avatar user-av">${userAvatar}</div>
-      <div class="chat-bubble user">${text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
-    </div>`;
-  msgsEl.scrollTop = msgsEl.scrollHeight;
-  
-  // Push to history
-  aiChatHistory.push({ role: 'user', content: text });
-  
-  // Show typing
-  aiChatIsTyping = true;
-  if (sendBtn) sendBtn.disabled = true;
-  msgsEl.innerHTML += `
-    <div class="chat-bubble-row" id="typing-bubble-${scriptId}">
-      <div class="chat-avatar ai-av">AI</div>
-      <div class="chat-bubble typing">
-        <div class="typing-dot"></div>
-        <div class="typing-dot"></div>
-        <div class="typing-dot"></div>
-      </div>
-    </div>`;
-  msgsEl.scrollTop = msgsEl.scrollHeight;
-  
-  // Get script context
-  const script = SCRIPTS.find(s => s.id === scriptId) || aiChatScriptCtx;
-  const sysPrompt = script ?
-    `你是富時代地產內部AI教練（志偉哥風格）。話術情境：「${script.trigger}」，話術內容：${script.content.slice(0,400)}。用繁體中文回答，簡潔直接不超過200字，像有經驗的主管在解釋。`
-    : '你是富時代地產內部AI教練，用繁體中文回答房地產銷售問題，簡潔直接，像志偉哥風格。不超過200字。';
-  
-  try {
-    const messages = [
-      ...aiChatHistory.slice(-8) // last 8 turns for context
-    ];
-    
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 400,
-        system: sysPrompt,
-        messages: messages
-      })
-    });
-    
-    const data = await resp.json();
-    const reply = data.content && data.content[0] ? data.content[0].text : '抱歉，請再試一次。';
-    
-    // Add to history
-    aiChatHistory.push({ role: 'assistant', content: reply });
-    
-    // Remove typing, add AI bubble
-    const typingBubble = document.getElementById('typing-bubble-' + scriptId);
-    if (typingBubble) typingBubble.remove();
-    
-    msgsEl.innerHTML += `
-      <div class="chat-bubble-row">
-        <div class="chat-avatar ai-av">AI</div>
-        <div class="chat-bubble ai" style="white-space:pre-wrap">${reply.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
-      </div>`;
-    msgsEl.scrollTop = msgsEl.scrollHeight;
-    
-  } catch(err) {
-    const typingBubble = document.getElementById('typing-bubble-' + scriptId);
-    if (typingBubble) typingBubble.remove();
-    msgsEl.innerHTML += `
-      <div class="chat-bubble-row">
-        <div class="chat-avatar ai-av">AI</div>
-        <div class="chat-bubble ai" style="color:#c0392b">連線異常，請重試。</div>
-      </div>`;
-  }
-  
-  aiChatIsTyping = false;
-  if (sendBtn) sendBtn.disabled = false;
-  msgsEl.scrollTop = msgsEl.scrollHeight;
-}
-
-// ── Hook AI chat into showDecodeSingle ──
-// We append AI chat after the decode card renders
-const _origShowDecodeSingle2 = window.showDecodeSingle;
-window.showDecodeSingle = function(id) {
-  if (typeof _origShowDecodeSingle2 === 'function') _origShowDecodeSingle2(id);
-  // Inject AI chat after render
-  setTimeout(() => {
-    const main = document.getElementById('main');
-    if (!main) return;
-    // Check if ai-chat already exists
-    if (document.getElementById('ai-chat-' + id)) return;
-    // Add AI chat container at end of main
-    const chatDiv = document.createElement('div');
-    chatDiv.id = 'ai-chat-container-' + id;
-    chatDiv.style.marginTop = '20px';
-    main.appendChild(chatDiv);
-    renderAIChat(id, 'ai-chat-container-' + id);
-  }, 100);
-};
-
-// ══════════════════════════════════════════════════════
-// UPGRADE 4: Mobile Tab Bar Navigation
-// ══════════════════════════════════════════════════════
-function mobileTabNav(tab) {
-  // Update active state
-  document.querySelectorAll('.mobile-tab-item').forEach(el => el.classList.remove('active'));
-  const activeTab = document.getElementById('mtab-' + tab);
-  if (activeTab) activeTab.classList.add('active');
-  
-  // Navigate
-  switch(tab) {
-    case 'home':
-      if (typeof showOverview === 'function') showOverview();
-      break;
-    case 'decode':
-      if (typeof showDecodeHome === 'function') showDecodeHome();
-      break;
-    case 'quiz':
-      if (typeof showQuizMode === 'function') showQuizMode();
-      break;
-    case 'replay':
-      if (typeof showReplayMode === 'function') showReplayMode();
-      break;
-    case 'growth':
-      if (typeof openGrowthPanel === 'function') openGrowthPanel('profile');
-      break;
-  }
-  
-  // Auto close sidebar on mobile
-  if (window.innerWidth <= 768) {
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.querySelector('.sidebar-overlay');
-    if (sidebar) sidebar.classList.remove('open');
-    if (overlay) overlay.classList.remove('show');
-  }
-}
-
-// Sync tab bar with sidebar navigation
-// Intercept existing nav functions to update tab bar active state
-function syncMobileTab(tabId) {
-  if (window.innerWidth > 768) return;
-  document.querySelectorAll('.mobile-tab-item').forEach(el => el.classList.remove('active'));
-  const t = document.getElementById('mtab-' + tabId);
-  if (t) t.classList.add('active');
-}
-
-// Hook into existing show functions
-['showOverview','showDecodeHome','showQuizMode','showReplayMode'].forEach((fn, i) => {
-  const tabs = ['home','decode','quiz','replay'];
-  const orig = window[fn];
-  if (orig) {
-    window[fn] = function() {
-      orig.apply(this, arguments);
-      syncMobileTab(tabs[i]);
-    };
-  }
-});
-
-// ── Update read UI on login ──
-const _origLibEnterApp = window.libEnterApp;
-window.libEnterApp = function() {
-  if (typeof _origLibEnterApp === 'function') _origLibEnterApp.apply(this, arguments);
-  setTimeout(updateReadUI, 500);
-};
-
-// Hook toggleCard to also update read badge in UI
-document.addEventListener('click', function(e) {
-  const header = e.target.closest('.script-header');
-  if (!header) return;
-  const card = header.closest('.script-card');
-  if (!card || !card.id) return;
-  const id = card.id.replace('card-', '');
-  setTimeout(() => {
-    if (card.classList.contains('expanded')) {
-      markRead(id);
-      // Show read badge
-      const badge = card.querySelector('.script-read-badge');
-      if (badge) badge.classList.add('show');
-    }
-  }, 200);
-});
-
-console.log('[LIB v9] All 4 upgrades loaded: Read Tracking, Search Highlight, AI Multi-turn Chat, Mobile Tab Bar');
-</script>
-
-
-<script>
-// ══════════════════════════════════════════════════════════════════
-// 個人化學習引擎 — Personalized Learning Engine v1.0
-// 資料來源: 已讀記錄 + 錯題記錄 + 成長積分 + 答題時間
-// ══════════════════════════════════════════════════════════════════
-
-// ── 技能分類映射 ──
-const SKILL_CATS = {
-  '信任建立':   { label:'信任建立', color:'#3D5A40', icon:'🤝', abbr:'信任' },
-  '異議處理':   { label:'異議處理', color:'#C0392B', icon:'🛡️', abbr:'異議' },
-  '提問式銷售': { label:'提問', color:'#B8943C', icon:'💬', abbr:'提問' },
-  '締結成交':   { label:'締結', color:'#2980B9', icon:'✍️', abbr:'締結' },
-  '追蹤技巧':   { label:'追蹤', color:'#8E44AD', icon:'📡', abbr:'追蹤' },
-  '市場知識':   { label:'市場', color:'#16A085', icon:'📊', abbr:'市場' },
-  '銷售心態':   { label:'心態', color:'#D35400', icon:'💡', abbr:'心態' },
-  '開發策略':   { label:'開發', color:'#27AE60', icon:'🎯', abbr:'開發' },
-};
-
-const WEAK_SCORE_THRESHOLD = 40; // below this = weak zone
-const WRONG_KEY = 'rt_wrong_';
-const PATH_KEY = 'rt_path_';
-
-// ── 儲存錯題紀錄 ──
-function saveWrongScript(scriptId) {
-  if (!libCurrentUser) return;
-  const key = WRONG_KEY + libCurrentUser.id;
-  const raw = localStorage.getItem(key);
-  const wrongMap = raw ? JSON.parse(raw) : {};
-  wrongMap[scriptId] = (wrongMap[scriptId] || 0) + 1;
-  localStorage.setItem(key, JSON.stringify(wrongMap));
-}
-
-function getWrongMap() {
-  if (!libCurrentUser) return {};
-  const raw = localStorage.getItem(WRONG_KEY + libCurrentUser.id);
-  return raw ? JSON.parse(raw) : {};
-}
-
-function clearWrongScript(scriptId) {
-  if (!libCurrentUser) return;
-  const key = WRONG_KEY + libCurrentUser.id;
-  const raw = localStorage.getItem(key);
-  const wrongMap = raw ? JSON.parse(raw) : {};
-  delete wrongMap[scriptId];
-  localStorage.setItem(key, JSON.stringify(wrongMap));
-}
-
-// ── 計算技能熟練度 ──
-function calcSkillMastery() {
-  if (!libCurrentUser) return {};
-  const readSet = getReadSet(libCurrentUser.id);
-  const wrongMap = getWrongMap();
-  const mastery = {};
-
-  Object.keys(SKILL_CATS).forEach(cat => {
-    const scripts = SCRIPTS.filter(s => s.category && s.category.includes(cat));
-    if (scripts.length === 0) { mastery[cat] = { pct: 0, read: 0, total: 0, wrong: 0 }; return; }
-    const readCount = scripts.filter(s => readSet.has(s.id)).length;
-    const wrongCount = scripts.filter(s => wrongMap[s.id] > 0).length;
-    // Score: read% * 0.7 + (1 - wrong%) * 0.3
-    const readPct = readCount / scripts.length;
-    const wrongPct = wrongCount / Math.max(scripts.length, 1);
-    const score = Math.round((readPct * 0.7 + (1 - wrongPct) * 0.3) * 100);
-    mastery[cat] = { pct: score, read: readCount, total: scripts.length, wrong: wrongCount };
-  });
-
-  return mastery;
-}
-
-// ── 找出最弱環節 ──
-function getWeakCategories(mastery, topN = 3) {
-  return Object.entries(mastery)
-    .filter(([, v]) => v.total > 0)
-    .sort((a, b) => a[1].pct - b[1].pct)
-    .slice(0, topN)
-    .map(([cat]) => cat);
-}
-
-// ── 生成個人化推薦清單 ──
-function buildPersonalizedRecs() {
-  if (!libCurrentUser) return { recs: [], mastery: {}, weakCats: [] };
-
-  const readSet = getReadSet(libCurrentUser.id);
-  const wrongMap = getWrongMap();
-  const mastery = calcSkillMastery();
-  const weakCats = getWeakCategories(mastery, 3);
-  const recs = [];
-
-  // 1. 錯題優先複習（最高優先級）
-  const wrongIds = Object.entries(wrongMap)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 4)
-    .map(([id]) => id);
-
-  wrongIds.forEach(id => {
-    const s = SCRIPTS.find(x => x.id === id);
-    if (!s) return;
-    recs.push({
-      type: 'review',
-      priority: 10 + (wrongMap[id] || 0),
-      scriptId: id,
-      title: s.title,
-      category: s.category,
-      reason: `答錯 ${wrongMap[id]} 次，需要重新掌握這條話術`,
-      tag: '需複習',
-      action: () => showScriptFromQuiz(id)
-    });
-  });
-
-  // 2. 弱項技能中還沒讀的話術
-  weakCats.forEach((cat, ci) => {
-    const unread = SCRIPTS.filter(s =>
-      s.category && s.category.includes(cat) && !readSet.has(s.id)
-    );
-    if (unread.length === 0) return;
-    // pick highest priority unread (Top first)
-    const pick = unread.find(s => s.level === 'Top') || unread.find(s => s.level === 'Core') || unread[0];
-    recs.push({
-      type: 'weak',
-      priority: 8 - ci,
-      scriptId: pick.id,
-      title: pick.title,
-      category: pick.category,
-      reason: `你的「${cat}」熟練度只有 ${mastery[cat].pct}%，這條是該分類必學`,
-      tag: '弱項補強',
-      action: () => showScriptFromQuiz(pick.id)
-    });
-  });
-
-  // 3. Top 話術中還沒讀的
-  const unreadTop = SCRIPTS.filter(s => s.level === 'Top' && !readSet.has(s.id));
-  if (unreadTop.length > 0) {
-    const pick = unreadTop[0];
-    recs.push({
-      type: 'challenge',
-      priority: 6,
-      scriptId: pick.id,
-      title: pick.title,
-      category: pick.category,
-      reason: `這是高難度 Top 話術，還沒讀過，建議挑戰`,
-      tag: '挑戰提升',
-      action: () => showScriptFromQuiz(pick.id)
-    });
-  }
-
-  // 4. 已讀但從未測試過的話術（有 SCRIPT_QUIZ_DB）
-  const readButUntested = Object.keys(SCRIPT_QUIZ_DB)
-    .filter(id => readSet.has(id) && !(wrongMap[id] > 0))
-    .slice(0, 2);
-  readButUntested.forEach(id => {
-    const s = SCRIPTS.find(x => x.id === id);
-    if (!s) return;
-    recs.push({
-      type: 'test',
-      priority: 4,
-      scriptId: id,
-      title: s.title,
-      category: s.category,
-      reason: '已讀但還沒測試過，驗證一下有沒有真的掌握',
-      tag: '待驗證',
-      action: () => quickQuizFromScript(id)
-    });
-  });
-
-  // Sort by priority desc, deduplicate
-  const seen = new Set();
-  const sorted = recs
-    .sort((a, b) => b.priority - a.priority)
-    .filter(r => { if (seen.has(r.scriptId)) return false; seen.add(r.scriptId); return true; })
-    .slice(0, 5);
-
-  return { recs: sorted, mastery, weakCats };
-}
-
-// ── 生成學習路徑 ──
-function buildLearningPath() {
-  if (!libCurrentUser || !libUserData) return [];
-  const u = libUserData;
-  const readSet = getReadSet(libCurrentUser.id);
-  const lv = typeof growthGetLevel === 'function' ? growthGetLevel(u.pts).lv : 1;
-
-  // Milestone steps based on level
-  const allSteps = [
-    { id: 'intro', label: '入門閱讀', icon: '📖', req: 0,  check: () => readSet.size >= 5 },
-    { id: 'trust', label: '信任建立', icon: '🤝', req: 1,  check: () => SCRIPTS.filter(s => s.category && s.category.includes('信任') && readSet.has(s.id)).length >= 3 },
-    { id: 'objection', label: '異議處理', icon: '🛡️', req: 2, check: () => SCRIPTS.filter(s => s.category && s.category.includes('異議') && readSet.has(s.id)).length >= 3 },
-    { id: 'quiz1', label: '第一次測驗', icon: '🧠', req: 2, check: () => u.totalExams >= 1 },
-    { id: 'decode', label: '解碼實戰', icon: '🔍', req: 3, check: () => SCRIPTS.filter(s => s.category && s.category.includes('提問') && readSet.has(s.id)).length >= 2 },
-    { id: 'close', label: '締結技巧', icon: '✍️', req: 3, check: () => SCRIPTS.filter(s => s.category && s.category.includes('締結') && readSet.has(s.id)).length >= 3 },
-    { id: 'top', label: 'Top 話術', icon: '🏆', req: 4, check: () => SCRIPTS.filter(s => s.level === 'Top' && readSet.has(s.id)).length >= 3 },
-    { id: 'master', label: '精通', icon: '👑', req: 5, check: () => u.pts >= 200 },
-  ];
-
-  return allSteps.map((step, i) => {
-    const done = step.check();
-    const prevDone = i === 0 || allSteps[i-1].check();
-    const active = !done && prevDone;
-    const locked = !done && !prevDone;
-    return { ...step, done, active, locked };
-  });
-}
-
-// ── 主渲染：個人化面板 ──
-function renderPersonalizedPanel(containerId) {
-  const el = document.getElementById(containerId);
-  if (!el) return;
-
-  if (!libCurrentUser) {
-    el.innerHTML = `<div class="plearn-panel"><div style="padding:20px;text-align:center;color:var(--text-dim);font-size:13px">請先登入，解鎖個人化學習路徑 🔐</div></div>`;
-    return;
-  }
-
-  const { recs, mastery, weakCats } = buildPersonalizedRecs();
-  const path = buildLearningPath();
-  const readSet = getReadSet(libCurrentUser.id);
-  const totalRead = readSet.size;
-  const totalScripts = SCRIPTS.length;
-
-  // ── Skill bars ──
-  const skillKeys = Object.keys(SKILL_CATS).filter(k => mastery[k] && mastery[k].total > 0);
-  const skillBarsHTML = skillKeys.map(cat => {
-    const m = mastery[cat];
-    const sc = SKILL_CATS[cat];
-    const barColor = m.pct >= 70 ? '#3D5A40' : m.pct >= 40 ? '#B8943C' : '#C0392B';
-    return `
-      <div class="skill-bar-item" onclick="showCatByName('${cat}')">
-        <div class="skill-bar-label">${sc.icon} ${sc.abbr}</div>
-        <div class="skill-bar-track">
-          <div class="skill-bar-fill" style="width:${m.pct}%;background:${barColor}"></div>
-        </div>
-        <div class="skill-bar-pct" style="color:${barColor}">${m.pct}%</div>
-        <div class="skill-bar-count">${m.read}/${m.total}</div>
-      </div>`;
-  }).join('');
-
-  // ── Recommendation cards ──
-  const recTagClass = { review: 'review', weak: 'weak', challenge: 'challenge', test: 'new' };
-  const recTagLabel = { review: '🔄 需複習', weak: '⚡ 弱項', challenge: '🏆 挑戰', test: '✅ 待驗證' };
-  const recCardsHTML = recs.length > 0 ? recs.map(r => `
-    <div class="prec-card ${r.type === 'review' ? 'urgent' : ''}" onclick="${r.type === 'test' ? `quickQuizFromScript('${r.scriptId}')` : `showScriptFromQuiz('${r.scriptId}')`}">
-      <div class="prec-card-icon">${SKILL_CATS[r.category] ? SKILL_CATS[r.category].icon : '📋'}</div>
-      <div class="prec-card-body">
-        <div class="prec-card-title">${esc(r.title.slice(0, 28))}${r.title.length > 28 ? '…' : ''}</div>
-        <div class="prec-card-reason">${esc(r.reason)}</div>
-      </div>
-      <span class="prec-card-tag ${recTagClass[r.type] || 'new'}">${recTagLabel[r.type] || r.tag}</span>
-    </div>
-  `).join('') : `<div style="text-align:center;padding:20px;color:var(--text-dim);font-size:13px">🎉 太厲害了！目前沒有需要補強的項目</div>`;
-
-  // ── Learning Path ──
-  const pathHTML = path.map((step, i) => `
-    ${i > 0 ? `<div class="path-connector ${path[i-1].done ? 'done' : ''}"></div>` : ''}
-    <div class="path-step">
-      <div class="path-step-dot ${step.done ? 'done' : step.active ? 'active' : 'locked'}">
-        ${step.done ? '✓' : step.active ? step.icon : step.icon}
-      </div>
-      <div class="path-step-label ${step.active ? 'active' : ''}">${step.label}</div>
-    </div>
-  `).join('');
-
-  // ── AI Insight placeholder (filled async) ──
-  el.innerHTML = `
-    <div class="plearn-panel">
-      <div class="plearn-header">
-        <div>
-          <div class="plearn-header-title">✨ 你的學習路徑</div>
-          <div class="plearn-header-sub">根據 ${totalRead} 筆已讀 · 錯題分析 · 積分等級 · 自動更新</div>
-        </div>
-        <button class="plearn-refresh-btn" onclick="refreshPersonalPanel()">↻ 重新分析</button>
-      </div>
-
-      <!-- Skill Mastery Bars -->
-      <div class="skill-radar-row">${skillBarsHTML}</div>
-
-      <!-- Recommendations -->
-      <div class="prec-section">
-        <div class="prec-section-label">
-          <span style="width:8px;height:8px;border-radius:50%;background:var(--olive);display:inline-block"></span>
-          現在最該練這幾條
-        </div>
-        ${recCardsHTML}
-      </div>
-
-      <!-- AI Insight (async) -->
-      <div class="ai-insight-card" id="plearn-ai-insight">
-        <div class="ai-insight-label">
-          <span>🤖</span> AI 學習診斷
-        </div>
-        <div class="ai-insight-loading" id="plearn-ai-loading">
-          <div style="width:14px;height:14px;border:1.5px solid var(--border);border-top-color:var(--olive);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0"></div>
-          正在分析你的學習狀態...
-        </div>
-        <div class="ai-insight-text" id="plearn-ai-text" style="display:none"></div>
-      </div>
-
-      <!-- Learning Path strip -->
-      <div class="path-strip">${pathHTML}</div>
-    </div>
-  `;
-
-  // Load AI insight async
-  loadAIInsight(mastery, weakCats, totalRead, buildLearningPath());
-}
-
-// ── AI 學習診斷（異步） ──
-async function loadAIInsight(mastery, weakCats, totalRead, path) {
-  const loadEl = document.getElementById('plearn-ai-loading');
-  const textEl = document.getElementById('plearn-ai-text');
-  if (!loadEl || !textEl) return;
-
-  const activeStep = path.find(s => s.active);
-  const weakSummary = weakCats.map(cat => `${cat}(${mastery[cat].pct}%)`).join('、');
-  const wrongMap = getWrongMap();
-  const topWrong = Object.entries(wrongMap).sort((a,b) => b[1]-a[1]).slice(0,2).map(([id]) => {
-    const s = SCRIPTS.find(x => x.id === id);
-    return s ? s.title : id;
-  }).join('、');
-
-  const prompt = `你是富時代地產AI學習教練。根據以下學習數據，用2-3句繁體中文給出精準的學習建議（像主管在給反饋，直接、有邏輯）：
-
-- 已讀話術：${totalRead} / ${SCRIPTS.length} 條
-- 弱項技能：${weakSummary || '暫無明顯弱項'}
-- 需複習話術：${topWrong || '無'}
-- 當前學習關卡：${activeStep ? activeStep.label : '持續精進中'}
-
-給出1個具體的下一步行動建議。不要超過60字。`;
-
-  try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 150,
-        messages: [{ role: 'user', content: prompt }]
-      })
-    });
-    const data = await resp.json();
-    const text = data.content && data.content[0] ? data.content[0].text : null;
-    if (text && loadEl && textEl) {
-      loadEl.style.display = 'none';
-      textEl.style.display = 'block';
-      textEl.textContent = text;
-    }
-  } catch(e) {
-    if (loadEl) loadEl.style.display = 'none';
-    if (textEl) {
-      textEl.style.display = 'block';
-      textEl.textContent = '持續閱讀話術並完成測驗，積累你的學習數據，AI 診斷會越來越精準。';
-    }
-  }
-}
-
-// ── 顯示特定分類 ──
-function showCatByName(catName) {
-  const scripts = SCRIPTS.filter(s => s.category && s.category.includes(catName));
-  if (scripts.length === 0) return;
-  renderMain(`
-    <button class="back-btn" onclick="showOverview()">← 返回總覽</button>
-    <div class="view-eyebrow">${SKILL_CATS[catName] ? SKILL_CATS[catName].icon : '📋'} ${catName}</div>
-    <div class="view-title">${catName} 相關話術</div>
-    <div class="view-desc" style="margin-bottom:20px">${scripts.length} 筆 · 點擊展開詳細話術內容</div>
-    <div class="script-list">${scripts.map(s => card(s)).join('')}</div>
-  `);
-  syncMobileTab('home');
-  setTimeout(updateReadUI, 100);
-}
-
-// ── Refresh ──
-function refreshPersonalPanel() {
-  const container = document.getElementById('plearn-container');
-  if (container) renderPersonalizedPanel('plearn-container');
-}
-
-// ── Hook wrong answers from quizzes ──
-// Patch answerQuiz to record wrong answers
-const _origAnswerQuiz = window.answerQuiz;
-if (typeof _origAnswerQuiz === 'function') {
-  window.answerQuiz = function(idx) {
-    _origAnswerQuiz.apply(this, arguments);
-    // After answering, check if wrong
-    const q = QUIZ_QUESTIONS[quizState.current];
-    if (q && !q.options[idx].correct) {
-      if (q.scriptId) saveWrongScript(q.scriptId);
-    }
-  };
-}
-
-// Patch quickAnswerQuiz similarly
-const _origQuickAnswerQuiz = window.quickAnswerQuiz;
-if (typeof _origQuickAnswerQuiz === 'function') {
-  window.quickAnswerQuiz = function(idx) {
-    const qState = window._quickQuizState;
-    const wasWrong = qState && qState.q && !qState.q.options[idx].correct;
-    _origQuickAnswerQuiz.apply(this, arguments);
-    if (wasWrong && qState && qState.scriptId) saveWrongScript(qState.scriptId);
-  };
-}
-
-// ── Patch showOverview to inject personalized panel ──
-const _origShowOverview2 = window.showOverview;
-window.showOverview = function() {
-  if (typeof _origShowOverview2 === 'function') _origShowOverview2.apply(this, arguments);
-  // Inject personalized panel after today mission
-  if (!libCurrentUser) return;
-  setTimeout(() => {
-    const main = document.getElementById('main');
-    if (!main) return;
-    // Inject before the grid
-    const existingContainer = document.getElementById('plearn-container');
-    if (existingContainer) { renderPersonalizedPanel('plearn-container'); return; }
-
-    // Find the first grid div and inject before it
-    const gridDiv = main.querySelector('[style*="display:grid"]');
-    const wrapper = document.createElement('div');
-    wrapper.id = 'plearn-container';
-    if (gridDiv) {
-      main.insertBefore(wrapper, gridDiv);
-    } else {
-      main.appendChild(wrapper);
-    }
-    renderPersonalizedPanel('plearn-container');
-  }, 80);
-};
-
-console.log('[LIB v9] Personalized Learning Engine loaded');
-</script>
-
 </body>
 </html>
