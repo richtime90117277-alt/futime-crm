@@ -840,9 +840,8 @@ body{
   display:flex;flex-direction:column;
   align-items:center;justify-content:center;
   z-index:99999;
-  cursor:pointer;
   overflow:hidden;
-" onclick="doLogin()">
+">
 
   <!-- 背景粒子光暈 -->
   <div style="position:absolute;top:-20%;left:-10%;width:60%;height:60%;background:radial-gradient(circle,rgba(201,146,43,.08) 0%,transparent 70%);pointer-events:none"></div>
@@ -881,8 +880,34 @@ body{
       數字不說謊。<br>決策從這裡開始。
     </div>
 
+    <!-- 密碼輸入區 -->
+    <div style="max-width:280px;margin:0 auto 12px">
+      <input id="loginPwInput" type="password" placeholder="輸入密碼" autocomplete="off"
+        style="
+          width:100%;
+          background:rgba(201,146,43,.07);
+          border:1px solid rgba(201,146,43,.4);
+          border-radius:100px;
+          padding:13px 24px;
+          color:#2c1f0e;
+          font-size:13px;
+          font-family:'DM Mono',Menlo,Consolas,monospace;
+          letter-spacing:3px;
+          text-align:center;
+          outline:none;
+          transition:all .3s ease;
+        "
+        onfocus="this.style.borderColor='rgba(201,146,43,.8)';this.style.boxShadow='0 0 0 3px rgba(201,146,43,.12)'"
+        onblur="this.style.borderColor='rgba(201,146,43,.4)';this.style.boxShadow='none'"
+        onkeydown="if(event.key==='Enter') doLogin()"
+      />
+    </div>
+
+    <!-- 錯誤提示 -->
+    <div id="loginPwError" style="height:20px;margin-bottom:12px;font-size:11px;color:#c0392b;letter-spacing:1px;font-family:'DM Mono',monospace;opacity:0;transition:opacity .3s"></div>
+
     <!-- CTA 按鈕 -->
-    <div style="
+    <div onclick="doLogin()" style="
       display:inline-flex;align-items:center;gap:10px;
       background:linear-gradient(135deg,rgba(201,146,43,.12),rgba(201,146,43,.06));
       border:1px solid rgba(201,146,43,.45);
@@ -2591,6 +2616,8 @@ body{
     <button class="btn-save" onclick="showSyncModal()" style="flex:1;background:linear-gradient(135deg,#1a6b3a,#27ae60)">🔗 同步至 CRM</button>
     <!-- ★ 儲存報告至雲端 -->
     <button class="btn-save" onclick="showSaveReportModal()" style="flex:1;background:linear-gradient(135deg,#7c3aed,#5b21b6)">💾 儲存報告</button>
+    <!-- ★ 存至 Notion -->
+    <button class="btn-save" id="notionSaveBtn" onclick="saveToNotion()" style="flex:1;background:linear-gradient(135deg,#1a1a2e,#2d2d4e);font-size:13px">📋 存至 Notion</button>
     <!-- ★ QR code 分享 -->
     <button class="btn-save" onclick="showQRModal()" style="flex:1;background:linear-gradient(135deg,#92400e,#c9922b);font-size:13px">📲 傳給客戶</button>
     <button class="bbk" style="width:100%" onclick="sw('I')">← 修改</button>
@@ -6725,8 +6752,23 @@ function setGrowth(v){
 }
 
 // ══ 登入系統 ════════════════════════════════════════════════════════
+var _LOGIN_PW = 'money';
+
 function doLogin() {
-  // v35：直接點擊進入，無需顧問選擇
+  var input = document.getElementById('loginPwInput');
+  var errEl = document.getElementById('loginPwError');
+  var pw = input ? input.value : '';
+
+  if(pw !== _LOGIN_PW) {
+    // 密碼錯誤
+    if(errEl){ errEl.textContent='密碼錯誤，請再試一次'; errEl.style.opacity='1'; }
+    if(input){ input.value=''; input.style.borderColor='rgba(192,57,43,.6)'; input.focus();
+      setTimeout(function(){ input.style.borderColor='rgba(201,146,43,.4)'; },1500); }
+    return;
+  }
+
+  // 密碼正確
+  if(errEl) errEl.style.opacity='0';
   var loginEl = document.getElementById('vLogin');
   if(loginEl){
     loginEl.style.opacity='0';
@@ -8211,6 +8253,114 @@ function doSyncCRM() {
     g('syncMsg').style.color = '#e05c4a';
     g('syncMsg').textContent = '❌ 網路錯誤：' + e.message;
   });
+}
+
+// ══ 存至 Notion ══════════════════════════════════════════════
+var _NOTION_DB_SOURCE = 'bface84d-bba2-4807-977d-f7155e4461cf';
+
+async function saveToNotion() {
+  var C = window._C || {};
+  var nm  = (g('iName')||{}).value || '';
+  var adv = (g('iAdv')||{}).value || '';
+  var prop= (g('iProp')||{}).value || '';
+
+  if (!nm) { showToast('請先填寫客戶姓名','error',2500); return; }
+  if (!C.inc) { showToast('請先產生報告再存至 Notion','error',2500); return; }
+
+  var btn = g('notionSaveBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ 存入中...';
+
+  var today = new Date();
+  var todayISO = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+  var rem  = Math.round(C.inc + C.ts - C.exp - C.effMn);
+  var _roi = window._roi || {};
+  var fnLabels = getActiveFnLabels();
+  var motives  = fnLabels.join('、') || '未選擇';
+  var dwWan    = C.dw  > 0 ? Math.round(C.dw/10000)  : 0;
+  var mn10     = _roi.profit > 0 ? _roi.profit : 0;
+  var annRate  = _roi.ann    > 0 ? parseFloat(_roi.ann) : 0;
+  var mnPay    = C.effMn > 0 ? Math.round(C.effMn) : 0;
+
+  var motivesArr = fnLabels.filter(function(m){
+    return ['自住','換屋','投資','資產傳承','節稅規劃','以房養老'].indexOf(m) !== -1;
+  });
+
+  var clientNote = (g('iClientNote')&&g('iClientNote').value) ? g('iClientNote').value : '（待補充）';
+
+  var pageContent = '## 👤 客戶基本資料\n\n'
+    + '| 欄位 | 內容 |\n|------|------|\n'
+    + '| 客戶姓名 | ' + nm + ' |\n'
+    + '| 負責顧問 | ' + (adv||'—') + ' |\n'
+    + '| 諮詢日期 | ' + todayISO + ' |\n'
+    + '| 購房動機 | ' + motives + ' |\n'
+    + '| 目標物件 | ' + (prop||'—') + ' |\n\n'
+    + '## 💰 財務狀況\n\n'
+    + '| 項目 | 金額 |\n|------|------|\n'
+    + '| 月收入 | ' + Math.round(C.inc||0).toLocaleString() + ' 元 |\n'
+    + '| 月支出 | ' + Math.round(C.exp||0).toLocaleString() + ' 元 |\n'
+    + '| 月供房貸 | ' + mnPay.toLocaleString() + ' 元 |\n'
+    + '| 月結餘 | ' + (rem>=0?'+':'') + rem.toLocaleString() + ' 元 |\n'
+    + '| 自備款 | ' + dwWan + ' 萬 |\n\n'
+    + '## 📈 投資分析\n\n'
+    + '| 項目 | 數值 |\n|------|------|\n'
+    + '| 10年增值 | +' + mn10 + ' 萬 |\n'
+    + '| 年化報酬率 | ' + annRate + ' % |\n'
+    + '| 目標總價 | ' + (C.pr>0?Math.round(C.pr/10000)+'萬':'—') + ' |\n\n'
+    + '## 📝 顧問備註\n\n' + clientNote + '\n\n---\n'
+    + '_由 富時代 Asset Planner 自動建檔 · ' + todayISO + '_';
+
+  var payload = {
+    task: 'create_notion_record',
+    data_source_id: _NOTION_DB_SOURCE,
+    properties: {
+      '客戶姓名': nm,
+      '負責顧問': adv || '',
+      '目標物件': prop || '',
+      'date:諮詢日期:start': todayISO,
+      'date:諮詢日期:is_datetime': 0,
+      '購房動機': JSON.stringify(motivesArr),
+      '自備款（萬）': dwWan,
+      '月結餘（元）': rem,
+      '月供房貸（元）': mnPay,
+      '10年增值（萬）': mn10,
+      '年化報酬率（%）': annRate,
+      '簽約狀態': '洽談中'
+    },
+    page_content: pageContent
+  };
+
+  try {
+    var resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        mcp_servers: [{ type: 'url', url: 'https://mcp.notion.com/mcp', name: 'notion-mcp' }],
+        system: 'You are a Notion integration assistant. The user sends JSON with task=create_notion_record. Use notion-create-pages MCP tool to create ONE page in the database data_source_id with the given properties and page_content as page body (markdown). Return ONLY JSON: {"success":true,"url":"<page_url>"} or {"success":false,"error":"<msg>"}. No extra text.',
+        messages: [{ role: 'user', content: JSON.stringify(payload) }]
+      })
+    });
+
+    var data = await resp.json();
+    var resultText = (data.content||[]).map(function(b){ return b.type==='text'?b.text:''; }).join('');
+    var result = {};
+    try { result = JSON.parse(resultText.replace(/```json|```/g,'').trim()); } catch(e){}
+
+    btn.disabled = false;
+    btn.textContent = '📋 存至 Notion';
+
+    if (result && result.success) {
+      showToast('✅ 已存至 Notion！報告建檔成功', 'success', 3000);
+    } else {
+      showToast('⚠️ Notion 建檔失敗：' + (result.error||'請稍後再試'), 'error', 3500);
+    }
+  } catch(e) {
+    btn.disabled = false;
+    btn.textContent = '📋 存至 Notion';
+    showToast('❌ 網路錯誤：' + e.message, 'error', 3000);
+  }
 }
 
 // ══ printPDF 函數 ═══════════════════════════════
