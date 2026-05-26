@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>富時代｜客戶解碼系統 v5.0</title>
+<title>富時代｜客戶解碼系統 v9.0</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -155,6 +155,36 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 .sidebar-item .s-cnt{font-size:10px;color:var(--text-dim);background:var(--surface2);border-radius:8px;padding:1px 6px;flex-shrink:0;}
 .sidebar-item.active .s-cnt{background:var(--olive-dim);color:var(--olive);}
 .sidebar-divider{height:1px;background:var(--border-light);margin:6px 16px;}
+
+/* ── Persona Card Grid ── */
+.persona-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:4px 8px 6px;}
+.persona-card{background:var(--surface2);border:1.5px solid var(--border);border-radius:9px;padding:8px 7px 7px;cursor:pointer;transition:all .15s;text-align:center;position:relative;}
+.persona-card:hover{background:#fff;border-color:var(--olive);box-shadow:0 2px 8px rgba(42,89,52,0.12);}
+.persona-card.active{background:var(--olive-dim);border-color:var(--olive);}
+.persona-card-icon{font-size:20px;line-height:1;margin-bottom:4px;}
+.persona-card-type{font-size:9px;font-weight:700;letter-spacing:.06em;color:var(--olive);margin-bottom:2px;}
+.persona-card-tagline{font-size:10px;color:var(--text-sub);line-height:1.35;margin-bottom:5px;min-height:28px;}
+.persona-card-cnt{display:inline-block;font-size:9px;font-weight:700;color:var(--text-dim);background:var(--surface3);border-radius:6px;padding:1px 6px;}
+.persona-card.active .persona-card-cnt{background:rgba(42,89,52,0.12);color:var(--olive);}
+.persona-type-label{font-size:9px;font-weight:700;letter-spacing:.08em;color:var(--text-dim);text-transform:uppercase;padding:8px 10px 2px;display:flex;align-items:center;gap:4px;}
+.persona-type-label::before{content:'';flex:1;height:1px;background:var(--border-light);}
+
+/* ── 考試院快答卡 ── */
+.exam-chips-wrap{display:flex;flex-wrap:wrap;gap:6px;padding:8px 0 4px;}
+.exam-chip{background:var(--surface);border:1.5px solid var(--border);border-radius:20px;padding:7px 14px;font-size:12px;color:var(--text-sub);cursor:pointer;transition:all .15s;line-height:1.3;}
+.exam-chip:hover{background:var(--olive-dim);border-color:var(--olive);color:var(--olive);}
+.exam-chip:active{transform:scale(0.96);}
+
+/* ── 三選一解碼：連勝條 ── */
+.streak-bar{display:flex;align-items:center;gap:6px;margin-bottom:14px;}
+.streak-dot{width:18px;height:18px;border-radius:50%;background:var(--surface3);border:1.5px solid var(--border);transition:all .3s;display:flex;align-items:center;justify-content:center;font-size:10px;}
+.streak-dot.hit{background:var(--olive);border-color:var(--olive);color:#fff;}
+.streak-dot.miss{background:#c0392b;border-color:#c0392b;color:#fff;}
+.streak-label{font-size:10px;font-weight:700;color:var(--text-dim);margin-left:auto;}
+.streak-label.fire{color:#e67e22;}
+.quick-tags{display:flex;flex-wrap:wrap;gap:4px;padding:4px 8px 8px;}
+.quick-tag{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:3px 9px;font-size:10px;color:var(--text-sub);cursor:pointer;transition:all .12s;white-space:nowrap;}
+.quick-tag:hover{background:var(--olive-dim);border-color:var(--olive);color:var(--olive);}
 
 /* main */
 .main{margin-left:var(--sidebar-w);flex:1;padding:24px 28px 48px;min-width:0;}
@@ -661,6 +691,16 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
     <div class="sidebar-item active" id="nav-overview" onclick="showOverview();autoCloseSidebar()">
       <span class="s-icon">🏠</span><span class="s-name">總覽</span>
     </div>
+    <div class="sidebar-item" id="nav-onboarding" onclick="showOnboarding();autoCloseSidebar()">
+      <span class="s-icon">🚀</span><span class="s-name">新人30天路徑</span><span class="s-cnt" style="background:rgba(192,57,43,0.1);color:#c0392b;font-weight:700">NEW</span>
+    </div>
+    <div class="sidebar-item" id="nav-journal" onclick="openJournal();autoCloseSidebar()">
+      <span class="s-icon">📓</span><span class="s-name">成功日記</span>
+    </div>
+
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-label" style="padding-bottom:6px">🔍 快搜</div>
+    <div class="quick-tags" id="quickTags"></div>
 
     <div class="sidebar-divider"></div>
     <div class="sidebar-label">👁️ 從客戶進入</div>
@@ -676,6 +716,33 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- ══ 成功日記 Modal ══ -->
+<div id="journal-modal" style="display:none;position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);overflow-y:auto;padding:0">
+  <div id="journal-inner" style="min-height:100%;display:flex;flex-direction:column;background:#F7F4EE;max-width:480px;margin:0 auto;position:relative">
+
+    <!-- Header -->
+    <div style="background:#fff;padding:20px 20px 0;border-bottom:1px solid #E8E0D0;position:sticky;top:0;z-index:10">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div>
+          <div style="font-size:9px;font-weight:700;letter-spacing:.2em;color:#B8943C;margin-bottom:2px">富時代 · RICH TIMES</div>
+          <div style="font-family:'Noto Serif TC',serif;font-size:22px;font-weight:700;color:#111318">成功<span style="color:#B8943C">日記</span></div>
+          <div style="font-size:10px;color:#9A8B7A;margin-top:2px">每天至少五件成果 · 過於自信勝於不夠自信</div>
+        </div>
+        <button onclick="closeJournal()" style="background:none;border:none;font-size:22px;color:#9A8B7A;cursor:pointer;padding:4px;line-height:1">✕</button>
+      </div>
+      <!-- Tab -->
+      <div style="display:flex;gap:0;border-bottom:2px solid #E8E0D0;margin:0 -20px;padding:0 20px">
+        <button id="jtab-today" onclick="showJournalTab('today')" style="background:none;border:none;border-bottom:2.5px solid #B8943C;margin-bottom:-2px;padding:8px 16px;font-size:13px;font-weight:700;color:#B8943C;cursor:pointer;font-family:inherit">今日記錄</button>
+        <button id="jtab-history" onclick="showJournalTab('history')" style="background:none;border:none;border-bottom:2.5px solid transparent;margin-bottom:-2px;padding:8px 16px;font-size:13px;color:#9A8B7A;cursor:pointer;font-family:inherit">歷史日記</button>
+        <button id="jtab-stats" onclick="showJournalTab('stats')" style="background:none;border:none;border-bottom:2.5px solid transparent;margin-bottom:-2px;padding:8px 16px;font-size:13px;color:#9A8B7A;cursor:pointer;font-family:inherit">統計概覽</button>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div id="journal-content" style="flex:1;padding:20px"></div>
+  </div>
+</div>
 
 <script>
 const SCRIPTS = [
@@ -4143,6 +4210,94 @@ const SCRIPTS = [
     "title": "行程擋不住的邀約：價值大過出去玩",
     "content": "Sara的台中客戶真實案例：客戶全家要從台中去高雄旅遊三天，最後被Sara邀到當天早上9點先坐高鐵從台中到桃園，談到中午，再下去高雄與家人會合。\n\n核心邏輯：不是時間問題，是價值問題。只要客戶覺得「不來會損失什麼」，他就會來。\n\n話術模板（出國/旅遊版）：「你去大陸這一趟要花錢又花時間，回來問題一樣沒解決。如果在你出發之前，我們先把這個錢的方向確定好，讓錢幫你在你出國的時候繼續賺，你去那邊學技術是不是也更安心？」\n\n行動邀約的關鍵句：「不是要你配合我，是因為這件事情對你有利，所以我才這樣約你。你禮拜幾幾點的時間可以空出來？」\n\n心理設定：客戶今天在基隆玩沒玩到，損失的是半天。但你這邊談成，他可以去九州玩都沒問題。讓他算清楚這個交換值不值得。",
     "note": "20260522下午銷售溝通培訓"
+  },
+  {
+    "id": "S410",
+    "category": "二部曲｜建立信任",
+    "situation": "與客戶第一次或初期接觸，需要建立真正的對話基礎",
+    "trigger": "（自我提醒）要怎麼讓客戶願意開口說話",
+    "title": "成功談話四原則：讓對方願意暢談",
+    "content": "智偉哥補充的成功談話基礎原則：\n\n1. 誠實：輕鬆說話在任何場合都不會出錯，不需要包裝，直接說。\n\n2. 正確的態度：坦白的意願比說話技巧更重要。有意願讓對方了解你，對話才能繼續。\n\n3. 對談話對象感興趣：不是假裝有興趣，是真的尊重他說的每一件事。對方感受得到——你在聽，還是在等他說完。\n\n4. 開放自己：想讓對方坦誠，自己要先坦誠。你說了一件真實的事，他才有空間說他的事。\n\n應用話術：「我不是來介紹房子的，我想先聽一下你現在的狀況，這樣我才知道什麼對你最有幫助。」\n\n記住：對話的目的不是說服，是讓對方說出他真正在意的事。",
+    "persona": null,
+    "level": "Core",
+    "note": "20260526早會｜成功談話基本原則"
+  },
+  {
+    "id": "S411",
+    "category": "三部曲｜需求與痛點",
+    "situation": "想深挖客戶真正動機，但客戶只給表面答案",
+    "trigger": "客戶說了一個理由，你覺得不是真正原因",
+    "title": "深挖提問三層次：找到隱藏計畫",
+    "content": "客戶給的第一個答案通常是「社交答案」，不是真正動機。要一層一層往下挖：\n\n第一層：問事實「為什麼選這個區域？」\n→ 他給一個表面理由（近公司、近學校）\n\n第二層：問動機「是機會吸引你，還是有情感連結？」\n→ 讓他區分理性和情感，他會更誠實\n\n第三層：揭露隱藏計畫「你說近學區，是因為你打算讓孩子讀那裡嗎？還是有其他打算？」\n→ 這一層才會出現他沒打算說的計畫（轉介紹用途、父母要住、未來賣掉的打算）\n\n核心原則：不要停在表面答案就開始介紹。客戶真正的動機出來了，你才知道要說什麼、不說什麼。\n\n延伸應用：深挖完馬上確認「所以你最在意的其實是___，對嗎？」讓他自己說yes，後面就不用你說了。",
+    "persona": null,
+    "level": "Top",
+    "note": "20260526早會｜深挖提問三層次"
+  },
+  {
+    "id": "S412",
+    "category": "五部曲｜異議處理",
+    "situation": "客戶帶了家人來看房，帶的那個人說有興趣的物件已售出，直接告知客戶不用來",
+    "trigger": "你說的那個物件已經賣掉了，沒必要來了",
+    "title": "玉如案例：別過早拒絕客戶，先問動機",
+    "content": "真實案例：妹妹帶姊姊來看房，業務直接告知優惠物件已售出，客戶就沒來了。\n\n錯誤：過早拒絕，沒有先了解來的真正動機。\n\n正確做法：先問「你當初對這個物件有興趣，是因為優惠，還是物件本身讓你有感？」\n\n這一問可能打開的劇本：\n① 如果是要優惠 → 我們還有其他優惠物件\n② 如果是物件本身 → 可以找類似條件的物件\n③ 可能的隱藏劇本：妹妹想幫姊姊找房，需求跟你想的不一樣，得重新了解\n\n原則：客戶說「那個沒了」不等於「我不想買了」。沒問動機就放棄，等於自己關掉一扇門。\n\n話術：「那個物件是沒了，但我想先了解一下，你當時對它哪裡有感？這樣我才知道要不要再幫你找找看。」",
+    "persona": "問問族-03",
+    "level": "Core",
+    "note": "20260526早會｜玉如客戶案例討論"
+  },
+  {
+    "id": "S413",
+    "category": "一部曲｜開發名單",
+    "situation": "剛讓客戶感受到價值，想要趁機要轉介紹",
+    "trigger": "（自我提醒）客戶剛感受到價值，但還沒開口要轉介紹",
+    "title": "轉介紹黃金時機：剛感受到價值的當下",
+    "content": "轉介紹最佳時機只有一個：客戶剛感受到你帶給他的價值的那一刻。\n\n例如：\n- 幫他算出一個數字讓他很震驚\n- 幫他解開一個他想很久的問題\n- 他說「哇，這樣想原來不一樣」的瞬間\n\n這個時候切入：「你身邊有沒有朋友也有類似的狀況？像你這樣的條件其實很多人都有，但他們不知道可以這樣操作。」\n\n不要說：「你可以幫我介紹朋友嗎？」——這是在要求。\n要說：「你剛才有感的這個邏輯，你覺得你身邊有哪個朋友如果聽到也會有感？」——這是讓他自己說出名字。\n\n他說出名字之後立刻：「那我們來想一下，怎麼讓他願意聽這件事……」——進入轉介紹設計。\n\n時機錯了，轉介紹成功率掉到個位數。時機對了，他甚至會主動幫你鋪路。",
+    "persona": null,
+    "level": "Top",
+    "note": "20260526早會｜轉介紹最佳時機"
+  },
+  {
+    "id": "S414",
+    "category": "二部曲｜建立信任",
+    "situation": "與客戶溝通時，對方有情緒或感覺被批評，導致防衛",
+    "trigger": "你說什麼他都覺得是在批評他，或者對方有情緒反應",
+    "title": "非暴力溝通四步驟：觀察→感受→需要→請求",
+    "content": "非暴力溝通是讓對方不覺得被攻擊的說話框架，適用於：客戶有防衛心、家人反對時溝通、team內部衝突。\n\n四步驟：\n\n1. 觀察（說事實，不加評價）\n「我看到你今天對幾個數字都停頓了一下」\n——不是「你一直在懷疑我」\n\n2. 感受（說自己的感受，不是評價對方）\n「我有點擔心」\n——不是「你讓我很挫折」\n\n3. 需要（說清楚自己的需要）\n「因為我希望你能做出對你真正有利的判斷」\n——讓對方理解你的出發點\n\n4. 請求（具體請求，讓對方有選擇）\n「你能不能告訴我，你在意的那個點是什麼？」\n——不是命令，是邀請\n\n應用在客戶身上：把「你不了解房地產」改成「我看到你對這個數字有些疑慮，我自己也覺得第一次看到會這樣，你最主要擔心的是哪一塊？」",
+    "persona": null,
+    "level": "Core",
+    "note": "20260526早會｜非暴力溝通四步驟"
+  },
+  {
+    "id": "S415",
+    "category": "五部曲｜異議處理",
+    "situation": "客戶說自己用自有資金買房才有安全感，但實際上資金大部分來自信貸",
+    "trigger": "我都是用自己的錢，這樣才安全",
+    "title": "速龍案例：安全感是感覺的還是算出來的",
+    "content": "客戶說用自己的錢買才有安全感，但信貸明細顯示當初板橋自備款大部分是信貸來的。\n\n破解話術（溫和版）：「你說當初買板橋是用自己的錢才有安全感，那我好奇一下，你之前借的信貸有一百多萬，這些錢拿去做了什麼？買股票、保險、還有板橋的裝潢——請問這些算是你自己的錢嗎？」\n\n讓他自己說出矛盾：不要直接批評，要讓他自己說「聽起來好像不成立」。\n\n核心邏輯：「你現在的安全感不是數字上的安全感，是感覺上的。安全感應該是算出來的，不是感覺出來的。」\n\n接著算數字：幫他把板橋房子增值部分（銀行多估140萬）、月付能力、萬一房子沒賣的保障全部列出來——讓他看到「數字安全感」，而不是停在「感覺安全感」。\n\n驗證建議：如果對方說「當初買板橋是買低於市價」，先去查實價登錄確認是否屬實，避免被話術框住。",
+    "persona": "股票族-02",
+    "level": "Top",
+    "note": "20260526早會｜速龍案例討論"
+  },
+  {
+    "id": "S416",
+    "category": "五部曲｜異議處理",
+    "situation": "子女在北部工作，媽媽在南部，錢在媽媽手上，媽媽對預售屋沒安全感",
+    "trigger": "我媽媽不放心，而且她說不如等我回台南再買",
+    "title": "媽媽在南部族：從媽媽的角色感切入",
+    "content": "這是特殊版的問媽媽族：子女在北部工作，但自備款需要媽媽出，媽媽對預售屋有疑慮，且認為「回台南買比較便宜」。\n\n不要排除媽媽，要從媽媽的角度進攻。\n\n三個切入點：\n\n1. 解除預售屋疑慮：「媽媽對預售屋不放心的原因是什麼？現在的預售屋有起造人信託保障，我可以把保障機制說明給媽媽聽。」——先了解媽媽的疑慮是什麼，才能針對性破解。\n\n2. 回台南住的成本算法：「如果你們現在不買，等幾年後才回台南，這幾年的租金要付多少？媽媽希望你一直幫別人的房東養房子嗎？讓媽媽自己算這筆帳。」\n\n3. 媽媽的角色感：「媽媽出這筆錢，是讓孩子在北部有個家，不用一直租房，等孩子退休後可以選擇留下或賣掉再回南部——那時候房子增值的錢也回來了。媽媽是在幫孩子佈局，不是在損失。」\n\n判斷何時排除媽媽：如果子女自己有錢、有條件，媽媽只是「精神反對」不是出錢方，才考慮繞過媽媽。但如果錢真的在媽媽手上，媽媽是 Keyman，一定要正面處理。",
+    "persona": "問媽媽族-02",
+    "level": "Core",
+    "note": "20260526早會｜媽媽在南部族案例討論"
+  },
+  {
+    "id": "S417",
+    "category": "跨部曲｜心法",
+    "situation": "業務一直約人去研討會但成效不好，覺得研討會沒用",
+    "trigger": "我有約人去研討會啊，就是沒用啊",
+    "title": "素蓉教訓：方法不改，期待結果改變，是神經病",
+    "content": "志偉哥原話：「你說研討會沒用，那我做了十幾年、做到50億總價，你告訴我是怎麼做到的？沒用的話，大家為什麼還跟著我？」\n\n問題不在研討會，在你的SOP沒進化：\n① 約人之前，有沒有了解他來的動機是什麼？\n② 研討會結束後，有沒有做PDCA——哪些做對了，哪些要修正？\n③ 下次再遇到類似的人，你的做法是一樣的嗎？\n\n正確的檢視問題：「上次這個人為什麼沒有後續？是因為我邀約時沒有先了解他的痛點？還是研討會後沒有追蹤？」找到那個細節，修正，下次做對。\n\n給自己的問題：「如果再給我一次機會，回到原點，我會怎麼開始？」從這裡找自己的進化點。\n\n核心原則：廣發訊息是一個技能，但廣發之後的前置了解、現場HOLD場、事後追蹤才是決定成交率的關鍵。活動是死的，人是活的。",
+    "persona": null,
+    "level": "Top",
+    "note": "20260526早會｜素蓉案例討論"
   }
 ];
 const MODULES = [{"no":0,"name":"話術系統地圖","icon":"🗺️","desc":"共通框架：觸發句→目的→推進","cats":["銷售心態"],"label":"跨部曲｜心法"},{"no":1,"name":"信任與開場","icon":"🤝","desc":"讓客戶對你這個人有感","cats":["信任建立"],"label":"一部曲｜開發名單"},{"no":2,"name":"開發與接觸","icon":"🎯","desc":"找到對的人、打開對話","cats":["開發策略"],"label":"二部曲｜建立信任"},{"no":3,"name":"提問式銷售","icon":"💬","desc":"讓客戶自己說出你要的答案","cats":["提問式銷售"],"label":"三部曲｜需求與痛點"},{"no":4,"name":"銷售流程控制","icon":"🔄","desc":"每一步都要有劇本","cats":["銷售流程"],"label":"四部曲｜物件配對"},{"no":5,"name":"異議處理","icon":"🛡️","desc":"客戶說的不等於真正的卡關點","cats":["異議處理"],"label":"五部曲｜異議處理"},{"no":6,"name":"追蹤與破冰","icon":"📡","desc":"沒有明確說不就是還在考慮","cats":["追蹤技巧"],"label":"六部曲｜締結成交"},{"no":7,"name":"締結成交","icon":"✍️","desc":"確認式推進，把下一步定死","cats":["締結成交","轉介紹策略"],"label":"七部曲｜售後服務"},{"no":8,"name":"市場知識武裝","icon":"📊","desc":"數字武器庫","cats":["市場知識","投資心理","真實案例","產品介紹"],"label":"八部曲｜進階技巧"}];
@@ -4815,6 +4970,592 @@ ${scriptSummary}
   }
 }
 
+// ══════════════════════════════════════
+// 🎯 考試院大廳 — 四種練法
+// ══════════════════════════════════════
+
+function showExamLobby(personaId) {
+  requireApiKey(() => _showExamLobby(personaId));
+}
+
+function _showExamLobby(personaId) {
+  const p = PERSONAS.find(x => x.id === personaId);
+  if (!p) return;
+  const diffColor = p.difficulty==='新手場' ? 'var(--olive)' : p.difficulty==='進階場' ? 'var(--gold)' : '#c0392b';
+  const diffBg    = p.difficulty==='新手場' ? 'rgba(42,89,52,0.08)' : p.difficulty==='進階場' ? 'rgba(184,148,60,0.1)' : 'rgba(192,57,43,0.07)';
+
+  const MODES = [
+    {
+      id: 'gauntlet',
+      icon: '⚔️',
+      name: '闖關模式',
+      tag: '單人',
+      tagColor: 'var(--olive)',
+      desc: '3 回合定生死\nAI 扮客戶，你來應對\n結束後 S / A / B / C 評級',
+      cta: '開始闖關',
+      fn: `startExamGauntlet('${personaId}')`,
+    },
+    {
+      id: 'guess',
+      icon: '🔍',
+      name: '盲猜客戶型',
+      tag: '快 · 不打字',
+      tagColor: '#7c5cbf',
+      desc: '只給你一句話\n猜是哪種族群\n猜對才解鎖應對話術',
+      cta: '開始盲猜',
+      fn: `startGuessMode()`,
+    },
+    {
+      id: 'branch',
+      icon: '🌿',
+      name: '情境分支選擇',
+      tag: '互動',
+      tagColor: '#2980b9',
+      desc: 'AI 開場一句話\n你選 A / B / C 應對\n選錯劇情變難，選對軟化',
+      cta: '進入分支',
+      fn: `startBranchMode('${personaId}')`,
+    },
+    {
+      id: 'projector',
+      icon: '📡',
+      name: '早會投影模式',
+      tag: '多人',
+      tagColor: '#c0392b',
+      desc: 'AI 顯示客戶一句話\n全員搶答 · 大字版\n最適合投到大螢幕',
+      cta: '開啟投影',
+      fn: `startProjectorMode('${personaId}')`,
+    },
+  ];
+
+  const modeCards = MODES.map(m => `
+    <div onclick="${m.fn}" style="background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:18px 16px;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;gap:6px"
+      onmouseover="this.style.borderColor='var(--olive)';this.style.boxShadow='0 2px 12px rgba(42,89,52,0.12)'"
+      onmouseout="this.style.borderColor='var(--border)';this.style.boxShadow=''">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+        <span style="font-size:26px">${m.icon}</span>
+        <span style="font-size:9px;font-weight:700;letter-spacing:.06em;color:${m.tagColor};background:${m.tagColor}1a;border-radius:10px;padding:2px 8px">${m.tag}</span>
+      </div>
+      <div style="font-size:14px;font-weight:700;color:var(--text)">${m.name}</div>
+      <div style="font-size:11px;color:var(--text-sub);line-height:1.7;white-space:pre-line">${m.desc}</div>
+      <div style="margin-top:6px;background:var(--olive);color:#fff;border-radius:8px;padding:9px;font-size:12px;font-weight:700;text-align:center">${m.cta} →</div>
+    </div>
+  `).join('');
+
+  renderMain(`
+    <button class="back-btn" onclick="showPersona('${personaId}')">← 返回客戶卡</button>
+    <div class="view-eyebrow">🎯 考試院大廳</div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
+      <span style="font-size:22px">${p.icon}</span>
+      <div>
+        <div style="font-size:15px;font-weight:700;color:var(--text)">${p.name}</div>
+        <div style="display:inline-block;background:${diffBg};border-radius:10px;padding:2px 10px;font-size:10px;font-weight:700;color:${diffColor};margin-top:3px">${p.difficulty||'進階場'}</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      ${modeCards}
+    </div>
+  `);
+}
+
+// ──────────────────────────────────────
+// 模式一：闖關模式（3 回合 → S/A/B/C 評級）
+// ──────────────────────────────────────
+function startExamGauntlet(personaId) {
+  const p = PERSONAS.find(x => x.id === personaId);
+  if (!p) return;
+  examState = { personaId, messages: [], score: null, active: true, persona: p, mode: 'gauntlet', round: 0 };
+  _renderGauntletUI(p);
+}
+
+function _renderGauntletUI(p) {
+  const EXAM_CHIPS = {
+    '問問族':['先問狀況','讓他說','驗證 Keyman','問最大卡點'],
+    '格局族':['先盤資產','問現金流','不急著推','確認哪關沒解'],
+    '自住安全感族':['問住的狀況','問學區需求','讓他描述格局','不先談數字'],
+    '投資族':['問現有配置','問報酬期待','算槓桿','讓他說比例'],
+    '高收入族':['同等級語言','不解釋只問','讓他主導','問天花板'],
+    '風險族':['承認風險','問他最怕什麼','給數據不保證','讓他說接受度'],
+    '退訂邊緣族':['不談成交','問當初理由','讓他說卡點','接住情緒'],
+    '股票族':['不說房比股好','讓他說比例','問看盤感受','算槓桿倍數'],
+    '問媽媽族':['讚媽媽眼光','邀媽媽把關','讓子女說需求','不繞過媽媽'],
+    '無殼族':['盤所有資源','不說買得起','讓他算缺口','先成交小步驟'],
+    '合資族':['確認三角色','不跳過任何人','讓出錢的表態','問最終決定者'],
+    '價格族':['不比優惠','問他覺得值多少','讓他說邏輯','轉移到報酬'],
+  };
+  const chips = (EXAM_CHIPS[p.type]||['聽他說','問感受','不推銷','驗證卡點'])
+    .map(c=>`<div class="exam-chip" onclick="sendExamChip('${c.replace(/'/g,"\\'")}')">💬 ${c}</div>`).join('');
+
+  renderMain(`
+    <button class="back-btn" onclick="showExamLobby('${p.id}')">← 返回大廳</button>
+    <div class="view-eyebrow">⚔️ 闖關模式 · 3 回合定生死</div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+      <span style="font-size:20px">${p.icon}</span>
+      <div style="font-size:15px;font-weight:700;color:var(--text)">${p.name}</div>
+    </div>
+    <div style="display:flex;gap:6px;margin-bottom:14px" id="gauntlet-rounds">
+      <div style="flex:1;background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;padding:8px;text-align:center;font-size:11px;color:var(--text-dim)">回合 1</div>
+      <div style="flex:1;background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;padding:8px;text-align:center;font-size:11px;color:var(--text-dim)">回合 2</div>
+      <div style="flex:1;background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;padding:8px;text-align:center;font-size:11px;color:var(--text-dim)">回合 3</div>
+    </div>
+    <div id="exam-chat" style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;min-height:220px;max-height:320px;overflow-y:auto;padding:14px;margin-bottom:10px;display:flex;flex-direction:column;gap:10px">
+      <div style="background:rgba(61,90,64,0.08);border-radius:8px;padding:10px 12px;font-size:13px;color:var(--text-dim);text-align:center">
+        AI 變身「${p.name}」中，3 回合後 AI 給 S/A/B/C 評級
+      </div>
+    </div>
+    <div style="margin-bottom:6px">
+      <div style="font-size:9px;font-weight:700;letter-spacing:.1em;color:var(--text-dim);margin-bottom:4px">⚡ 快答</div>
+      <div class="exam-chips-wrap">${chips}</div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <textarea id="exam-input" placeholder="或自己打…" style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--text);font-family:inherit;resize:none;height:44px;outline:none" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendExamMsg()}"></textarea>
+      <button onclick="sendExamMsg()" style="background:var(--olive);color:#fff;border:none;border-radius:10px;padding:10px 14px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">送出</button>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button onclick="endExamGauntlet()" style="flex:1;background:rgba(184,148,60,0.12);color:var(--gold);border:1px solid rgba(184,148,60,0.3);border-radius:8px;padding:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">🏁 結束 · 拿評級</button>
+    </div>
+  `);
+  initExam(p);
+}
+
+async function endExamGauntlet() {
+  if (!examState.active) return;
+  examState.active = false;
+  const p = examState.persona;
+  addExamMessage('system', '⏹ AI 正在給評級…', '系統');
+
+  const scorePrompt = `你剛才扮演「${p.name}」客戶。現在切換成教練，給業務一個評級。
+
+評級標準：
+S（90+）完全沒踩陷阱，問句讓我自己說出結論，我明顯軟化
+A（75-89）偶爾踩小陷阱，但整體方向對，有讓我鬆動
+B（60-74）有幾個明顯失誤，或沒有讓我說出結論
+C（60以下）踩了主要陷阱（${p.trap}），或一直在介紹而不是問問題
+
+輸出格式：
+【評級】S / A / B / C
+
+【一句話】（用15字以內說這場犯了什麼或做對了什麼）
+
+【做對的】（引用對話中一個具體句子）
+
+【下次改】（引用對話中一個問題句，說明怎麼改）
+
+【補強話術主題】→ 主題：XXX（1-2個）`;
+
+  const reply = await callExamAPI(scorePrompt, examState.messages, '');
+  addExamMessage('score', reply, '教練評級');
+
+  // 解析評級顯示
+  setTimeout(() => {
+    const gradeMatch = reply.match(/【評級】\s*([SABC])/);
+    if (!gradeMatch) return;
+    const grade = gradeMatch[1];
+    const gradeColor = grade==='S'?'#e67e22':grade==='A'?'var(--olive)':grade==='B'?'var(--gold)':'#c0392b';
+    const chat = document.getElementById('exam-chat');
+    if (!chat) return;
+    const badge = document.createElement('div');
+    badge.style.cssText = `text-align:center;padding:20px;background:${gradeColor}18;border:2px solid ${gradeColor};border-radius:14px;margin-top:4px`;
+    badge.innerHTML = `<div style="font-size:52px;font-weight:900;color:${gradeColor};font-family:'Noto Serif TC',serif">${grade}</div><div style="font-size:13px;font-weight:700;color:var(--text);margin-top:4px">評級</div><button onclick="showExamLobby('${p.id}')" style="margin-top:14px;background:var(--olive);color:#fff;border:none;border-radius:8px;padding:9px 20px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">再挑一種練法</button>`;
+    chat.appendChild(badge);
+    chat.scrollTop = chat.scrollHeight;
+
+    // XP
+    if (typeof growthAddPts === 'function' && libCurrentUser) {
+      const pts = grade==='S'?20:grade==='A'?12:grade==='B'?7:3;
+      growthAddPts(pts, `闖關模式 ${grade} 評級`);
+    }
+  }, 400);
+}
+
+// ──────────────────────────────────────
+// 模式二：盲猜客戶型
+// ──────────────────────────────────────
+let guessState = { pool: [], current: 0, score: 0 };
+
+function startGuessMode() {
+  // 從 PERSONAS 抽 8 題，每題只給一句話，猜 type
+  const shuffled = shuffleArray([...PERSONAS]).slice(0, 8);
+  guessState = { pool: shuffled, current: 0, score: 0 };
+  renderGuessQuestion();
+}
+
+function renderGuessQuestion() {
+  const { pool, current, score } = guessState;
+  if (current >= pool.length) { return renderGuessResult(); }
+  const p = pool[current];
+  // 選項：正確 type + 3 個隨機 type
+  const allTypes = [...new Set(PERSONAS.map(x=>x.type))];
+  const wrong = shuffleArray(allTypes.filter(t=>t!==p.type)).slice(0,3);
+  const opts = shuffleArray([p.type, ...wrong]);
+  const dotHTML = pool.map((_,i)=>`<div class="streak-dot ${i<current?(guessState.hits&&guessState.hits[i]?'hit':'miss'):''}${i===current?'" style="border-color:var(--olive)':''}">${i<current?(guessState.hits&&guessState.hits[i]?'✓':'✗'):''}</div>`).join('');
+
+  renderMain(`
+    <button class="back-btn" onclick="startGuessMode()">↺ 重新開始</button>
+    <div class="view-eyebrow">🔍 盲猜客戶型 · 第 ${current+1} / ${pool.length} 題</div>
+    <div class="streak-bar" style="margin-bottom:14px">${dotHTML}<span class="streak-label">答對 ${score}</span></div>
+
+    <div style="background:linear-gradient(135deg,rgba(42,89,52,0.08),rgba(184,148,60,0.05));border:2px solid rgba(42,89,52,0.2);border-radius:14px;padding:20px;margin-bottom:20px;text-align:center">
+      <div style="font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--text-dim);margin-bottom:10px">客戶說了這句話 ↓</div>
+      <div style="font-size:16px;font-weight:700;color:var(--text);line-height:1.6;font-family:'Noto Serif TC',serif">「${esc(p.surface)}」</div>
+    </div>
+
+    <div style="font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--text-dim);margin-bottom:10px">這是哪種客戶？</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px" id="guess-opts">
+      ${opts.map(t=>`
+        <div onclick="answerGuess('${t}','${p.type}','${p.id}')"
+          style="background:#fff;border:1.5px solid var(--border);border-radius:10px;padding:14px 12px;cursor:pointer;font-size:13px;font-weight:700;color:var(--text);text-align:center;transition:all .12s"
+          onmouseover="this.style.borderColor='var(--olive)';this.style.background='var(--olive-dim)'"
+          onmouseout="this.style.borderColor='var(--border)';this.style.background='#fff'">
+          ${t}
+        </div>`).join('')}
+    </div>
+    <div id="guess-feedback" style="display:none;margin-top:14px"></div>
+  `);
+}
+
+function answerGuess(chosen, correct, personaId) {
+  const hit = chosen === correct;
+  if (!guessState.hits) guessState.hits = [];
+  guessState.hits.push(hit);
+  if (hit) guessState.score++;
+
+  // 鎖定選項
+  document.querySelectorAll('#guess-opts > div').forEach(el => {
+    el.onclick = null;
+    el.onmouseover = null;
+    el.onmouseout = null;
+    const t = el.textContent.trim();
+    if (t === correct) { el.style.cssText += ';background:rgba(39,174,96,0.1);border-color:#27ae60;color:#1e8449'; }
+    else if (t === chosen && !hit) { el.style.cssText += ';background:rgba(192,57,43,0.07);border-color:#c0392b;color:#c0392b'; }
+  });
+
+  // 找到正確 persona 顯示解析
+  const p = PERSONAS.find(x=>x.id===personaId);
+  const fb = document.getElementById('guess-feedback');
+  if (fb) {
+    fb.style.display = 'block';
+    fb.innerHTML = `
+      <div style="background:${hit?'rgba(39,174,96,0.07)':'rgba(192,57,43,0.05)'};border:1px solid ${hit?'#27ae60':'#c0392b'};border-radius:12px;padding:14px;margin-bottom:10px">
+        <div style="font-size:12px;font-weight:700;color:${hit?'#1e8449':'#c0392b'};margin-bottom:6px">${hit?'✅ 猜對了！':'❌ 猜錯了，這是 '+correct}</div>
+        <div style="font-size:11px;color:var(--text-sub);line-height:1.6">心裡真正在說：「${esc(p?p.real:'')}」</div>
+      </div>
+      <button onclick="guessNext()" style="width:100%;background:var(--olive);color:#fff;border:none;border-radius:10px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">${guessState.current+1 < guessState.pool.length ? '下一題 →' : '看成績 →'}</button>
+    `;
+  }
+}
+
+function guessNext() {
+  guessState.current++;
+  renderGuessQuestion();
+}
+
+function renderGuessResult() {
+  const { pool, score } = guessState;
+  const pct = Math.round(score/pool.length*100);
+  renderMain(`
+    <div class="view-eyebrow">🔍 盲猜客戶型 · 結果</div>
+    <div style="text-align:center;padding:32px 0 20px">
+      <div class="quiz-score">${score}/${pool.length}</div>
+      <div style="font-size:16px;color:var(--text);margin:8px 0">${pct>=80?'🏆 客戶讀心術解鎖！':pct>=60?'💪 眼力不錯，繼續練':'🌱 多看 persona 卡再來挑戰'}</div>
+      <div style="font-size:12px;color:var(--text-sub)">辨識率 ${pct}%</div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:center">
+      <button onclick="startGuessMode()" style="background:var(--olive);color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">🔄 再猜一輪</button>
+    </div>
+  `);
+  if (typeof growthAddPts==='function'&&libCurrentUser) growthAddPts(Math.round(score*2), '盲猜客戶型');
+}
+
+// ──────────────────────────────────────
+// 模式三：情境分支選擇（AI 根據你的選擇決定劇情）
+// ──────────────────────────────────────
+let branchState = { personaId: null, messages: [], round: 0, maxRound: 5, good: 0, bad: 0 };
+
+function startBranchMode(personaId) {
+  requireApiKey(() => _startBranchMode(personaId));
+}
+
+async function _startBranchMode(personaId) {
+  const p = PERSONAS.find(x=>x.id===personaId);
+  if (!p) return;
+  branchState = { personaId, persona: p, messages: [], round: 0, maxRound: 5, good: 0, bad: 0 };
+
+  renderMain(`
+    <button class="back-btn" onclick="showExamLobby('${personaId}')">← 返回大廳</button>
+    <div class="view-eyebrow">🌿 情境分支 · 你的選擇決定結果</div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+      <span style="font-size:20px">${p.icon}</span>
+      <div style="font-size:14px;font-weight:700;color:var(--text)">${p.name}</div>
+    </div>
+    <div id="branch-progress" style="display:flex;gap:4px;margin-bottom:16px">
+      ${Array.from({length:5},(_,i)=>`<div id="bp-${i}" style="flex:1;height:6px;border-radius:4px;background:var(--surface3);border:1px solid var(--border)"></div>`).join('')}
+    </div>
+    <div id="branch-content" style="min-height:200px">
+      <div style="text-align:center;padding:40px 0;color:var(--text-dim);font-size:13px">AI 正在準備第一幕…</div>
+    </div>
+  `);
+
+  await _nextBranchRound('（對話開始，你說出你的開場白，1-2句）');
+}
+
+async function _nextBranchRound(userChoice) {
+  const p = branchState.persona;
+  if (branchState.round >= branchState.maxRound) {
+    return _renderBranchResult();
+  }
+
+  branchState.messages.push({ role: 'user', content: userChoice });
+
+  const systemPrompt = `你是「${p.name}」客戶（${p.type}）。
+心裡在想：${p.real}
+表面說法：${p.surface}
+容易踩的陷阱：${p.trap}
+需要感受到才鬆口：${p.need}
+
+這是一個情境分支練習。根據業務說的話：
+1. 用1-2句繁體中文口語回應（維持角色）
+2. 然後給出3個業務可選的下一步（A/B/C），其中只有1個是正確方向
+3. 格式必須嚴格如下（純文字，不用markdown）：
+
+【客戶說】（你的回應1-2句）
+
+A｜（業務選項描述，15字內）
+B｜（業務選項描述，15字內）
+C｜（業務選項描述，15字內）
+正確：（A 或 B 或 C）`;
+
+  const content = `<div style="text-align:center;padding:20px;color:var(--text-dim)">AI 思考中…</div>`;
+  document.getElementById('branch-content').innerHTML = content;
+
+  let reply = '';
+  try {
+    reply = await callAnthropicAPI(systemPrompt, branchState.messages, 400);
+  } catch(e) { reply = '連線失敗'; }
+
+  branchState.messages.push({ role: 'assistant', content: reply });
+
+  // 解析回應
+  const clientMatch = reply.match(/【客戶說】\s*([\s\S]*?)(?=\nA｜|\nA\|)/);
+  const clientSays = clientMatch ? clientMatch[1].trim() : reply.split('\n')[0];
+  const opts = ['A','B','C'].map(l => {
+    const m = reply.match(new RegExp(`${l}[｜|]\\s*(.+)`));
+    return m ? m[1].trim() : '';
+  });
+  const correctMatch = reply.match(/正確[：:]\s*([ABC])/);
+  const correctLetter = correctMatch ? correctMatch[1] : 'A';
+
+  // 更新進度條
+  for (let i=0;i<branchState.maxRound;i++) {
+    const el = document.getElementById('bp-'+i);
+    if (el) el.style.background = i < branchState.round ? (branchState.roundResults&&branchState.roundResults[i] ? 'var(--olive)' : '#c0392b') : i===branchState.round ? 'rgba(184,148,60,0.5)' : 'var(--surface3)';
+  }
+
+  const optHTML = ['A','B','C'].map((l,i) => opts[i] ? `
+    <div onclick="chooseBranch('${l}','${correctLetter}')"
+      style="background:#fff;border:1.5px solid var(--border);border-radius:10px;padding:13px 14px;cursor:pointer;display:flex;gap:10px;align-items:flex-start;transition:all .12s"
+      onmouseover="this.style.borderColor='var(--olive)';this.style.background='var(--olive-dim)'"
+      onmouseout="this.style.borderColor='var(--border)';this.style.background='#fff'">
+      <span style="font-size:12px;font-weight:900;color:var(--olive);flex-shrink:0;min-width:16px">${l}</span>
+      <span style="font-size:13px;color:var(--text);line-height:1.5">${esc(opts[i])}</span>
+    </div>` : '').join('');
+
+  document.getElementById('branch-content').innerHTML = `
+    <div style="background:var(--surface2);border-left:3px solid var(--gold);border-radius:0 10px 10px 0;padding:14px;margin-bottom:16px;font-size:13px;color:var(--text);line-height:1.7">
+      <div style="font-size:9px;font-weight:700;letter-spacing:.1em;color:var(--gold);margin-bottom:6px">第 ${branchState.round+1} 幕 · 客戶說</div>
+      「${esc(clientSays)}」
+    </div>
+    <div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--text-dim);margin-bottom:8px">你的下一步？</div>
+    <div style="display:flex;flex-direction:column;gap:7px">${optHTML}</div>
+  `;
+}
+
+function chooseBranch(chosen, correct) {
+  const hit = chosen === correct;
+  if (!branchState.roundResults) branchState.roundResults = [];
+  branchState.roundResults.push(hit);
+  if (hit) branchState.good++; else branchState.bad++;
+
+  // 更新選項顯示
+  document.querySelectorAll('#branch-content > div:last-child > div').forEach(el => {
+    el.onclick = null; el.onmouseover = null; el.onmouseout = null;
+    const letter = el.querySelector('span')?.textContent?.trim();
+    if (letter === correct) { el.style.cssText += ';background:rgba(39,174,96,0.08);border-color:#27ae60'; }
+    else if (letter === chosen && !hit) { el.style.cssText += ';background:rgba(192,57,43,0.05);border-color:#c0392b'; }
+  });
+
+  const fb = document.createElement('div');
+  fb.style.cssText = `margin-top:12px;padding:12px 14px;background:${hit?'rgba(39,174,96,0.06)':'rgba(192,57,43,0.05)'};border-radius:10px;font-size:12px;color:${hit?'#1e8449':'#c0392b'};font-weight:700`;
+  fb.textContent = hit ? '✅ 選對了！劇情往好的方向走' : `❌ 選${chosen}會踩陷阱，正確是 ${correct}`;
+  document.getElementById('branch-content').appendChild(fb);
+
+  branchState.round++;
+  setTimeout(() => _nextBranchRound(hit ? `（我選了：${chosen}，這是正確方向）` : `（我選了：${chosen}，這踩了陷阱，讓客戶更防備）`), 1200);
+}
+
+function _renderBranchResult() {
+  const { good, bad, maxRound, persona: p } = branchState;
+  const pct = Math.round(good/maxRound*100);
+  renderMain(`
+    <div class="view-eyebrow">🌿 情境分支 · 結束</div>
+    <div style="text-align:center;padding:28px 0 16px">
+      <div class="quiz-score">${good}/${maxRound}</div>
+      <div style="font-size:15px;color:var(--text);margin:8px 0">${pct>=80?'🏆 劇情全過！客戶幾乎要點頭了':pct>=60?'💪 選對大方向，還有幾步可以更精準':'🌱 踩了幾個陷阱，回 persona 卡再看一遍'}</div>
+      <div style="font-size:12px;color:var(--text-sub)">正確率 ${pct}%</div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <button onclick="startBranchMode('${p.id}')" style="background:var(--olive);color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">🔄 再來一遍</button>
+      <button onclick="showExamLobby('${p.id}')" style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 24px;font-size:13px;color:var(--text-sub);cursor:pointer;font-family:inherit">← 換模式</button>
+    </div>
+  `);
+  if (typeof growthAddPts==='function'&&libCurrentUser) growthAddPts(good*3, '情境分支練習');
+}
+
+// ──────────────────────────────────────
+// 模式四：早會投影模式（大字版，全員搶答）
+// ──────────────────────────────────────
+let projState = { personaId: null, round: 0, maxRound: 5, pool: [] };
+
+function startProjectorMode(personaId) {
+  requireApiKey(() => _startProjectorMode(personaId));
+}
+
+async function _startProjectorMode(personaId) {
+  const p = PERSONAS.find(x=>x.id===personaId);
+  if (!p) return;
+  // 抽5句不同情境的觸發語
+  const pool = shuffleArray(SCRIPTS.filter(s => s.persona===personaId || s.persona===null).filter(s => !s.trigger.startsWith('（'))).slice(0, 5);
+  if (!pool.length) {
+    const fallback = shuffleArray(SCRIPTS.filter(s=>!s.trigger.startsWith('（'))).slice(0,5);
+    pool.push(...fallback);
+  }
+  projState = { personaId, persona: p, round: 0, maxRound: Math.min(5, pool.length), pool, revealed: false };
+  _renderProjectorRound();
+}
+
+let _projTimer = null;
+
+function _renderProjectorRound() {
+  const { persona: p, round, maxRound, pool } = projState;
+  if (round >= maxRound) return _renderProjectorEnd();
+  const s = pool[round];
+
+  // 清掉舊計時器
+  if (_projTimer) { clearInterval(_projTimer); _projTimer = null; }
+
+  renderMain(`
+    <div style="min-height:80vh;display:flex;flex-direction:column;justify-content:center;padding:20px 0">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <span style="font-size:10px;font-weight:700;letter-spacing:.15em;color:var(--text-dim)">📡 早會投影 · ${round+1} / ${maxRound}</span>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div id="proj-timer-ring" style="position:relative;width:44px;height:44px">
+            <svg width="44" height="44" style="transform:rotate(-90deg)">
+              <circle cx="22" cy="22" r="18" fill="none" stroke="var(--surface3)" stroke-width="3"/>
+              <circle id="proj-timer-arc" cx="22" cy="22" r="18" fill="none" stroke="var(--gold)" stroke-width="3"
+                stroke-dasharray="113" stroke-dashoffset="0" style="transition:stroke-dashoffset .9s linear,stroke .3s"/>
+            </svg>
+            <div id="proj-timer-num" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:var(--gold)">30</div>
+          </div>
+          <button onclick="projToggleTimer()" id="proj-timer-btn" style="background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;color:var(--text-sub)">暫停</button>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:center;gap:6px;margin-bottom:20px">
+        ${Array.from({length:maxRound},(_,i)=>`<div style="width:24px;height:6px;border-radius:3px;background:${i<round?'var(--olive)':i===round?'var(--gold)':'var(--surface3)'}"></div>`).join('')}
+      </div>
+
+      <div style="background:var(--surface);border:2px solid var(--gold);border-radius:20px;padding:28px 20px;text-align:center;margin-bottom:24px;box-shadow:0 4px 24px rgba(184,148,60,0.15)">
+        <div style="font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--gold);margin-bottom:14px">客戶說了這句話 ↓</div>
+        <div style="font-size:22px;font-weight:700;color:var(--text);line-height:1.6;font-family:'Noto Serif TC',serif">「${esc(s.trigger)}」</div>
+        <div style="font-size:12px;color:var(--text-dim);margin-top:10px">${esc(s.situation.slice(0,40))}…</div>
+      </div>
+
+      <div id="proj-answer-area" style="display:none">
+        <div style="background:linear-gradient(135deg,rgba(42,89,52,0.08),rgba(184,148,60,0.05));border:2px solid var(--olive);border-radius:16px;padding:20px;margin-bottom:16px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--olive);margin-bottom:10px">✅ 應對方向</div>
+          <div style="font-size:15px;color:var(--text);line-height:1.8">${esc(s.content.slice(0,150))}${s.content.length>150?'…':''}</div>
+          <div style="margin-top:12px;font-size:11px;color:var(--text-dim)">話術 ${s.id} · ${s.category}</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;justify-content:center">
+        <button onclick="projReveal()" id="proj-reveal-btn" style="flex:1;max-width:220px;background:var(--olive);color:#fff;border:none;border-radius:12px;padding:15px;font-size:15px;font-weight:900;cursor:pointer;font-family:inherit">
+          揭曉答案 👇
+        </button>
+        <button onclick="projNext()" id="proj-next-btn" style="display:none;flex:1;max-width:220px;background:var(--gold);color:#fff;border:none;border-radius:12px;padding:15px;font-size:15px;font-weight:900;cursor:pointer;font-family:inherit">
+          下一題 →
+        </button>
+      </div>
+    </div>
+  `);
+
+  // 啟動倒數計時器
+  let timeLeft = 30;
+  let paused = false;
+  projState._timerPaused = false;
+  projState._timerLeft = timeLeft;
+
+  projToggleTimer = function() {
+    paused = !paused;
+    projState._timerPaused = paused;
+    const btn = document.getElementById('proj-timer-btn');
+    if (btn) btn.textContent = paused ? '繼續' : '暫停';
+  };
+
+  _projTimer = setInterval(() => {
+    if (paused) return;
+    timeLeft--;
+    projState._timerLeft = timeLeft;
+    const num = document.getElementById('proj-timer-num');
+    const arc = document.getElementById('proj-timer-arc');
+    if (num) num.textContent = Math.max(0, timeLeft);
+    if (arc) {
+      const pct = Math.max(0, timeLeft / 30);
+      arc.setAttribute('stroke-dashoffset', String(Math.round(113 * (1 - pct))));
+      arc.setAttribute('stroke', timeLeft <= 5 ? '#c0392b' : timeLeft <= 10 ? '#e67e22' : 'var(--gold)');
+      if (num) num.style.color = timeLeft <= 5 ? '#c0392b' : timeLeft <= 10 ? '#e67e22' : 'var(--gold)';
+    }
+    if (timeLeft <= 0) {
+      clearInterval(_projTimer);
+      _projTimer = null;
+      // 自動揭曉
+      const revealBtn = document.getElementById('proj-reveal-btn');
+      if (revealBtn && document.getElementById('proj-answer-area').style.display === 'none') {
+        projReveal();
+      }
+    }
+  }, 1000);
+}
+
+let projToggleTimer = function() {};
+
+function projReveal() {
+  if (_projTimer) { clearInterval(_projTimer); _projTimer = null; }
+  document.getElementById('proj-answer-area').style.display = 'block';
+  document.getElementById('proj-reveal-btn').style.display = 'none';
+  document.getElementById('proj-next-btn').style.display = 'block';
+  // 計時器變灰
+  const num = document.getElementById('proj-timer-num');
+  const arc = document.getElementById('proj-timer-arc');
+  if (num) num.style.color = 'var(--text-dim)';
+  if (arc) arc.setAttribute('stroke', 'var(--border)');
+}
+
+function projNext() {
+  if (_projTimer) { clearInterval(_projTimer); _projTimer = null; }
+  projState.round++;
+  _renderProjectorRound();
+}
+
+function _renderProjectorEnd() {
+  renderMain(`
+    <div style="min-height:60vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px">
+      <div style="font-size:48px;margin-bottom:16px">🏁</div>
+      <div style="font-size:20px;font-weight:700;color:var(--text);margin-bottom:8px">早會練習結束</div>
+      <div style="font-size:13px;color:var(--text-sub);margin-bottom:28px">今天誰說得最準？</div>
+      <button onclick="showExamLobby(projState.personaId)" style="background:var(--olive);color:#fff;border:none;border-radius:12px;padding:14px 32px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit">回考試院大廳</button>
+    </div>
+  `);
+}
+
 // ── 考試院：AI 直接扮演客戶考試 ──
 let examState = { personaId: null, messages: [], score: null, active: false };
 
@@ -4831,34 +5572,76 @@ function _startExam(personaId) {
 }
 
 function renderExamUI(p) {
+  // 依 persona 類型產生快答卡
+  const EXAM_CHIPS = {
+    '問問族':      ['先問狀況，不推產品', '讓他說，我來聽', '驗證 Keyman 是誰', '問他最大的卡點'],
+    '格局族':      ['先幫他盤資產', '問現金流壓力', '不急著推新案子', '確認哪關還沒解'],
+    '自住安全感族':['先問住的狀況', '問小孩學區需求', '讓他說理想格局', '不先談數字'],
+    '投資族':      ['先問現有配置', '問報酬率期待', '算槓桿給他看', '讓他說比例'],
+    '高收入族':    ['用同等級語言', '不解釋只問', '讓他主導話題', '問天花板在哪'],
+    '風險族':      ['承認風險存在', '先問他最怕什麼', '不保證，給數據', '讓他說接受程度'],
+    '退訂邊緣族':  ['先不談成交', '問他當初買的理由', '讓他說卡在哪', '承認他的感受'],
+    '股票族':      ['不說房比股好', '讓他說股票比例', '問天天看盤感受', '算槓桿倍數'],
+    '問媽媽族':    ['讚媽媽眼光準', '邀媽媽來把關', '讓子女說媽媽需求', '不繞過媽媽'],
+    '無殼族':      ['幫他盤所有資源', '不說「其實買得起」', '讓他算缺口', '先成交一個小步驟'],
+    '合資族':      ['確認三個角色', '不跳過任何一方', '讓出錢的先表態', '問最終決定者'],
+    '價格族':      ['不比優惠', '問他覺得值多少', '讓他說資產邏輯', '轉移焦點到報酬'],
+  };
+  const chips = (EXAM_CHIPS[p.type] || ['聽他說', '問感受', '不推銷', '驗證卡點'])
+    .map(c => `<div class="exam-chip" onclick="sendExamChip('${c.replace(/'/g,"\\'")}')">💬 ${c}</div>`)
+    .join('');
+
   renderMain(`
     <div class="view-eyebrow">🎯 考試院 · AI 陪練</div>
-    <div class="view-title">${p.icon} ${p.name}</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
-      <div style="background:rgba(184,148,60,0.08);border:1px solid rgba(184,148,60,0.2);border-radius:10px;padding:12px;font-size:12px;color:var(--text)">
-        <div style="font-size:9px;font-weight:700;letter-spacing:.1em;color:var(--gold);margin-bottom:6px">他心裡在說</div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+      <span style="font-size:22px">${p.icon}</span>
+      <div>
+        <div style="font-size:16px;font-weight:700;color:var(--text)">${p.name}</div>
+        <div style="font-size:11px;color:var(--text-dim)">${p.type} · ${p.difficulty || ''}</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+      <div style="background:rgba(184,148,60,0.08);border:1px solid rgba(184,148,60,0.2);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--text)">
+        <div style="font-size:9px;font-weight:700;letter-spacing:.1em;color:var(--gold);margin-bottom:5px">💭 他心裡在說</div>
         ${p.real}
       </div>
-      <div style="background:rgba(180,50,50,0.06);border:1px solid rgba(180,50,50,0.15);border-radius:10px;padding:12px;font-size:12px;color:var(--text)">
-        <div style="font-size:9px;font-weight:700;letter-spacing:.1em;color:#c0392b;margin-bottom:6px">最容易踩的陷阱</div>
+      <div style="background:rgba(180,50,50,0.06);border:1px solid rgba(180,50,50,0.15);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--text)">
+        <div style="font-size:9px;font-weight:700;letter-spacing:.1em;color:#c0392b;margin-bottom:5px">⚠️ 最容易踩的陷阱</div>
         ${p.trap}
       </div>
     </div>
-    <div id="exam-chat" style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;min-height:300px;max-height:420px;overflow-y:auto;padding:16px;margin-bottom:12px;display:flex;flex-direction:column;gap:10px">
+    <div id="exam-chat" style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;min-height:240px;max-height:360px;overflow-y:auto;padding:14px;margin-bottom:10px;display:flex;flex-direction:column;gap:10px">
       <div style="background:rgba(61,90,64,0.08);border-radius:8px;padding:10px 12px;font-size:13px;color:var(--text-dim);text-align:center">
         AI 正在變身成「${p.name}」，準備好就開口吧
       </div>
     </div>
-    <div style="display:flex;gap:8px">
-      <textarea id="exam-input" placeholder="輸入你要說的話..." style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--text);font-family:inherit;resize:none;height:50px;outline:none" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendExamMsg()}"></textarea>
-      <button onclick="sendExamMsg()" style="background:var(--olive);color:#fff;border:none;border-radius:10px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">送出</button>
+    <div style="margin-bottom:6px">
+      <div style="font-size:9px;font-weight:700;letter-spacing:.1em;color:var(--text-dim);margin-bottom:4px">⚡ 快答（點一下送出）</div>
+      <div class="exam-chips-wrap">${chips}</div>
     </div>
-    <div style="display:flex;gap:8px;margin-top:8px">
-      <button onclick="endExam()" style="flex:1;background:rgba(184,148,60,0.15);color:var(--gold);border:1px solid rgba(184,148,60,0.3);border-radius:8px;padding:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">🏁 結束 · 請 AI 評分</button>
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <textarea id="exam-input" placeholder="或者自己打…" style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--text);font-family:inherit;resize:none;height:46px;outline:none" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendExamMsg()}"></textarea>
+      <button onclick="sendExamMsg()" style="background:var(--olive);color:#fff;border:none;border-radius:10px;padding:10px 14px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">送出</button>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button onclick="endExam()" style="flex:1;background:rgba(184,148,60,0.12);color:var(--gold);border:1px solid rgba(184,148,60,0.3);border-radius:8px;padding:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit">🏁 結束 · 請 AI 評分</button>
     </div>
   `);
-  // 初始化：AI 先開場
   initExam(p);
+}
+
+// 快答卡點擊發送
+async function sendExamChip(text) {
+  if (!examState.active) return;
+  addExamMessage('user', text, '業務');
+  examState.messages.push({ role: 'user', content: text });
+  const p = examState.persona;
+  const systemPrompt = buildExamSystemPrompt(p);
+  const msgCount = examState.messages.filter(m => m.role === 'user').length;
+  const hint = msgCount >= 8 ? '（如果業務已經做對幾件事，你可以開始軟化）' : '';
+  const reply = await callExamAPI(systemPrompt, examState.messages, hint);
+  addExamMessage('ai', reply, p.name);
+  examState.messages.push({ role: 'assistant', content: reply });
 }
 
 async function initExam(p) {
@@ -5054,28 +5837,92 @@ const SLIM_CATS = [
 ];
 
 function buildNav() {
-  // 客戶辨識 nav — 按類型分組
+  // ── 快搜標籤 ──
+  const QUICK_TAGS = [
+    { label:'已讀不回', kw:'已讀不回' },
+    { label:'問媽媽', kw:'問媽媽' },
+    { label:'股票族', kw:'股票族' },
+    { label:'想退屋', kw:'退屋' },
+    { label:'家人反對', kw:'家人反對' },
+    { label:'沒錢', kw:'沒錢' },
+    { label:'轉介紹', kw:'轉介紹' },
+    { label:'破冰', kw:'鉤子' },
+  ];
+  const quickTagsEl = document.getElementById('quickTags');
+  QUICK_TAGS.forEach(t => {
+    const tag = document.createElement('div');
+    tag.className = 'quick-tag';
+    tag.textContent = t.label;
+    tag.onclick = () => {
+      document.querySelectorAll('.quick-tag').forEach(x => x.style.cssText = '');
+      tag.style.cssText = 'background:var(--olive-dim);border-color:var(--olive);color:var(--olive);font-weight:700;';
+      doSearch(t.kw);
+      autoCloseSidebar();
+    };
+    quickTagsEl.appendChild(tag);
+  });
+
+  // ── 客戶辨識 nav — 按類型分組，每組 2 欄卡片 ──
   const personaEl = document.getElementById('personaNav');
+
+  // persona tagline 對照（顯示在卡片上的一句話特徵）
+  const TYPE_META = {
+    '問問族':      { emoji:'🎭', tagline:'問不完、不表態' },
+    '格局族':      { emoji:'🏰', tagline:'有資產、卡關卡很深' },
+    '自住安全感族':{ emoji:'🏡', tagline:'想住、但怕踏錯' },
+    '投資族':      { emoji:'📈', tagline:'看報酬、算數字' },
+    '高收入族':    { emoji:'💼', tagline:'有能力、主觀強' },
+    '風險族':      { emoji:'⚠️', tagline:'怕輸、怕負債' },
+    '退訂邊緣族':  { emoji:'🚨', tagline:'快要跑掉' },
+    '股票族':      { emoji:'📊', tagline:'不想動本金' },
+    '問媽媽族':    { emoji:'👵', tagline:'媽媽才是 Keyman' },
+    '無殼族':      { emoji:'🐢', tagline:'想買、覺得買不起' },
+    '合資族':      { emoji:'🤝', tagline:'多方資金、角色混亂' },
+    '價格族':      { emoji:'💲', tagline:'一直殺價' },
+  };
+
   const typeOrder = ['問問族','格局族','自住安全感族','投資族','高收入族','風險族','退訂邊緣族','股票族','問媽媽族','無殼族','合資族','價格族'];
   typeOrder.forEach(type => {
     const group = PERSONAS.filter(p => p.type === type);
     if (!group.length) return;
-    const label = document.createElement('div');
-    label.style.cssText = 'font-size:9px;font-weight:700;letter-spacing:.1em;color:var(--text-dim);padding:8px 16px 2px;text-transform:uppercase';
-    label.textContent = type;
-    personaEl.appendChild(label);
+    const meta = TYPE_META[type] || { emoji:'👤', tagline:'' };
+
+    // 類型標籤列
+    const typeLabel = document.createElement('div');
+    typeLabel.className = 'persona-type-label';
+    typeLabel.innerHTML = `<span>${meta.emoji} ${type}</span>`;
+    personaEl.appendChild(typeLabel);
+
+    // 卡片 grid
+    const grid = document.createElement('div');
+    grid.className = 'persona-grid';
     group.forEach(p => {
-      const el = document.createElement('div');
-      el.className = 'sidebar-item';
-      el.id = 'nav-persona-' + p.id;
-      el.style.paddingLeft = '20px';
-      el.innerHTML = `<span class="s-icon" style="font-size:13px">${p.icon}</span><span class="s-name" style="font-size:11.5px">${p.name}</span><span style="font-size:9px;color:var(--gold);margin-left:auto">練 ▶</span>`;
-      el.onclick = () => { showPersona(p.id); autoCloseSidebar(); };
-      personaEl.appendChild(el);
+      const scriptCnt = SCRIPTS.filter(s => s.persona === p.id).length;
+      const diffColor = p.difficulty === '新手場' ? '#3D6B45' : p.difficulty === '進階場' ? '#9A7B2E' : '#c0392b';
+      const card = document.createElement('div');
+      card.className = 'persona-card';
+      card.id = 'nav-persona-' + p.id;
+      // 卡片顯示：icon、客戶名（前5字）、一句話特徵、話術數
+      const shortName = p.name.replace(/^.+?\s/, '').substring(0, 10) || p.name.substring(0, 10);
+      const tagline = p.brief ? p.brief.substring(0, 22) : meta.tagline;
+      card.innerHTML = `
+        <div class="persona-card-icon">${p.icon}</div>
+        <div class="persona-card-type" style="color:${diffColor}">${p.difficulty || type}</div>
+        <div class="persona-card-tagline">${tagline}</div>
+        <div class="persona-card-cnt">話術 ${scriptCnt} 張</div>
+      `;
+      card.onclick = () => {
+        document.querySelectorAll('.persona-card').forEach(x => x.classList.remove('active'));
+        card.classList.add('active');
+        showPersona(p.id);
+        autoCloseSidebar();
+      };
+      grid.appendChild(card);
     });
+    personaEl.appendChild(grid);
   });
 
-  // 情境分類 nav（精簡版）
+  // ── 情境分類 nav（精簡版）──
   const catEl = document.getElementById('catNav');
   SLIM_CATS.forEach(sc => {
     const cnt = SCRIPTS.filter(s => sc.merge.includes(s.category)).length;
@@ -5086,8 +5933,6 @@ function buildNav() {
     el.onclick = () => { showSlimCat(sc); autoCloseSidebar(); };
     catEl.appendChild(el);
   });
-
-
 }
 
 // 顯示精簡分類
@@ -5138,12 +5983,17 @@ function showPersona(id) {
       </div>
     </div>
 
-    <div style="display:flex;gap:10px;margin-bottom:20px">
-      <button onclick="startExam('${p.id}')" style="flex:1;background:var(--olive);color:#fff;border:none;border-radius:10px;padding:13px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">
-        🎯 考試院 · 開始陪練
-      </button>
-      <button onclick="openCoach('${p.id}','${p.name}')" style="flex:1;background:rgba(184,148,60,0.15);color:var(--gold);border:1px solid rgba(184,148,60,0.3);border-radius:10px;padding:13px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">
-        ⚡ 生成跟進報告
+    <div style="background:linear-gradient(135deg,rgba(42,89,52,0.07),rgba(184,148,60,0.05));border:2px solid rgba(42,89,52,0.25);border-radius:14px;padding:16px;margin-bottom:20px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <span style="font-size:24px">🎯</span>
+        <div>
+          <div style="font-size:13px;font-weight:700;color:var(--text)">考試院 · 四種練法</div>
+          <div style="font-size:11px;color:var(--text-dim)">從閖關到早會投影，選你想要的模式</div>
+        </div>
+        <div style="margin-left:auto;background:${p.difficulty==='新手場'?'rgba(42,89,52,0.1)':p.difficulty==='進階場'?'rgba(184,148,60,0.12)':'rgba(192,57,43,0.08)'};border-radius:12px;padding:4px 10px;font-size:10px;font-weight:700;color:${p.difficulty==='新手場'?'var(--olive)':p.difficulty==='進階場'?'var(--gold)':'#c0392b'}">${p.difficulty||'進階場'}</div>
+      </div>
+      <button onclick="showExamLobby('${p.id}')" style="width:100%;background:var(--olive);color:#fff;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:900;cursor:pointer;font-family:inherit;letter-spacing:.02em">
+        進考試院大廳 →
       </button>
     </div>
     <div class="view-eyebrow" style="margin-bottom:12px">📋 相關話術（${related.length} 筆）</div>
@@ -5177,6 +6027,199 @@ function showSearch(q) {
     <div class="view-title">「${esc(q)}」</div>
     <div class="view-desc">找到 ${results.length} 筆相關話術</div>
     <div class="script-list">${results.length ? results.map(s=>card(s,q)).join('') : empty('找不到相關話術')}</div>
+  `);
+}
+
+// ══════════════════════════════════════
+// 🚀 新人30天路徑系統
+// ══════════════════════════════════════
+
+const ONBOARDING_PLAN = [
+  // ── 第一週：心法與信任建立 ──
+  { day:1,  week:1, theme:'心法週', icon:'🧠', title:'為什麼客戶說的不是真正原因', scripts:['S003','S014'], exam:'問問族-01', badge:'🌱 第一步' },
+  { day:2,  week:1, theme:'心法週', icon:'🧠', title:'成交是設計出來的，每步都要有劇本', scripts:['S005','S137'], exam:null, badge:null },
+  { day:3,  week:1, theme:'心法週', icon:'🧠', title:'介紹產品≠銷售，信任才是重點', scripts:['S003','S006','S410'], exam:'問問族-02', badge:null },
+  { day:4,  week:1, theme:'心法週', icon:'🧠', title:'高層做局，低層做事', scripts:['S134','S135','S411'], exam:null, badge:null },
+  { day:5,  week:1, theme:'心法週', icon:'🧠', title:'深挖三層次：找到隱藏計畫', scripts:['S411','S137'], exam:'格局族-01', badge:'🔥 第一週完成' },
+
+  // ── 第二週：開發與接觸 ──
+  { day:6,  week:2, theme:'開發週', icon:'🎯', title:'已讀不回的人性與鉤子訊息', scripts:['S004','S219','S223'], exam:null, badge:null },
+  { day:7,  week:2, theme:'開發週', icon:'🎯', title:'轉介紹鐵律：黃金時機只有一次', scripts:['S413','S136'], exam:'問問族-03', badge:null },
+  { day:8,  week:2, theme:'開發週', icon:'🎯', title:'研討會邀約：吸引不是推銷', scripts:['S138','S412'], exam:null, badge:null },
+  { day:9,  week:2, theme:'開發週', icon:'🎯', title:'盲猜客戶型大挑戰', scripts:['S001','S009'], exam:'問媽媽族-01', badge:null },
+  { day:10, week:2, theme:'開發週', icon:'🎯', title:'邀約前置作業：了解痛點才能吸引', scripts:['S413','S417'], exam:'股票族-01', badge:'🔥 第二週完成' },
+
+  // ── 第三週：異議處理核心 ──
+  { day:11, week:3, theme:'異議週', icon:'🛡️', title:'家人反對的三種版本', scripts:['S007','S151','S212','S213'], exam:'問媽媽族-02', badge:null },
+  { day:12, week:3, theme:'異議週', icon:'🛡️', title:'股票族四層引導問題', scripts:['S015','S016','S001'], exam:'股票族-02', badge:null },
+  { day:13, week:3, theme:'異議週', icon:'🛡️', title:'客戶一直說「我知道」怎麼辦', scripts:['S010','S011'], exam:'價格族-01', badge:null },
+  { day:14, week:3, theme:'異議週', icon:'🛡️', title:'媽媽是 Keyman 怎麼邀她來', scripts:['S009','S416'], exam:'問媽媽族-01', badge:null },
+  { day:15, week:3, theme:'異議週', icon:'🛡️', title:'安全感是算出來的，不是感覺', scripts:['S415','S012','S013'], exam:'格局族-02', badge:'🔥 第三週完成' },
+
+  // ── 第四週：締結成交 ──
+  { day:16, week:4, theme:'締結週', icon:'✍️', title:'YES牆三層設計', scripts:['S153','S152'], exam:'退訂邊緣族-01', badge:null },
+  { day:17, week:4, theme:'締結週', icon:'✍️', title:'假設成交法：讓他自己說出來', scripts:['S135','S134'], exam:'格局族-01', badge:null },
+  { day:18, week:4, theme:'締結週', icon:'✍️', title:'行程擋不住的邀約：價值大過出去玩', scripts:['S409','S218'], exam:'自住安全感族-01', badge:null },
+  { day:19, week:4, theme:'締結週', icon:'✍️', title:'退屋邊緣：怎麼讓他留下來', scripts:['S007','S002'], exam:'退訂邊緣族-01', badge:null },
+  { day:20, week:4, theme:'締結週', icon:'✍️', title:'締結SOP：每一步定死下一步', scripts:['S005','S314','S315'], exam:'無殼族-01', badge:'🔥 第四週完成' },
+
+  // ── 第五～六週：進階與實戰 ──
+  { day:21, week:5, theme:'進階週', icon:'🏆', title:'顧問定位：客戶配合你，不是你配合客戶', scripts:['S218','S224'], exam:'高收入族-01', badge:null },
+  { day:22, week:5, theme:'進階週', icon:'🏆', title:'白嫖拆法：一直問不行動的客戶', scripts:['S217'], exam:'問問族-01', badge:null },
+  { day:23, week:5, theme:'進階週', icon:'🏆', title:'損失框架三句型', scripts:['S207','S206'], exam:'風險族-01', badge:null },
+  { day:24, week:5, theme:'進階週', icon:'🏆', title:'家族案三角色確認法', scripts:['S304','S305','S303'], exam:'合資族-01', badge:null },
+  { day:25, week:5, theme:'進階週', icon:'🏆', title:'負債族成交法：只成交一件事', scripts:['S314','S315','S312'], exam:'無殼族-01', badge:null },
+  { day:26, week:5, theme:'進階週', icon:'🏆', title:'高收入族：用同等級語言切入', scripts:['S406','S407','S408'], exam:'高收入族-02', badge:null },
+  { day:27, week:5, theme:'進階週', icon:'🏆', title:'非暴力溝通：化解對立', scripts:['S414','S410'], exam:null, badge:null },
+  { day:28, week:5, theme:'進階週', icon:'🏆', title:'PDCA：每次會談後的自我進化', scripts:['S417','S005'], exam:'問問族-02', badge:null },
+  { day:29, week:5, theme:'進階週', icon:'🏆', title:'今日任務：任選一個客戶類型全套走一遍', scripts:[], exam:'格局族-02', badge:null },
+  { day:30, week:5, theme:'進階週', icon:'🏆', title:'30天總複習：闖關模式挑最難的 persona', scripts:['S014','S015','S134'], exam:'高收入族-01', badge:'🏆 30天完成！' },
+];
+
+const WEEK_META = {
+  1: { label:'第一週', name:'心法與信任', color:'#2A5934', bg:'rgba(42,89,52,0.08)', desc:'先建立正確的銷售觀念，不急著背話術' },
+  2: { label:'第二週', name:'開發與接觸', color:'#2980b9', bg:'rgba(41,128,185,0.08)', desc:'找到對的人、打開對話、建立第一印象' },
+  3: { label:'第三週', name:'異議處理', color:'#c0392b', bg:'rgba(192,57,43,0.08)', desc:'客戶說不的背後，都有一個真正的卡點' },
+  4: { label:'第四週', name:'締結成交', color:'#9A7B2E', bg:'rgba(154,123,46,0.08)', desc:'把每一步定死，讓成交成為必然' },
+  5: { label:'第五六週', name:'進階實戰', color:'#6c3483', bg:'rgba(108,52,131,0.08)', desc:'進階客戶類型、顧問定位、自我進化' },
+};
+
+function _getOnboardingProgress() {
+  try {
+    const raw = localStorage.getItem('lib_onboarding_v1');
+    return raw ? JSON.parse(raw) : {};
+  } catch(e) { return {}; }
+}
+
+function _saveOnboardingProgress(prog) {
+  try { localStorage.setItem('lib_onboarding_v1', JSON.stringify(prog)); } catch(e) {}
+}
+
+function toggleOnboardingDay(day) {
+  const prog = _getOnboardingProgress();
+  prog[day] = !prog[day];
+  _saveOnboardingProgress(prog);
+  // 重新渲染那一天的狀態
+  const btn = document.getElementById('ob-day-' + day);
+  const row = document.getElementById('ob-row-' + day);
+  if (btn && row) {
+    const done = prog[day];
+    btn.textContent = done ? '✅' : '○';
+    btn.style.background = done ? 'var(--olive)' : 'var(--surface2)';
+    btn.style.color = done ? '#fff' : 'var(--text-dim)';
+    row.style.opacity = done ? '0.6' : '1';
+  }
+  // 更新進度條
+  const total = ONBOARDING_PLAN.length;
+  const doneCount = Object.values(prog).filter(Boolean).length;
+  const pct = Math.round(doneCount/total*100);
+  const bar = document.getElementById('ob-progress-bar');
+  const label = document.getElementById('ob-progress-label');
+  if (bar) bar.style.width = pct + '%';
+  if (label) label.textContent = `${doneCount} / ${total} 天完成 · ${pct}%`;
+  // XP
+  if (prog[day] && typeof growthAddPts === 'function' && libCurrentUser) {
+    growthAddPts(3, `30天路徑 Day${day} 完成`);
+    if (doneCount === total) growthAddPts(50, '🏆 30天路徑全部完成！');
+  }
+}
+
+function showOnboarding() {
+  setActive('nav-onboarding');
+  const prog = _getOnboardingProgress();
+  const total = ONBOARDING_PLAN.length;
+  const doneCount = Object.values(prog).filter(Boolean).length;
+  const pct = Math.round(doneCount/total*100);
+
+  // 按週分組
+  const weeks = {};
+  ONBOARDING_PLAN.forEach(d => {
+    if (!weeks[d.week]) weeks[d.week] = [];
+    weeks[d.week].push(d);
+  });
+
+  const weeksHTML = Object.entries(weeks).map(([wk, days]) => {
+    const meta = WEEK_META[wk];
+    const weekDone = days.filter(d => prog[d.day]).length;
+    const weekTotal = days.length;
+    const weekPct = Math.round(weekDone/weekTotal*100);
+
+    const daysHTML = days.map(d => {
+      const done = !!prog[d.day];
+      const scriptLinks = d.scripts.slice(0,3).map(id => {
+        const s = SCRIPTS.find(x=>x.id===id);
+        return s ? `<span onclick="showScriptFromQuiz('${id}')" style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:2px 7px;font-size:10px;color:var(--text-sub);cursor:pointer;white-space:nowrap" onmouseover="this.style.background='var(--olive-dim)';this.style.color='var(--olive)'" onmouseout="this.style.background='var(--surface2)';this.style.color='var(--text-sub)'">${id}</span>` : '';
+      }).join('');
+      const examBtn = d.exam ? `<span onclick="showPersona('${d.exam}');showExamLobby('${d.exam}')" style="background:rgba(42,89,52,0.08);border:1px solid rgba(42,89,52,0.2);border-radius:6px;padding:2px 7px;font-size:10px;color:var(--olive);cursor:pointer;white-space:nowrap">🎯 考</span>` : '';
+
+      return `
+        <div id="ob-row-${d.day}" style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border-light);opacity:${done?0.55:1};transition:opacity .2s">
+          <button id="ob-day-${d.day}" onclick="toggleOnboardingDay(${d.day})"
+            style="flex-shrink:0;width:28px;height:28px;border-radius:50%;border:1.5px solid ${done?'var(--olive)':'var(--border)'};background:${done?'var(--olive)':'var(--surface2)'};color:${done?'#fff':'var(--text-dim)'};font-size:12px;cursor:pointer;font-family:inherit;font-weight:700;display:flex;align-items:center;justify-content:center;transition:all .15s">
+            ${done?'✅':'○'}
+          </button>
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+              <span style="font-size:9px;font-weight:700;color:var(--text-dim);flex-shrink:0">Day ${d.day}</span>
+              <span style="font-size:13px;font-weight:700;color:var(--text);line-height:1.4">${d.icon} ${d.title}</span>
+              ${d.badge ? `<span style="font-size:9px;font-weight:700;color:${meta.color};background:${meta.bg};border-radius:8px;padding:2px 7px;flex-shrink:0">${d.badge}</span>` : ''}
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:5px;align-items:center">
+              ${scriptLinks}
+              ${examBtn}
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+
+    return `
+      <div style="background:#fff;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:14px">
+        <div style="background:${meta.bg};border-bottom:1.5px solid ${meta.color}22;padding:14px 16px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+            <div>
+              <div style="font-size:10px;font-weight:700;letter-spacing:.1em;color:${meta.color}">${meta.label} · ${meta.name}</div>
+              <div style="font-size:12px;color:var(--text-sub);margin-top:2px">${meta.desc}</div>
+            </div>
+            <div style="text-align:right;flex-shrink:0">
+              <div style="font-size:18px;font-weight:900;color:${meta.color}">${weekDone}/${weekTotal}</div>
+              <div style="font-size:9px;color:var(--text-dim)">天完成</div>
+            </div>
+          </div>
+          <div style="background:rgba(0,0,0,0.08);border-radius:4px;height:4px;overflow:hidden;margin-top:8px">
+            <div style="height:100%;background:${meta.color};border-radius:4px;width:${weekPct}%;transition:width .4s"></div>
+          </div>
+        </div>
+        <div style="padding:4px 16px 8px">${daysHTML}</div>
+      </div>`;
+  }).join('');
+
+  renderMain(`
+    <div class="view-eyebrow">🚀 新人培訓路徑</div>
+    <div style="font-size:20px;font-weight:700;color:var(--text);margin-bottom:4px">30天，從新人到上場</div>
+    <div style="font-size:12px;color:var(--text-sub);margin-bottom:20px">每天15分鐘 · 讀話術 + 考試院闖關 · 打勾記錄進度</div>
+
+    <div style="background:linear-gradient(135deg,rgba(42,89,52,0.1),rgba(184,148,60,0.06));border:2px solid rgba(42,89,52,0.25);border-radius:14px;padding:18px;margin-bottom:24px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div>
+          <div style="font-size:28px;font-weight:900;color:var(--olive)">${pct}%</div>
+          <div style="font-size:11px;color:var(--text-sub)" id="ob-progress-label">${doneCount} / ${total} 天完成 · ${pct}%</div>
+        </div>
+        <div style="font-size:36px">${pct===100?'🏆':pct>=60?'🔥':pct>=30?'💪':'🌱'}</div>
+      </div>
+      <div style="background:rgba(0,0,0,0.1);border-radius:6px;height:8px;overflow:hidden">
+        <div id="ob-progress-bar" style="height:100%;background:var(--olive);border-radius:6px;width:${pct}%;transition:width .5s ease"></div>
+      </div>
+      ${pct===0?`<div style="font-size:11px;color:var(--text-dim);margin-top:8px">從第一天開始，每天打勾，30天後你就是能上場的業務顧問</div>`:
+        pct===100?`<div style="font-size:12px;color:var(--olive);font-weight:700;margin-top:8px">🎉 恭喜完成30天路徑！去挑戰考試院的高難度關卡吧</div>`:
+        `<div style="font-size:11px;color:var(--text-dim);margin-top:8px">繼續！還有 ${total-doneCount} 天，每天15分鐘就夠了</div>`}
+    </div>
+
+    ${weeksHTML}
+
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px;margin-top:4px;text-align:center">
+      <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px">每完成一天 +3pt · 全部完成 +50pt</div>
+      <button onclick="if(confirm('確定清除30天進度？')){localStorage.removeItem('lib_onboarding_v1');showOnboarding()}" style="background:none;border:1px solid var(--border);border-radius:8px;padding:6px 14px;font-size:11px;color:var(--text-dim);cursor:pointer;font-family:inherit">重置進度</button>
+    </div>
   `);
 }
 
@@ -5414,6 +6457,28 @@ function renderContent(raw, hl) {
 
 function card(s, hl='') {
   const isExp = expandedCards.has(s.id);
+
+  // 找相關話術（同 persona 或同 category，排除自己，最多3張）
+  const related = SCRIPTS.filter(x =>
+    x.id !== s.id && (
+      (s.persona && x.persona === s.persona) ||
+      x.category === s.category
+    )
+  ).slice(0, 3);
+
+  // 找對應的 persona 考試院
+  const personaTarget = s.persona || null;
+
+  const nextStepHTML = `
+    <div style="margin-top:14px;padding-top:14px;border-top:1.5px dashed var(--border)">
+      <div style="font-size:9px;font-weight:700;letter-spacing:.1em;color:var(--text-dim);margin-bottom:8px">📌 讀完了，下一步</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        <button onclick="quickQuizFromScript('${s.id}')" style="background:linear-gradient(135deg,rgba(184,148,60,0.15),rgba(184,148,60,0.08));border:1.5px solid rgba(184,148,60,0.4);border-radius:10px;padding:8px 14px;font-size:12px;font-weight:700;color:var(--gold);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px"><span>🧠</span> 測這條</button>
+        ${personaTarget ? `<button onclick="showPersona('${personaTarget}');showExamLobby('${personaTarget}')" style="background:linear-gradient(135deg,rgba(42,89,52,0.12),rgba(42,89,52,0.06));border:1.5px solid rgba(42,89,52,0.3);border-radius:10px;padding:8px 14px;font-size:12px;font-weight:700;color:var(--olive);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px"><span>🎯</span> 去考試院用這條</button>` : ''}
+        ${related.length > 0 ? `<button onclick="_showRelatedScripts('${s.id}')" style="background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;padding:8px 14px;font-size:12px;font-weight:700;color:var(--text-sub);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:5px"><span>📚</span> 相關話術 ${related.length} 張</button>` : ''}
+      </div>
+    </div>`;
+
   return `<div class="script-card${isExp?' expanded':''}" id="card-${s.id}">
     <div class="script-header" onclick="toggleCard('${s.id}')">
       <span class="script-id">${s.id}</span>
@@ -5431,10 +6496,30 @@ function card(s, hl='') {
         <button class="action-btn primary" onclick="copyScript('${s.id}')">📋 複製話術</button>
         <button class="action-btn" onclick="copyTrig('${s.id}')">💬 複製觸發句</button>
         <button class="action-btn" onclick="openDrillModal('${s.id}')" style="background:rgba(138,43,226,.15);border-color:rgba(138,43,226,.4);color:#b06eff">🎭 豆包演練</button>
-        <button class="action-btn" onclick="quickQuizFromScript('${s.id}')" style="background:rgba(184,148,60,0.15);border-color:rgba(184,148,60,0.5);color:var(--gold)">🧠 測一下這條</button>
       </div>
+      ${nextStepHTML}
     </div>
   </div>`;
+}
+
+function _showRelatedScripts(id) {
+  const s = SCRIPTS.find(x => x.id === id);
+  if (!s) return;
+  const related = SCRIPTS.filter(x =>
+    x.id !== id && (
+      (s.persona && x.persona === s.persona) ||
+      x.category === s.category
+    )
+  ).slice(0, 6);
+  setActive(null);
+  setTotal(related.length);
+  renderMain(`
+    <button class="back-btn" onclick="history.back ? history.back() : showOverview()">← 返回</button>
+    <div class="view-eyebrow">📚 相關話術</div>
+    <div class="view-title">與「${esc(s.title.slice(0,20))}」相關</div>
+    <div class="view-desc">${related.length} 筆 · 同客戶類型或同部曲</div>
+    <div class="script-list">${related.map(r => card(r)).join('')}</div>
+  `);
 }
 
 function empty(msg) {
@@ -5478,6 +6563,7 @@ function copyTrig(id) {
 
 function setActive(id) {
   document.querySelectorAll('.sidebar-item').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.persona-card').forEach(el=>el.classList.remove('active'));
   if (id) { const el=document.getElementById(id); if(el) el.classList.add('active'); }
 }
 function setTotal(n) { document.getElementById('totalCnt').textContent = n; }
@@ -6035,14 +7121,33 @@ function renderQuizQuestion() {
   const total = _pool.length;
   const progress = Math.round((quizState.current / total) * 100);
 
+  // 連勝條：用 answers 歷史顯示每題結果
+  const streakDots = Array.from({length: total}, (_, i) => {
+    if (i < quizState.answers.length) {
+      const hit = quizState.answers[i].correct;
+      return `<div class="streak-dot ${hit ? 'hit' : 'miss'}">${hit ? '✓' : '✗'}</div>`;
+    }
+    return `<div class="streak-dot" style="${i === quizState.current ? 'border-color:var(--olive);background:rgba(42,89,52,0.08)' : ''}"></div>`;
+  }).join('');
+
+  // 連勝數計算
+  let streak = 0;
+  for (let i = quizState.answers.length - 1; i >= 0; i--) {
+    if (quizState.answers[i].correct) streak++;
+    else break;
+  }
+  const streakLabel = streak >= 3 ? `<span class="streak-label fire">🔥 連對 ${streak}</span>` :
+                      streak >= 1 ? `<span class="streak-label">連對 ${streak}</span>` :
+                      `<span class="streak-label">${quizState.current + 1} / ${total}</span>`;
+
   renderMain(`
     <div class="view-eyebrow">🧠 解碼練習 · 第二層</div>
-    <div class="view-title">先猜，再對照</div>
-    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:20px;height:6px;margin-bottom:20px;overflow:hidden">
+    <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:12px">先猜，再對照</div>
+    <div class="streak-bar">${streakDots}${streakLabel}</div>
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:20px;height:4px;margin-bottom:16px;overflow:hidden">
       <div style="height:100%;background:var(--olive);border-radius:20px;width:${progress}%;transition:width .3s"></div>
     </div>
     <div class="quiz-container">
-      <div style="font-size:10px;font-weight:700;letter-spacing:.12em;color:var(--text-dim);margin-bottom:12px">題目 ${quizState.current + 1} / ${total}</div>
       <div class="quiz-situation">${esc(q.situation)}</div>
       <div class="quiz-q">${esc(q.question)}</div>
       <div class="quiz-options" id="quiz-opts">
@@ -8788,13 +9893,60 @@ function quickQuizFromScript(scriptId) {
     return;
   }
 
-  // 找不到題目
+  // 靜態題庫沒有 → 用 AI 動態生成
+  _quickQuizGenerateAndRender(s);
+}
+
+async function _quickQuizGenerateAndRender(s) {
+  // 先顯示生成中畫面
   renderMain(`
-    <button class="back-btn" onclick="showDecodeSingle('${scriptId}')">← 返回話術</button>
-    <div style="text-align:center;padding:40px 20px">
-      <div style="font-size:13px;color:var(--text-sub)">這條話術尚未有測驗題目</div>
+    <button class="back-btn" onclick="showScriptFromQuiz('${s.id}')">← 返回話術</button>
+    <div class="view-eyebrow">🧠 AI 出題中</div>
+    <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px">為「${esc(s.title.slice(0,24))}」生成測驗</div>
+    <div style="font-size:12px;color:var(--text-sub);margin-bottom:28px">AI 正在根據這條話術的核心邏輯出一道三選一...</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      ${[1,2,3].map(()=>`
+        <div style="background:var(--surface2);border-radius:10px;padding:14px;animation:pulse 1.2s ease-in-out infinite">
+          <div style="height:12px;background:var(--surface3);border-radius:4px;width:90%;margin-bottom:8px"></div>
+          <div style="height:10px;background:var(--surface3);border-radius:4px;width:70%"></div>
+        </div>`).join('')}
     </div>
+    <style>@keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}</style>
   `);
+
+  try {
+    const requireApiKey = window.requireApiKey;
+    // 先確認有 API key，沒有就提示
+    if (!localStorage.getItem('lib_api_key')) {
+      renderMain(`
+        <button class="back-btn" onclick="showScriptFromQuiz('${s.id}')">← 返回話術</button>
+        <div style="text-align:center;padding:40px 20px">
+          <div style="font-size:32px;margin-bottom:12px">🔑</div>
+          <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px">需要設定 API Key</div>
+          <div style="font-size:12px;color:var(--text-sub);margin-bottom:20px">動態出題需要 Claude AI，請先設定 API Key</div>
+          <button onclick="promptApiKey()" style="background:var(--olive);color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">設定 API Key</button>
+        </div>
+      `);
+      return;
+    }
+
+    const q = await _generateQuizForScript(s);
+    // 快取進 SCRIPT_QUIZ_DB 避免重複生成
+    if (window.SCRIPT_QUIZ_DB) SCRIPT_QUIZ_DB[s.id] = q;
+
+    quizState = { current: 0, score: 0, answers: [], sourceScriptId: s.id, questions: [q] };
+    renderDynamicQuiz();
+  } catch(e) {
+    renderMain(`
+      <button class="back-btn" onclick="showScriptFromQuiz('${s.id}')">← 返回話術</button>
+      <div style="text-align:center;padding:40px 20px">
+        <div style="font-size:32px;margin-bottom:12px">⚠️</div>
+        <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px">生成失敗</div>
+        <div style="font-size:12px;color:var(--text-sub);margin-bottom:20px">${esc(e.message || '連線問題，請稍後再試')}</div>
+        <button onclick="_quickQuizGenerateAndRender(SCRIPTS.find(x=>x.id==='${s.id}'))" style="background:var(--olive);color:#fff;border:none;border-radius:10px;padding:12px 24px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">🔄 重試</button>
+      </div>
+    `);
+  }
 }
 
 
@@ -9560,7 +10712,6 @@ function libLogin() {
 
 function libEnterApp() {
   document.getElementById('lib-login').style.display = 'none';
-  // 顯示 topbar 用戶區
   var ua = document.getElementById('topbar-user-area');
   ua.style.display = 'flex';
   var initials = libCurrentUser.name.slice(-1);
@@ -9568,10 +10719,306 @@ function libEnterApp() {
   document.getElementById('tb-name').textContent = libCurrentUser.name;
   document.getElementById('growth-avatar').textContent = initials;
   document.getElementById('growth-name').textContent = libCurrentUser.name;
-
-  // 管理員顯示同步按鈕，業務不顯示
   var syncBtn = document.getElementById('syncBtn');
   if (syncBtn) syncBtn.style.display = libCurrentUser.role === 'manager' ? '' : 'none';
+
+  // 登入後檢查：今天還沒填日記就彈出
+  var today = new Date().toISOString().split('T')[0];
+  var todayEntry = _jGetEntry(libCurrentUser.id, today);
+  if (!todayEntry || !todayEntry.submitted) {
+    setTimeout(() => openJournal(true), 600); // 輕量延遲讓主畫面先顯示
+  }
+}
+
+// ══════════════════════════════════════
+// 📓 成功日記系統
+// ══════════════════════════════════════
+
+const JOURNAL_PROMPTS = [
+  '做了一件什麼事？',
+  '學到或想通了什麼？',
+  '幫助了誰或帶動了誰？',
+  '克服了什麼挑戰？',
+  '任何小事都算，寫下來！',
+];
+const JOURNAL_MOODS = [
+  { emoji:'🔥', label:'燃', val:'fire' },
+  { emoji:'💪', label:'穩', val:'solid' },
+  { emoji:'😌', label:'平', val:'calm' },
+  { emoji:'😓', label:'難', val:'hard' },
+];
+
+function _jKey(uid, date) { return `journal_${uid}_${date}`; }
+function _jGetEntry(uid, date) {
+  try { const r = localStorage.getItem(_jKey(uid, date)); return r ? JSON.parse(r) : null; } catch(e) { return null; }
+}
+function _jSaveEntry(uid, date, data) {
+  try { localStorage.setItem(_jKey(uid, date), JSON.stringify(data)); } catch(e) {}
+}
+function _jAllDates(uid) {
+  const prefix = `journal_${uid}_`;
+  const dates = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k && k.startsWith(prefix)) {
+      const d = k.slice(prefix.length);
+      if (/^\d{4}-\d{2}-\d{2}$/.test(d)) dates.push(d);
+    }
+  }
+  return dates.sort().reverse();
+}
+
+let _journalCurrentTab = 'today';
+
+function openJournal(fromLogin) {
+  if (!libCurrentUser) return;
+  document.getElementById('journal-modal').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+  showJournalTab('today');
+}
+
+function closeJournal() {
+  document.getElementById('journal-modal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function showJournalTab(tab) {
+  _journalCurrentTab = tab;
+  ['today','history','stats'].forEach(t => {
+    const btn = document.getElementById('jtab-' + t);
+    if (!btn) return;
+    if (t === tab) {
+      btn.style.borderBottomColor = '#B8943C';
+      btn.style.color = '#B8943C';
+      btn.style.fontWeight = '700';
+    } else {
+      btn.style.borderBottomColor = 'transparent';
+      btn.style.color = '#9A8B7A';
+      btn.style.fontWeight = '400';
+    }
+  });
+  const content = document.getElementById('journal-content');
+  if (tab === 'today') content.innerHTML = _renderJournalToday();
+  else if (tab === 'history') content.innerHTML = _renderJournalHistory();
+  else content.innerHTML = _renderJournalStats();
+}
+
+function _fmtDate(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00');
+  const days = ['日','一','二','三','四','五','六'];
+  return `${d.getFullYear()} 年 ${d.getMonth()+1} 月 ${d.getDate()} 日（週${days[d.getDay()]}）`;
+}
+
+function _renderJournalToday() {
+  const uid = libCurrentUser.id;
+  const today = new Date().toISOString().split('T')[0];
+  const entry = _jGetEntry(uid, today) || { items: ['','','','',''], mood: null, submitted: false };
+
+  const streak = _calcStreak(uid);
+  const moodHTML = JOURNAL_MOODS.map(m => `
+    <button onclick="_jSelectMood('${m.val}')" id="jmood-${m.val}"
+      style="background:${entry.mood===m.val?'#B8943C':'#fff'};color:${entry.mood===m.val?'#fff':'#6B5E50'};border:1.5px solid ${entry.mood===m.val?'#B8943C':'#D4C8B8'};border-radius:20px;padding:7px 14px;font-size:13px;cursor:pointer;font-family:inherit;font-weight:${entry.mood===m.val?'700':'400'};transition:all .15s">
+      ${m.emoji} ${m.label}
+    </button>`).join('');
+
+  const itemsHTML = JOURNAL_PROMPTS.map((p, i) => `
+    <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px">
+      <div style="width:28px;height:28px;border-radius:50%;background:${entry.items[i]?'#B8943C':'#E8E0D0'};color:${entry.items[i]?'#fff':'#9A8B7A'};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;transition:background .2s">${i+1}</div>
+      <textarea id="jitem-${i}" placeholder="${p}"
+        oninput="_jAutoSave()"
+        style="flex:1;background:#fff;border:1.5px solid #E8E0D0;border-radius:10px;padding:10px 12px;font-size:13px;color:#111318;font-family:'Noto Sans TC',sans-serif;resize:none;height:44px;outline:none;line-height:1.5;transition:border-color .15s"
+        onfocus="this.style.borderColor='#B8943C';this.style.height='64px'"
+        onblur="this.style.borderColor='#E8E0D0';if(!this.value)this.style.height='44px'"
+        >${esc(entry.items[i] || '')}</textarea>
+    </div>`).join('');
+
+  return `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+      <div style="font-size:13px;font-weight:700;color:#6B5E50">${_fmtDate(today)}</div>
+      <div style="background:${streak>0?'#FFF3E0':'#F5F0E8'};border:1px solid ${streak>0?'#F4A830':'#D4C8B8'};border-radius:20px;padding:4px 12px;font-size:12px;font-weight:700;color:${streak>0?'#D4830A':'#9A8B7A'}">🔥 連續 ${streak} 天</div>
+    </div>
+
+    <div style="background:#fff;border:1.5px solid #E8E0D0;border-radius:14px;padding:18px;margin-bottom:16px">
+      <div style="font-size:13px;font-weight:700;color:#111318;margin-bottom:14px;display:flex;align-items:center;gap:8px">
+        <span style="width:4px;height:16px;background:#B8943C;border-radius:2px;display:inline-block"></span>
+        今日五大成果
+      </div>
+      ${itemsHTML}
+    </div>
+
+    <div style="background:#fff;border:1.5px solid #E8E0D0;border-radius:14px;padding:16px;margin-bottom:20px">
+      <div style="font-size:12px;font-weight:700;color:#6B5E50;margin-bottom:10px">今日狀態</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">${moodHTML}</div>
+    </div>
+
+    <button onclick="_jSubmitToday()" style="width:100%;background:linear-gradient(135deg,#B8943C,#9A7B2E);color:#fff;border:none;border-radius:12px;padding:15px;font-size:15px;font-weight:900;cursor:pointer;font-family:inherit;letter-spacing:.02em;box-shadow:0 4px 16px rgba(154,123,46,0.3)">
+      ${entry.submitted ? '✅ 今日已記錄，再次儲存' : '📝 記錄今日成果'}
+    </button>
+    ${entry.submitted ? `<div style="text-align:center;font-size:11px;color:#9A8B7A;margin-top:8px">今天的成果已記錄 ✓</div>` : ''}
+  `;
+}
+
+function _jSelectMood(val) {
+  const uid = libCurrentUser.id;
+  const today = new Date().toISOString().split('T')[0];
+  const entry = _jGetEntry(uid, today) || { items: ['','','','',''], mood: null, submitted: false };
+  entry.mood = entry.mood === val ? null : val;
+  _jSaveEntry(uid, today, entry);
+  // 更新按鈕樣式
+  JOURNAL_MOODS.forEach(m => {
+    const btn = document.getElementById('jmood-' + m.val);
+    if (!btn) return;
+    const sel = entry.mood === m.val;
+    btn.style.background = sel ? '#B8943C' : '#fff';
+    btn.style.color = sel ? '#fff' : '#6B5E50';
+    btn.style.borderColor = sel ? '#B8943C' : '#D4C8B8';
+    btn.style.fontWeight = sel ? '700' : '400';
+  });
+}
+
+function _jAutoSave() {
+  const uid = libCurrentUser.id;
+  const today = new Date().toISOString().split('T')[0];
+  const entry = _jGetEntry(uid, today) || { items: ['','','','',''], mood: null, submitted: false };
+  JOURNAL_PROMPTS.forEach((_, i) => {
+    const el = document.getElementById('jitem-' + i);
+    if (el) entry.items[i] = el.value;
+  });
+  // 更新序號顏色
+  JOURNAL_PROMPTS.forEach((_, i) => {
+    const numEl = document.querySelector(`#journal-content [id="jitem-${i}"]`)?.previousElementSibling;
+    if (numEl) {
+      numEl.style.background = entry.items[i] ? '#B8943C' : '#E8E0D0';
+      numEl.style.color = entry.items[i] ? '#fff' : '#9A8B7A';
+    }
+  });
+  _jSaveEntry(uid, today, entry);
+}
+
+function _jSubmitToday() {
+  const uid = libCurrentUser.id;
+  const today = new Date().toISOString().split('T')[0];
+  const entry = _jGetEntry(uid, today) || { items: ['','','','',''], mood: null, submitted: false };
+  JOURNAL_PROMPTS.forEach((_, i) => {
+    const el = document.getElementById('jitem-' + i);
+    if (el) entry.items[i] = el.value;
+  });
+  const filledCount = entry.items.filter(x => x.trim()).length;
+  if (filledCount === 0) { showToast('至少寫一條成果！'); return; }
+  entry.submitted = true;
+  entry.submittedAt = new Date().toISOString();
+  _jSaveEntry(uid, today, entry);
+  showToast(`✅ 記錄完成！今天寫了 ${filledCount} 條成果`);
+  // XP
+  if (typeof growthAddPts === 'function' && libCurrentUser && libUserData) {
+    growthAddPts(3, '成功日記打卡');
+    const streak = _calcStreak(uid);
+    if (streak >= 7) growthAddPts(10, '日記連續7天');
+  }
+  showJournalTab('today');
+}
+
+function _calcStreak(uid) {
+  const dates = _jAllDates(uid);
+  if (!dates.length) return 0;
+  let streak = 0;
+  let d = new Date();
+  for (let i = 0; i < 60; i++) {
+    const ds = d.toISOString().split('T')[0];
+    const e = _jGetEntry(uid, ds);
+    if (e && e.submitted) { streak++; d.setDate(d.getDate() - 1); }
+    else if (i === 0) { d.setDate(d.getDate() - 1); } // 今天還沒填不打斷
+    else break;
+  }
+  return streak;
+}
+
+function _renderJournalHistory() {
+  const uid = libCurrentUser.id;
+  const dates = _jAllDates(uid).filter(d => {
+    const e = _jGetEntry(uid, d);
+    return e && (e.submitted || e.items.some(x => x.trim()));
+  });
+  if (!dates.length) return `<div style="text-align:center;padding:40px 0;color:#9A8B7A"><div style="font-size:32px;margin-bottom:12px">📭</div><div style="font-size:14px">還沒有歷史記錄</div><div style="font-size:12px;margin-top:6px">先去填今日成果吧！</div></div>`;
+
+  return dates.map(date => {
+    const entry = _jGetEntry(uid, date);
+    const filled = entry.items.filter(x => x.trim());
+    const mood = JOURNAL_MOODS.find(m => m.val === entry.mood);
+    return `
+      <div style="background:#fff;border:1.5px solid #E8E0D0;border-radius:12px;padding:14px 16px;margin-bottom:10px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div style="font-size:12px;font-weight:700;color:#6B5E50">${_fmtDate(date)}</div>
+          <div style="display:flex;gap:6px;align-items:center">
+            ${mood ? `<span style="font-size:13px">${mood.emoji}</span>` : ''}
+            <span style="font-size:10px;font-weight:700;color:#B8943C;background:rgba(184,148,60,0.1);border-radius:8px;padding:2px 8px">${filled.length} 條</span>
+          </div>
+        </div>
+        ${filled.map((txt, i) => `
+          <div style="display:flex;gap:8px;margin-bottom:6px;align-items:flex-start">
+            <div style="width:18px;height:18px;border-radius:50%;background:#B8943C;color:#fff;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">${i+1}</div>
+            <div style="font-size:13px;color:#111318;line-height:1.5;flex:1">${esc(txt)}</div>
+          </div>`).join('')}
+      </div>`;
+  }).join('');
+}
+
+function _renderJournalStats() {
+  const uid = libCurrentUser.id;
+  const allDates = _jAllDates(uid);
+  const submitted = allDates.filter(d => { const e = _jGetEntry(uid,d); return e && e.submitted; });
+  const totalItems = submitted.reduce((acc, d) => {
+    const e = _jGetEntry(uid, d);
+    return acc + (e ? e.items.filter(x=>x.trim()).length : 0);
+  }, 0);
+  const streak = _calcStreak(uid);
+  const maxStreak = _calcMaxStreak(uid);
+
+  // 本月熱圖
+  const now = new Date();
+  const year = now.getFullYear(), month = now.getMonth();
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const firstDay = new Date(year, month, 1).getDay();
+  const monthPrefix = `${year}-${String(month+1).padStart(2,'0')}-`;
+
+  let calCells = Array(firstDay).fill('<div></div>').join('');
+  for (let d = 1; d <= daysInMonth; d++) {
+    const ds = monthPrefix + String(d).padStart(2,'0');
+    const e = _jGetEntry(uid, ds);
+    const done = e && e.submitted;
+    const isToday = ds === now.toISOString().split('T')[0];
+    calCells += `<div style="aspect-ratio:1;border-radius:6px;background:${done?'#B8943C':isToday?'rgba(184,148,60,0.2)':'#F0EBE3'};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:${isToday?'700':'400'};color:${done?'#fff':isToday?'#B8943C':'#9A8B7A'}${done?';box-shadow:0 2px 6px rgba(184,148,60,0.3)':''}">${d}</div>`;
+  }
+
+  return `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px">
+      ${[['累計天數', submitted.length, '📅'], ['目前連續', streak, '🔥'], ['總記錄成果', totalItems, '✍️'], ['最長連續', maxStreak, '🏆']].map(([label, val, icon]) => `
+        <div style="background:#fff;border:1.5px solid #E8E0D0;border-radius:14px;padding:18px;text-align:center">
+          <div style="font-size:28px;font-weight:900;color:#B8943C;font-family:'Noto Serif TC',serif">${val}</div>
+          <div style="font-size:11px;color:#9A8B7A;margin-top:4px">${icon} ${label}</div>
+        </div>`).join('')}
+    </div>
+    <div style="background:#fff;border:1.5px solid #E8E0D0;border-radius:14px;padding:16px">
+      <div style="font-size:12px;font-weight:700;color:#6B5E50;margin-bottom:12px">本月記錄熱度</div>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:6px">
+        ${['日','一','二','三','四','五','六'].map(d=>`<div style="text-align:center;font-size:9px;color:#9A8B7A;font-weight:700">${d}</div>`).join('')}
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">${calCells}</div>
+    </div>
+  `;
+}
+
+function _calcMaxStreak(uid) {
+  const dates = _jAllDates(uid).filter(d => { const e = _jGetEntry(uid,d); return e && e.submitted; }).sort();
+  if (!dates.length) return 0;
+  let max = 1, cur = 1;
+  for (let i = 1; i < dates.length; i++) {
+    const prev = new Date(dates[i-1]), curr = new Date(dates[i]);
+    const diff = (curr - prev) / 86400000;
+    if (diff === 1) { cur++; max = Math.max(max, cur); }
+    else cur = 1;
+  }
+  return max;
 }
 
 function libLogout() {
