@@ -7296,6 +7296,154 @@ const QUIZ_QUESTIONS = [
   }
 ];
 
+// ── 猜話術題庫（type: 'response'）── 客戶說這句，你怎麼回？
+const RESPONSE_QUESTIONS = [
+  {
+    id: 'r1', type: 'response',
+    situation: '客戶聽你介紹完，面無表情說：「這個價格太高了，我沒有辦法。」',
+    question: '你的最佳第一句話是？',
+    options: [
+      { text: 'A — 「你覺得多少才合理？我去幫你談看看」', correct: false, feedback: '把球踢回去讓客戶出價，你就失去了主導權。而且他說出一個低數字，你後面就很難拉回來。' },
+      { text: 'B — 「你說價格太高——是跟哪個案子比，還是跟你的預算比？」', correct: true, feedback: '對！先搞清楚「高」的參照點才能繼續對話。跟預算比 vs 跟競品比，是完全不同的問題，解法也不同。這句話讓你先聽懂他，再決定怎麼說。' },
+      { text: 'C — 「你先聽我說完，這個價格真的很值得……」', correct: false, feedback: '他說高，你立刻說值得，是正面衝突。他的防禦心馬上升起，後面說什麼他都不想聽了。' }
+    ]
+  },
+  {
+    id: 'r2', type: 'response',
+    situation: '帶看完回到接待中心，客戶說：「我還要去看幾個案子比較一下。」然後拿起包包準備走。',
+    question: '在他離開前，你最應該說哪句話？',
+    options: [
+      { text: 'A — 「好沒問題，去比較看看，有問題再找我。」', correct: false, feedback: '你放棄了最後的主動機會。他出門後熱度下降，等他比完回來你又要重新從零開始燒。' },
+      { text: 'B — 「你說要比較——你評分一間房子，最重要的前三個條件是什麼？我照這三個幫你對。」', correct: true, feedback: '讓他說出自己的標準，你就得到了他的決策邏輯。而且幫他「對」，讓他沒有理由特別去別處比。掌握標準 = 掌握比較的框架。' },
+      { text: 'C — 「我告訴你我們跟別的案子比，哪裡更好……」', correct: false, feedback: '你主動攻擊競品，他反而對你更防禦。他還沒說去哪比，你就先打，顯得很心虛。讓他說出競品缺點比你說有力十倍。' }
+    ]
+  },
+  {
+    id: 'r3', type: 'response',
+    situation: '客戶說：「現在景氣不好，買了之後萬一跌怎麼辦？我不敢賭。」語氣很認真，眼神直視著你。',
+    question: '這時候你應該？',
+    options: [
+      { text: 'A — 告訴他房地產長期一定漲，給他數據和案例', correct: false, feedback: '他說「不敢賭」，你給數據說明「長期一定漲」，在他耳裡聽起來就是「你繼續賭」。這個時候數據不能解決他的情緒，先聽懂他的恐懼才能繼續。' },
+      { text: 'B — 「你說怕跌——你現在最擔心的是什麼情況發生？」', correct: true, feedback: '讓他說出他的具體恐懼，你才知道真正的卡點是什麼。是怕短期資金套牢？是怕房價腰斬？是怕影響生活品質？恐懼說出來，才能具體拆解，不說你只能猜。' },
+      { text: 'C — 「你買的是自住還是投資？自住不用在意漲跌。」', correct: false, feedback: '這句話對的情況是他是自住客。但你還不確定，直接說可能說錯對象。先讓他說恐懼，確認需求，再決定用這個框架。' }
+    ]
+  },
+  {
+    id: 'r4', type: 'response',
+    situation: '你在電話追蹤，客戶說：「你好，最近比較忙，等我有空再聯絡你。」語氣平淡，沒有明顯情緒。',
+    question: '這通電話你應該怎麼做？',
+    options: [
+      { text: 'A — 「好好，那你忙完了再找我，我等你。」', correct: false, feedback: '主動權完全交出去了。「等你」的意思就是你從主動變被動，客戶下次不一定會記得找你，熱度只會繼續掉。' },
+      { text: 'B — 「好，我不打擾你太久——我先問一下，你說的比較忙，大概是忙到什麼時候？」', correct: true, feedback: '這樣做兩件事：尊重他的時間（不強逼），同時鎖住一個時間點，讓「等你」變成「X號之後」。有時間錨點，下次追蹤就有合理理由再接觸。' },
+      { text: 'C — 「沒關係，但我有一個最新的消息你可能想知道……」', correct: false, feedback: '他剛說忙，你立刻說「有消息」，他會覺得你在繞過他說的話強行推銷。如果他的忙是真的，這樣只會讓他更煩。先鎖時間，消息留到下次。' }
+    ]
+  },
+  {
+    id: 'r5', type: 'response',
+    situation: '客戶昨天看完很開心，今天突然傳訊息：「昨天想了一下，我覺得現在時機不對，先暫緩好了。」',
+    question: '你回覆的第一句應該是？',
+    options: [
+      { text: 'A — 「你想太多了！昨天你也說覺得很好啊，是發生什麼事嗎？」', correct: false, feedback: '「你想太多了」是否定他的感受，他立刻就會防禦。昨天說好今天反悔，是情緒上有東西卡住，不是邏輯問題，不能用邏輯反駁。' },
+      { text: 'B — 「我收到了。你說時機不對——是外部有什麼變化，還是昨天看完後有哪個地方讓你不確定？」', correct: true, feedback: '先接住他的訊號，不急著反駁。然後把問題分成兩個方向讓他選——外部變化還是內部疑慮，他選哪個你都得到資訊，才能繼續推進。' },
+      { text: 'C — 「好，那等你時機對了再說吧。」', correct: false, feedback: '這等於真的放棄了。「時機不對」幾乎永遠不會變成「時機對了」，如果你接受這個說法等他，這個客戶基本上就流失了。' }
+    ]
+  },
+  {
+    id: 'r6', type: 'response',
+    situation: '客戶說：「我朋友上個月買了一間，結果比他買的時候便宜了50萬，我怕我也這樣。」',
+    question: '你的回應策略是？',
+    options: [
+      { text: 'A — 說明你們的案子和他朋友買的不同，不會這樣', correct: false, feedback: '你說不會跌，等於跟他在爭。他有具體案例，你說不會，他更不信你。不要和恐懼爭辯，要讓恐懼說話。' },
+      { text: 'B — 「你朋友那間之後有什麼變化嗎？他現在後悔了還是說無所謂？」', correct: true, feedback: '先讓他說完他朋友的故事，你從中了解他真正怕的是什麼。而且，朋友買了「短期跌50萬」——現在呢？如果之後漲回來，這個問題就自己解了。讓對話繼續，不要急著反駁。' },
+      { text: 'C — 「買房要看長線，短期波動不重要。」', correct: false, feedback: '你說長線，他說短期跌50萬，這是雞同鴨講。你的邏輯沒有錯，但他現在聽不進去，因為他的情緒還在那50萬上面。先處理情緒，再說邏輯。' }
+    ]
+  },
+  {
+    id: 'r7', type: 'response',
+    situation: '客戶很認真地說：「我想要先把頭期款存夠再說，現在存了大概七成了。」',
+    question: '這是什麼訊號？你的第一句話是？',
+    options: [
+      { text: 'A — 「那你大概還要多久才能存夠？」', correct: false, feedback: '問時間是在幫他繼續等。他說「七成了」是在告訴你進度，不是在說他要繼續等——這句話是可以推進的訊號，不是要你幫他計算等待時間。' },
+      { text: 'B — 「你有沒有想過，你存錢的這段時間，房價也在跑？」', correct: true, feedback: '這是關鍵的框架破解。存錢存的是靜止的數字，但房價在動。他存的速度跟得上房價漲的速度嗎？這個問題讓他開始重新計算，而不是繼續等。' },
+      { text: 'C — 「你已經七成了，其實可以開始準備了，你知道嗎？」', correct: false, feedback: '這句話不錯，但少了衝擊感。他存七成的邏輯可能是「非得存夠才行」，你說「可以開始準備」他還是覺得不夠。先打破「存夠才能買」的框架，後面說「七成就夠了」才有說服力。' }
+    ]
+  },
+  {
+    id: 'r8', type: 'response',
+    situation: '客戶說：「我聽說你們建商之前有延遲交屋的記錄，這讓我有點擔心。」',
+    question: '你的回應是？',
+    options: [
+      { text: 'A — 立刻解釋那次延遲的原因，說明這次不會這樣', correct: false, feedback: '你急著解釋，他會覺得你在護短。就算解釋是真的，聽起來還是像辯護。先承認他的擔心是合理的，再說明，這樣可信度高很多。' },
+      { text: 'B — 「你說有聽說——你聽到的是哪個案子？讓我先確認一下，因為情況可能不太一樣。」', correct: true, feedback: '先搞清楚他聽到的是什麼，有幾種可能：資訊是錯的、是別的建商、或是真實但有特殊背景。你不能在不知道他聽到什麼的情況下就急著解釋——搞清楚才能對症回應。' },
+      { text: 'C — 「業界多少都有這種事，我們已經改善了。」', correct: false, feedback: '「業界都有」等於承認了，然後說改善了，他的擔心不減反增。這句話的殺傷力比你想像的大。' }
+    ]
+  }
+];
+
+// ── 猜地雷題庫（type: 'minefield'）── 這段回應哪裡說錯了？
+const MINEFIELD_QUESTIONS = [
+  {
+    id: 'm1', type: 'minefield',
+    situation: '客戶說「我再想想」，業務回應：「好，那你回去想清楚，有問題隨時找我，我等你消息。」',
+    question: '這個回應最大的問題在哪裡？',
+    options: [
+      { text: 'A — 說「等你消息」把主動權完全交出去了', correct: true, feedback: '答對！「我等你消息」代表接下來的主動權在客戶那邊——他不聯絡，對話就死了。正確做法是鎖住下一個接觸點：「那我X號再跟你確認一下，你看可以嗎？」主動權要留在你手裡。' },
+      { text: 'B — 不應該說「想清楚」，這樣有壓力', correct: false, feedback: '「想清楚」語感稍重，但不是這個回應最大的問題。最致命的是讓主動權消失——客戶說再見，你也說再見，對話就結束了。' },
+      { text: 'C — 應該繼續補充資料讓他帶回去參考', correct: false, feedback: '補資料可以，但不是這個回應的主要問題。他說再想想，最重要的是你不能讓這個「想想」變成無限期等待，要鎖時間。' }
+    ]
+  },
+  {
+    id: 'm2', type: 'minefield',
+    situation: '客戶說「我家人不同意」，業務說：「你媽又不是幫你買，幹嘛聽她的？你自己覺得好才最重要。」',
+    question: '這個回應犯了什麼錯？',
+    options: [
+      { text: 'A — 語氣太強硬，應該溫柔一點說同樣的話', correct: false, feedback: '不只是語氣問題。就算溫柔地說「家人又沒幫你買」，邏輯本身就是在攻擊他的家人關係。客戶聽到這句話，會本能地站到家人那邊。' },
+      { text: 'B — 在沒搞清楚家人角色的情況下就否定家人意見', correct: true, feedback: '答對！家人可能是出資的Keyman，你說「不用聽她的」就等於讓他放棄最重要的決策成員。就算不是出資的，攻擊他的家人關係只會讓客戶更防禦。正確做法是先問清楚家人角色，再決定怎麼處理。' },
+      { text: 'C — 沒有繼續介紹案子優點，說服力不夠', correct: false, feedback: '問題不是缺少優點介紹——問題是這句話主動攻擊了他的家人，讓客戶立刻防禦。繼續介紹優點無法解決這個已經造成的傷害。' }
+    ]
+  },
+  {
+    id: 'm3', type: 'minefield',
+    situation: '客戶說「我股票放著就好，報酬也不差」，業務回應：「但是房地產長期來看報酬率比股票穩定，你看這個數據……」然後開始講數字。',
+    question: '這個策略哪裡有問題？',
+    options: [
+      { text: 'A — 數據可能不準確，要用更可靠的來源', correct: false, feedback: '數據準不準是次要問題。真正的問題是策略方向錯了——和股票比報酬率，你進了他最熟悉的戰場，而且他對自己的股票比你更了解，這場比較你很難贏。' },
+      { text: 'B — 接受了「房地產vs股票」的比較框架，在他的主場打仗', correct: true, feedback: '答對！他一說股票，業務就跟著進入股票vs房地產的比較戰。但這個框架本來就對你不利——他更懂他的股票。正確做法是破框：「我不是要你放棄股票，我是說你有沒有聽過讓你600萬控制5000萬的方法？」把房地產定位成槓桿工具，不是替代品。' },
+      { text: 'C — 說話速度太快，讓客戶來不及思考', correct: false, feedback: '速度不是這裡的問題。根本的錯誤是進入了一個對你不利的比較框架，不管說得多慢、多有條理，在這個框架裡你都很難贏。' }
+    ]
+  },
+  {
+    id: 'm4', type: 'minefield',
+    situation: '客戶說「我現在不想動資金」，業務說：「沒問題，今天就隨便聊聊，你有興趣的話跟我說就好。」然後開始隨意介紹。',
+    question: '這個開場最大的問題是？',
+    options: [
+      { text: 'A — 說「隨便聊聊」讓自己顯得不專業', correct: false, feedback: '「隨便聊聊」語感確實輕率，但不是最大的問題。更嚴重的是業務接受了「不動資金」這個設定，卻沒有理解背後的真正含義。' },
+      { text: 'B — 接受了「不動資金」的設定，但沒有驗證這是真的卡點還是槓桿需求', correct: true, feedback: '答對！「不想動資金」通常不是拒絕，是在問「有沒有不需要動現有資金的方式」。業務沒有驗證這句話的真實意思就接受了，等於錯過了切入點。應該問：「你說不想動資金——是時機不對，還是你希望有不需要動現有資金就能進場的方式？」' },
+      { text: 'C — 應該先讓客戶坐下來，不要站著聊', correct: false, feedback: '環境設定是細節，不是這個對話的核心問題。最重要的是業務沒有理解「不動資金」背後的真正訊號就直接跳過了。' }
+    ]
+  },
+  {
+    id: 'm5', type: 'minefield',
+    situation: '客戶說「我想再比較一下其他案子」，業務說：「好，那你去比較，如果有問題的話再來找我，我的電話你有嗎？」然後給名片。',
+    question: '這個回應哪裡出了問題？',
+    options: [
+      { text: 'A — 給名片太早，應該等他真的要走再給', correct: false, feedback: '名片的時機點不是這裡最大的問題。更嚴重的是業務讓客戶帶著比較的衝動離開，卻沒有掌握他的比較標準。' },
+      { text: 'B — 讓客戶去比較時，沒有先掌握他的評分標準', correct: true, feedback: '答對！讓客戶出門比較，最危險的事是你不知道他用什麼在比。正確做法是在他離開前問：「你說要比較，你評分一間房子最重要的前三個條件是什麼？我照這三個幫你對一下。」掌握標準 = 掌握比較的框架，他就沒有理由特別跑去別處比了。' },
+      { text: 'C — 應該說「你不要去比了，我們這邊最好」', correct: false, feedback: '直接說「不要去比」更糟——顯得你有壓力，讓客戶更想出去看看。問題不是阻止他比較，而是要在他比較之前掌握他的標準。' }
+    ]
+  },
+  {
+    id: 'm6', type: 'minefield',
+    situation: '客戶解釋完疑慮後，業務說：「我知道你的疑慮，但其實這個問題不大，你不用太擔心，因為……」然後開始長篇解釋。',
+    question: '這個開頭犯了哪個常見的地雷？',
+    options: [
+      { text: 'A — 說「不用太擔心」是在否定客戶的感受', correct: true, feedback: '答對！「不用太擔心」等於告訴他「你的擔心是多餘的」——這是在否定他的感受，不是在理解他。客戶聽到這句話，第一反應是「你根本沒在聽我說話」，然後防禦升起。正確做法是先接住感受：「你說的這個擔心很正常，我遇過很多人一開始都有這個疑慮……」再說明。' },
+      { text: 'B — 後面的解釋太長，重點應該要更精簡', correct: false, feedback: '長篇解釋是問題，但更根本的地雷是開頭那句「不用太擔心」。就算後面說得再精簡，開頭先否定他的感受，他已經關掉耳朵了。' },
+      { text: 'C — 應該先問問題，不要急著解釋', correct: false, feedback: '先問問題的方向是對的，但這個選項只說了「應該先問」，沒有指出最具體的地雷——開頭那句「不用太擔心」正在否定客戶的感受，是立即造成防禦的話。' }
+    ]
+  }
+];
+
 let quizState = { current: 0, score: 0, answers: [] };
 let quizShuffled = [];
 
@@ -7316,24 +7464,25 @@ function showQuizMode() {
   setActive('nav-quiz');
 
   const TOTAL = 6;
-  // 從全部 SCRIPTS 隨機抽，優先從靜態題庫有題目的話術中抽
-  const pool = shuffleArray(SCRIPTS.filter(s =>
-    !s.trigger.startsWith('（自我提醒）') &&
-    (SCRIPT_QUIZ_DB[s.id] || QUIZ_QUESTIONS.find(q => q.scriptId === s.id))
+
+  // ── 三種題型各抽 2 題，混合出題 ──
+  const decodePool = shuffleArray(QUIZ_QUESTIONS.filter(q => q.type === 'decode'));
+  const responsePool = shuffleArray(RESPONSE_QUESTIONS);
+  const minefieldPool = shuffleArray(MINEFIELD_QUESTIONS);
+
+  // 也把 SCRIPT_QUIZ_DB 裡的加進 decode pool
+  const dbPool = shuffleArray(SCRIPTS.filter(s =>
+    !s.trigger.startsWith('（自我提醒）') && SCRIPT_QUIZ_DB[s.id]
   ));
+  const dbQuestions = dbPool.slice(0, 2).map(s => SCRIPT_QUIZ_DB[s.id]);
 
-  const questions = [];
-  for (let i = 0; i < Math.min(TOTAL, pool.length); i++) {
-    const s = pool[i];
-    if (SCRIPT_QUIZ_DB[s.id]) {
-      questions.push(SCRIPT_QUIZ_DB[s.id]);
-    } else {
-      const existing = QUIZ_QUESTIONS.find(q => q.scriptId === s.id);
-      if (existing) questions.push(existing);
-    }
-  }
+  const decodeQuestions = [...dbQuestions, ...decodePool].slice(0, 2);
+  const responseQuestions = responsePool.slice(0, 2);
+  const minefieldQuestions = minefieldPool.slice(0, 2);
 
-  quizShuffled = questions.slice(0, TOTAL);
+  // 混合後再打亂順序
+  const mixed = shuffleArray([...decodeQuestions, ...responseQuestions, ...minefieldQuestions]);
+  quizShuffled = mixed.slice(0, TOTAL);
   quizState = { current: 0, score: 0, answers: [] };
   renderQuizQuestion();
 }
@@ -7403,14 +7552,23 @@ function renderQuizQuestion() {
                       streak >= 1 ? `<span class="streak-label">連對 ${streak}</span>` :
                       `<span class="streak-label">${quizState.current + 1} / ${total}</span>`;
 
+  // 根據題型決定標籤和顏色
+  const typeMap = {
+    decode:    { badge: '🔍 解讀客戶', color: '#3D5A40', bg: 'rgba(61,90,64,0.08)' },
+    response:  { badge: '💬 最佳回應', color: '#2563EB', bg: 'rgba(37,99,235,0.07)' },
+    minefield: { badge: '💣 找出地雷', color: '#B45309', bg: 'rgba(180,83,9,0.08)' }
+  };
+  const tm = typeMap[q.type] || typeMap.decode;
+
   renderMain(`
-    <div class="view-eyebrow">🧠 解碼練習 · 第二層</div>
+    <div class="view-eyebrow">🧠 課程練習</div>
     <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:12px">先猜，再對照</div>
     <div class="streak-bar">${streakDots}${streakLabel}</div>
     <div style="background:var(--surface2);border:1px solid var(--border);border-radius:20px;height:4px;margin-bottom:16px;overflow:hidden">
       <div style="height:100%;background:var(--olive);border-radius:20px;width:${progress}%;transition:width .3s"></div>
     </div>
     <div class="quiz-container">
+      <div style="margin-bottom:10px"><span style="font-size:10px;font-weight:800;letter-spacing:.08em;color:${tm.color};background:${tm.bg};padding:3px 10px;border-radius:20px">${tm.badge}</span></div>
       <div class="quiz-situation">${esc(q.situation)}</div>
       <div class="quiz-q">${esc(q.question)}</div>
       <div class="quiz-options" id="quiz-opts">
@@ -11259,11 +11417,12 @@ function libEnterApp() {
 // ══════════════════════════════════════
 
 const JOURNAL_PROMPTS = [
-  '做了一件什麼事？',
-  '學到或想通了什麼？',
-  '幫助了誰或帶動了誰？',
-  '克服了什麼挑戰？',
-  '任何小事都算，寫下來！',
+  '今天接觸了哪些潛在客戶或人脈？',
+  '今天更理解了客戶哪個需求或痛點？',
+  '今天幫了誰或解決了什麼問題？',
+  '今天突破了哪個開發或成交卡點？',
+  '今天哪件小事讓自己離目標更近？',
+  '今天做了什麼讓自己更像顧問而不是業務？',
 ];
 const JOURNAL_MOODS = [
   { emoji:'🔥', label:'燃', val:'fire' },
