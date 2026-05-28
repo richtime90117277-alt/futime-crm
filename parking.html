@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>富時代｜Parking 資金教學</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700;900&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F5F0E8;
+  --surface: #FFFFFF;
+  --surface2: #F9F6F1;
+  --border: #E0D8CC;
+  --olive: #3D5A40;
+  --olive-light: #4E7254;
+  --olive-dim: rgba(61,90,64,0.08);
+  --gold: #8A6A1E;
+  --gold-light: #B8943C;
+  --gold-dim: rgba(138,106,30,0.10);
+  --text: #1E1A14;
+  --text-sub: #5C5344;
+  --text-dim: #9A8F82;
+  --red: #B84040;
+  --red-dim: rgba(184,64,64,0.09);
+  --blue: #2A4A7A;
+  --blue-dim: rgba(42,74,122,0.09);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 2px 12px rgba(0,0,0,0.07);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Noto Sans TC', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.7;
+  min-height: 100vh;
+  padding-bottom: 60px;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--olive);
+  padding: 12px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.topbar-brand {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 13px; font-weight: 700;
+  color: rgba(255,255,255,0.9); letter-spacing: .08em;
+}
+.topbar-title {
+  font-size: 12px; font-weight: 500;
+  color: rgba(255,255,255,0.65); letter-spacing: .06em;
+}
+.topbar-date {
+  font-size: 11px; color: rgba(255,255,255,0.45);
+}
+
+/* ── HERO ── */
+.hero {
+  background: var(--olive);
+  padding: 28px 20px 36px;
+  text-align: center;
+  position: relative; overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 30px,
+    rgba(255,255,255,0.02) 30px,
+    rgba(255,255,255,0.02) 31px
+  );
+  pointer-events: none;
+}
+.hero-tag {
+  display: inline-block;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 20px; padding: 3px 14px;
+  font-size: 10px; font-weight: 700; letter-spacing: .15em;
+  color: rgba(255,255,255,0.7); margin-bottom: 12px;
+  text-transform: uppercase;
+}
+.hero-title {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 22px; font-weight: 900;
+  color: #fff; line-height: 1.4;
+  margin-bottom: 8px;
+}
+.hero-sub {
+  font-size: 12px; color: rgba(255,255,255,0.55);
+  line-height: 1.6;
+}
+
+/* ── NAV TABS ── */
+.nav-tabs {
+  display: flex; gap: 0;
+  background: var(--surface);
+  border-bottom: 2px solid var(--border);
+  overflow-x: auto; scrollbar-width: none;
+  position: sticky; top: 45px; z-index: 90;
+}
+.nav-tabs::-webkit-scrollbar { display: none; }
+.nav-tab {
+  flex-shrink: 0;
+  padding: 11px 18px;
+  font-size: 12px; font-weight: 700;
+  color: var(--text-dim); cursor: pointer;
+  border-bottom: 2.5px solid transparent;
+  margin-bottom: -2px; transition: all .15s;
+  white-space: nowrap; background: none; border-top: none; border-left: none; border-right: none;
+  font-family: inherit;
+}
+.nav-tab.active { color: var(--olive); border-bottom-color: var(--olive); }
+.nav-tab:hover:not(.active) { color: var(--text-sub); }
+
+/* ── SECTIONS ── */
+.section { display: none; padding: 16px; }
+.section.active { display: block; }
+
+/* ── CARDS ── */
+.card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow);
+}
+.card-header {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 14px;
+}
+.card-icon {
+  width: 36px; height: 36px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+}
+.icon-olive { background: var(--olive-dim); }
+.icon-gold { background: var(--gold-dim); }
+.icon-red { background: var(--red-dim); }
+.icon-blue { background: var(--blue-dim); }
+.card-title {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 15px; font-weight: 700; color: var(--text);
+}
+.card-subtitle { font-size: 11px; color: var(--text-dim); margin-top: 1px; }
+
+/* ── TABLE ── */
+.data-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 13px;
+}
+.data-table th {
+  background: var(--surface2);
+  font-weight: 700; font-size: 11px;
+  letter-spacing: .06em; color: var(--text-sub);
+  padding: 8px 10px; text-align: left;
+  border-bottom: 1.5px solid var(--border);
+}
+.data-table td {
+  padding: 10px;
+  border-bottom: 1px solid var(--border-light, #EDEEF1);
+  vertical-align: top;
+}
+.data-table tr:last-child td { border-bottom: none; }
+.badge {
+  display: inline-block;
+  padding: 2px 9px; border-radius: 20px;
+  font-size: 11px; font-weight: 700;
+}
+.badge-olive { background: var(--olive-dim); color: var(--olive); }
+.badge-gold { background: var(--gold-dim); color: var(--gold); }
+.badge-red { background: var(--red-dim); color: var(--red); }
+.badge-blue { background: var(--blue-dim); color: var(--blue); }
+
+/* ── CALLOUT ── */
+.callout {
+  border-radius: var(--radius-sm);
+  padding: 13px 15px;
+  margin: 12px 0;
+  font-size: 13px; line-height: 1.6;
+  display: flex; gap: 10px; align-items: flex-start;
+}
+.callout-icon { font-size: 17px; flex-shrink: 0; margin-top: 1px; }
+.callout-olive { background: var(--olive-dim); border-left: 3px solid var(--olive); }
+.callout-gold { background: var(--gold-dim); border-left: 3px solid var(--gold-light); }
+.callout-red { background: var(--red-dim); border-left: 3px solid var(--red); }
+.callout-blue { background: var(--blue-dim); border-left: 3px solid var(--blue); }
+
+/* ── STRATEGY STEPS ── */
+.step-row {
+  display: flex; align-items: stretch; gap: 0;
+  margin-bottom: 0;
+}
+.step-item {
+  flex: 1;
+  padding: 14px 12px;
+  text-align: center;
+  border: 1.5px solid var(--border);
+  position: relative;
+}
+.step-item:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
+.step-item:last-child { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+.step-item:not(:first-child) { border-left: none; }
+.step-num {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: .1em; color: var(--text-dim);
+  margin-bottom: 4px; text-transform: uppercase;
+}
+.step-pct {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 24px; font-weight: 900; color: var(--olive);
+  line-height: 1;
+}
+.step-label {
+  font-size: 11px; color: var(--text-sub);
+  margin-top: 5px; line-height: 1.4;
+}
+.step-item.step-now { background: var(--olive-dim); border-color: var(--olive); }
+.step-item.step-now .step-pct { color: var(--olive); }
+
+/* ── COMPARISON ── */
+.compare-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+}
+.compare-card {
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  background: var(--surface2);
+}
+.compare-card.highlight { background: var(--olive-dim); border-color: rgba(61,90,64,0.3); }
+.compare-label {
+  font-size: 10px; font-weight: 700; letter-spacing: .1em;
+  color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px;
+}
+.compare-card.highlight .compare-label { color: var(--olive); }
+.compare-tag {
+  display: inline-block; background: var(--olive); color: #fff;
+  font-size: 9px; font-weight: 700; letter-spacing: .08em;
+  padding: 2px 7px; border-radius: 10px; margin-bottom: 8px;
+}
+.compare-desc { font-size: 12px; color: var(--text-sub); line-height: 1.6; }
+.compare-card.highlight .compare-desc { color: var(--text); }
+
+/* ── RISK ITEMS ── */
+.risk-item {
+  display: flex; gap: 12px; align-items: flex-start;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface2);
+  margin-bottom: 8px;
+}
+.risk-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  flex-shrink: 0; margin-top: 5px;
+}
+.dot-red { background: var(--red); }
+.dot-gold { background: var(--gold-light); }
+.risk-title { font-size: 13px; font-weight: 700; color: var(--text); }
+.risk-desc { font-size: 12px; color: var(--text-sub); margin-top: 2px; line-height: 1.5; }
+
+/* ── TICKER ROW ── */
+.ticker-grid { display: flex; flex-direction: column; gap: 8px; }
+.ticker-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 14px;
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.ticker-code {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 13px; font-weight: 700; color: var(--olive);
+  min-width: 52px;
+}
+.ticker-name { font-size: 12px; color: var(--text-sub); flex: 1; }
+.ticker-note { font-size: 11px; color: var(--text-dim); text-align: right; }
+
+/* ── TSMC CARD ── */
+.tsmc-formula {
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px; flex-wrap: wrap;
+  padding: 16px; background: var(--olive-dim);
+  border-radius: var(--radius-sm); margin: 12px 0;
+}
+.formula-block {
+  text-align: center; padding: 8px 14px;
+  background: #fff; border: 1.5px solid var(--border);
+  border-radius: 8px;
+}
+.formula-val {
+  font-family: 'Noto Serif TC', serif;
+  font-size: 18px; font-weight: 900; color: var(--olive);
+}
+.formula-label { font-size: 10px; color: var(--text-dim); margin-top: 1px; }
+.formula-op { font-size: 20px; font-weight: 900; color: var(--text-dim); }
+.formula-result {
+  text-align: center; padding: 10px 18px;
+  background: var(--olive); border-radius: 8px;
+}
+.formula-result .formula-val { color: #fff; font-size: 20px; }
+.formula-result .formula-label { color: rgba(255,255,255,0.65); }
+
+/* ── SECTION LABEL ── */
+.section-label {
+  font-size: 10px; font-weight: 700; letter-spacing: .15em;
+  color: var(--text-dim); text-transform: uppercase;
+  margin: 20px 0 10px;
+}
+
+/* ── INFO LIST ── */
+.info-list { list-style: none; }
+.info-list li {
+  display: flex; gap: 8px; align-items: flex-start;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px; color: var(--text-sub); line-height: 1.6;
+}
+.info-list li:last-child { border-bottom: none; }
+.info-list li::before {
+  content: '—'; color: var(--olive); font-weight: 700;
+  flex-shrink: 0; margin-top: 1px;
+}
+
+/* ── BOTTOM HINT ── */
+.bottom-note {
+  text-align: center; font-size: 11px; color: var(--text-dim);
+  padding: 20px 16px 8px; line-height: 1.6;
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="topbar-brand">富時代地產</span>
+  <span class="topbar-title">Parking 資金教學</span>
+  <span class="topbar-date">2026.05.27</span>
+</div>
+
+<div class="hero">
+  <div class="hero-tag">財商武裝</div>
+  <div class="hero-title">Parking 資金<br>進階應用策略</div>
+  <div class="hero-sub">讓閒置資金聰明停泊，等待進場時機<br>常裕主講 · 2026-05-27 早會</div>
+</div>
+
+<nav class="nav-tabs">
+  <button class="nav-tab active" onclick="switchTab('strategy')">📊 進場策略</button>
+  <button class="nav-tab" onclick="switchTab('tsmc')">🔍 台積電指標</button>
+  <button class="nav-tab" onclick="switchTab('method')">📈 定期不定額</button>
+  <button class="nav-tab" onclick="switchTab('sectors')">🏭 族群輪動</button>
+  <button class="nav-tab" onclick="switchTab('risk')">⚠️ 風險提醒</button>
+</nav>
+
+<!-- ─── TAB 1：進場策略 ─── -->
+<div class="section active" id="tab-strategy">
+
+  <div class="callout callout-blue">
+    <span class="callout-icon">📌</span>
+    <div>因應台股上漲至 <strong>4.4 萬點</strong>，進場標準從下跌 5% 調高為 <strong>下跌 10%</strong>，資金分三批部署。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-olive">💰</div>
+      <div>
+        <div class="card-title">三批資金部署表</div>
+        <div class="card-subtitle">依台股指數分批進場</div>
+      </div>
+    </div>
+    <div class="step-row">
+      <div class="step-item step-now">
+        <div class="step-num">第一批</div>
+        <div class="step-pct">30%</div>
+        <div class="step-label">現在<br>立刻投入</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">第二批</div>
+        <div class="step-pct">30%</div>
+        <div class="step-label">跌至<br>4.0 萬點</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">第三批</div>
+        <div class="step-pct">40%</div>
+        <div class="step-label">跌至<br>3.8 萬點</div>
+      </div>
+    </div>
+    <div class="callout callout-gold" style="margin-top:14px;">
+      <span class="callout-icon">💡</span>
+      <div>第三批 40% 可再拆為兩個 <strong>20%</strong>，分別在 3.8 萬與 3.6 萬進場，降低集中風險。</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-blue">🎯</div>
+      <div>
+        <div class="card-title">今年危險區域</div>
+        <div class="card-subtitle">高位風險評估</div>
+      </div>
+    </div>
+    <div class="callout callout-red">
+      <span class="callout-icon">⚠️</span>
+      <div>預估危險區域：<strong>4.7 萬 ～ 5.5 萬點</strong><br>需搭配台積電價位判斷，若台積電仍在 2,300 多元徘徊，可繼續持有。</div>
+    </div>
+    <ul class="info-list">
+      <li>股市雖熱，但台積電未達本益比 30 倍關鍵價不代表崩盤</li>
+      <li>上次策略為跌 5% 進場，本次因基期較高改為跌 10%</li>
+      <li>長線持有者不需賣出，波段單才需在關鍵價位獲利了結</li>
+    </ul>
+  </div>
+
+</div>
+
+<!-- ─── TAB 2：台積電指標 ─── -->
+<div class="section" id="tab-tsmc">
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-olive">🏆</div>
+      <div>
+        <div class="card-title">台積電（2330）關鍵目標價</div>
+        <div class="card-subtitle">判斷大盤是否過熱的核心指標</div>
+      </div>
+    </div>
+    <div class="tsmc-formula">
+      <div class="formula-block">
+        <div class="formula-val">86 元</div>
+        <div class="formula-label">今年預估 EPS</div>
+      </div>
+      <div class="formula-op">×</div>
+      <div class="formula-block">
+        <div class="formula-val">30 倍</div>
+        <div class="formula-label">本益比上限</div>
+      </div>
+      <div class="formula-op">=</div>
+      <div class="formula-result">
+        <div class="formula-val">2,580 元</div>
+        <div class="formula-label">關鍵賣壓價位</div>
+      </div>
+    </div>
+    <ul class="info-list">
+      <li>達到 2,580 元時，預期出現大量賣壓</li>
+      <li>目前尚未創新高，主力刻意控盤不讓快速上漲</li>
+      <li>護城河評分 <strong>10/10</strong>，5–10 年內幾乎沒有對手</li>
+      <li>台積電未到目標價前，大盤雖熱但系統性風險有限</li>
+    </ul>
+  </div>
+
+  <div class="callout callout-olive">
+    <span class="callout-icon">📖</span>
+    <div><strong>如何使用這個指標？</strong><br>每天看台積電收盤價：距 2,580 元越近，越要留意停利準備；距離越遠，可以相對放心持有。</div>
+  </div>
+
+</div>
+
+<!-- ─── TAB 3：定期不定額 ─── -->
+<div class="section" id="tab-method">
+
+  <div class="compare-grid" style="margin-bottom:12px;">
+    <div class="compare-card">
+      <div class="compare-label">定期定額</div>
+      <div class="compare-desc">每次固定金額投入，不論價格高低，操作簡單但效率較低。</div>
+    </div>
+    <div class="compare-card highlight">
+      <div class="compare-label">定期不定額</div>
+      <div class="compare-tag">推薦 ▲</div>
+      <div class="compare-desc">跌越多買越多，相同資金累積更多低價單位數，報酬率高 5–10%。</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-olive">📐</div>
+      <div>
+        <div class="card-title">定期不定額操作方式</div>
+        <div class="card-subtitle">以每月 1 萬為基礎示範</div>
+      </div>
+    </div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>狀況</th>
+          <th>當月投入</th>
+          <th>說明</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>股價正常</td>
+          <td><span class="badge badge-olive">1 萬</span></td>
+          <td style="font-size:12px;color:var(--text-sub);">基本配額</td>
+        </tr>
+        <tr>
+          <td>股價下跌 1 檔</td>
+          <td><span class="badge badge-gold">2 萬</span></td>
+          <td style="font-size:12px;color:var(--text-sub);">加倍買進</td>
+        </tr>
+        <tr>
+          <td>股價再跌</td>
+          <td><span class="badge badge-gold">3 萬</span></td>
+          <td style="font-size:12px;color:var(--text-sub);">持續加碼</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="callout callout-olive" style="margin-top:12px;">
+      <span class="callout-icon">🎯</span>
+      <div>核心概念：<strong>跌越多，買越多</strong>。總投入資金相同，但低點累積的單位數更多，平均成本更低。</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-gold">📊</div>
+      <div>
+        <div class="card-title">適用標的</div>
+        <div class="card-subtitle">穩健型 ETF 最適合</div>
+      </div>
+    </div>
+    <ul class="info-list">
+      <li><strong>0050（元大台灣 50）</strong>：過去半年從 50 元漲到 100 元，長期趨勢明確</li>
+      <li>以台灣龍頭企業為核心，波動小於個股</li>
+      <li>適合 Parking 資金搭配使用，不需盯盤</li>
+    </ul>
+  </div>
+
+</div>
+
+<!-- ─── TAB 4：族群輪動 ─── -->
+<div class="section" id="tab-sectors">
+
+  <div class="callout callout-blue" style="margin-bottom:14px;">
+    <span class="callout-icon">🔄</span>
+    <div>目前多個族群輪動帶動指數上漲，需判斷各族群所處的波段位置再決定是否追入。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-olive">🏭</div>
+      <div>
+        <div class="card-title">目前熱門族群概況</div>
+        <div class="card-subtitle">2026.05.27 更新</div>
+      </div>
+    </div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>族群</th>
+          <th>代表標的</th>
+          <th>現況</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="badge badge-blue">晶片</span></td>
+          <td>聯發科 2454</td>
+          <td style="font-size:12px;color:var(--text-sub);">晶片題材，漲近兩倍</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-olive">代工</span></td>
+          <td>鴻海 2317</td>
+          <td style="font-size:12px;color:var(--text-sub);">創新高，26 元以上</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-olive">金融</span></td>
+          <td>富邦金</td>
+          <td style="font-size:12px;color:var(--text-sub);">銀行股開始輪動</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-gold">記憶體</span></td>
+          <td>威剛、群聯</td>
+          <td style="font-size:12px;color:var(--text-sub);">已漲第一波，群聯 EPS 達 100 元（前四個月）</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-gold">載板</span></td>
+          <td>欣興、景碩</td>
+          <td style="font-size:12px;color:var(--text-sub);">漲第二波，欣興破千元</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-red">被動元件</span></td>
+          <td>國巨 MLCC</td>
+          <td style="font-size:12px;color:var(--text-sub);">最近題材，800 元以上有壓力</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout callout-gold">
+    <span class="callout-icon">💡</span>
+    <div>族群輪動的原則：<strong>已漲第一波的標的</strong>追入風險較高；尚未啟動或剛開始輪動的族群，相對有更多上漲空間。</div>
+  </div>
+
+</div>
+
+<!-- ─── TAB 5：風險提醒 ─── -->
+<div class="section" id="tab-risk">
+
+  <div class="callout callout-red" style="margin-bottom:16px;">
+    <span class="callout-icon">🚨</span>
+    <div>以下個股為常裕明確提醒<strong>不建議投資</strong>或需特別謹慎的標的。</div>
+  </div>
+
+  <div class="section-label">高風險個股</div>
+
+  <div class="risk-item">
+    <div class="risk-dot dot-red"></div>
+    <div>
+      <div class="risk-title">聯亞光</div>
+      <div class="risk-desc">政府持股比例過大，介入風險高，不建議投資。</div>
+    </div>
+  </div>
+
+  <div class="risk-item">
+    <div class="risk-dot dot-red"></div>
+    <div>
+      <div class="risk-title">洪碩（先進封裝）</div>
+      <div class="risk-desc">公司內部問題，股價波動性高達 30–40%，不穩定。</div>
+    </div>
+  </div>
+
+  <div class="risk-item">
+    <div class="risk-dot dot-gold"></div>
+    <div>
+      <div class="risk-title">部分記憶體個股</div>
+      <div class="risk-desc">已反映未來 2–3 年甚至更久的獲利預期，存在「本夢比」風險。股價可能已過度反映未來，回檔空間大。</div>
+    </div>
+  </div>
+
+  <div class="section-label" style="margin-top:20px;">觀念提醒</div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-blue">🧭</div>
+      <div>
+        <div class="card-title">Parking 資金的核心原則</div>
+      </div>
+    </div>
+    <ul class="info-list">
+      <li>Parking 資金是「等待房地產頭期款用的閒置資金」，<strong>不是用來冒險追漲的</strong></li>
+      <li>選標的以穩健為主（如 0050），個股需有基本面支撐</li>
+      <li>分批進場機制是保護，不要因急躁一次全進</li>
+      <li>停損與停利都要事先設好，避免情緒決策</li>
+      <li>股市是輔助，房地產才是主軸——記住資金用途</li>
+    </ul>
+  </div>
+
+</div>
+
+<div class="bottom-note">
+  富時代地產 · 內部財商教材 · 僅供團隊使用<br>
+  內容依實際市況更新，投資有風險，僅供教育參考
+</div>
+
+<script>
+function switchTab(id) {
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
