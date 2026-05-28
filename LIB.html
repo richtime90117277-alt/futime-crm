@@ -700,6 +700,9 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
     <div class="sidebar-item" id="nav-daily-summary" onclick="showDailySummary();autoCloseSidebar()">
       <span class="s-icon">📊</span><span class="s-name">今日學習總結</span>
     </div>
+    <div class="sidebar-item" id="nav-loan-edu" onclick="showLoanEdu();autoCloseSidebar()">
+      <span class="s-icon">🏦</span><span class="s-name">貸款專業教學</span><span class="s-cnt" style="background:rgba(42,89,52,0.1);color:var(--olive);font-weight:700">NEW</span>
+    </div>
 
     <div class="sidebar-divider"></div>
     <div class="sidebar-label" style="padding-bottom:6px">🔍 快搜</div>
@@ -6822,6 +6825,301 @@ function copyTrig(id) {
   const s = SCRIPTS.find(x=>x.id===id);
   if (!s) return;
   navigator.clipboard?.writeText(s.trigger).then(()=>toast('✅ 觸發句已複製'));
+}
+
+// ══════════════════════════════════════
+// 🏦 貸款專業教學系統
+// ══════════════════════════════════════
+
+const LOAN_CHECKLIST_KEY = 'lib_loan_checklist_v1';
+
+function _getLoanChecklist() {
+  try { return JSON.parse(localStorage.getItem(LOAN_CHECKLIST_KEY) || '{}'); } catch(e) { return {}; }
+}
+
+function toggleLoanCheck(id) {
+  const data = _getLoanChecklist();
+  data[id] = !data[id];
+  try { localStorage.setItem(LOAN_CHECKLIST_KEY, JSON.stringify(data)); } catch(e) {}
+  const box = document.getElementById('lc-' + id);
+  const row = document.getElementById('lcr-' + id);
+  if (box) {
+    box.textContent = data[id] ? '✅' : '○';
+    box.style.background = data[id] ? 'var(--olive)' : 'var(--surface2)';
+    box.style.color = data[id] ? '#fff' : 'var(--text-dim)';
+    box.style.borderColor = data[id] ? 'var(--olive)' : 'var(--border)';
+  }
+  if (row) row.style.opacity = data[id] ? '0.5' : '1';
+  // 更新計數
+  const total = document.querySelectorAll('.loan-check-btn').length;
+  const done = Object.values(_getLoanChecklist()).filter(Boolean).length;
+  const pctEl = document.getElementById('loan-check-pct');
+  const barEl = document.getElementById('loan-check-bar');
+  if (pctEl) pctEl.textContent = done + ' / ' + total + ' 項已確認';
+  if (barEl) barEl.style.width = Math.round(done/total*100) + '%';
+}
+
+function showLoanEdu() {
+  setActive('nav-loan-edu');
+  setTotal(SCRIPTS.length);
+  const chk = _getLoanChecklist();
+
+  const CHECKLIST_ITEMS = [
+    { id:'salary', label:'薪轉帳戶由公司整批轉帳，存摺備註欄有顯示' },
+    { id:'deposit', label:'有存款餘額（每100萬可認列3–6萬收入）' },
+    { id:'stock', label:'有股票資產（可認列市值的1–3%）' },
+    { id:'policy', label:'有保單（確認可借餘額或總價值）' },
+    { id:'biz', label:'有公司/行號，可提供營業額證明' },
+    { id:'dividend', label:'有股利收入（配股配息，可從年度申報查）' },
+    { id:'rent', label:'有租金收入（需附租約）' },
+    { id:'credit', label:'信用評分良好，無逾期紀錄' },
+    { id:'other', label:'其他：國票、債券、基金、黃金存摺等' },
+    { id:'account', label:'貸款金流帳戶已與股票操作帳戶分開' },
+  ];
+
+  const total = CHECKLIST_ITEMS.length;
+  const done = CHECKLIST_ITEMS.filter(i => chk[i.id]).length;
+  const pct = Math.round(done/total*100);
+
+  const checkRows = CHECKLIST_ITEMS.map(item => {
+    const checked = !!chk[item.id];
+    return `
+      <div id="lcr-${item.id}" style="display:flex;align-items:center;gap:12px;padding:11px 14px;background:#fff;border:1.5px solid var(--border);border-radius:9px;margin-bottom:7px;cursor:pointer;transition:opacity .2s;${checked?'opacity:0.5':''}" onclick="toggleLoanCheck('${item.id}')">
+        <button id="lc-${item.id}" class="loan-check-btn" style="width:28px;height:28px;border-radius:50%;border:1.5px solid ${checked?'var(--olive)':'var(--border)'};background:${checked?'var(--olive)':'var(--surface2)'};color:${checked?'#fff':'var(--text-dim)'};font-size:13px;cursor:pointer;flex-shrink:0;font-family:inherit;transition:all .15s;">${checked?'✅':'○'}</button>
+        <span style="font-size:13px;color:var(--text);line-height:1.5;">${item.label}</span>
+      </div>`;
+  }).join('');
+
+  renderMain(`
+    <!-- HERO -->
+    <div style="background:linear-gradient(135deg,var(--olive) 0%,#3D6B45 100%);border-radius:var(--radius);padding:24px 22px 20px;margin-bottom:20px;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:-20px;right:-20px;font-size:100px;opacity:.06;line-height:1;">🏦</div>
+      <div style="font-size:10px;font-weight:700;letter-spacing:.18em;color:rgba(255,255,255,0.55);margin-bottom:6px;text-transform:uppercase;">富時代 · 專業教學</div>
+      <div style="font-family:'Noto Serif TC',serif;font-size:22px;font-weight:700;color:#fff;margin-bottom:6px;line-height:1.3;">銀行貸款財力證明<br>全攻略</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.65);line-height:1.6;">2026.05.28 早會｜國泰×智偉哥實戰分享<br>「我挑銀行，不是銀行挑我」</div>
+    </div>
+
+    <!-- 區塊一：財力證明全覽 -->
+    <div style="margin-bottom:18px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+        <span style="font-size:16px;">💰</span>
+        <span style="font-family:'Noto Serif TC',serif;font-size:16px;font-weight:700;color:var(--text);">財力證明全覽</span>
+        <span style="font-size:10px;color:var(--text-dim);margin-left:4px;">越多越好，目標3–5項以上</span>
+      </div>
+      <div style="background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+        ${[
+          ['薪資轉帳','最基本最重要','必須公司整批轉，備註欄才顯示','var(--olive-dim)','var(--olive)'],
+          ['存款餘額','每100萬認列3–6萬','各銀行標準不同，多比較','rgba(184,148,60,0.08)','var(--gold)'],
+          ['股票資產','市值1–3%認列','部分銀行已不接受，提早確認','var(--surface2)','var(--text-dim)'],
+          ['保單','可借餘額或保單總值','不同銀行看不同指標','var(--surface2)','var(--text-dim)'],
+          ['公司營業額','需有公司行號','年營業額可全額認列','var(--surface2)','var(--text-dim)'],
+          ['股利收入','年度配股配息','申報可查，長期累積有效','var(--surface2)','var(--text-dim)'],
+          ['租金收入','不動產租賃','需附租約，穩定加分','var(--surface2)','var(--text-dim)'],
+          ['信用評分','影響核貸意願','維持良好紀錄，避免逾期','var(--surface2)','var(--text-dim)'],
+          ['其他加分項','國票/債券/基金/黃金存摺','額外補充，多多益善','var(--surface2)','var(--text-dim)'],
+        ].map((r,i)=>`
+          <div style="display:grid;grid-template-columns:auto 1fr 1fr;gap:0;border-bottom:${i<8?'1px solid var(--border-light)':'none'};">
+            <div style="padding:11px 14px;background:${r[3]};min-width:90px;display:flex;align-items:center;">
+              <span style="font-size:12px;font-weight:700;color:${r[4]};">${r[0]}</span>
+            </div>
+            <div style="padding:11px 14px;border-left:1px solid var(--border-light);display:flex;align-items:center;">
+              <span style="font-size:11.5px;color:var(--text);">${r[1]}</span>
+            </div>
+            <div style="padding:11px 14px;border-left:1px solid var(--border-light);display:flex;align-items:center;background:var(--surface2);">
+              <span style="font-size:11px;color:var(--text-sub);line-height:1.4;">${r[2]}</span>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- 區塊二：薪轉帳戶眉角 -->
+    <div style="margin-bottom:18px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+        <span style="font-size:16px;">🏢</span>
+        <span style="font-family:'Noto Serif TC',serif;font-size:16px;font-weight:700;color:var(--text);">薪轉帳戶眉角</span>
+      </div>
+      <div style="background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);padding:16px 18px;">
+        <div style="background:rgba(42,89,52,0.07);border-left:3px solid var(--olive);border-radius:0 8px 8px 0;padding:12px 14px;margin-bottom:14px;">
+          <div style="font-size:12px;font-weight:700;color:var(--olive);margin-bottom:4px;">⚠️ 關鍵原則</div>
+          <div style="font-size:13px;color:var(--text);line-height:1.6;">薪轉必須由<strong>公司整批轉帳</strong>才會在存摺備註欄顯示「薪資」字樣。自己把錢存進去，銀行不認！</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:9px;">
+          ${[
+            ['公司需向銀行申請薪轉戶','員工薪資才會出現在備註欄，否則就只是一般轉帳'],
+            ['自行匯入 ≠ 薪轉','大部分銀行直接不認，等於沒有薪資證明'],
+            ['薪轉會產生成本','勞健保、二代健保提撥、勞退自提6%——老闆同意很重要'],
+            ['扣繳憑單可控制申報額','例：月薪15萬，年薪180萬，扣繳只報45–60萬（退稅範圍內）'],
+          ].map(([t,d])=>`
+            <div style="display:flex;gap:10px;padding:10px 12px;background:var(--surface2);border-radius:8px;">
+              <span style="color:var(--olive);font-size:13px;flex-shrink:0;margin-top:1px;">▸</span>
+              <div>
+                <div style="font-size:13px;font-weight:700;color:var(--text);">${t}</div>
+                <div style="font-size:11.5px;color:var(--text-sub);margin-top:3px;line-height:1.5;">${d}</div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+
+    <!-- 區塊三：公司節稅策略 -->
+    <div style="margin-bottom:18px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+        <span style="font-size:16px;">🧮</span>
+        <span style="font-family:'Noto Serif TC',serif;font-size:16px;font-weight:700;color:var(--text);">公司節稅策略</span>
+      </div>
+      <div style="background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);padding:16px 18px;">
+        <div style="background:rgba(184,148,60,0.08);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;padding:12px 14px;margin-bottom:14px;">
+          <div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:4px;">💡 設立公司時機</div>
+          <div style="font-size:13px;color:var(--text);line-height:1.6;">當年收入超過 <strong>138萬（所得稅率達20%）</strong>，就可以認真考慮設立公司節稅了。</div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:var(--text-dim);letter-spacing:.06em;margin-bottom:10px;">▼ 年收300萬試算比較</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+          <div style="background:rgba(192,57,43,0.07);border:1.5px solid rgba(192,57,43,0.2);border-radius:9px;padding:14px;text-align:center;">
+            <div style="font-size:10px;font-weight:700;color:#c0392b;letter-spacing:.08em;margin-bottom:6px;">個人繳稅</div>
+            <div style="font-size:24px;font-weight:900;color:#c0392b;font-family:'Noto Serif TC',serif;">90萬</div>
+            <div style="font-size:11px;color:var(--text-sub);margin-top:4px;">所得稅率 30%</div>
+          </div>
+          <div style="background:rgba(42,89,52,0.07);border:1.5px solid rgba(42,89,52,0.25);border-radius:9px;padding:14px;text-align:center;">
+            <div style="font-size:10px;font-weight:700;color:var(--olive);letter-spacing:.08em;margin-bottom:6px;">設立公司後</div>
+            <div style="font-size:24px;font-weight:900;color:var(--olive);font-family:'Noto Serif TC',serif;">省70萬+</div>
+            <div style="font-size:11px;color:var(--text-sub);margin-top:4px;">幾乎一個簽約金</div>
+          </div>
+        </div>
+        <div style="background:var(--olive-dim);border-radius:9px;padding:13px 15px;">
+          <div style="font-size:11px;font-weight:700;color:var(--olive);margin-bottom:6px;">📖 智偉哥實戰經驗</div>
+          <div style="font-size:12.5px;color:var(--text);line-height:1.65;">進入東方帝國第三年就設立公司，全公司第一個直接對開發票的業務。透過與兄弟的公司互相開立發票做薪轉（不同姓，銀行無法對上），每月薪轉約15萬多，年薪約180萬。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 區塊四：金流四大原則 -->
+    <div style="margin-bottom:18px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+        <span style="font-size:16px;">🛡️</span>
+        <span style="font-family:'Noto Serif TC',serif;font-size:16px;font-weight:700;color:var(--text);">金流準備四大原則</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        ${[
+          ['⏰','提早準備','至少買房前一年開始，不是前半年。財力證明需長期累積，臨時來不及。'],
+          ['🏦','帳戶乾淨','貸款金流帳戶不能與股票操作帳戶混用，銀行追查金流會很麻煩。'],
+          ['📋','多元配置','至少3–5項以上財力證明。只準備單一證明，容易被銀行政策一刀切。'],
+          ['📈','持續累積','財力證明是長期建立的資產，不是考試前才臨時抱佛腳。'],
+        ].map(([icon,title,desc])=>`
+          <div style="background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);padding:14px;">
+            <div style="font-size:22px;margin-bottom:7px;">${icon}</div>
+            <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:5px;">${title}</div>
+            <div style="font-size:11.5px;color:var(--text-sub);line-height:1.55;">${desc}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- 區塊五：真實失敗案例 -->
+    <div style="margin-bottom:18px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+        <span style="font-size:16px;">📖</span>
+        <span style="font-family:'Noto Serif TC',serif;font-size:16px;font-weight:700;color:var(--text);">真實失敗案例</span>
+        <span style="font-size:10px;color:var(--text-dim);">前車之鑑，避免踩坑</span>
+      </div>
+      <div style="background:#fff;border:1.5px solid rgba(192,57,43,0.25);border-radius:var(--radius);padding:16px 18px;">
+        <div style="font-size:12px;font-weight:700;color:#c0392b;margin-bottom:10px;">⚠️ 桑大哥貸款實戰案例</div>
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:14px;">
+          ${[
+            ['物件總價','1,314萬'],
+            ['預計貸款','七成（台新銀行）'],
+            ['自備款需求','328萬'],
+            ['已有貸款','渣打銀行 965萬，利率 2.2%'],
+            ['遇到問題','渣打貸款影響後續；台新要求逐筆追查960萬金流來源'],
+          ].map(([k,v],i)=>`
+            <div style="padding:9px 12px;background:var(--surface2);border-bottom:${i<4?'1px solid var(--border-light)':'none'};font-size:11.5px;font-weight:700;color:var(--text-sub);white-space:nowrap;">${k}</div>
+            <div style="padding:9px 14px;border-left:1px solid var(--border-light);border-bottom:${i<4?'1px solid var(--border-light)':'none'};font-size:12.5px;color:var(--text);">${v}</div>
+          `).join('')}
+        </div>
+        <div style="font-size:12px;font-weight:700;color:var(--text-dim);margin-bottom:10px;">▼ 銀行政策踩雷紀錄</div>
+        <div style="display:flex;flex-direction:column;gap:7px;">
+          ${[
+            ['渣打銀行','金管會檢查VIP客戶資格（需存款300萬），預售屋貸款案件全部撤件'],
+            ['台北中信','原本接受股票作為財力證明，後來改變政策不再接受'],
+            ['台新銀行','原說資產型可貸，後來要求詳細金流證明'],
+            ['2024預售屋','大部分銀行沒有額度，只能估到五成'],
+          ].map(([bank,desc])=>`
+            <div style="display:flex;gap:10px;padding:10px 12px;background:rgba(192,57,43,0.05);border:1px solid rgba(192,57,43,0.12);border-radius:8px;">
+              <span style="font-size:11px;font-weight:700;color:#c0392b;white-space:nowrap;padding-top:2px;">${bank}</span>
+              <span style="font-size:12px;color:var(--text-sub);line-height:1.5;">${desc}</span>
+            </div>
+          `).join('')}
+        </div>
+        <div style="margin-top:12px;background:rgba(42,89,52,0.07);border-left:3px solid var(--olive);border-radius:0 8px 8px 0;padding:10px 14px;">
+          <div style="font-size:12.5px;color:var(--text);line-height:1.6;"><strong>核心教訓：</strong>即使銀行專員說「沒問題」，最後仍可能因政策變化無法核貸。金流帳戶一定要乾淨，與股票操作分開。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 區塊六：顧問備戰清單 -->
+    <div style="margin-bottom:18px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <span style="font-size:16px;">✅</span>
+        <span style="font-family:'Noto Serif TC',serif;font-size:16px;font-weight:700;color:var(--text);">顧問財力自我盤點</span>
+      </div>
+      <div style="font-size:12px;color:var(--text-dim);margin-bottom:12px;">先搞定自己的貸款，才有底氣教導客戶。逐項打勾，看看你現在有幾項。</div>
+
+      <!-- 進度條 -->
+      <div style="background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <span style="font-size:11px;font-weight:700;color:var(--text-sub);">我目前具備的財力證明</span>
+          <span id="loan-check-pct" style="font-size:12px;font-weight:700;color:var(--olive);">${done} / ${total} 項已確認</span>
+        </div>
+        <div style="background:var(--surface2);border-radius:6px;height:7px;overflow:hidden;">
+          <div id="loan-check-bar" style="width:${pct}%;height:7px;background:var(--olive);border-radius:6px;transition:width .4s ease;"></div>
+        </div>
+      </div>
+
+      ${checkRows}
+
+      <div style="margin-top:12px;background:var(--olive);border-radius:var(--radius);padding:14px 16px;text-align:center;">
+        <div style="font-size:11px;color:rgba(255,255,255,0.7);margin-bottom:4px;">🎯 目標</div>
+        <div style="font-size:14px;font-weight:700;color:#fff;line-height:1.5;">「做到銀行所有可認列的財力證明<br>我挑銀行，不是銀行挑我」</div>
+        <div style="font-size:11px;color:rgba(255,255,255,0.55);margin-top:6px;">—— 智偉哥，財力配置範例</div>
+      </div>
+    </div>
+
+    <!-- 區塊七：實務操作建議 -->
+    <div style="margin-bottom:18px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+        <span style="font-size:16px;">📋</span>
+        <span style="font-family:'Noto Serif TC',serif;font-size:16px;font-weight:700;color:var(--text);">實務操作建議</span>
+      </div>
+      <div style="background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);padding:16px 18px;">
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          ${[
+            ['🙋','不懂貸款先問袋叔','有實戰經驗的前輩第一時間諮詢，不要自己摸索'],
+            ['💬','買房前先問清楚','需要準備多少收入證明，再決定薪資金額要設多少'],
+            ['📅','預售屋交屋前半年','再開始排隊撥款，不要太早也不要太晚'],
+            ['🏦','最後階段多送一家','多送一家銀行以防萬一，保留後路'],
+            ['💵','最壞打算','準備好現金購屋，之後再辦理理財型貸款'],
+            ['⏰','國泰世華特別注意','需排隊等額度；兩年寬限期但需買保險和基金（年約10萬，連續6年），第一年房子不能賣'],
+          ].map(([icon,t,d])=>`
+            <div style="display:flex;gap:12px;padding:11px 13px;background:var(--surface2);border-radius:8px;align-items:flex-start;">
+              <span style="font-size:15px;flex-shrink:0;margin-top:1px;">${icon}</span>
+              <div>
+                <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;">${t}</div>
+                <div style="font-size:11.5px;color:var(--text-sub);line-height:1.5;">${d}</div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+
+    <!-- 底部心態語錄 -->
+    <div style="background:linear-gradient(135deg,rgba(42,89,52,0.08) 0%,rgba(184,148,60,0.06) 100%);border:1.5px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center;margin-bottom:40px;">
+      <div style="font-size:22px;margin-bottom:10px;">🧠</div>
+      <div style="font-family:'Noto Serif TC',serif;font-size:14px;font-weight:700;color:var(--text);line-height:1.7;margin-bottom:10px;">「有錢人永遠在聊如何解決問題，<br>沒有人在抱怨。<br>正面思維吸引財富，<br>負面思維趕走機會。」</div>
+      <div style="font-size:11px;color:var(--text-dim);">—— 智偉哥，2026.05.28 早會</div>
+    </div>
+  `);
 }
 
 function setActive(id) {
