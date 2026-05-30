@@ -252,12 +252,24 @@ tr:last-child td { border-bottom: none; }
     <div class="clock-card">
       <div class="clock-display" id="clockDisplay">00:00:00</div>
       <div class="clock-sub" id="clockSub"></div>
-      <select class="name-select" id="punchName">
+      <select class="name-select" id="punchName" onchange="resetPunchAuth()">
         <option value="">— 選擇成員 —</option>
       </select>
-      <div class="punch-btns">
-        <button class="btn-in" onclick="punch('上班')">↗ 上班打卡</button>
-        <button class="btn-out" onclick="punch('下班')">↙ 下班打卡</button>
+      <div id="punchAuthArea" style="display:none; margin-bottom:1.25rem;">
+        <input type="password" id="punchPIN" maxlength="4" placeholder="請輸入手機末四碼"
+          style="background:rgba(255,255,255,0.07);border:1px solid rgba(212,168,67,0.35);border-radius:8px;color:#fff;padding:10px 14px;font-size:18px;width:200px;text-align:center;letter-spacing:0.3em;font-family:inherit;"
+          oninput="this.value=this.value.replace(/[^0-9]/,'')"
+          onkeydown="if(event.key==='Enter')verifyPIN()" />
+        <div id="pinErr" style="color:#ff6b6b;font-size:12px;margin-top:6px;display:none">末四碼錯誤，請再試一次</div>
+        <button onclick="verifyPIN()" style="margin-top:10px;background:#d4a843;color:#0a1628;border:none;padding:9px 22px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:block;margin-left:auto;margin-right:auto;">驗證</button>
+      </div>
+      <div id="punchBtns" style="display:none">
+        <div style="color:#d4a843;font-size:13px;margin-bottom:10px;" id="punchWelcome"></div>
+        <div class="punch-btns">
+          <button class="btn-in" onclick="punch('上班')">↗ 上班打卡</button>
+          <button class="btn-out" onclick="punch('下班')">↙ 下班打卡</button>
+        </div>
+        <button onclick="resetPunchAuth()" style="margin-top:12px;background:transparent;color:#8899aa;border:none;font-size:12px;cursor:pointer;font-family:inherit;">↩ 切換成員</button>
       </div>
     </div>
     <div class="card">
@@ -498,9 +510,49 @@ function showToast(msg) {
   setTimeout(() => t.style.display = 'none', 2800);
 }
 
+
+// ── 打卡 PIN 驗證 ──
+let punchAuthed = false;
+
+function resetPunchAuth() {
+  punchAuthed = false;
+  document.getElementById('punchAuthArea').style.display = 'none';
+  document.getElementById('punchBtns').style.display = 'none';
+  document.getElementById('punchPIN').value = '';
+  document.getElementById('pinErr').style.display = 'none';
+  const name = document.getElementById('punchName').value;
+  if (name) {
+    document.getElementById('punchAuthArea').style.display = 'block';
+    setTimeout(() => document.getElementById('punchPIN').focus(), 100);
+  }
+}
+
+function verifyPIN() {
+  const name = document.getElementById('punchName').value;
+  const pin  = document.getElementById('punchPIN').value;
+  if (!name) { showToast('請先選擇成員'); return; }
+  const member = MEMBERS.find(m => m.name === name);
+  if (!member) return;
+  // 取手機末四碼（去掉非數字）
+  const digits = member.phone.replace(/[^0-9]/g, '');
+  const last4  = digits.slice(-4);
+  if (pin === last4) {
+    punchAuthed = true;
+    document.getElementById('pinErr').style.display = 'none';
+    document.getElementById('punchAuthArea').style.display = 'none';
+    document.getElementById('punchBtns').style.display = 'block';
+    document.getElementById('punchWelcome').textContent = `👋 ${name}，請打卡`;
+  } else {
+    document.getElementById('pinErr').style.display = 'block';
+    document.getElementById('punchPIN').value = '';
+    document.getElementById('punchPIN').focus();
+  }
+}
+
 async function punch(type) {
   const name = document.getElementById('punchName').value;
   if (!name) { showToast('請先選擇成員'); return; }
+  if (!punchAuthed) { showToast('請先驗證手機末四碼'); return; }
   const t = now();
   const entry = { name, type, time: fmtT(t), date: fmtD(t), hour: t.getHours() };
   logs.unshift(entry);
