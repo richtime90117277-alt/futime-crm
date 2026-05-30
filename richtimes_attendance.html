@@ -200,6 +200,34 @@ tr:last-child td { border-bottom: none; }
   display: none; z-index: 9999; white-space: nowrap; font-weight: 500;
   box-shadow: 0 4px 16px rgba(0,0,0,0.2);
 }
+
+/* 附件上傳 */
+.upload-zone {
+  border: 1.5px dashed #dde0e5; border-radius: 8px;
+  padding: 16px; text-align: center; cursor: pointer;
+  background: #fafafa; transition: all 0.15s; position: relative;
+}
+.upload-zone:hover { border-color: #d4a843; background: #fffdf4; }
+.upload-zone.has-file { border-color: #2e7d32; background: #f1f8f1; }
+.upload-zone input[type=file] {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+}
+.upload-icon { font-size: 22px; margin-bottom: 4px; }
+.upload-label { font-size: 12px; color: #888; }
+.upload-label strong { color: #d4a843; }
+.file-info {
+  display: none; align-items: center; gap: 8px;
+  font-size: 12px; color: #2e7d32; font-weight: 500; margin-top: 6px;
+}
+.file-info.show { display: flex; justify-content: center; }
+.file-clear {
+  font-size: 11px; color: #c62828; cursor: pointer;
+  border: none; background: none; padding: 2px 6px; font-family: inherit;
+}
+.uploading-bar {
+  height: 3px; background: #e8eaed; border-radius: 2px; margin-top: 8px; display: none;
+}
+.uploading-bar-fill { height: 100%; background: #d4a843; border-radius: 2px; width: 0; transition: width 0.3s; }
 </style>
 </head>
 <body>
@@ -266,6 +294,21 @@ tr:last-child td { border-bottom: none; }
           <label>事由</label>
           <textarea id="leaveReason" placeholder="請簡述請假原因…"></textarea>
         </div>
+        <div class="form-field full">
+          <label>附件（醫生證明，選填）</label>
+          <div class="upload-zone" id="uploadZone">
+            <input type="file" id="leaveFile" accept="image/*,.pdf" onchange="handleFileChange(this)" />
+            <div class="upload-icon">📎</div>
+            <div class="upload-label">點此上傳或拖曳檔案<br><strong>支援 JPG、PNG、PDF，上限 5MB</strong></div>
+          </div>
+          <div class="file-info" id="fileInfo">
+            <span id="fileName"></span>
+            <button class="file-clear" onclick="clearFile()">✕ 移除</button>
+          </div>
+          <div class="uploading-bar" id="uploadBar">
+            <div class="uploading-bar-fill" id="uploadBarFill"></div>
+          </div>
+        </div>
       </div>
       <button class="submit-btn" onclick="submitLeave()">送出申請</button>
     </div>
@@ -329,7 +372,7 @@ tr:last-child td { border-bottom: none; }
 
       <div id="admin-leaves" class="admin-section" style="display:none">
         <div class="table-wrap">
-          <table><thead><tr><th>申請人</th><th>假別</th><th>日期</th><th>事由</th><th>操作</th></tr></thead>
+          <table><thead><tr><th>申請人</th><th>假別</th><th>日期</th><th>事由</th><th>附件</th><th>操作</th></tr></thead>
           <tbody id="leavesBody"></tbody></table>
         </div>
       </div>
@@ -481,6 +524,40 @@ function renderLog() {
 }
 renderLog();
 
+// 附件處理
+let leaveFileData = null;
+
+function handleFileChange(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { showToast('檔案超過 5MB，請壓縮後再上傳'); input.value = ''; return; }
+  document.getElementById('uploadZone').classList.add('has-file');
+  document.getElementById('fileName').textContent = '📄 ' + file.name;
+  document.getElementById('fileInfo').classList.add('show');
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    leaveFileData = { name: file.name, type: file.type, data: e.target.result.split(',')[1] };
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearFile() {
+  leaveFileData = null;
+  document.getElementById('leaveFile').value = '';
+  document.getElementById('uploadZone').classList.remove('has-file');
+  document.getElementById('fileInfo').classList.remove('show');
+  document.getElementById('fileName').textContent = '';
+}
+
+function showUploadProgress(pct) {
+  const bar = document.getElementById('uploadBar');
+  const fill = document.getElementById('uploadBarFill');
+  bar.style.display = 'block';
+  fill.style.width = pct + '%';
+  if (pct >= 100) setTimeout(() => { bar.style.display = 'none'; fill.style.width = '0'; }, 800);
+}
+
 async function submitLeave() {
   const applicant = document.getElementById('leaveApplicant').value;
   const type      = document.getElementById('leaveType').value;
@@ -490,15 +567,19 @@ async function submitLeave() {
   if (!applicant || !start || !end) { showToast('請填寫必要欄位'); return; }
   if (end < start) { showToast('結束日期不能早於開始日期'); return; }
   const id = Date.now();
-  leaves.unshift({ applicant, type, start, end, reason, status: 'pending', id });
+  leaves.unshift({ applicant, type, start, end, reason, status: 'pending', id,
+    hasFile: !!leaveFileData, fileName: leaveFileData ? leaveFileData.name : '' });
   save();
   renderLeaveRows();
   showToast('申請已送出，等待主管審核');
-  ['leaveApplicant','leaveStart','leaveEnd','leaveReason'].forEach(id => {
-    document.getElementById(id).value = '';
+  ['leaveApplicant','leaveStart','leaveEnd','leaveReason'].forEach(fid => {
+    document.getElementById(fid).value = '';
   });
-  // 同步寫入 Google Sheets
-  await postGAS({ action: 'leave', applicant, type, start, end, reason });
+  clearFile();
+  // 同步寫入 Google Sheets（含附件）
+  showUploadProgress(30);
+  await postGAS({ action: 'leave', applicant, type, start, end, reason, file: leaveFileData });
+  showUploadProgress(100);
 }
 
 function renderLeaveRows() {
@@ -511,6 +592,7 @@ function renderLeaveRows() {
       <span style="font-weight:600">${l.applicant}</span>
       <span style="color:#888;font-size:12px">${l.type}</span>
       <span style="color:#888;font-size:12px">${l.start} ~ ${l.end}</span>
+      ${l.hasFile ? `<span style="font-size:11px;color:#1565c0">📎 ${l.fileName}</span>` : ''}
       <span class="leave-status ${sCls[l.status]}">${sLabel[l.status]}</span>
     </div>`).join('');
 }
@@ -599,6 +681,12 @@ function renderLeaveAdmin() {
       <td>${l.type}</td>
       <td style="font-size:12px;color:#888">${l.start} ~ ${l.end}</td>
       <td style="font-size:12px;color:#888">${l.reason || '—'}</td>
+      <td>${l.hasFile
+        ? (l.fileUrl
+            ? `<a href="${l.fileUrl}" target="_blank" style="font-size:11px;color:#1565c0;text-decoration:none">📎 查看附件</a>`
+            : `<span style="font-size:11px;color:#888">📎 ${l.fileName}</span>`)
+        : '<span style="font-size:11px;color:#ccc">無附件</span>'
+      }</td>
       <td>${l.status === 'pending'
         ? `<button class="approve-btn ok" onclick="approveLeave(${i},'approved')">核准</button>
            <button class="approve-btn no" onclick="approveLeave(${i},'denied')">拒絕</button>`
