@@ -621,6 +621,67 @@ async function checkPW() {
 }
 
 async function syncFromSheets() {
+  return new Promise((resolve) => {
+    const callbackName = 'gasCallback_' + Date.now();
+    const url = GAS_URL + '?action=query&password=' + encodeURIComponent(ADMIN_PW) + '&callback=' + callbackName;
+    const script = document.createElement('script');
+    const timer = setTimeout(() => {
+      console.warn('Sheets 同步逾時');
+      script.remove();
+      resolve();
+    }, 8000);
+    window[callbackName] = function(data) {
+      clearTimeout(timer);
+      script.remove();
+      if (data && data.ok) {
+        if (data.punches && data.punches.length > 0) {
+          logs = data.punches.map(p => ({
+            name: p.name, type: p.type, date: p.date, time: p.time,
+            hour: parseInt((p.time || '0').split(':')[0])
+          }));
+          save();
+        }
+        if (data.leaves) {
+          leaves = data.leaves.map(l => ({
+            applicant: l.applicant, type: l.type,
+            start: l.start, end: l.end, reason: l.reason,
+            status: l.status === '已核准' ? 'approved' : l.status === '已拒絕' ? 'denied' : 'pending',
+            fileUrl: l.fileUrl || '', hasFile: !!l.fileUrl, fileName: '',
+            id: l.id
+          }));
+          save();
+        }
+      }
+      resolve();
+    };
+    script.src = url;
+    script.onerror = () => { clearTimeout(timer); resolve(); };
+    document.head.appendChild(script);
+  });
+}
+
+
+async function checkPW() {
+  const v = document.getElementById('pwInput').value;
+  if (v === ADMIN_PW) {
+    document.getElementById('adminLock').style.display = 'none';
+    document.getElementById('adminPanel').style.display = 'block';
+    document.getElementById('filterDate').value = fmtD(now());
+    const m = now();
+    document.getElementById('reportMonth').value = `${m.getFullYear()}-${String(m.getMonth()+1).padStart(2,'0')}`;
+    // 從 Sheets 拉最新資料
+    showToast('載入資料中…');
+    await syncFromSheets();
+    updateStats();
+    renderAttendance();
+    renderLeaveAdmin();
+    renderMembersTable();
+  } else {
+    document.getElementById('pwErr').style.display = 'block';
+  }
+}
+
+async function syncFromSheets() {
   try {
     const res = await fetch(GAS_URL, {
       method: 'POST',
@@ -725,6 +786,19 @@ function renderAttendance() {
   }).join('');
 }
 
+
+async function reloadFromSheets() {
+  const btn = document.getElementById('reloadBtn');
+  btn.textContent = '載入中…';
+  btn.disabled = true;
+  await syncFromSheets();
+  updateStats();
+  renderAttendance();
+  renderLeaveAdmin();
+  btn.textContent = '⟳ 從雲端載入';
+  btn.disabled = false;
+  showToast('✅ 已從 Sheets 載入最新資料');
+}
 function deleteLog(name, date) {
   if (!confirm(`確定刪除 ${name} 在 ${date} 的打卡紀錄？`)) return;
   logs = logs.filter(l => !(l.name === name && l.date === date));
