@@ -600,7 +600,7 @@ function renderLeaveRows() {
 }
 renderLeaveRows();
 
-async function checkPW() {
+function checkPW() {
   const v = document.getElementById('pwInput').value;
   if (v === ADMIN_PW) {
     document.getElementById('adminLock').style.display = 'none';
@@ -608,69 +608,75 @@ async function checkPW() {
     document.getElementById('filterDate').value = fmtD(now());
     const m = now();
     document.getElementById('reportMonth').value = `${m.getFullYear()}-${String(m.getMonth()+1).padStart(2,'0')}`;
-    // 從 Sheets 拉最新資料
-    showToast('載入資料中…');
-    await syncFromSheets();
     updateStats();
     renderAttendance();
     renderLeaveAdmin();
     renderMembersTable();
+    // 背景非阻塞載入雲端資料
+    syncFromSheets().then(() => {
+      updateStats();
+      renderAttendance();
+      renderLeaveAdmin();
+      showToast('✅ 已載入最新資料');
+    });
   } else {
     document.getElementById('pwErr').style.display = 'block';
   }
 }
 
 async function syncFromSheets() {
+  const SHEET_ID = '1Kr7O9Em4VNWefAC4pIpi__YBLuAr5uC0MtkJCTix7nQ';
   try {
-    // 讀打卡紀錄（工作表 gid=0，第一個分頁）
-    const punchUrl = 'https://docs.google.com/spreadsheets/d/1Kr7O9Em4VNWefAC4pIpi__YBLuAr5uC0MtkJCTix7nQ/gviz/tq?tqx=out:json&sheet=打卡紀錄';
-    const leaveUrl = 'https://docs.google.com/spreadsheets/d/1Kr7O9Em4VNWefAC4pIpi__YBLuAr5uC0MtkJCTix7nQ/gviz/tq?tqx=out:json&sheet=請假申請';
-
-    const [punchRes, leaveRes] = await Promise.all([
-      fetch(punchUrl).catch(() => null),
-      fetch(leaveUrl).catch(() => null)
-    ]);
-
-    if (punchRes && punchRes.ok) {
-      const text = await punchRes.text();
-      const json = JSON.parse(text.replace(/.*google.visualization.Query.setResponse\(/, '').replace(/\);?$/, ''));
-      const rows = json.table.rows || [];
-      if (rows.length > 0) {
-        logs = rows.map(r => {
-          const name = r.c[0]?.v || '';
-          const type = r.c[1]?.v || '';
-          const date = r.c[2]?.v || '';
-          const time = r.c[3]?.v || '';
-          const hour = parseInt((time || '0').split(':')[0]);
-          return { name, type, date, time, hour };
-        }).filter(l => l.name);
+    // 打卡紀錄
+    const pUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=%E6%89%93%E5%8D%A1%E7%B4%80%E9%8C%84`;
+    const pr = await fetch(pUrl);
+    if (pr.ok) {
+      const txt = await pr.text();
+      const clean = txt.replace(/^[^{]+/, '').replace(/[^}]+$/, '');
+      const data = JSON.parse(clean);
+      const rows = (data.table && data.table.rows) ? data.table.rows : [];
+      if (rows.length) {
+        logs = rows.map(r => ({
+          name: r.c[0]?.v || '',
+          type: r.c[1]?.v || '',
+          date: r.c[2]?.v || '',
+          time: r.c[3]?.v || '',
+          hour: parseInt(((r.c[3]?.v) || '0').split(':')[0])
+        })).filter(l => l.name);
         save();
       }
     }
+  } catch(e) { console.warn('打卡同步失敗', e); }
 
-    if (leaveRes && leaveRes.ok) {
-      const text = await leaveRes.text();
-      const json = JSON.parse(text.replace(/.*google.visualization.Query.setResponse\(/, '').replace(/\);?$/, ''));
-      const rows = json.table.rows || [];
-      if (rows.length > 0) {
+  try {
+    // 請假申請
+    const lUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=%E8%AB%8B%E5%81%87%E7%94%B3%E8%AB%8B`;
+    const lr = await fetch(lUrl);
+    if (lr.ok) {
+      const txt = await lr.text();
+      const clean = txt.replace(/^[^{]+/, '').replace(/[^}]+$/, '');
+      const data = JSON.parse(clean);
+      const rows = (data.table && data.table.rows) ? data.table.rows : [];
+      if (rows.length) {
         leaves = rows.map(r => {
-          const id       = r.c[0]?.v || Date.now();
-          const applicant= r.c[1]?.v || '';
-          const type     = r.c[2]?.v || '';
-          const start    = r.c[3]?.v || '';
-          const end      = r.c[4]?.v || '';
-          const reason   = r.c[5]?.v || '';
-          const st       = r.c[6]?.v || '審核中';
-          const fileUrl  = r.c[7]?.v || '';
-          const status   = st === '已核准' ? 'approved' : st === '已拒絕' ? 'denied' : 'pending';
-          return { id, applicant, type, start, end, reason, status, fileUrl, hasFile: !!fileUrl, fileName: '' };
+          const st = r.c[6]?.v || '審核中';
+          return {
+            id:        r.c[0]?.v || Date.now(),
+            applicant: r.c[1]?.v || '',
+            type:      r.c[2]?.v || '',
+            start:     r.c[3]?.v || '',
+            end:       r.c[4]?.v || '',
+            reason:    r.c[5]?.v || '',
+            status:    st === '已核准' ? 'approved' : st === '已拒絕' ? 'denied' : 'pending',
+            fileUrl:   r.c[7]?.v || '',
+            hasFile:   !!(r.c[7]?.v),
+            fileName:  ''
+          };
         }).filter(l => l.applicant);
         save();
       }
     }
-  } catch(e) {
-    console.warn('Sheets 同步失敗', e);
-  }
+  } catch(e) { console.warn('請假同步失敗', e); }
 }
 
 
@@ -705,6 +711,62 @@ function deleteLeave(i) {
   renderLeaveRows();
   updateStats();
   showToast('已刪除假單');
+}
+
+
+function updateStats() {
+  const today    = fmtD(now());
+  const todayLogs = logs.filter(l => l.date === today);
+  const names    = [...new Set(todayLogs.map(l => l.name))];
+  const lateCount = todayLogs.filter(l => l.type === '上班' && l.hour >= WORK_START_HOUR).length;
+  const leaveToday = leaves.filter(l => l.start <= today && l.end >= today && l.status === 'approved').length;
+  document.getElementById('statTotal').textContent  = names.length;
+  document.getElementById('statLate').textContent   = lateCount;
+  document.getElementById('statLeave').textContent  = leaveToday;
+  document.getElementById('statAbsent').textContent = Math.max(0, MEMBERS.length - names.length - leaveToday);
+}
+
+function adminSwitch(name, btn) {
+  document.querySelectorAll('.admin-section').forEach(s => s.style.display = 'none');
+  document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('admin-' + name).style.display = 'block';
+  btn.classList.add('active');
+}
+
+function renderAttendance() {
+  const fd = document.getElementById('filterDate').value;
+  const fm = document.getElementById('filterMember').value;
+  let filtered = logs;
+  if (fd) filtered = filtered.filter(l => l.date === fd);
+  if (fm) filtered = filtered.filter(l => l.name === fm);
+  const byKey = {};
+  filtered.forEach(l => {
+    const k = l.name + '|' + l.date;
+    if (!byKey[k]) byKey[k] = { name: l.name, date: l.date, in: null, out: null, inHour: null };
+    if (l.type === '上班') { byKey[k].in = l.time; byKey[k].inHour = l.hour; }
+    if (l.type === '下班') byKey[k].out = l.time;
+  });
+  const rows = Object.values(byKey);
+  const body = document.getElementById('attendanceBody');
+  if (!rows.length) {
+    body.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#bbb;font-size:13px">無紀錄</td></tr>';
+    return;
+  }
+  body.innerHTML = rows.map(r => {
+    let badge = !r.in
+      ? '<span class="badge absent">未打卡</span>'
+      : r.inHour >= WORK_START_HOUR
+        ? '<span class="badge late">遲到</span>'
+        : '<span class="badge normal">正常</span>';
+    return `<tr>
+      <td style="font-weight:600">${r.name}</td>
+      <td>${r.date}</td>
+      <td>${r.in || '—'}</td>
+      <td>${r.out || '—'}</td>
+      <td>${badge}</td>
+      <td><button class="approve-btn no" onclick="deleteLog('${r.name}','${r.date}')">刪除</button></td>
+    </tr>`;
+  }).join('');
 }
 
 function renderLeaveAdmin() {
