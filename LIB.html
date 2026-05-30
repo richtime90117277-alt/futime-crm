@@ -649,6 +649,9 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--text
     <div class="sidebar-item active" id="nav-overview" onclick="showOverview();autoCloseSidebar()">
       <span class="s-icon">🏠</span><span class="s-name">總覽</span>
     </div>
+    <div class="sidebar-item" id="nav-bossmap" onclick="showBossMap();autoCloseSidebar()">
+      <span class="s-icon">🗺️</span><span class="s-name">Boss 大地圖</span><span class="s-cnt" style="background:rgba(192,57,43,0.1);color:#c0392b;font-weight:700">玩</span>
+    </div>
     <div class="sidebar-item" id="nav-onboarding" onclick="showOnboarding();autoCloseSidebar()">
       <span class="s-icon">🚀</span><span class="s-name">新人30天路徑</span><span class="s-cnt" style="background:rgba(192,57,43,0.1);color:#c0392b;font-weight:700">NEW</span>
     </div>
@@ -1343,16 +1346,7 @@ function _showExamLobby(personaId) {
       newbie: '主玩法：用打的，不用打字',
     },
     {
-      id: 'branch', step: 3,
-      icon: '🌿', name: '情境分支選擇',
-      tag: '互動·AI', tagColor: '#2980b9',
-      desc: 'AI 開場一句話\n選 A / B / C 應對\n選錯劇情變難',
-      cta: '進入分支',
-      fn: `startBranchMode('${personaId}')`,
-      newbie: '第三步：練判斷，選錯沒關係',
-    },
-    {
-      id: 'gauntlet', step: 4,
+      id: 'gauntlet', step: 3,
       icon: '⚔️', name: '進階挑戰 · AI',
       tag: '進階·會用 AI', tagColor: 'var(--olive)',
       desc: 'AI 真人扮客戶\n自由對話 3 回合\n打字真功夫、給 S/A/B/C',
@@ -1361,7 +1355,7 @@ function _showExamLobby(personaId) {
       newbie: '老鳥場：練真實對話',
     },
     {
-      id: 'projector', step: 5,
+      id: 'projector', step: 4,
       icon: '📡', name: '早會投影模式',
       tag: '多人', tagColor: '#8e44ad',
       desc: '全員搶答 · 大字版\n30秒倒數計時\n最適合投到大螢幕',
@@ -1411,6 +1405,182 @@ function _showExamLobby(personaId) {
   `);
 }
 // ──────────────────────────────────────
+// 📅 每日 Boss 挑戰（日期種子抽 Boss · 連續天數）
+// ──────────────────────────────────────
+const BOSS_DAILY_KEY = 'lib_boss_daily_v1';
+function _todayStr(){ const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+// 用日期字串產生穩定種子（全團隊同一天打同一隻 Boss）
+function _dailySeed(str){ let h=0; for(let i=0;i<str.length;i++){ h=(h*31+str.charCodeAt(i))>>>0; } return h; }
+function _dailyLoad(){ try{ return JSON.parse(localStorage.getItem(BOSS_DAILY_KEY)||'{}'); }catch(e){ return {}; } }
+function _dailySave(d){ try{ localStorage.setItem(BOSS_DAILY_KEY, JSON.stringify(d)); }catch(e){} }
+// 取得今天的 Boss
+function _dailyBoss(){
+  const levels = _bossLevels();
+  if(levels.length===0) return null;
+  const seed = _dailySeed(_todayStr());
+  return levels[seed % levels.length];
+}
+function _dailyStatus(){
+  const d = _dailyLoad();
+  const today = _todayStr();
+  const done = d.lastDate === today;
+  return { done, streak: d.streak||0, best: (d.records&&d.records[today])||0, lastDate:d.lastDate };
+}
+// 完成每日挑戰後呼叫（在 Boss 結算時，如果是今日 Boss）
+function _dailyComplete(accPct){
+  const d = _dailyLoad();
+  const today = _todayStr();
+  if(d.lastDate === today){ // 今天已完成，只更新最佳
+    d.records = d.records||{}; d.records[today] = Math.max(d.records[today]||0, accPct);
+    _dailySave(d); return d.streak||0;
+  }
+  // 連續天數：昨天有完成才 +1，否則歸 1
+  const y = new Date(); y.setDate(y.getDate()-1);
+  const yStr = `${y.getFullYear()}-${String(y.getMonth()+1).padStart(2,'0')}-${String(y.getDate()).padStart(2,'0')}`;
+  d.streak = (d.lastDate===yStr ? (d.streak||0)+1 : 1);
+  d.lastDate = today;
+  d.records = d.records||{}; d.records[today] = accPct;
+  _dailySave(d);
+  return d.streak;
+}
+function startDailyChallenge(){
+  const boss = _dailyBoss();
+  if(!boss){ showToast('目前沒有可挑戰的 Boss 😅'); return; }
+  bossState = null;
+  startBossBattle(boss.id, { daily:true });
+}
+
+
+const BOSS_WIN_RATE = 60; // 通關率達此 % 才算過關、解鎖下一關
+const BOSS_DIFF_ORDER = { '新手場': 0, '進階場': 1, '高段位場': 2 };
+const BOSS_ZONE = [
+  { key: '新手場', name: '新手村', icon: '🌱', color: '#3D5A40' },
+  { key: '進階場', name: '進階區', icon: '⚔️', color: '#B8943C' },
+  { key: '高段位場', name: '高段位', icon: '👑', color: '#c0392b' },
+];
+
+// 取得排序後的關卡清單（難度→題數多的優先；題數<2 不列入地圖）
+function _bossLevels(){
+  return PERSONAS
+    .filter(p => SCRIPTS.filter(s => s.persona===p.id && s.trigger && s.title).length >= 2)
+    .map(p => ({ p, n: SCRIPTS.filter(s=>s.persona===p.id&&s.trigger&&s.title).length, d: BOSS_DIFF_ORDER[p.difficulty] ?? 1 }))
+    .sort((a,b) => a.d - b.d || b.n - a.n)
+    .map(x => x.p);
+}
+function _bossMapLoad(){
+  try { return JSON.parse(localStorage.getItem(BOSS_MAP_KEY) || '{}'); } catch(e){ return {}; }
+}
+function _bossMapSave(data){
+  try { localStorage.setItem(BOSS_MAP_KEY, JSON.stringify(data)); } catch(e){}
+}
+// 過關後記錄成績（取最佳）
+function _bossMapRecord(personaId, grade, accPct){
+  const data = _bossMapLoad();
+  const stars = grade==='S'?3 : grade==='A'?2 : grade==='B'?1 : 0;
+  const cur = data[personaId] || { stars:0, best:0, cleared:false };
+  const cleared = cur.cleared || accPct >= BOSS_WIN_RATE;
+  data[personaId] = {
+    stars: Math.max(cur.stars, stars),
+    best: Math.max(cur.best, accPct),
+    cleared
+  };
+  _bossMapSave(data);
+  return data[personaId];
+}
+// 某關是否解鎖：第一關恆解鎖；其餘看「前一關是否 cleared」
+function _bossLevelUnlocked(levels, idx, data){
+  if (idx === 0) return true;
+  const prev = levels[idx-1];
+  return !!(data[prev.id] && data[prev.id].cleared);
+}
+
+function showBossMap(){
+  const levels = _bossLevels();
+  const data = _bossMapLoad();
+  const totalCleared = levels.filter(p => data[p.id] && data[p.id].cleared).length;
+  const totalStars = levels.reduce((s,p)=> s + (data[p.id]?.stars||0), 0);
+  const maxStars = levels.length * 3;
+
+  // 每日挑戰橫幅
+  const dboss = _dailyBoss();
+  const dstat = _dailyStatus();
+  const dailyBanner = dboss ? `
+    <div onclick="startDailyChallenge()" style="background:linear-gradient(135deg,#3D5A40,#2a3d2c);border-radius:16px;padding:16px;margin-bottom:16px;cursor:pointer;position:relative;overflow:hidden"
+      onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div style="font-size:38px">${dboss.icon}</div>
+        <div style="flex:1">
+          <div style="font-size:10px;font-weight:800;letter-spacing:.15em;color:var(--gold)">📅 今日挑戰${dstat.streak>0?` · 🔥 連續 ${dstat.streak} 天`:''}</div>
+          <div style="font-size:15px;font-weight:800;color:#fff;margin-top:2px">${dstat.done?'✓ 今天已完成':'神秘客戶上門了'}</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.7);margin-top:2px">${dstat.done?`今日最佳通關率 ${dstat.best}% · 可再戰刷新`:'完成額外 +10 pt，連續天數越長獎勵越高'}</div>
+        </div>
+        <div style="background:var(--gold);color:#fff;border-radius:10px;padding:9px 16px;font-size:13px;font-weight:800;white-space:nowrap">${dstat.done?'再挑戰':'開始 →'}</div>
+      </div>
+    </div>` : '';
+
+  // 依難度分區
+  let zonesHTML = '';
+  let runningIdx = 0; // 全域關卡索引（決定解鎖）
+  for (const zone of BOSS_ZONE) {
+    const zoneLevels = levels.filter(p => (p.difficulty||'進階場') === zone.key);
+    if (zoneLevels.length === 0) continue;
+    const cards = zoneLevels.map(p => {
+      const gIdx = levels.indexOf(p);
+      const unlocked = _bossLevelUnlocked(levels, gIdx, data);
+      const rec = data[p.id];
+      const stars = rec?.stars || 0;
+      const best = rec?.best || 0;
+      const starStr = unlocked ? ('★★★'.slice(0,stars) + '☆☆☆'.slice(0, 3-stars)) : '';
+      return `
+        <div onclick="${unlocked ? `startBossBattle('${p.id}')` : `showToast('先打贏前一關才能解鎖 🔒')`}"
+          style="position:relative;background:${unlocked?'#fff':'var(--surface3)'};border:2px solid ${rec?.cleared?zone.color:'var(--border)'};border-radius:14px;padding:14px;cursor:pointer;transition:all .15s;opacity:${unlocked?1:0.55}"
+          ${unlocked?`onmouseover="this.style.borderColor='${zone.color}';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='${rec?.cleared?zone.color:'var(--border)'}';this.style.transform=''"`:''}>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="font-size:30px;filter:${unlocked?'none':'grayscale(1)'}">${unlocked? p.icon : '🔒'}</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${unlocked?p.name:'？？？'}</div>
+              <div style="font-size:14px;letter-spacing:2px;color:${stars>0?'var(--gold)':'var(--text-dim)'};margin-top:2px">${starStr}</div>
+            </div>
+          </div>
+          ${unlocked && best>0 ? `<div style="position:absolute;top:10px;right:12px;font-size:10px;font-weight:700;color:${rec?.cleared?zone.color:'var(--text-dim)'}">最佳 ${best}%</div>` : ''}
+          ${rec?.cleared ? `<div style="position:absolute;bottom:8px;right:10px;font-size:9px;font-weight:700;color:${zone.color}">✓ 已攻下</div>` : ''}
+        </div>`;
+    }).join('');
+    zonesHTML += `
+      <div style="margin-bottom:18px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <span style="font-size:18px">${zone.icon}</span>
+          <span style="font-size:13px;font-weight:800;color:${zone.color};letter-spacing:.05em">${zone.name}</span>
+          <span style="font-size:10px;color:var(--text-dim)">${zoneLevels.length} 關</span>
+          <div style="flex:1;height:1px;background:var(--border)"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">${cards}</div>
+      </div>`;
+  }
+
+  renderMain(`
+    <div class="view-eyebrow">🗺️ Boss 大地圖</div>
+    ${dailyBanner}
+    <div style="background:linear-gradient(135deg,rgba(61,90,64,0.08),rgba(184,148,60,0.05));border:1.5px solid rgba(61,90,64,0.2);border-radius:16px;padding:16px;margin-bottom:20px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--text-dim)">攻下進度</div>
+          <div style="font-size:24px;font-weight:900;color:var(--olive);font-family:'Noto Serif TC',serif">${totalCleared} / ${levels.length} 關</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--text-dim)">收集星星</div>
+          <div style="font-size:24px;font-weight:900;color:var(--gold);font-family:'Noto Serif TC',serif">⭐ ${totalStars} / ${maxStars}</div>
+        </div>
+      </div>
+      <div style="margin-top:12px;background:var(--surface3);border-radius:20px;height:10px;overflow:hidden">
+        <div style="height:100%;width:${Math.round(totalCleared/levels.length*100)}%;background:linear-gradient(90deg,#3D5A40,#B8943C);border-radius:20px;transition:width .6s"></div></div>
+      <div style="font-size:10px;color:var(--text-dim);margin-top:8px">通關率達 ${BOSS_WIN_RATE}% 即攻下該關、解鎖下一關 · ★ 數依評級 B/A/S</div>
+    </div>
+    ${zonesHTML}
+  `);
+}
+
+// ──────────────────────────────────────
 // 🎮 Boss 戰模式（選擇式 · 零 API · 血條對戰）
 // ──────────────────────────────────────
 const BOSS_CFG = { playerMaxHP: 100, bossMaxHP: 100, wrongDmg: 25, comboBonus: 6 };
@@ -1443,19 +1613,33 @@ function _bossSplitTrap(trap){
 function _buildBossQuestions(p){
   const scripts = SCRIPTS.filter(s => s.persona === p.id && s.trigger && s.title);
   const trapPool = _bossSplitTrap(p.trap);
+  // 別關的正解技巧名池（最強干擾：聽起來都像對的技巧，逼你真的讀客戶那句話）
+  const otherTitlePool = SCRIPTS
+    .filter(s => s.persona !== p.id && s.title)
+    .map(s => _bossShortTitle(s.title));
   const qs = scripts.map(s => {
     const correct = _bossShortTitle(s.title);
-    // 迷惑選項1：這個客戶的真實陷阱；迷惑選項2：通用錯誤反射
     const used = new Set([correct]);
     const distractors = [];
+    // 干擾1：別關的正解技巧名（看起來最像對的）
+    const titlePick = _bossShuffle(otherTitlePool).find(t => t && !used.has(t) && t.length>=4);
+    if(titlePick){ distractors.push(titlePick); used.add(titlePick); }
+    // 干擾2：這個客戶的真實陷阱
     const trapPick = _bossShuffle(trapPool).find(t => !used.has(t));
     if(trapPick){ distractors.push(trapPick); used.add(trapPick); }
+    // 干擾3：通用錯誤反射，並補滿到 3 個
     for(const g of _bossShuffle(BOSS_GENERIC_WRONG)){
-      if(distractors.length>=2) break;
+      if(distractors.length>=3) break;
       if(!used.has(g)){ distractors.push(g); used.add(g); }
     }
-    while(distractors.length<2){ distractors.push(BOSS_GENERIC_WRONG[distractors.length]); }
-    const opts = _bossShuffle([{t:correct,ok:true}, {t:distractors[0],ok:false}, {t:distractors[1],ok:false}]);
+    let gi=0;
+    while(distractors.length<3 && gi<BOSS_GENERIC_WRONG.length){
+      const g=BOSS_GENERIC_WRONG[gi++]; if(!used.has(g)){ distractors.push(g); used.add(g); }
+    }
+    const opts = _bossShuffle([
+      {t:correct,ok:true},
+      ...distractors.map(d=>({t:d,ok:false}))
+    ]);
     return {
       trigger: s.trigger,
       situation: s.situation || '',
@@ -1467,7 +1651,7 @@ function _buildBossQuestions(p){
   return _bossShuffle(qs);
 }
 
-function startBossBattle(personaId){
+function startBossBattle(personaId, opts){
   const p = PERSONAS.find(x => x.id === personaId);
   if(!p) return;
   const questions = _buildBossQuestions(p);
@@ -1479,7 +1663,8 @@ function startBossBattle(personaId){
   bossState = {
     personaId, persona: p, questions, idx: 0,
     playerHP: BOSS_CFG.playerMaxHP, bossHP: BOSS_CFG.bossMaxHP,
-    dmgPerHit, combo: 0, correctCount: 0, locked: false
+    dmgPerHit, combo: 0, correctCount: 0, locked: false,
+    daily: !!(opts && opts.daily)
   };
   _renderBossUI();
 }
@@ -1501,21 +1686,24 @@ function _renderBossUI(){
       style="background:#fff;border:2px solid var(--border);border-radius:14px;padding:15px 16px;cursor:pointer;display:flex;gap:12px;align-items:center;transition:all .12s"
       onmouseover="if(!bossState.locked){this.style.borderColor='var(--olive)';this.style.background='var(--olive-dim)'}"
       onmouseout="if(!bossState.locked){this.style.borderColor='var(--border)';this.style.background='#fff'}">
-      <span style="font-size:13px;font-weight:900;color:var(--olive);flex-shrink:0;width:22px;height:22px;border:1.5px solid var(--olive);border-radius:50%;display:flex;align-items:center;justify-content:center">${['A','B','C'][i]}</span>
+      <span style="font-size:13px;font-weight:900;color:var(--olive);flex-shrink:0;width:22px;height:22px;border:1.5px solid var(--olive);border-radius:50%;display:flex;align-items:center;justify-content:center">${['A','B','C','D'][i]}</span>
       <span style="font-size:14px;color:var(--text);line-height:1.5">${esc(o.t)}</span></div>`).join('');
+  const isEnraged = (s.bossHP / BOSS_CFG.bossMaxHP) <= 0.30 && s.bossHP > 0;
   renderMain(`
     <button class="back-btn" onclick="showExamLobby('${s.personaId}')">← 退出戰鬥</button>
     <div class="view-eyebrow">🎮 Boss 戰 · 第 ${s.idx+1} / ${s.questions.length} 關</div>
 
     <!-- Boss 區 -->
-    <div style="background:linear-gradient(135deg,rgba(192,57,43,0.06),rgba(184,148,60,0.04));border:2px solid rgba(192,57,43,0.2);border-radius:16px;padding:16px;margin-bottom:14px">
+    <div style="background:${isEnraged?'linear-gradient(135deg,rgba(192,57,43,0.16),rgba(231,76,60,0.08))':'linear-gradient(135deg,rgba(192,57,43,0.06),rgba(184,148,60,0.04))'};border:2px solid ${isEnraged?'#c0392b':'rgba(192,57,43,0.2)'};border-radius:16px;padding:16px;margin-bottom:14px;${isEnraged?'animation:boss-enrage 1s ease-in-out infinite':''}">
+      <style>@keyframes boss-enrage{0%,100%{box-shadow:0 0 0 0 rgba(192,57,43,0)}50%{box-shadow:0 0 16px 2px rgba(192,57,43,0.35)}}</style>
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
         <div id="boss-avatar" style="font-size:40px;transition:transform .2s">${p.icon}</div>
         <div style="flex:1">
           <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
-            <span style="font-size:14px;font-weight:700;color:var(--text)">${p.name}</span>
+            <span style="font-size:14px;font-weight:700;color:var(--text)">${p.name}${isEnraged?' <span style="color:#c0392b;font-size:11px;font-weight:900">💢 狂暴中</span>':''}</span>
             <span style="font-size:11px;font-weight:700;color:#c0392b">HP ${s.bossHP}</span></div>
-          ${_bossHPBar(s.bossHP, BOSS_CFG.bossMaxHP, 'linear-gradient(90deg,#c0392b,#e67e22)').replace('id=""','id="boss-hp-bar"')}
+          ${_bossHPBar(s.bossHP, BOSS_CFG.bossMaxHP, isEnraged?'linear-gradient(90deg,#8e0000,#c0392b)':'linear-gradient(90deg,#c0392b,#e67e22)').replace('id=""','id="boss-hp-bar"')}
+          ${isEnraged?'<div style="font-size:9px;color:#c0392b;font-weight:700;margin-top:5px">客戶被逼到牆角！答錯扣血加重、但你砍中爆擊翻倍</div>':''}
         </div></div>
     </div>
 
@@ -1554,21 +1742,25 @@ function bossAnswer(i){
     else if(idx===i){ el.style.borderColor='#c0392b'; el.style.background='rgba(192,57,43,0.06)'; }
   });
 
+  // 狂暴判定：Boss 血量 ≤ 30% 進入狂暴（答對前先看當下血量）
+  const enraged = (s.bossHP / BOSS_CFG.bossMaxHP) <= 0.30 && s.bossHP > 0;
+
   let dmgText = '';
   if(hit){
     s.combo++;
     s.correctCount++;
-    const bonus = s.combo>=2 ? BOSS_CFG.comboBonus : 0;
+    let bonus = s.combo>=2 ? BOSS_CFG.comboBonus : 0;
+    if(enraged) bonus += s.dmgPerHit; // 狂暴期命中爆擊：額外加一倍基礎傷害
     const dmg = s.dmgPerHit + bonus;
     s.bossHP = Math.max(0, s.bossHP - dmg);
-    dmgText = `<span style="color:#c0392b;font-weight:900">−${dmg} Boss HP${bonus?` (🔥連擊+${bonus})`:''}</span>`;
-    // Boss 受擊抖動
+    dmgText = `<span style="color:#c0392b;font-weight:900">−${dmg} Boss HP${enraged?' (💥狂暴爆擊!)':bonus?` (🔥連擊+${bonus})`:''}</span>`;
     const av = document.getElementById('boss-avatar');
     if(av){ av.style.transform='translateX(-6px) scale(.9)'; setTimeout(()=>av.style.transform='',180); }
   } else {
     s.combo = 0;
-    s.playerHP = Math.max(0, s.playerHP - BOSS_CFG.wrongDmg);
-    dmgText = `<span style="color:#c0392b;font-weight:900">你 −${BOSS_CFG.wrongDmg} HP</span>`;
+    const wrong = enraged ? Math.round(BOSS_CFG.wrongDmg*1.6) : BOSS_CFG.wrongDmg;
+    s.playerHP = Math.max(0, s.playerHP - wrong);
+    dmgText = `<span style="color:#c0392b;font-weight:900">你 −${wrong} HP${enraged?' (💢客戶狂攻!)':''}</span>`;
   }
   // 更新血條
   const bb = document.getElementById('boss-hp-bar'); if(bb) bb.style.width = Math.round(s.bossHP/BOSS_CFG.bossMaxHP*100)+'%';
@@ -1613,27 +1805,56 @@ function _renderBossResult(){
   const pts = grade==='S'?20:grade==='A'?12:grade==='B'?7:3;
   if(won) _playSfx('correct'); else _playSfx('wrong');
 
+  // 每日挑戰：完成就記錄、連續天數、額外獎勵
+  let dailyMsg = '';
+  let bonusPts = 0;
+  if(s.daily){
+    const streak = _dailyComplete(acc);
+    bonusPts = 10 + Math.min(streak, 7); // 每日固定 +10，連續加成最多 +7
+    dailyMsg = `<div style="background:linear-gradient(135deg,rgba(184,148,60,0.12),rgba(192,57,43,0.06));border:1.5px solid var(--gold);border-radius:12px;padding:13px;margin:0 auto 16px;max-width:340px;text-align:center">
+      <div style="font-size:12px;font-weight:800;color:var(--gold);letter-spacing:.05em">📅 完成今日挑戰！</div>
+      <div style="font-size:13px;font-weight:700;color:var(--text);margin-top:4px">🔥 連續 ${streak} 天 &nbsp;·&nbsp; 額外 +${bonusPts} pt</div></div>`;
+  }
+
+  // 記錄地圖進度（取最佳），並判斷是否首次攻下、解鎖下一關
+  const levels = _bossLevels();
+  const myIdx = levels.findIndex(x => x.id === s.personaId);
+  const before = _bossMapLoad()[s.personaId]?.cleared || false;
+  const rec = _bossMapRecord(s.personaId, grade, acc);
+  const justCleared = !before && rec.cleared;
+  let unlockMsg = '';
+  if(justCleared && myIdx >= 0 && myIdx+1 < levels.length){
+    unlockMsg = `<div style="background:rgba(184,148,60,0.1);border:1.5px dashed var(--gold);border-radius:12px;padding:12px;margin:0 auto 16px;max-width:340px;font-size:13px;font-weight:700;color:var(--gold);text-align:center">🔓 解鎖新關卡：${levels[myIdx+1].name}！</div>`;
+  } else if(justCleared && myIdx === levels.length-1){
+    unlockMsg = `<div style="background:rgba(192,57,43,0.08);border:1.5px dashed #c0392b;border-radius:12px;padding:12px;margin:0 auto 16px;max-width:340px;font-size:13px;font-weight:700;color:#c0392b;text-align:center">👑 全地圖攻下！你是客戶解碼大師</div>`;
+  }
+  const nextLevel = (won && myIdx>=0 && myIdx+1<levels.length && (_bossMapLoad()[levels[myIdx+1].id]===undefined || _bossLevelUnlocked(levels, myIdx+1, _bossMapLoad()))) ? levels[myIdx+1] : null;
+
   renderMain(`
-    <button class="back-btn" onclick="showExamLobby('${s.personaId}')">← 返回大廳</button>
+    <button class="back-btn" onclick="showBossMap()">← 返回大地圖</button>
     <div class="view-eyebrow">🎮 Boss 戰 · 戰果</div>
     <div style="text-align:center;padding:24px 0">
       <div style="font-size:64px;margin-bottom:8px">${won?'🎉':'💀'}</div>
       <div style="font-size:13px;font-weight:700;letter-spacing:.1em;color:var(--text-dim);margin-bottom:4px">${won?'BOSS 擊破':'戰鬥失敗'}</div>
       <div style="display:inline-block;margin:10px 0;padding:14px 28px;background:${gradeColor}14;border:2px solid ${gradeColor};border-radius:16px">
-        <div style="font-size:56px;font-weight:900;color:${gradeColor};font-family:'Noto Serif TC',serif;line-height:1">${grade}</div></div>
+        <div style="font-size:56px;font-weight:900;color:${gradeColor};font-family:'Noto Serif TC',serif;line-height:1">${grade}</div>
+        <div style="font-size:18px;letter-spacing:3px;color:var(--gold);margin-top:4px">${'★★★'.slice(0, grade==='S'?3:grade==='A'?2:grade==='B'?1:0)}${'☆☆☆'.slice(0, 3-(grade==='S'?3:grade==='A'?2:grade==='B'?1:0))}</div></div>
       <div style="font-size:15px;font-weight:700;color:${gradeColor};margin-top:8px">${gradeMsg}</div>
       <div style="display:flex;justify-content:center;gap:20px;margin-top:18px;font-size:12px;color:var(--text-sub)">
-        <div>命中率 <b style="color:var(--text)">${acc}%</b></div>
+        <div>通關率 <b style="color:var(--text)">${acc}%</b></div>
         <div>答對 <b style="color:var(--text)">${s.correctCount}/${total}</b></div>
         <div>剩餘 HP <b style="color:var(--text)">${s.playerHP}</b></div></div>
       <div style="display:inline-block;margin-top:14px;background:${gradeColor};color:#fff;border-radius:20px;padding:5px 18px;font-size:13px;font-weight:700">+${pts} pt</div>
     </div>
+    ${dailyMsg}
+    ${unlockMsg}
     <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-      <button onclick="startBossBattle('${s.personaId}')" style="background:var(--olive);color:#fff;border:none;border-radius:12px;padding:12px 24px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">🔄 再戰一次</button>
-      <button onclick="showPersona('${s.personaId}')" style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 24px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;color:var(--text-sub)">📖 複習客戶卡</button></div>
+      ${nextLevel ? `<button onclick="startBossBattle('${nextLevel.id}')" style="background:var(--gold);color:#fff;border:none;border-radius:12px;padding:12px 24px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">下一關：${nextLevel.name} →</button>` : ''}
+      <button onclick="startBossBattle('${s.personaId}'${s.daily?", {daily:true}":""})" style="background:var(--olive);color:#fff;border:none;border-radius:12px;padding:12px 24px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">🔄 再戰一次</button>
+      <button onclick="showBossMap()" style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 24px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;color:var(--text-sub)">🗺️ 大地圖</button></div>
   `);
   if(won) _launchConfetti(grade==='S'?60:35, gradeColor);
-  if(typeof growthAddPts==='function' && libCurrentUser) growthAddPts(pts, `Boss 戰 ${grade} 評級`);
+  if(typeof growthAddPts==='function' && libCurrentUser) growthAddPts(pts + bonusPts, `Boss 戰 ${grade} 評級${s.daily?'（每日挑戰）':''}`);
   if(typeof _logExamGrade==='function') _logExamGrade(grade);
 }
 
