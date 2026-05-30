@@ -627,35 +627,66 @@ function checkPW() {
 
 async function syncFromSheets() {
   const SHEET_ID = '1Kr7O9Em4VNWefAC4pIpi__YBLuAr5uC0MtkJCTix7nQ';
+
+  // gviz 日期格式轉換：Date(2026,4,30) → 2026-05-30
+  function parseGvizDate(v) {
+    if (!v) return '';
+    if (typeof v === 'string' && v.includes('-')) return v;
+    const m = String(v).match(/Date\((\d+),(\d+),(\d+)\)/);
+    if (m) {
+      const y = m[1], mo = String(parseInt(m[2])+1).padStart(2,'0'), d = String(m[3]).padStart(2,'0');
+      return `${y}-${mo}-${d}`;
+    }
+    return String(v);
+  }
+
+  // gviz 時間格式轉換：{v: 0.614...} 或 "15:03:21"
+  function parseGvizTime(cell) {
+    if (!cell) return '';
+    const v = cell.v;
+    const f = cell.f;
+    if (f && f.includes(':')) return f;
+    if (typeof v === 'string' && v.includes(':')) return v;
+    if (typeof v === 'number') {
+      const total = Math.round(v * 86400);
+      const h = String(Math.floor(total/3600)).padStart(2,'0');
+      const m = String(Math.floor((total%3600)/60)).padStart(2,'0');
+      const s = String(total%60).padStart(2,'0');
+      return `${h}:${m}:${s}`;
+    }
+    return String(v || '');
+  }
+
   try {
-    // 打卡紀錄
     const pUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=%E6%89%93%E5%8D%A1%E7%B4%80%E9%8C%84`;
     const pr = await fetch(pUrl);
     if (pr.ok) {
       const txt = await pr.text();
-      const clean = txt.replace(/^[^{]+/, '').replace(/[^}]+$/, '');
+      const clean = txt.replace(/^[^\{]+/, '').replace(/\);?\s*$/, '');
       const data = JSON.parse(clean);
       const rows = (data.table && data.table.rows) ? data.table.rows : [];
+      console.log('打卡 rows:', rows.length, rows[0]);
       if (rows.length) {
-        logs = rows.map(r => ({
-          name: r.c[0]?.v || '',
-          type: r.c[1]?.v || '',
-          date: r.c[2]?.v || '',
-          time: r.c[3]?.v || '',
-          hour: parseInt(((r.c[3]?.v) || '0').split(':')[0])
-        })).filter(l => l.name);
+        logs = rows.map(r => {
+          const name = r.c[0]?.v || '';
+          const type = r.c[1]?.v || '';
+          const date = parseGvizDate(r.c[2]?.v);
+          const time = parseGvizTime(r.c[3]);
+          const hour = parseInt((time || '0').split(':')[0]);
+          return { name, type, date, time, hour };
+        }).filter(l => l.name);
         save();
+        console.log('打卡載入完成:', logs.length, '筆');
       }
     }
   } catch(e) { console.warn('打卡同步失敗', e); }
 
   try {
-    // 請假申請
     const lUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=%E8%AB%8B%E5%81%87%E7%94%B3%E8%AB%8B`;
     const lr = await fetch(lUrl);
     if (lr.ok) {
       const txt = await lr.text();
-      const clean = txt.replace(/^[^{]+/, '').replace(/[^}]+$/, '');
+      const clean = txt.replace(/^[^\{]+/, '').replace(/\);?\s*$/, '');
       const data = JSON.parse(clean);
       const rows = (data.table && data.table.rows) ? data.table.rows : [];
       if (rows.length) {
@@ -665,8 +696,8 @@ async function syncFromSheets() {
             id:        r.c[0]?.v || Date.now(),
             applicant: r.c[1]?.v || '',
             type:      r.c[2]?.v || '',
-            start:     r.c[3]?.v || '',
-            end:       r.c[4]?.v || '',
+            start:     parseGvizDate(r.c[3]?.v),
+            end:       parseGvizDate(r.c[4]?.v),
             reason:    r.c[5]?.v || '',
             status:    st === '已核准' ? 'approved' : st === '已拒絕' ? 'denied' : 'pending',
             fileUrl:   r.c[7]?.v || '',
