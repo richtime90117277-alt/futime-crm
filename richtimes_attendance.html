@@ -363,6 +363,7 @@ tr:last-child td { border-bottom: none; }
           <input type="date" id="filterDate" oninput="renderAttendance()" />
           <label>成員</label>
           <select id="filterMember" onchange="renderAttendance()"><option value="">全部</option></select>
+          <button class="gen-btn" onclick="reloadFromSheets()" id="reloadBtn">⟳ 從雲端載入</button>
         </div>
         <div class="table-wrap">
           <table><thead><tr><th>成員</th><th>日期</th><th>上班</th><th>下班</th><th>狀態</th><th>操作</th></tr></thead>
