@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>富時代 出缺勤系統</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.10.0/dist/tabler-icons.min.css" />
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang TC', 'Microsoft JhengHei', sans-serif; background: #f4f5f7; min-height: 100vh; }
+
+.rt-header {
+  background: #0a1628;
+  padding: 1rem 1.5rem;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.rt-logo { color: #d4a843; font-size: 20px; font-weight: 600; letter-spacing: 0.05em; }
+.rt-logo span { color: #fff; }
+.rt-date { color: #8899aa; font-size: 13px; }
+
+.container { max-width: 520px; margin: 0 auto; padding: 1rem; }
+
+.tab-bar {
+  display: flex; gap: 4px; margin-bottom: 1rem;
+  background: #e8eaed; padding: 4px; border-radius: 10px;
+}
+.tab-btn {
+  flex: 1; padding: 9px 12px; font-size: 13px;
+  border: none; background: transparent; border-radius: 7px;
+  cursor: pointer; color: #666; font-family: inherit; transition: all 0.15s;
+}
+.tab-btn.active { background: #fff; color: #0a1628; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
+
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* Clock Panel */
+.clock-card {
+  background: #0a1628; border-radius: 14px;
+  padding: 2rem 1.5rem; text-align: center; margin-bottom: 1rem;
+  position: relative; overflow: hidden;
+}
+.clock-card::before {
+  content: ''; position: absolute; top: -50px; right: -50px;
+  width: 180px; height: 180px; border-radius: 50%;
+  border: 1px solid rgba(212,168,67,0.18);
+}
+.clock-card::after {
+  content: ''; position: absolute; top: -85px; right: -85px;
+  width: 250px; height: 250px; border-radius: 50%;
+  border: 1px solid rgba(212,168,67,0.08);
+}
+.clock-display {
+  font-size: 52px; font-weight: 200; color: #fff;
+  letter-spacing: 0.06em; font-variant-numeric: tabular-nums; margin-bottom: 6px;
+}
+.clock-sub { color: #8899aa; font-size: 13px; margin-bottom: 1.75rem; }
+.name-select {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(212,168,67,0.35);
+  border-radius: 8px; color: #fff; padding: 10px 14px;
+  font-size: 14px; width: 230px; margin-bottom: 1.25rem; font-family: inherit;
+  appearance: none;
+}
+.name-select option { background: #0a1628; }
+.punch-btns { display: flex; gap: 12px; justify-content: center; }
+.btn-in, .btn-out {
+  padding: 12px 28px; border-radius: 8px;
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  border: none; font-family: inherit; transition: opacity 0.15s;
+}
+.btn-in { background: #d4a843; color: #0a1628; }
+.btn-out { background: transparent; color: #d4a843; border: 1px solid #d4a843; }
+.btn-in:active, .btn-out:active { opacity: 0.8; transform: scale(0.98); }
+
+.card {
+  background: #fff; border-radius: 12px;
+  border: 1px solid #e8eaed; overflow: hidden; margin-bottom: 1rem;
+}
+.card-header {
+  padding: 12px 16px; border-bottom: 1px solid #f0f1f3;
+  font-size: 13px; font-weight: 600; color: #555;
+}
+.log-row {
+  display: flex; align-items: center; padding: 11px 16px;
+  border-bottom: 1px solid #f5f6f7; font-size: 13px; gap: 10px;
+}
+.log-row:last-child { border-bottom: none; }
+.log-name { font-weight: 600; color: #1a1a2e; min-width: 60px; }
+.log-badge {
+  font-size: 11px; padding: 2px 9px; border-radius: 20px; font-weight: 500;
+}
+.log-badge.in { background: #e8f5e9; color: #2e7d32; }
+.log-badge.out { background: #fff3e0; color: #e65100; }
+.log-time { color: #888; margin-left: auto; font-size: 12px; font-variant-numeric: tabular-nums; }
+.empty-msg { padding: 28px; text-align: center; color: #bbb; font-size: 13px; }
+
+/* Leave Panel */
+.form-card {
+  background: #fff; border-radius: 12px;
+  border: 1px solid #e8eaed; padding: 1.25rem; margin-bottom: 1rem;
+}
+.form-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 1rem; color: #1a1a2e; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-field { display: flex; flex-direction: column; gap: 5px; }
+.form-field.full { grid-column: 1/-1; }
+.form-field label { font-size: 12px; color: #888; font-weight: 500; }
+.form-field select, .form-field input, .form-field textarea {
+  font-size: 13px; padding: 9px 11px; border-radius: 8px;
+  border: 1px solid #dde0e5; background: #fafafa;
+  color: #1a1a2e; font-family: inherit;
+}
+.form-field textarea { resize: vertical; min-height: 72px; }
+.submit-btn {
+  background: #0a1628; color: #d4a843; border: none;
+  padding: 11px 24px; border-radius: 8px;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  font-family: inherit; margin-top: 6px; display: inline-flex; align-items: center; gap: 6px;
+}
+.submit-btn:hover { opacity: 0.9; }
+
+.leave-row {
+  display: flex; align-items: center; padding: 11px 16px;
+  border-bottom: 1px solid #f5f6f7; gap: 8px; font-size: 13px; flex-wrap: wrap;
+}
+.leave-row:last-child { border-bottom: none; }
+.leave-status { font-size: 11px; padding: 2px 9px; border-radius: 20px; margin-left: auto; font-weight: 500; }
+.leave-status.pending { background: #fff8e1; color: #f57f17; }
+.leave-status.approved { background: #e8f5e9; color: #2e7d32; }
+.leave-status.denied { background: #ffebee; color: #c62828; }
+
+/* Admin Panel */
+.pw-wrap {
+  background: #fff; border-radius: 12px; border: 1px solid #e8eaed;
+  padding: 2.5rem 1.5rem; text-align: center;
+}
+.pw-title { font-size: 15px; font-weight: 600; margin-bottom: 6px; color: #1a1a2e; }
+.pw-sub { font-size: 13px; color: #888; margin-bottom: 1.5rem; }
+.pw-input {
+  padding: 11px 14px; font-size: 14px; border-radius: 8px;
+  border: 1px solid #dde0e5; width: 210px; font-family: inherit; color: #1a1a2e;
+  display: block; margin: 0 auto 12px;
+}
+.pw-btn {
+  background: #0a1628; color: #d4a843; border: none;
+  padding: 11px 28px; border-radius: 8px; font-size: 13px;
+  font-weight: 600; cursor: pointer; font-family: inherit;
+}
+.pw-err { color: #c62828; font-size: 12px; margin-top: 8px; display: none; }
+
+.stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 1rem; }
+.stat-card { background: #fff; border-radius: 10px; border: 1px solid #e8eaed; padding: 12px; text-align: center; }
+.stat-num { font-size: 24px; font-weight: 600; color: #1a1a2e; }
+.stat-label { font-size: 11px; color: #888; margin-top: 2px; }
+
+.admin-tabs { display: flex; gap: 6px; margin-bottom: 1rem; flex-wrap: wrap; }
+.admin-tab {
+  padding: 6px 14px; font-size: 12px; border: 1px solid #dde0e5;
+  border-radius: 20px; cursor: pointer; background: transparent;
+  color: #666; font-family: inherit; font-weight: 500;
+}
+.admin-tab.active { background: #0a1628; color: #d4a843; border-color: #0a1628; }
+
+.filter-row { display: flex; gap: 8px; margin-bottom: 12px; align-items: center; flex-wrap: wrap; }
+.filter-row label { font-size: 12px; color: #888; font-weight: 500; }
+.filter-row select, .filter-row input[type=date], .filter-row input[type=month] {
+  font-size: 12px; padding: 6px 10px; border: 1px solid #dde0e5;
+  border-radius: 7px; background: #fff; font-family: inherit; color: #1a1a2e;
+}
+
+.table-wrap { background: #fff; border-radius: 12px; border: 1px solid #e8eaed; overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 380px; }
+th { padding: 9px 12px; text-align: left; font-size: 11px; font-weight: 600; color: #888; border-bottom: 1px solid #f0f1f3; white-space: nowrap; }
+td { padding: 10px 12px; border-bottom: 1px solid #f5f6f7; }
+tr:last-child td { border-bottom: none; }
+
+.badge { font-size: 11px; padding: 2px 9px; border-radius: 20px; font-weight: 500; }
+.badge.normal { background: #e8f5e9; color: #2e7d32; }
+.badge.late { background: #fff3e0; color: #e65100; }
+.badge.absent { background: #ffebee; color: #c62828; }
+
+.approve-btn {
+  font-size: 11px; padding: 3px 11px; border-radius: 20px;
+  cursor: pointer; border: 1px solid; background: transparent;
+  font-family: inherit; margin-right: 4px; font-weight: 500;
+}
+.approve-btn.ok { color: #2e7d32; border-color: #2e7d32; }
+.approve-btn.no { color: #c62828; border-color: #c62828; }
+
+.gen-btn {
+  background: #0a1628; color: #d4a843; border: none;
+  padding: 7px 18px; border-radius: 7px; font-size: 12px;
+  font-weight: 600; cursor: pointer; font-family: inherit;
+}
+
+.toast {
+  position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
+  background: #0a1628; color: #d4a843; border: 1px solid #d4a843;
+  padding: 10px 20px; border-radius: 8px; font-size: 13px;
+  display: none; z-index: 9999; white-space: nowrap; font-weight: 500;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+</style>
+</head>
+<body>
+
+<div id="toast" class="toast"></div>
+
+<div class="rt-header">
+  <div class="rt-logo"><span>富</span>時代 <span style="font-size:14px;color:#8899aa;font-weight:400;margin-left:8px">出缺勤系統</span></div>
+  <div class="rt-date" id="headerDate"></div>
+</div>
+
+<div class="container">
+
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('clock',this)">⏱ 打卡</button>
+    <button class="tab-btn" onclick="switchTab('leave',this)">📋 請假</button>
+    <button class="tab-btn" onclick="switchTab('admin',this)">🔐 主管後台</button>
+  </div>
+
+  <!-- 打卡 Panel -->
+  <div id="panel-clock" class="panel active">
+    <div class="clock-card">
+      <div class="clock-display" id="clockDisplay">00:00:00</div>
+      <div class="clock-sub" id="clockSub"></div>
+      <select class="name-select" id="punchName">
+        <option value="">— 選擇成員 —</option>
+      </select>
+      <div class="punch-btns">
+        <button class="btn-in" onclick="punch('上班')">↗ 上班打卡</button>
+        <button class="btn-out" onclick="punch('下班')">↙ 下班打卡</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">今日打卡紀錄</div>
+      <div id="logList"><div class="empty-msg">尚無打卡紀錄</div></div>
+    </div>
+  </div>
+
+  <!-- 請假 Panel -->
+  <div id="panel-leave" class="panel">
+    <div class="form-card">
+      <h3>請假申請</h3>
+      <div class="form-grid">
+        <div class="form-field">
+          <label>申請人</label>
+          <select id="leaveApplicant"><option value="">— 選擇 —</option></select>
+        </div>
+        <div class="form-field">
+          <label>假別</label>
+          <select id="leaveType">
+            <option>事假</option><option>病假</option><option>特休</option>
+            <option>婚假</option><option>喪假</option><option>公假</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label>開始日期</label>
+          <input type="date" id="leaveStart" />
+        </div>
+        <div class="form-field">
+          <label>結束日期</label>
+          <input type="date" id="leaveEnd" />
+        </div>
+        <div class="form-field full">
+          <label>事由</label>
+          <textarea id="leaveReason" placeholder="請簡述請假原因…"></textarea>
+        </div>
+      </div>
+      <button class="submit-btn" onclick="submitLeave()">送出申請</button>
+    </div>
+    <div class="card">
+      <div class="card-header">請假紀錄</div>
+      <div id="leaveRows"><div class="empty-msg">尚無請假紀錄</div></div>
+    </div>
+  </div>
+
+  <!-- 主管後台 Panel -->
+  <div id="panel-admin" class="panel">
+    <div id="adminLock">
+      <div class="pw-wrap">
+        <div class="pw-title">🔐 主管後台</div>
+        <div class="pw-sub">請輸入管理密碼進入後台</div>
+        <input type="password" class="pw-input" id="pwInput" placeholder="輸入密碼" onkeydown="if(event.key==='Enter')checkPW()" />
+        <button class="pw-btn" onclick="checkPW()">進入後台</button>
+        <div class="pw-err" id="pwErr">密碼錯誤，請再試一次</div>
+      </div>
+    </div>
+
+    <div id="adminPanel" style="display:none">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-num" id="statTotal">0</div>
+          <div class="stat-label">今日出勤</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="statLate" style="color:#e65100">0</div>
+          <div class="stat-label">遲到</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="statLeave" style="color:#1565c0">0</div>
+          <div class="stat-label">請假</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="statAbsent" style="color:#c62828">0</div>
+          <div class="stat-label">未打卡</div>
+        </div>
+      </div>
+
+      <div class="admin-tabs">
+        <button class="admin-tab active" onclick="adminSwitch('attendance',this)">打卡紀錄</button>
+        <button class="admin-tab" onclick="adminSwitch('leaves',this)">請假審核</button>
+        <button class="admin-tab" onclick="adminSwitch('members',this)">成員名單</button>
+        <button class="admin-tab" onclick="adminSwitch('report',this)">月報表</button>
+      </div>
+
+      <div id="admin-attendance" class="admin-section">
+        <div class="filter-row">
+          <label>日期</label>
+          <input type="date" id="filterDate" oninput="renderAttendance()" />
+          <label>成員</label>
+          <select id="filterMember" onchange="renderAttendance()"><option value="">全部</option></select>
+        </div>
+        <div class="table-wrap">
+          <table><thead><tr><th>成員</th><th>日期</th><th>上班</th><th>下班</th><th>狀態</th></tr></thead>
+          <tbody id="attendanceBody"></tbody></table>
+        </div>
+      </div>
+
+      <div id="admin-leaves" class="admin-section" style="display:none">
+        <div class="table-wrap">
+          <table><thead><tr><th>申請人</th><th>假別</th><th>日期</th><th>事由</th><th>操作</th></tr></thead>
+          <tbody id="leavesBody"></tbody></table>
+        </div>
+      </div>
+
+      <div id="admin-members" class="admin-section" style="display:none">
+        <div class="table-wrap">
+          <table><thead><tr><th>#</th><th>姓名</th><th>電話</th></tr></thead>
+          <tbody id="membersBody"></tbody></table>
+        </div>
+      </div>
+
+      <div id="admin-report" class="admin-section" style="display:none">
+        <div class="filter-row">
+          <label>月份</label>
+          <input type="month" id="reportMonth" />
+          <button class="gen-btn" onclick="genReport()">產生報表</button>
+        </div>
+        <div class="table-wrap">
+          <table><thead><tr><th>成員</th><th>出勤天數</th><th>遲到次數</th><th>請假天數</th><th>未打卡</th></tr></thead>
+          <tbody id="reportBody"></tbody></table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end container -->
+
+<script>
+const ADMIN_PW = '1234';
+const WORK_START_HOUR = 9;
+
+const MEMBERS = [
+  { name: '阮智偉', phone: '0952-557-433' },
+  { name: '吳玉如', phone: '0928-208-527' },
+  { name: '鄭采崴', phone: '0909-361-862' },
+  { name: '侯明智', phone: '0953-513-609' },
+  { name: '張書菡', phone: '0906-672-626' },
+  { name: '商國泰', phone: '0927-256-502' },
+  { name: '郭淑真', phone: '0968-711-319' },
+  { name: '陳芊諾', phone: '0953-098-428' },
+  { name: '許亞茵', phone: '0976-559-910' },
+  { name: '曾素蘭', phone: '0900-049-913' },
+  { name: '林紫君', phone: '0909-343-140' },
+  { name: '高亞琦', phone: '0913-514-943' },
+  { name: '廖一龍', phone: '0916-088-439' },
+  { name: '王鈞志', phone: '0970-955-982' },
+  { name: '黃中興', phone: '0930-815-851' },
+  { name: '黃彥程', phone: '0972-872-508' },
+  { name: '劉常裕', phone: '0963-104-053' },
+  { name: '施向宇', phone: '0933-671-354' },
+  { name: '莊環蔭', phone: '0933-674-134' },
+  { name: '廉海桃', phone: '0930-641-908' },
+];
+
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbwgnFDZAXgR-wOeQZxwf55VTWVU11eDqMEpPAKG0QZZtdfs2Ih8DuVzOGGX13kIIyVb/exec';
+
+let logs   = JSON.parse(localStorage.getItem('rt_logs_v3')   || '[]');
+let leaves = JSON.parse(localStorage.getItem('rt_leaves_v3') || '[]');
+
+function save() {
+  localStorage.setItem('rt_logs_v3',   JSON.stringify(logs));
+  localStorage.setItem('rt_leaves_v3', JSON.stringify(leaves));
+}
+
+async function postGAS(payload) {
+  try {
+    const res = await fetch(GAS_URL, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+    return await res.json();
+  } catch(e) {
+    console.warn('GAS 連線失敗，本地已儲存', e);
+    return { ok: false };
+  }
+}
+
+const now   = () => new Date();
+const fmtT  = d => d.toTimeString().slice(0,8);
+const fmtD  = d => d.toISOString().slice(0,10);
+const fmtDsp = d => {
+  const w = ['日','一','二','三','四','五','六'];
+  return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日（週${w[d.getDay()]}）`;
+};
+
+// Build selects
+(function buildSelects() {
+  ['punchName','leaveApplicant','filterMember'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    MEMBERS.forEach(m => {
+      const o = document.createElement('option');
+      o.value = m.name; o.textContent = m.name;
+      el.appendChild(o);
+    });
+  });
+})();
+
+// Clock
+function tickClock() {
+  const t = now();
+  document.getElementById('clockDisplay').textContent = fmtT(t);
+  document.getElementById('clockSub').textContent = fmtDsp(t);
+  document.getElementById('headerDate').textContent = fmtDsp(t);
+  setTimeout(tickClock, 1000);
+}
+tickClock();
+
+function switchTab(name, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 2800);
+}
+
+async function punch(type) {
+  const name = document.getElementById('punchName').value;
+  if (!name) { showToast('請先選擇成員'); return; }
+  const t = now();
+  const entry = { name, type, time: fmtT(t), date: fmtD(t), hour: t.getHours() };
+  logs.unshift(entry);
+  save();
+  renderLog();
+  updateStats();
+  showToast(`${name}  ${type}打卡成功  ${fmtT(t)}`);
+  // 同步寫入 Google Sheets
+  const r = await postGAS({ action: 'punch', name, type });
+  if (r.ok) showToast(`✅ ${name}  ${type}打卡已同步至 Sheets`);
+}
+
+function renderLog() {
+  const today = fmtD(now());
+  const rows = logs.filter(l => l.date === today);
+  const el = document.getElementById('logList');
+  if (!rows.length) { el.innerHTML = '<div class="empty-msg">尚無打卡紀錄</div>'; return; }
+  el.innerHTML = rows.map(l => `
+    <div class="log-row">
+      <span class="log-name">${l.name}</span>
+      <span class="log-badge ${l.type === '上班' ? 'in' : 'out'}">${l.type}</span>
+      <span class="log-time">${l.time}</span>
+    </div>`).join('');
+}
+renderLog();
+
+async function submitLeave() {
+  const applicant = document.getElementById('leaveApplicant').value;
+  const type      = document.getElementById('leaveType').value;
+  const start     = document.getElementById('leaveStart').value;
+  const end       = document.getElementById('leaveEnd').value;
+  const reason    = document.getElementById('leaveReason').value;
+  if (!applicant || !start || !end) { showToast('請填寫必要欄位'); return; }
+  if (end < start) { showToast('結束日期不能早於開始日期'); return; }
+  const id = Date.now();
+  leaves.unshift({ applicant, type, start, end, reason, status: 'pending', id });
+  save();
+  renderLeaveRows();
+  showToast('申請已送出，等待主管審核');
+  ['leaveApplicant','leaveStart','leaveEnd','leaveReason'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  // 同步寫入 Google Sheets
+  await postGAS({ action: 'leave', applicant, type, start, end, reason });
+}
+
+function renderLeaveRows() {
+  const el = document.getElementById('leaveRows');
+  if (!leaves.length) { el.innerHTML = '<div class="empty-msg">尚無請假紀錄</div>'; return; }
+  const sLabel = { pending:'審核中', approved:'已核准', denied:'已拒絕' };
+  const sCls   = { pending:'pending', approved:'approved', denied:'denied' };
+  el.innerHTML = leaves.map(l => `
+    <div class="leave-row">
+      <span style="font-weight:600">${l.applicant}</span>
+      <span style="color:#888;font-size:12px">${l.type}</span>
+      <span style="color:#888;font-size:12px">${l.start} ~ ${l.end}</span>
+      <span class="leave-status ${sCls[l.status]}">${sLabel[l.status]}</span>
+    </div>`).join('');
+}
+renderLeaveRows();
+
+function checkPW() {
+  const v = document.getElementById('pwInput').value;
+  if (v === ADMIN_PW) {
+    document.getElementById('adminLock').style.display = 'none';
+    document.getElementById('adminPanel').style.display = 'block';
+    document.getElementById('filterDate').value = fmtD(now());
+    const m = now();
+    document.getElementById('reportMonth').value = `${m.getFullYear()}-${String(m.getMonth()+1).padStart(2,'0')}`;
+    updateStats();
+    renderAttendance();
+    renderLeaveAdmin();
+    renderMembersTable();
+  } else {
+    document.getElementById('pwErr').style.display = 'block';
+  }
+}
+
+function updateStats() {
+  const today    = fmtD(now());
+  const todayLogs = logs.filter(l => l.date === today);
+  const names    = [...new Set(todayLogs.map(l => l.name))];
+  const lateCount = todayLogs.filter(l => l.type === '上班' && l.hour >= WORK_START_HOUR).length;
+  const leaveToday = leaves.filter(l => l.start <= today && l.end >= today && l.status === 'approved').length;
+  document.getElementById('statTotal').textContent  = names.length;
+  document.getElementById('statLate').textContent   = lateCount;
+  document.getElementById('statLeave').textContent  = leaveToday;
+  document.getElementById('statAbsent').textContent = Math.max(0, MEMBERS.length - names.length - leaveToday);
+}
+
+function adminSwitch(name, btn) {
+  document.querySelectorAll('.admin-section').forEach(s => s.style.display = 'none');
+  document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('admin-' + name).style.display = 'block';
+  btn.classList.add('active');
+}
+
+function renderAttendance() {
+  const fd = document.getElementById('filterDate').value;
+  const fm = document.getElementById('filterMember').value;
+  let filtered = logs;
+  if (fd) filtered = filtered.filter(l => l.date === fd);
+  if (fm) filtered = filtered.filter(l => l.name === fm);
+  const byKey = {};
+  filtered.forEach(l => {
+    const k = l.name + '|' + l.date;
+    if (!byKey[k]) byKey[k] = { name: l.name, date: l.date, in: null, out: null, inHour: null };
+    if (l.type === '上班') { byKey[k].in = l.time; byKey[k].inHour = l.hour; }
+    if (l.type === '下班') byKey[k].out = l.time;
+  });
+  const rows = Object.values(byKey);
+  const body = document.getElementById('attendanceBody');
+  if (!rows.length) {
+    body.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#bbb;font-size:13px">無紀錄</td></tr>';
+    return;
+  }
+  body.innerHTML = rows.map(r => {
+    let badge = !r.in
+      ? '<span class="badge absent">未打卡</span>'
+      : r.inHour >= WORK_START_HOUR
+        ? '<span class="badge late">遲到</span>'
+        : '<span class="badge normal">正常</span>';
+    return `<tr>
+      <td style="font-weight:600">${r.name}</td>
+      <td>${r.date}</td>
+      <td>${r.in || '—'}</td>
+      <td>${r.out || '—'}</td>
+      <td>${badge}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderLeaveAdmin() {
+  const body = document.getElementById('leavesBody');
+  if (!leaves.length) {
+    body.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#bbb;font-size:13px">無請假申請</td></tr>';
+    return;
+  }
+  body.innerHTML = leaves.map((l, i) => `
+    <tr>
+      <td style="font-weight:600">${l.applicant}</td>
+      <td>${l.type}</td>
+      <td style="font-size:12px;color:#888">${l.start} ~ ${l.end}</td>
+      <td style="font-size:12px;color:#888">${l.reason || '—'}</td>
+      <td>${l.status === 'pending'
+        ? `<button class="approve-btn ok" onclick="approveLeave(${i},'approved')">核准</button>
+           <button class="approve-btn no" onclick="approveLeave(${i},'denied')">拒絕</button>`
+        : `<span class="leave-status ${l.status === 'approved' ? 'approved' : 'denied'}">${l.status === 'approved' ? '已核准' : '已拒絕'}</span>`
+      }</td>
+    </tr>`).join('');
+}
+
+async function approveLeave(i, status) {
+  const leaveId = leaves[i].id;
+  leaves[i].status = status;
+  save();
+  renderLeaveAdmin();
+  renderLeaveRows();
+  updateStats();
+  showToast(status === 'approved' ? '✅ 已核准假單' : '❌ 已拒絕假單');
+  // 同步更新 Google Sheets
+  await postGAS({ action: 'approve', id: leaveId, status, password: ADMIN_PW });
+}
+
+function renderMembersTable() {
+  document.getElementById('membersBody').innerHTML = MEMBERS.map((m, i) => `
+    <tr>
+      <td style="color:#bbb">${i + 1}</td>
+      <td style="font-weight:600">${m.name}</td>
+      <td style="color:#888">${m.phone}</td>
+    </tr>`).join('');
+}
+
+function genReport() {
+  const month = document.getElementById('reportMonth').value;
+  if (!month) { showToast('請選擇月份'); return; }
+  const body = document.getElementById('reportBody');
+  body.innerHTML = MEMBERS.map(m => {
+    const myLogs = logs.filter(l => l.name === m.name && l.date.startsWith(month));
+    const days   = new Set(myLogs.map(l => l.date)).size;
+    const late   = myLogs.filter(l => l.type === '上班' && l.hour >= WORK_START_HOUR).length;
+    const myLeaves = leaves.filter(l => l.applicant === m.name && l.status === 'approved' && l.start.startsWith(month));
+    const leaveDays = myLeaves.reduce((acc, l) => {
+      return acc + Math.round((new Date(l.end) - new Date(l.start)) / 86400000) + 1;
+    }, 0);
+    const absent = Math.max(0, 22 - days - leaveDays);
+    return `<tr>
+      <td style="font-weight:600">${m.name}</td>
+      <td>${days}</td>
+      <td>${late > 0 ? `<span style="color:#e65100;font-weight:600">${late}</span>` : '0'}</td>
+      <td>${leaveDays}</td>
+      <td>${absent > 0 ? `<span style="color:#c62828;font-weight:600">${absent}</span>` : '0'}</td>
+    </tr>`;
+  }).join('');
+}
+</script>
+</body>
+</html>
