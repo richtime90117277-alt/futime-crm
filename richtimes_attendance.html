@@ -441,9 +441,11 @@ async function postGAS(payload) {
   try {
     const res = await fetch(GAS_URL, {
       method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify(payload)
     });
-    return await res.json();
+    return { ok: true };
   } catch(e) {
     console.warn('GAS 連線失敗，本地已儲存', e);
     return { ok: false };
