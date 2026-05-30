@@ -365,7 +365,7 @@ tr:last-child td { border-bottom: none; }
           <select id="filterMember" onchange="renderAttendance()"><option value="">全部</option></select>
         </div>
         <div class="table-wrap">
-          <table><thead><tr><th>成員</th><th>日期</th><th>上班</th><th>下班</th><th>狀態</th></tr></thead>
+          <table><thead><tr><th>成員</th><th>日期</th><th>上班</th><th>下班</th><th>狀態</th><th>操作</th></tr></thead>
           <tbody id="attendanceBody"></tbody></table>
         </div>
       </div>
@@ -600,7 +600,7 @@ function renderLeaveRows() {
 }
 renderLeaveRows();
 
-function checkPW() {
+async function checkPW() {
   const v = document.getElementById('pwInput').value;
   if (v === ADMIN_PW) {
     document.getElementById('adminLock').style.display = 'none';
@@ -608,12 +608,64 @@ function checkPW() {
     document.getElementById('filterDate').value = fmtD(now());
     const m = now();
     document.getElementById('reportMonth').value = `${m.getFullYear()}-${String(m.getMonth()+1).padStart(2,'0')}`;
+    // 從 Sheets 拉最新資料
+    showToast('載入資料中…');
+    await syncFromSheets();
     updateStats();
     renderAttendance();
     renderLeaveAdmin();
     renderMembersTable();
   } else {
     document.getElementById('pwErr').style.display = 'block';
+  }
+}
+
+async function syncFromSheets() {
+  try {
+    const res = await fetch(GAS_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'query', password: ADMIN_PW, date: fmtD(now()) })
+    });
+    // no-cors 無法讀回應，改用 GET + callback 方式
+    const url = GAS_URL + '?action=query&password=' + encodeURIComponent(ADMIN_PW) + '&callback=gasCallback';
+    await new Promise((resolve) => {
+      window.gasCallback = function(data) {
+        if (data.ok) {
+          if (data.punches) {
+            // 合併 Sheets 資料到本地
+            const today = fmtD(now());
+            const sheetsLogs = data.punches.map(p => ({
+              name: p.name, type: p.type, date: p.date, time: p.time,
+              hour: parseInt(p.time ? p.time.split(':')[0] : 0)
+            }));
+            // 用 Sheets 資料覆蓋今日本地資料
+            logs = logs.filter(l => l.date !== today);
+            logs = [...sheetsLogs.filter(l => l.date === today), ...logs];
+            save();
+          }
+          if (data.leaves) {
+            leaves = data.leaves.map(l => ({
+              applicant: l.applicant, type: l.type,
+              start: l.start, end: l.end, reason: l.reason,
+              status: l.status === '已核准' ? 'approved' : l.status === '已拒絕' ? 'denied' : 'pending',
+              fileUrl: l.fileUrl || '', hasFile: !!l.fileUrl,
+              id: l.id
+            }));
+            save();
+          }
+        }
+        resolve();
+      };
+      const script = document.createElement('script');
+      script.src = url;
+      script.onerror = () => resolve();
+      document.head.appendChild(script);
+      setTimeout(resolve, 5000);
+    });
+  } catch(e) {
+    console.warn('Sheets 同步失敗，使用本地資料', e);
   }
 }
 
@@ -661,14 +713,37 @@ function renderAttendance() {
       : r.inHour >= WORK_START_HOUR
         ? '<span class="badge late">遲到</span>'
         : '<span class="badge normal">正常</span>';
+    const key = r.name + '|' + r.date;
     return `<tr>
       <td style="font-weight:600">${r.name}</td>
       <td>${r.date}</td>
       <td>${r.in || '—'}</td>
       <td>${r.out || '—'}</td>
       <td>${badge}</td>
+      <td><button class="approve-btn no" onclick="deleteLog('${r.name}','${r.date}')">刪除</button></td>
     </tr>`;
   }).join('');
+}
+
+function deleteLog(name, date) {
+  if (!confirm(`確定刪除 ${name} 在 ${date} 的打卡紀錄？`)) return;
+  logs = logs.filter(l => !(l.name === name && l.date === date));
+  save();
+  renderAttendance();
+  updateStats();
+  showToast(`已刪除 ${name} ${date} 的打卡紀錄`);
+  // 同步刪除 Sheets
+  postGAS({ action: 'deleteLog', name, date, password: ADMIN_PW });
+}
+
+function deleteLeave(i) {
+  if (!confirm(`確定刪除這筆請假申請？`)) return;
+  leaves.splice(i, 1);
+  save();
+  renderLeaveAdmin();
+  renderLeaveRows();
+  updateStats();
+  showToast('已刪除假單');
 }
 
 function renderLeaveAdmin() {
@@ -689,11 +764,14 @@ function renderLeaveAdmin() {
             : `<span style="font-size:11px;color:#888">📎 ${l.fileName}</span>`)
         : '<span style="font-size:11px;color:#ccc">無附件</span>'
       }</td>
-      <td>${l.status === 'pending'
-        ? `<button class="approve-btn ok" onclick="approveLeave(${i},'approved')">核准</button>
-           <button class="approve-btn no" onclick="approveLeave(${i},'denied')">拒絕</button>`
-        : `<span class="leave-status ${l.status === 'approved' ? 'approved' : 'denied'}">${l.status === 'approved' ? '已核准' : '已拒絕'}</span>`
-      }</td>
+      <td>
+        ${l.status === 'pending'
+          ? `<button class="approve-btn ok" onclick="approveLeave(${i},'approved')">核准</button>
+             <button class="approve-btn no" onclick="approveLeave(${i},'denied')">拒絕</button>`
+          : `<span class="leave-status ${l.status === 'approved' ? 'approved' : 'denied'}">${l.status === 'approved' ? '已核准' : '已拒絕'}</span>`
+        }
+        <button class="approve-btn no" style="margin-top:4px;display:block" onclick="deleteLeave(${i})">刪除</button>
+      </td>
     </tr>`).join('');
 }
 
