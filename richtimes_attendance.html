@@ -128,10 +128,8 @@ tr:last-child td { border-bottom: none; }
       </div>
       <div id="punchReady" style="display:none">
         <div class="welcome-txt" id="welcomeTxt"></div>
-        <div class="punch-btns">
-          <button class="btn-in" onclick="doPunch('上班')">↗ 上班打卡</button>
-          <button class="btn-out" onclick="doPunch('下班')">↙ 下班打卡</button>
-        </div>
+        <div id="autoPunchCountdown" style="color:#d4a843;font-size:28px;font-weight:600;margin:8px 0;"></div>
+        <div id="autoPunchType" style="color:#8899aa;font-size:13px;margin-bottom:12px;"></div>
         <div><button class="switch-btn" onclick="resetPunch()">↩ 切換成員</button></div>
       </div>
     </div>
@@ -217,6 +215,7 @@ tr:last-child td { border-bottom: none; }
           <label>成員</label>
           <select id="filterMember" onchange="renderAttendance()"><option value="">全部</option></select>
           <button class="gen-btn" id="reloadBtn" onclick="reloadSheets()">⟳ 雲端載入</button>
+          <button class="gen-btn" style="background:#d4a843;color:#0a1628" onclick="openSupplementModal()">✚ 補打卡</button>
         </div>
         <div class="table-wrap">
           <table><thead><tr><th>成員</th><th>日期</th><th>上班</th><th>下班</th><th>狀態</th><th>操作</th></tr></thead>
@@ -240,12 +239,40 @@ tr:last-child td { border-bottom: none; }
           <label>月份</label>
           <input type="month" id="reportMonth" />
           <button class="gen-btn" onclick="genReport()">產生報表</button>
+          <button class="gen-btn" style="background:#d4a843;color:#0a1628" onclick="exportReportCSV()">⬇ 匯出 CSV</button>
         </div>
         <div class="table-wrap">
           <table><thead><tr><th>成員</th><th>出勤天數</th><th>遲到次數</th><th>請假天數</th><th>未打卡</th></tr></thead>
           <tbody id="reportBody"></tbody></table>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- 補打卡 Modal -->
+<div id="supplementModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9998;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:14px;padding:1.75rem 1.5rem;width:300px;max-width:92vw;box-shadow:0 8px 32px rgba(0,0,0,0.18);">
+    <div style="font-size:15px;font-weight:700;margin-bottom:1.2rem;color:#0a1628">✚ 主管補打卡</div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div><label style="font-size:12px;color:#888;font-weight:500">成員</label>
+        <select id="supName" style="width:100%;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid #dde0e5;margin-top:4px;font-family:inherit;background:#fafafa">
+          <option value="">— 選擇 —</option>
+        </select></div>
+      <div><label style="font-size:12px;color:#888;font-weight:500">日期</label>
+        <input type="date" id="supDate" style="width:100%;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid #dde0e5;margin-top:4px;font-family:inherit;background:#fafafa" /></div>
+      <div><label style="font-size:12px;color:#888;font-weight:500">類型</label>
+        <select id="supType" style="width:100%;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid #dde0e5;margin-top:4px;font-family:inherit;background:#fafafa">
+          <option value="上班">上班打卡</option><option value="下班">下班打卡</option>
+        </select></div>
+      <div><label style="font-size:12px;color:#888;font-weight:500">時間</label>
+        <input type="time" id="supTime" style="width:100%;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid #dde0e5;margin-top:4px;font-family:inherit;background:#fafafa" /></div>
+      <div><label style="font-size:12px;color:#888;font-weight:500">補打原因</label>
+        <input type="text" id="supReason" placeholder="如：外出拜訪客戶" style="width:100%;font-size:13px;padding:8px 10px;border-radius:8px;border:1px solid #dde0e5;margin-top:4px;font-family:inherit;background:#fafafa" /></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:1.2rem">
+      <button onclick="closeSupplementModal()" style="flex:1;padding:10px;border-radius:8px;border:1px solid #dde0e5;background:#fff;cursor:pointer;font-family:inherit;font-size:13px;color:#666">取消</button>
+      <button onclick="submitSupplement()" style="flex:1;padding:10px;border-radius:8px;border:none;background:#0a1628;color:#d4a843;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600">確認補打</button>
     </div>
   </div>
 </div>
@@ -352,10 +379,13 @@ function onMemberSelect() {
 function resetPunch() {
   punchAuthed = false;
   punchLoc = null;
+  if (autoPunchTimer) { clearInterval(autoPunchTimer); autoPunchTimer = null; }
   document.getElementById('pinArea').style.display = 'none';
   document.getElementById('punchReady').style.display = 'none';
   document.getElementById('pinInput').value = '';
   document.getElementById('pinErr').style.display = 'none';
+  document.getElementById('autoPunchCountdown').textContent = '';
+  document.getElementById('autoPunchType').textContent = '';
 }
 
 function calcDist(lat1, lng1, lat2, lng2) {
@@ -376,6 +406,8 @@ function getLocation() {
     );
   });
 }
+
+let autoPunchTimer = null;
 
 async function doVerify() {
   const name = document.getElementById('punchName').value;
@@ -403,7 +435,27 @@ async function doVerify() {
     punchLoc = { lat: loc.lat, lng: loc.lng, dist };
     document.getElementById('pinArea').style.display = 'none';
     document.getElementById('punchReady').style.display = 'block';
-    document.getElementById('welcomeTxt').textContent = '👋 '+name+'，距公司 '+dist+' 公尺，請打卡';
+
+    // 根據時間決定打卡類型
+    const hour = new Date().getHours();
+    const punchType = hour < 12 ? '上班' : '下班';
+    const typeLabel = punchType === '上班' ? '↗ 上班打卡' : '↙ 下班打卡';
+    document.getElementById('welcomeTxt').textContent = '👋 '+name+'，距公司 '+dist+' 公尺';
+    document.getElementById('autoPunchType').textContent = typeLabel+' 將在 3 秒後自動打卡…';
+
+    // 倒數 3 秒自動打卡
+    let count = 3;
+    document.getElementById('autoPunchCountdown').textContent = count;
+    autoPunchTimer = setInterval(async () => {
+      count--;
+      if (count > 0) {
+        document.getElementById('autoPunchCountdown').textContent = count;
+      } else {
+        clearInterval(autoPunchTimer);
+        autoPunchTimer = null;
+        await doPunch(punchType);
+      }
+    }, 1000);
   } catch(e) {
     showToast('⚠️ '+e);
   }
@@ -595,18 +647,21 @@ function genReport() {
   const month = document.getElementById('reportMonth').value;
   if (!month) { showToast('請選擇月份'); return; }
   const body = document.getElementById('reportBody');
-  body.innerHTML = MEMBERS.map(m => {
+  lastReportData = MEMBERS.map(m => {
     const ml = logs.filter(l=>l.name===m.name&&l.date.startsWith(month));
     const days = new Set(ml.map(l=>l.date)).size;
     const late = ml.filter(l=>l.type==='上班'&&l.hour>=WORK_START_HOUR).length;
     const lv = leaves.filter(l=>l.applicant===m.name&&l.status==='approved'&&l.start.startsWith(month));
     const lvDays = lv.reduce((a,l)=>a+Math.round((new Date(l.end)-new Date(l.start))/86400000)+1,0);
     const absent = Math.max(0,22-days-lvDays);
-    return '<tr><td style="font-weight:600">'+m.name+'</td><td>'+days+'</td>'+
-      '<td>'+(late>0?'<span style="color:#e65100;font-weight:600">'+late+'</span>':'0')+'</td>'+
-      '<td>'+lvDays+'</td>'+
-      '<td>'+(absent>0?'<span style="color:#c62828;font-weight:600">'+absent+'</span>':'0')+'</td></tr>';
-  }).join('');
+    return { name: m.name, days, late, lvDays, absent };
+  });
+  body.innerHTML = lastReportData.map(r =>
+    '<tr><td style="font-weight:600">'+r.name+'</td><td>'+r.days+'</td>'+
+    '<td>'+(r.late>0?'<span style="color:#e65100;font-weight:600">'+r.late+'</span>':'0')+'</td>'+
+    '<td>'+r.lvDays+'</td>'+
+    '<td>'+(r.absent>0?'<span style="color:#c62828;font-weight:600">'+r.absent+'</span>':'0')+'</td></tr>'
+  ).join('');
 }
 
 // ── Sheets 同步 ──
@@ -669,6 +724,61 @@ async function reloadSheets() {
   updateStats(); renderAttendance(); renderLeaveAdmin();
   btn.textContent='⟳ 雲端載入'; btn.disabled=false;
   showToast('✅ 已載入最新資料');
+}
+
+// ── 補打卡 ──
+function openSupplementModal() {
+  const modal = document.getElementById('supplementModal');
+  modal.style.display = 'flex';
+  // 填入成員選項
+  const sel = document.getElementById('supName');
+  if (sel.options.length <= 1) {
+    MEMBERS.forEach(m => { const o = document.createElement('option'); o.value=m.name; o.textContent=m.name; sel.appendChild(o); });
+  }
+  document.getElementById('supDate').value = fmtD(new Date());
+  const h = new Date().getHours();
+  document.getElementById('supType').value = h < 12 ? '上班' : '下班';
+  document.getElementById('supTime').value = new Date().toTimeString().slice(0,5);
+}
+
+function closeSupplementModal() {
+  document.getElementById('supplementModal').style.display = 'none';
+}
+
+async function submitSupplement() {
+  const name   = document.getElementById('supName').value;
+  const date   = document.getElementById('supDate').value;
+  const type   = document.getElementById('supType').value;
+  const time   = document.getElementById('supTime').value + ':00';
+  const reason = document.getElementById('supReason').value;
+  if (!name || !date || !time) { showToast('請填寫必要欄位'); return; }
+  const hour = parseInt(time.split(':')[0]);
+  const entry = { name, type, time, date, hour };
+  logs.unshift(entry);
+  save(); renderAttendance(); updateStats();
+  closeSupplementModal();
+  showToast('✅ 已替 '+name+' 補打 '+type+'卡（'+date+' '+time+'）');
+  await postGAS({ action:'punch', name, type, date, time, reason, supplement: true, password: ADMIN_PW });
+}
+
+// ── 匯出 CSV ──
+let lastReportData = [];
+
+function exportReportCSV() {
+  const month = document.getElementById('reportMonth').value;
+  if (!month) { showToast('請先產生報表'); return; }
+  if (!lastReportData.length) { showToast('請先點「產生報表」'); return; }
+  const header = '姓名,出勤天數,遲到次數,請假天數,未打卡天數\n';
+  const rows = lastReportData.map(r => `${r.name},${r.days},${r.late},${r.lvDays},${r.absent}`).join('\n');
+  const bom = '\uFEFF'; // UTF-8 BOM for Excel
+  const blob = new Blob([bom + header + rows], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `富時代_月報表_${month}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('✅ 已匯出 '+month+' 月報表');
 }
 </script>
 </body>
