@@ -621,169 +621,56 @@ async function checkPW() {
 }
 
 async function syncFromSheets() {
-  return new Promise((resolve) => {
-    const callbackName = 'gasCallback_' + Date.now();
-    const url = GAS_URL + '?action=query&password=' + encodeURIComponent(ADMIN_PW) + '&callback=' + callbackName;
-    const script = document.createElement('script');
-    const timer = setTimeout(() => {
-      console.warn('Sheets 同步逾時');
-      script.remove();
-      resolve();
-    }, 8000);
-    window[callbackName] = function(data) {
-      clearTimeout(timer);
-      script.remove();
-      if (data && data.ok) {
-        if (data.punches && data.punches.length > 0) {
-          logs = data.punches.map(p => ({
-            name: p.name, type: p.type, date: p.date, time: p.time,
-            hour: parseInt((p.time || '0').split(':')[0])
-          }));
-          save();
-        }
-        if (data.leaves) {
-          leaves = data.leaves.map(l => ({
-            applicant: l.applicant, type: l.type,
-            start: l.start, end: l.end, reason: l.reason,
-            status: l.status === '已核准' ? 'approved' : l.status === '已拒絕' ? 'denied' : 'pending',
-            fileUrl: l.fileUrl || '', hasFile: !!l.fileUrl, fileName: '',
-            id: l.id
-          }));
-          save();
-        }
-      }
-      resolve();
-    };
-    script.src = url;
-    script.onerror = () => { clearTimeout(timer); resolve(); };
-    document.head.appendChild(script);
-  });
-}
-
-
-async function checkPW() {
-  const v = document.getElementById('pwInput').value;
-  if (v === ADMIN_PW) {
-    document.getElementById('adminLock').style.display = 'none';
-    document.getElementById('adminPanel').style.display = 'block';
-    document.getElementById('filterDate').value = fmtD(now());
-    const m = now();
-    document.getElementById('reportMonth').value = `${m.getFullYear()}-${String(m.getMonth()+1).padStart(2,'0')}`;
-    // 從 Sheets 拉最新資料
-    showToast('載入資料中…');
-    await syncFromSheets();
-    updateStats();
-    renderAttendance();
-    renderLeaveAdmin();
-    renderMembersTable();
-  } else {
-    document.getElementById('pwErr').style.display = 'block';
-  }
-}
-
-async function syncFromSheets() {
   try {
-    const res = await fetch(GAS_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ action: 'query', password: ADMIN_PW, date: fmtD(now()) })
-    });
-    // no-cors 無法讀回應，改用 GET + callback 方式
-    const url = GAS_URL + '?action=query&password=' + encodeURIComponent(ADMIN_PW) + '&callback=gasCallback';
-    await new Promise((resolve) => {
-      window.gasCallback = function(data) {
-        if (data.ok) {
-          if (data.punches) {
-            // 合併 Sheets 資料到本地
-            const today = fmtD(now());
-            const sheetsLogs = data.punches.map(p => ({
-              name: p.name, type: p.type, date: p.date, time: p.time,
-              hour: parseInt(p.time ? p.time.split(':')[0] : 0)
-            }));
-            // 用 Sheets 資料覆蓋今日本地資料
-            logs = logs.filter(l => l.date !== today);
-            logs = [...sheetsLogs.filter(l => l.date === today), ...logs];
-            save();
-          }
-          if (data.leaves) {
-            leaves = data.leaves.map(l => ({
-              applicant: l.applicant, type: l.type,
-              start: l.start, end: l.end, reason: l.reason,
-              status: l.status === '已核准' ? 'approved' : l.status === '已拒絕' ? 'denied' : 'pending',
-              fileUrl: l.fileUrl || '', hasFile: !!l.fileUrl,
-              id: l.id
-            }));
-            save();
-          }
-        }
-        resolve();
-      };
-      const script = document.createElement('script');
-      script.src = url;
-      script.onerror = () => resolve();
-      document.head.appendChild(script);
-      setTimeout(resolve, 5000);
-    });
+    // 讀打卡紀錄（工作表 gid=0，第一個分頁）
+    const punchUrl = 'https://docs.google.com/spreadsheets/d/1Kr7O9Em4VNWefAC4pIpi__YBLuAr5uC0MtkJCTix7nQ/gviz/tq?tqx=out:json&sheet=打卡紀錄';
+    const leaveUrl = 'https://docs.google.com/spreadsheets/d/1Kr7O9Em4VNWefAC4pIpi__YBLuAr5uC0MtkJCTix7nQ/gviz/tq?tqx=out:json&sheet=請假申請';
+
+    const [punchRes, leaveRes] = await Promise.all([
+      fetch(punchUrl).catch(() => null),
+      fetch(leaveUrl).catch(() => null)
+    ]);
+
+    if (punchRes && punchRes.ok) {
+      const text = await punchRes.text();
+      const json = JSON.parse(text.replace(/.*google.visualization.Query.setResponse\(/, '').replace(/\);?$/, ''));
+      const rows = json.table.rows || [];
+      if (rows.length > 0) {
+        logs = rows.map(r => {
+          const name = r.c[0]?.v || '';
+          const type = r.c[1]?.v || '';
+          const date = r.c[2]?.v || '';
+          const time = r.c[3]?.v || '';
+          const hour = parseInt((time || '0').split(':')[0]);
+          return { name, type, date, time, hour };
+        }).filter(l => l.name);
+        save();
+      }
+    }
+
+    if (leaveRes && leaveRes.ok) {
+      const text = await leaveRes.text();
+      const json = JSON.parse(text.replace(/.*google.visualization.Query.setResponse\(/, '').replace(/\);?$/, ''));
+      const rows = json.table.rows || [];
+      if (rows.length > 0) {
+        leaves = rows.map(r => {
+          const id       = r.c[0]?.v || Date.now();
+          const applicant= r.c[1]?.v || '';
+          const type     = r.c[2]?.v || '';
+          const start    = r.c[3]?.v || '';
+          const end      = r.c[4]?.v || '';
+          const reason   = r.c[5]?.v || '';
+          const st       = r.c[6]?.v || '審核中';
+          const fileUrl  = r.c[7]?.v || '';
+          const status   = st === '已核准' ? 'approved' : st === '已拒絕' ? 'denied' : 'pending';
+          return { id, applicant, type, start, end, reason, status, fileUrl, hasFile: !!fileUrl, fileName: '' };
+        }).filter(l => l.applicant);
+        save();
+      }
+    }
   } catch(e) {
-    console.warn('Sheets 同步失敗，使用本地資料', e);
+    console.warn('Sheets 同步失敗', e);
   }
-}
-
-function updateStats() {
-  const today    = fmtD(now());
-  const todayLogs = logs.filter(l => l.date === today);
-  const names    = [...new Set(todayLogs.map(l => l.name))];
-  const lateCount = todayLogs.filter(l => l.type === '上班' && l.hour >= WORK_START_HOUR).length;
-  const leaveToday = leaves.filter(l => l.start <= today && l.end >= today && l.status === 'approved').length;
-  document.getElementById('statTotal').textContent  = names.length;
-  document.getElementById('statLate').textContent   = lateCount;
-  document.getElementById('statLeave').textContent  = leaveToday;
-  document.getElementById('statAbsent').textContent = Math.max(0, MEMBERS.length - names.length - leaveToday);
-}
-
-function adminSwitch(name, btn) {
-  document.querySelectorAll('.admin-section').forEach(s => s.style.display = 'none');
-  document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
-  document.getElementById('admin-' + name).style.display = 'block';
-  btn.classList.add('active');
-}
-
-function renderAttendance() {
-  const fd = document.getElementById('filterDate').value;
-  const fm = document.getElementById('filterMember').value;
-  let filtered = logs;
-  if (fd) filtered = filtered.filter(l => l.date === fd);
-  if (fm) filtered = filtered.filter(l => l.name === fm);
-  const byKey = {};
-  filtered.forEach(l => {
-    const k = l.name + '|' + l.date;
-    if (!byKey[k]) byKey[k] = { name: l.name, date: l.date, in: null, out: null, inHour: null };
-    if (l.type === '上班') { byKey[k].in = l.time; byKey[k].inHour = l.hour; }
-    if (l.type === '下班') byKey[k].out = l.time;
-  });
-  const rows = Object.values(byKey);
-  const body = document.getElementById('attendanceBody');
-  if (!rows.length) {
-    body.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;color:#bbb;font-size:13px">無紀錄</td></tr>';
-    return;
-  }
-  body.innerHTML = rows.map(r => {
-    let badge = !r.in
-      ? '<span class="badge absent">未打卡</span>'
-      : r.inHour >= WORK_START_HOUR
-        ? '<span class="badge late">遲到</span>'
-        : '<span class="badge normal">正常</span>';
-    const key = r.name + '|' + r.date;
-    return `<tr>
-      <td style="font-weight:600">${r.name}</td>
-      <td>${r.date}</td>
-      <td>${r.in || '—'}</td>
-      <td>${r.out || '—'}</td>
-      <td>${badge}</td>
-      <td><button class="approve-btn no" onclick="deleteLog('${r.name}','${r.date}')">刪除</button></td>
-    </tr>`;
-  }).join('');
 }
 
 
