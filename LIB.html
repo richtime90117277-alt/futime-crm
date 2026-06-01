@@ -535,7 +535,7 @@ body.lib-bigtext .decode-signal { font-size: 19px !important; }
         <option value="zcw">鄭采崴</option>
         <option value="zsh">張書菡</option>
         <option value="wjz">王鈞志</option>
-        <option value="wyr">吳玉如</option>
+        <option value="wyr">吳V顧問</option>
         <option value="sgt">商國泰</option>
         <option value="gzz">郭淑真</option>
         <option value="gyq">高亞琦</option>
@@ -545,11 +545,12 @@ body.lib-bigtext .decode-signal { font-size: 19px !important; }
         <option value="lzj">林紫君</option>
         <option value="hzx">黃中興</option>
         <option value="hyc">黃彥程</option>
-        <option value="cfy">陳丰彥</option>
+        <option value="syd">孫運迪</option>
         <option value="lcy">劉常裕</option>
-        <option value="sxy">施向宇</option>
+        <option value="sxy">施U顧問</option>
         <option value="zhy">莊環蔭</option>
-        <option value="lht">廉海桃</option>
+        <option value="lht">廉H顧問</option>
+        <option value="lcg">劉晁綱</option>
       </optgroup>
     </select>
     <label>密碼</label>
@@ -1565,9 +1566,7 @@ function _bossMapRecord(personaId, grade, accPct){
 }
 // 某關是否解鎖：第一關恆解鎖；其餘看「前一關是否 cleared」
 function _bossLevelUnlocked(levels, idx, data){
-  if (idx === 0) return true;
-  const prev = levels[idx-1];
-  return !!(data[prev.id] && data[prev.id].cleared);
+  return true; // 全部關卡直接開放，不需前一關過關
 }
 
 function showBossMap(){
@@ -1905,7 +1904,7 @@ function _renderBossResult(){
   } else if(justCleared && myIdx === levels.length-1){
     unlockMsg = `<div style="background:rgba(192,57,43,0.08);border:1.5px dashed #c0392b;border-radius:12px;padding:12px;margin:0 auto 16px;max-width:340px;font-size:13px;font-weight:700;color:#c0392b;text-align:center">👑 全地圖攻下！你是客戶解碼大師</div>`;
   }
-  const nextLevel = (won && myIdx>=0 && myIdx+1<levels.length && (_bossMapLoad()[levels[myIdx+1].id]===undefined || _bossLevelUnlocked(levels, myIdx+1, _bossMapLoad()))) ? levels[myIdx+1] : null;
+  const nextLevel = (rec.cleared && myIdx>=0 && myIdx+1<levels.length && (_bossMapLoad()[levels[myIdx+1].id]===undefined || _bossLevelUnlocked(levels, myIdx+1, _bossMapLoad()))) ? levels[myIdx+1] : null;
 
   renderMain(`
     <button class="back-btn" onclick="showBossMap()">← 返回大地圖</button>
@@ -8480,18 +8479,15 @@ const LIB_ACCOUNTS = {
   csm:  { name:'陳淑美', pw:'8428', role:'sales' },
   hmz:  { name:'侯明智', pw:'3609', role:'sales' },
   xyi:  { name:'許亞茵', pw:'9910', role:'sales' },
-  zsl:  { name:'曾素蘭', pw:'9913', role:'sales' },
   lzj:  { name:'林紫君', pw:'3140', role:'sales' },
   hzx:  { name:'黃中興', pw:'5851', role:'sales' },
   hyc:  { name:'黃彥程', pw:'2508', role:'sales' },
   syd:  { name:'孫運迪', pw:'1681', role:'sales' },
-  cfy:  { name:'陳丰彥', pw:'3993', role:'sales' },
   lcy:  { name:'劉常裕', pw:'4053', role:'sales' },
   sxy:  { name:'施U顧問', pw:'1354', role:'sales' },
   zhy:  { name:'莊環蔭', pw:'4134', role:'sales' },
   lht:  { name:'廉H顧問', pw:'1908', role:'sales' },
   lcg:  { name:'劉晁綱', pw:'1552', role:'sales' },
-  yfy:  { name:'游馥宇', pw:'3320', role:'sales' },
 };
 let libCurrentUser = null;
 let libUserData = null;
