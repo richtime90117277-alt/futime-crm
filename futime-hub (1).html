@@ -48,12 +48,11 @@ header{
   padding:14px 36px 13px;
   position:relative;
   background:linear-gradient(135deg,#FFFDF7 0%,#FFF8EC 50%,#F9F4E8 100%);
-  border-bottom:1px solid rgba(184,136,46,0.25);
-  box-shadow:0 2px 24px rgba(26,40,32,0.09);
+  border-bottom:1px solid rgba(184,136,46,0.18);
+  box-shadow:0 2px 20px rgba(26,40,32,0.06);
 }
-.h-rule{position:absolute;bottom:0;left:0;right:0;height:2.5px;
-  background:linear-gradient(90deg,transparent 0%,var(--gold) 15%,var(--amber) 40%,var(--gold2) 50%,var(--amber) 60%,var(--gold) 85%,transparent 100%);
-  opacity:0.9;}
+.h-rule{position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent 0%,var(--amber) 25%,var(--gold2) 50%,var(--amber) 75%,transparent 100%);}
 
 .logo-area{display:flex;align-items:center;gap:14px;}
 .logo-mark{
@@ -111,20 +110,20 @@ header{
 /* ══ CARD ══ */
 .card{
   position:relative;overflow:hidden;border-radius:16px;
-  background:var(--paper);border:1px solid rgba(184,136,46,0.14);
+  background:var(--paper);border:1px solid rgba(58,86,68,0.08);
   display:flex;flex-direction:column;text-decoration:none;color:inherit;min-height:0;
   transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .28s,border-color .28s;
-  box-shadow:0 1px 0 rgba(255,255,255,0.9) inset,0 2px 14px var(--shadow);
+  box-shadow:0 1px 0 rgba(255,255,255,0.9) inset,0 2px 12px var(--shadow);
 }
-.card:hover{transform:translateY(-4px) scale(1.007);border-color:rgba(184,136,46,0.45);
-  box-shadow:0 1px 0 rgba(255,255,255,0.9) inset,0 18px 48px rgba(26,40,32,0.13),0 0 0 1px rgba(184,136,46,0.22);}
+.card:hover{transform:translateY(-4px) scale(1.007);border-color:rgba(184,136,46,0.3);
+  box-shadow:0 1px 0 rgba(255,255,255,0.9) inset,0 16px 44px rgba(26,40,32,0.12),0 0 0 1px rgba(184,136,46,0.15);}
 
-.c-accent{position:absolute;top:0;left:0;right:0;height:3px;border-radius:16px 16px 0 0;opacity:0.55;transition:opacity .3s,height .3s;}
-.card:hover .c-accent{opacity:1;height:3px;}
-.ca-green{background:linear-gradient(90deg,transparent 0%,#3D5A47 30%,#7BAA88 70%,transparent 100%);}
-.ca-gold {background:linear-gradient(90deg,transparent 0%,var(--amber) 30%,var(--gold2) 70%,transparent 100%);}
-.ca-rose {background:linear-gradient(90deg,transparent 0%,var(--rose) 30%,var(--amber) 70%,transparent 100%);}
-.ca-teal {background:linear-gradient(90deg,transparent 0%,#2E7A6A 30%,#5AA890 70%,transparent 100%);}
+.c-accent{position:absolute;top:0;left:0;right:0;height:2px;border-radius:16px 16px 0 0;opacity:0;transition:opacity .3s;}
+.card:hover .c-accent{opacity:1;}
+.ca-green{background:linear-gradient(90deg,transparent,#3D5A47,#7BAA88,transparent);}
+.ca-gold {background:linear-gradient(90deg,transparent,var(--amber),var(--gold2),transparent);}
+.ca-rose {background:linear-gradient(90deg,transparent,var(--rose),var(--amber),transparent);}
+.ca-teal {background:linear-gradient(90deg,transparent,#2E7A6A,#5AA890,transparent);}
 
 /* ══ ILL ══ */
 .ill{flex:0 0 50%;min-height:0;overflow:hidden;position:relative;border-radius:16px 16px 0 0;}
@@ -172,6 +171,51 @@ header{
 .s5-pip{width:4px;height:4px;border-radius:50%;background:rgba(58,86,68,0.18);margin-left:auto;flex-shrink:0;transition:all .2s;}
 .s5-btn:hover .s5-pip{background:var(--amber);box-shadow:0 0 5px rgba(232,160,32,0.5);}
 
+/* ══ QUICK TOOLBAR ══ */
+.qtoolbar{
+  flex-shrink:0;
+  display:flex;align-items:center;gap:8px;
+  padding:6px 36px;
+  border-top:1px solid var(--border);
+  background:rgba(248,245,238,0.85);
+}
+.qt-label{
+  font-size:8px;letter-spacing:0.18em;text-transform:uppercase;
+  color:var(--mist);white-space:nowrap;margin-right:4px;
+  font-family:'Cormorant Garamond',serif;
+}
+.qt-btn{
+  display:flex;align-items:center;gap:7px;
+  padding:5px 14px 5px 10px;
+  border-radius:20px;
+  border:1px solid rgba(58,86,68,0.13);
+  background:rgba(58,86,68,0.04);
+  text-decoration:none;
+  color:var(--ink2);
+  font-size:11px;font-weight:500;
+  white-space:nowrap;
+  transition:all .2s;
+  cursor:pointer;
+}
+.qt-btn:hover{
+  background:rgba(58,86,68,0.09);
+  border-color:rgba(58,86,68,0.22);
+  transform:translateY(-1px);
+  box-shadow:0 3px 10px var(--shadow);
+}
+.qt-icon{
+  width:16px;height:16px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.qt-icon svg{width:14px;height:14px;stroke:var(--moss);stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+.qt-tag{
+  font-size:7.5px;letter-spacing:0.08em;
+  background:var(--foam);color:var(--sage);
+  border-radius:10px;padding:1px 7px;
+  border:1px solid rgba(58,86,68,0.10);
+  margin-left:2px;
+}
+
 /* ══ PAGE FOOTER ══ */
 footer{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:7px 36px;border-top:1px solid var(--border);background:rgba(253,250,245,0.7);}
 .f-left,.f-right{font-size:8.5px;letter-spacing:0.14em;color:var(--mist);}
@@ -179,10 +223,11 @@ footer{flex-shrink:0;display:flex;align-items:center;justify-content:space-betwe
 
 /* ══ ANIM ══ */
 @keyframes riseIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-header  {animation:riseIn .45s .00s ease both;}
-.divider{animation:riseIn .45s .08s ease both;}
-.grid   {animation:riseIn .5s  .16s ease both;}
-footer  {animation:riseIn .45s .28s ease both;}
+header   {animation:riseIn .45s .00s ease both;}
+.divider {animation:riseIn .45s .08s ease both;}
+.grid    {animation:riseIn .5s  .16s ease both;}
+.qtoolbar{animation:riseIn .45s .24s ease both;}
+footer   {animation:riseIn .45s .32s ease both;}
 
 /* ══ MOBILE ══ */
 @media(max-width:768px){
@@ -210,6 +255,12 @@ footer  {animation:riseIn .45s .28s ease both;}
   .arrow-ring svg{width:8px;height:8px;}
   .s5-btns{gap:4px;padding:5px 11px 9px;}
   .s5-btn{padding:5px 9px;font-size:8.5px;gap:6px;border-radius:6px;}
+  .qtoolbar{padding:5px 14px;gap:6px;overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;}
+  .qt-label{display:none;}
+  .qt-btn{font-size:9.5px;padding:4px 10px 4px 8px;gap:5px;}
+  .qt-icon{width:14px;height:14px;}
+  .qt-icon svg{width:12px;height:12px;}
+  .qt-tag{font-size:6.5px;padding:1px 5px;}
   footer{padding:6px 14px;}
   .f-left,.f-right{font-size:7.5px;}
 }
@@ -266,47 +317,58 @@ footer  {animation:riseIn .45s .28s ease both;}
           <stop offset="0%" stop-color="#5A8A6A"/>
           <stop offset="100%" stop-color="#1E3228"/>
         </radialGradient>
-        <filter id="gp1"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-        <filter id="gp1s"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="gp1"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="gp1s"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
       </defs>
-      <!-- glow behind -->
-      <polygon points="100,14 170,56 145,136 55,136 30,56" fill="rgba(61,90,71,0.18)" filter="url(#gp1)"/>
-      <!-- filled pentagon — bigger, bolder -->
-      <polygon points="100,18 166,58 142,132 58,132 34,58" fill="url(#pgFill)"/>
-      <!-- sheen top -->
-      <polygon points="100,18 166,58 148,58 100,26" fill="rgba(255,255,255,0.09)"/>
+      <!-- soft glow behind -->
+      <polygon points="100,20 162,58 140,128 60,128 38,58" fill="rgba(61,90,71,0.15)" filter="url(#gp1)"/>
+      <!-- filled pentagon -->
+      <polygon points="100,24 158,60 137,122 63,122 42,60" fill="url(#pgFill)"/>
+      <!-- sheen -->
+      <polygon points="100,24 158,60 140,60 100,30" fill="rgba(255,255,255,0.08)"/>
       <!-- border -->
-      <polygon points="100,18 166,58 142,132 58,132 34,58" fill="none" stroke="rgba(200,230,210,0.28)" stroke-width="1.5"/>
+      <polygon points="100,24 158,60 137,122 63,122 42,60" fill="none" stroke="rgba(200,230,210,0.22)" stroke-width="1.2"/>
       <!-- inner ring -->
-      <polygon points="100,44 140,68 124,112 76,112 60,68" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
-      <!-- centre circle + dot -->
-      <circle cx="100" cy="78" r="18" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.2)" stroke-width="1.2"/>
-      <circle cx="100" cy="78" r="9" fill="rgba(232,160,32,0.92)"/>
-      <circle cx="100" cy="78" r="4" fill="#fff"/>
-      <!-- corner anchor dots -->
-      <circle cx="100" cy="18"  r="5.5" fill="#DEB86A" filter="url(#gp1s)"/>
-      <circle cx="166" cy="58"  r="4"   fill="rgba(255,255,255,0.65)"/>
-      <circle cx="142" cy="132" r="4"   fill="rgba(255,255,255,0.5)"/>
-      <circle cx="58"  cy="132" r="4"   fill="rgba(255,255,255,0.5)"/>
-      <circle cx="34"  cy="58"  r="4"   fill="rgba(255,255,255,0.6)"/>
+      <polygon points="100,46 136,68 122,106 78,106 64,68" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="0.9"/>
+      <!-- centre -->
+      <circle cx="100" cy="76" r="16" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+      <circle cx="100" cy="76" r="7" fill="rgba(232,160,32,0.9)"/>
+      <circle cx="100" cy="76" r="3" fill="#fff"/>
+      <!-- corner dots -->
+      <circle cx="100" cy="24" r="5" fill="#DEB86A" filter="url(#gp1s)"/>
+      <circle cx="158" cy="60" r="3.5" fill="rgba(255,255,255,0.6)"/>
+      <circle cx="137" cy="122" r="3.5" fill="rgba(255,255,255,0.45)"/>
+      <circle cx="63"  cy="122" r="3.5" fill="rgba(255,255,255,0.45)"/>
+      <circle cx="42"  cy="60"  r="3.5" fill="rgba(255,255,255,0.55)"/>
       <!-- connector lines -->
-      <line x1="100" y1="60" x2="100" y2="24"  stroke="rgba(255,255,255,0.22)" stroke-width="1" stroke-dasharray="3 3"/>
-      <line x1="115" y1="71" x2="161" y2="60"  stroke="rgba(255,255,255,0.18)" stroke-width="1" stroke-dasharray="3 3"/>
-      <line x1="113" y1="87" x2="136" y2="127" stroke="rgba(255,255,255,0.16)" stroke-width="1" stroke-dasharray="3 3"/>
-      <line x1="87"  y1="87" x2="64"  y2="127" stroke="rgba(255,255,255,0.16)" stroke-width="1" stroke-dasharray="3 3"/>
-      <line x1="85"  y1="71" x2="39"  y2="60"  stroke="rgba(255,255,255,0.18)" stroke-width="1" stroke-dasharray="3 3"/>
-      <!-- 5 labels — inside pentagon edge, clearly readable -->
-      <text x="100" y="12"  font-size="9" fill="rgba(232,160,32,0.95)" text-anchor="middle" font-family="sans-serif" font-weight="700">需求分析</text>
-      <text x="174" y="62"  font-size="8" fill="rgba(200,230,210,0.9)" text-anchor="start"  font-family="sans-serif" font-weight="600">決策</text>
-      <text x="148" y="144" font-size="8" fill="rgba(200,230,210,0.9)" text-anchor="middle" font-family="sans-serif" font-weight="600">節點預判</text>
-      <text x="52"  y="144" font-size="8" fill="rgba(200,230,210,0.9)" text-anchor="middle" font-family="sans-serif" font-weight="600">客戶評估</text>
-      <text x="4"   y="62"  font-size="8" fill="rgba(200,230,210,0.9)" text-anchor="start"  font-family="sans-serif" font-weight="600">情境</text>
+      <line x1="100" y1="60"  x2="100" y2="29"  stroke="rgba(255,255,255,0.2)"  stroke-width="0.9" stroke-dasharray="3 2"/>
+      <line x1="113" y1="69"  x2="153" y2="62"  stroke="rgba(255,255,255,0.16)" stroke-width="0.9" stroke-dasharray="3 2"/>
+      <line x1="111" y1="83"  x2="132" y2="118" stroke="rgba(255,255,255,0.14)" stroke-width="0.9" stroke-dasharray="3 2"/>
+      <line x1="89"  y1="83"  x2="68"  y2="118" stroke="rgba(255,255,255,0.14)" stroke-width="0.9" stroke-dasharray="3 2"/>
+      <line x1="87"  y1="69"  x2="47"  y2="62"  stroke="rgba(255,255,255,0.16)" stroke-width="0.9" stroke-dasharray="3 2"/>
+      <!-- LABELS — outside pentagon, clearly visible on light bg -->
+      <!-- top: 需求分析 -->
+      <rect x="74" y="5" width="52" height="14" rx="4" fill="rgba(232,160,32,0.2)" stroke="rgba(184,136,46,0.6)" stroke-width="0.7"/>
+      <text x="100" y="15" font-size="7.5" fill="#7A5010" text-anchor="middle" font-family="sans-serif" font-weight="600">需求分析</text>
+      <!-- top-right: 決策路圖 -->
+      <rect x="160" y="48" width="36" height="14" rx="4" fill="rgba(61,90,71,0.12)" stroke="rgba(61,90,71,0.4)" stroke-width="0.7"/>
+      <text x="178" y="57.5" font-size="7" fill="#2A4830" text-anchor="middle" font-family="sans-serif" font-weight="600">決策路圖</text>
+      <!-- bot-right: 節點預判 -->
+      <rect x="140" y="126" width="36" height="14" rx="4" fill="rgba(61,90,71,0.10)" stroke="rgba(61,90,71,0.35)" stroke-width="0.7"/>
+      <text x="158" y="135.5" font-size="7" fill="#2A4830" text-anchor="middle" font-family="sans-serif" font-weight="600">節點預判</text>
+      <!-- bot-left: 客戶評估 -->
+      <rect x="24" y="126" width="36" height="14" rx="4" fill="rgba(61,90,71,0.10)" stroke="rgba(61,90,71,0.35)" stroke-width="0.7"/>
+      <text x="42" y="135.5" font-size="7" fill="#2A4830" text-anchor="middle" font-family="sans-serif" font-weight="600">客戶評估</text>
+      <!-- top-left: 情境應對 -->
+      <rect x="4" y="48" width="36" height="14" rx="4" fill="rgba(61,90,71,0.10)" stroke="rgba(61,90,71,0.35)" stroke-width="0.7"/>
+      <text x="22" y="57.5" font-size="7" fill="#2A4830" text-anchor="middle" font-family="sans-serif" font-weight="600">情境應對</text>
     </svg>
   </div>
   <div class="cb">
     <div class="c-eyebrow">S1 · 核心系統</div>
     <div class="c-title">顧問決策系統</div>
-    <div class="c-desc">即時評估客戶狀態，智能預判每個決策節點</div>
+    <div class="c-desc">客戶狀態評估・需求分析・決策節點預判・即時支援輔助</div>
+    <div class="chips"><span class="chip">決策節點</span><span class="chip">客戶分析</span><span class="chip">情境應對</span></div>
   </div>
   <div class="cfoot">
     <div class="cta-label">進入系統</div>
@@ -335,56 +397,70 @@ footer  {animation:riseIn .45s .28s ease both;}
           <stop offset="0%" stop-color="#C8E8F8" stop-opacity="0.6"/>
           <stop offset="100%" stop-color="#E8F4FD" stop-opacity="0.1"/>
         </linearGradient>
-        <filter id="gh"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="gh"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
       </defs>
       <rect x="0" y="0" width="200" height="165" fill="url(#skyG)"/>
-      <!-- single clean cloud -->
-      <ellipse cx="42" cy="26" rx="24" ry="11" fill="rgba(255,255,255,0.75)"/>
-      <ellipse cx="56" cy="20" rx="18" ry="13" fill="rgba(255,255,255,0.80)"/>
+      <!-- clouds -->
+      <ellipse cx="38" cy="28" rx="20" ry="9" fill="rgba(255,255,255,0.7)"/>
+      <ellipse cx="52" cy="23" rx="16" ry="11" fill="rgba(255,255,255,0.75)"/>
+      <ellipse cx="26" cy="26" rx="12" ry="7"  fill="rgba(255,255,255,0.6)"/>
+      <ellipse cx="158" cy="22" rx="17" ry="8"  fill="rgba(255,255,255,0.65)"/>
+      <ellipse cx="170" cy="17" rx="13" ry="9"  fill="rgba(255,255,255,0.7)"/>
       <!-- sun -->
-      <circle cx="168" cy="30" r="14" fill="rgba(255,220,80,0.5)"/>
-      <circle cx="168" cy="30" r="9"  fill="rgba(255,200,40,0.72)"/>
-      <!-- ground shadow -->
-      <ellipse cx="100" cy="134" rx="58" ry="8" fill="rgba(26,40,32,0.10)"/>
-      <!-- house body — bigger, cleaner -->
-      <rect x="50" y="80" width="100" height="60" rx="3" fill="url(#wallG2)"/>
+      <circle cx="170" cy="32" r="12" fill="rgba(255,220,80,0.55)"/>
+      <circle cx="170" cy="32" r="8"  fill="rgba(255,200,40,0.7)"/>
+      <!-- ground -->
+      <ellipse cx="100" cy="136" rx="78" ry="10" fill="rgba(58,86,68,0.13)" filter="url(#gh)"/>
+      <rect x="18" y="130" width="164" height="8" rx="4" fill="rgba(80,120,60,0.22)"/>
+      <!-- house shadow -->
+      <ellipse cx="102" cy="134" rx="54" ry="7" fill="rgba(26,40,32,0.1)"/>
+      <!-- body -->
+      <rect x="54" y="78" width="92" height="58" rx="3" fill="url(#wallG2)"/>
       <!-- roof -->
-      <polygon points="38,82 100,22 162,82" fill="url(#roofG)"/>
-      <polygon points="100,22 162,82 152,82 100,28" fill="rgba(255,255,255,0.10)"/>
+      <polygon points="44,80 100,28 156,80" fill="url(#roofG)"/>
+      <polygon points="100,28 156,80 148,80 100,34" fill="rgba(255,255,255,0.1)"/>
+      <polygon points="44,80 100,80 100,28" fill="rgba(0,0,0,0.04)"/>
       <!-- chimney -->
-      <rect x="130" y="40" width="13" height="28" rx="2" fill="#7A5020"/>
-      <rect x="127" y="36" width="19" height="8" rx="2" fill="#8A6030"/>
-      <!-- smoke -->
-      <circle cx="136" cy="30" r="6"  fill="rgba(200,200,200,0.45)"/>
-      <circle cx="140" cy="22" r="5"  fill="rgba(200,200,200,0.32)"/>
+      <rect x="128" y="42" width="11" height="24" rx="2" fill="#7A5020"/>
+      <rect x="125" y="38" width="17" height="7"  rx="2" fill="#8A6030"/>
+      <!-- smoke puffs -->
+      <circle cx="133" cy="32" r="5"  fill="rgba(200,200,200,0.4)"/>
+      <circle cx="136" cy="24" r="4"  fill="rgba(200,200,200,0.3)"/>
+      <circle cx="132" cy="17" r="3"  fill="rgba(200,200,200,0.2)"/>
       <!-- door -->
-      <rect x="82" y="104" width="36" height="36" rx="18" fill="#1A2820"/>
-      <rect x="82" y="104" width="36" height="20" rx="0"  fill="#1A2820"/>
-      <rect x="82" y="104" width="36" height="36" rx="6"  fill="none" stroke="rgba(222,184,106,0.6)" stroke-width="1.2"/>
-      <circle cx="114" cy="122" r="2.8" fill="rgba(222,184,106,0.95)"/>
-      <!-- windows — larger, clearer -->
-      <rect x="56" y="90" width="26" height="20" rx="4" fill="rgba(200,230,255,0.7)" stroke="rgba(255,255,255,0.6)" stroke-width="1"/>
-      <line x1="69" y1="90" x2="69" y2="110" stroke="rgba(255,255,255,0.6)" stroke-width="0.9"/>
-      <line x1="56" y1="100" x2="82" y2="100" stroke="rgba(255,255,255,0.6)" stroke-width="0.9"/>
-      <rect x="118" y="90" width="26" height="20" rx="4" fill="rgba(255,220,120,0.65)" stroke="rgba(255,255,255,0.6)" stroke-width="1"/>
-      <line x1="131" y1="90" x2="131" y2="110" stroke="rgba(255,255,255,0.6)" stroke-width="0.9"/>
-      <line x1="118" y1="100" x2="144" y2="100" stroke="rgba(255,255,255,0.6)" stroke-width="0.9"/>
-      <!-- ROI tag — big, prominent -->
-      <rect x="128" y="20" width="64" height="22" rx="7" fill="rgba(232,160,32,0.28)" stroke="rgba(184,136,46,0.7)" stroke-width="1"/>
-      <text x="160" y="34" font-size="12" fill="#6A4008" text-anchor="middle" font-family="sans-serif" font-weight="800">+ROI 142%</text>
+      <rect x="84" y="100" width="32" height="36" rx="16" fill="#1A2820"/>
+      <rect x="84" y="100" width="32" height="20" rx="0"  fill="#1A2820"/>
+      <rect x="84" y="100" width="32" height="36" rx="5"  fill="none" stroke="rgba(222,184,106,0.55)" stroke-width="1"/>
+      <circle cx="113" cy="118" r="2.2" fill="rgba(222,184,106,0.9)"/>
+      <!-- windows -->
+      <rect x="60" y="87" width="22" height="18" rx="3" fill="rgba(200,230,255,0.65)" stroke="rgba(255,255,255,0.5)" stroke-width="0.8"/>
+      <line x1="71" y1="87" x2="71" y2="105" stroke="rgba(255,255,255,0.5)" stroke-width="0.7"/>
+      <line x1="60" y1="96" x2="82" y2="96"  stroke="rgba(255,255,255,0.5)" stroke-width="0.7"/>
+      <rect x="118" y="87" width="22" height="18" rx="3" fill="rgba(255,210,120,0.55)" stroke="rgba(255,255,255,0.5)" stroke-width="0.8"/>
+      <line x1="129" y1="87" x2="129" y2="105" stroke="rgba(255,255,255,0.5)" stroke-width="0.7"/>
+      <line x1="118" y1="96" x2="140" y2="96"  stroke="rgba(255,255,255,0.5)" stroke-width="0.7"/>
+      <!-- window light glow -->
+      <ellipse cx="129" cy="105" rx="12" ry="5" fill="rgba(255,200,80,0.12)" filter="url(#gh)"/>
+      <!-- ROI tag -->
+      <rect x="136" y="28" width="52" height="15" rx="5" fill="rgba(232,160,32,0.22)" stroke="rgba(184,136,46,0.6)" stroke-width="0.8"/>
+      <text x="162" y="38.5" font-size="8.5" fill="#7A5010" text-anchor="middle" font-family="sans-serif" font-weight="700">+ROI 142%</text>
       <!-- walkway -->
-      <polygon points="86,140 114,140 118,148 82,148" fill="rgba(180,160,120,0.4)"/>
-      <!-- garden -->
-      <circle cx="46" cy="126" r="7" fill="rgba(80,160,80,0.65)"/>
-      <line x1="46" y1="133" x2="46" y2="142" stroke="rgba(60,100,40,0.6)" stroke-width="2"/>
-      <circle cx="154" cy="126" r="7" fill="rgba(220,100,100,0.65)"/>
-      <line x1="154" y1="133" x2="154" y2="142" stroke="rgba(60,100,40,0.6)" stroke-width="2"/>
+      <polygon points="88,136 112,136 116,144 84,144" fill="rgba(180,160,120,0.35)"/>
+      <!-- garden plants -->
+      <circle cx="54" cy="126" r="5" fill="rgba(80,160,80,0.6)"/>
+      <circle cx="48" cy="122" r="4" fill="rgba(100,180,100,0.55)"/>
+      <line x1="54" y1="131" x2="54" y2="138" stroke="rgba(60,100,40,0.55)" stroke-width="1.5"/>
+      <line x1="48" y1="126" x2="48" y2="133" stroke="rgba(60,100,40,0.55)" stroke-width="1.5"/>
+      <circle cx="148" cy="126" r="5" fill="rgba(220,100,100,0.6)"/>
+      <circle cx="154" cy="122" r="4" fill="rgba(240,140,140,0.55)"/>
+      <line x1="148" y1="131" x2="148" y2="138" stroke="rgba(60,100,40,0.55)" stroke-width="1.5"/>
+      <line x1="154" y1="126" x2="154" y2="133" stroke="rgba(60,100,40,0.55)" stroke-width="1.5"/>
     </svg>
   </div>
   <div class="cb">
     <div class="c-eyebrow">S2 · 規劃工具</div>
     <div class="c-title">AI 資產規劃報告</div>
-    <div class="c-desc">AI 自動生成 ROI 分析報告，多策略即時比較</div>
+    <div class="c-desc">ROI 分析・多策略比較・AI 自動生成個案報告</div>
   </div>
   <div class="cfoot">
     <div class="cta-label">開啟工具</div>
@@ -400,61 +476,64 @@ footer  {animation:riseIn .45s .28s ease both;}
     <div class="ill-fade"></div>
     <div class="num-badge">03</div>
     <svg viewBox="0 0 200 165" preserveAspectRatio="xMidYMid meet">
-      <defs><filter id="gc"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+      <defs><filter id="gc"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
       <!-- shadow -->
-      <rect x="28" y="28" width="144" height="118" rx="12" fill="rgba(212,90,58,0.09)" filter="url(#gc)"/>
+      <rect x="32" y="30" width="136" height="112" rx="10" fill="rgba(212,90,58,0.07)" filter="url(#gc)"/>
       <!-- body -->
-      <rect x="22" y="18" width="156" height="120" rx="11" fill="rgba(255,255,255,0.92)" stroke="rgba(212,90,58,0.22)" stroke-width="1"/>
-      <!-- header bar -->
-      <rect x="22" y="18" width="156" height="36" rx="11" fill="#D45A3A"/>
-      <rect x="22" y="40" width="156" height="14" rx="0" fill="#D45A3A"/>
-      <!-- header text — bigger -->
-      <text x="100" y="42" font-size="12" fill="rgba(255,255,255,0.97)" text-anchor="middle" font-family="sans-serif" font-weight="700" letter-spacing="1.5">2026 · 品牌活動</text>
+      <rect x="28" y="22" width="144" height="112" rx="9" fill="rgba(255,255,255,0.88)" stroke="rgba(212,90,58,0.2)" stroke-width="0.8"/>
+      <!-- header -->
+      <rect x="28" y="22" width="144" height="30" rx="9" fill="#D45A3A"/>
+      <rect x="28" y="38" width="144" height="14" rx="0" fill="#D45A3A"/>
+      <text x="100" y="41" font-size="10" fill="rgba(255,255,255,0.95)" text-anchor="middle" font-family="sans-serif" font-weight="700" letter-spacing="1">2026 · 品牌活動</text>
       <!-- ring clips -->
-      <rect x="60"  y="10" width="10" height="18" rx="5" fill="#B84030"/>
-      <rect x="130" y="10" width="10" height="18" rx="5" fill="#B84030"/>
-      <!-- divider line -->
-      <line x1="30" y1="68" x2="170" y2="68" stroke="rgba(212,90,58,0.12)" stroke-width="1"/>
-      <!-- day headers — bigger font -->
-      <text x="44"  y="66" font-size="9" fill="rgba(61,90,71,0.6)"  text-anchor="middle" font-family="sans-serif" font-weight="600">一</text>
-      <text x="68"  y="66" font-size="9" fill="rgba(61,90,71,0.6)"  text-anchor="middle" font-family="sans-serif" font-weight="600">二</text>
-      <text x="92"  y="66" font-size="9" fill="rgba(61,90,71,0.6)"  text-anchor="middle" font-family="sans-serif" font-weight="600">三</text>
-      <text x="116" y="66" font-size="9" fill="rgba(61,90,71,0.6)"  text-anchor="middle" font-family="sans-serif" font-weight="600">四</text>
-      <text x="140" y="66" font-size="9" fill="rgba(184,136,46,0.9)" text-anchor="middle" font-family="sans-serif" font-weight="700">六</text>
-      <text x="162" y="66" font-size="9" fill="rgba(212,60,40,0.8)"  text-anchor="middle" font-family="sans-serif" font-weight="700">日</text>
+      <rect x="62"  y="14" width="9" height="16" rx="4.5" fill="#B84030"/>
+      <rect x="130" y="14" width="9" height="16" rx="4.5" fill="#B84030"/>
+      <!-- day headers -->
+      <text x="48"  y="63" font-size="7.5" fill="rgba(61,90,71,0.55)" text-anchor="middle" font-family="sans-serif" font-weight="500">一</text>
+      <text x="68"  y="63" font-size="7.5" fill="rgba(61,90,71,0.55)" text-anchor="middle" font-family="sans-serif" font-weight="500">二</text>
+      <text x="88"  y="63" font-size="7.5" fill="rgba(61,90,71,0.55)" text-anchor="middle" font-family="sans-serif" font-weight="500">三</text>
+      <text x="108" y="63" font-size="7.5" fill="rgba(61,90,71,0.55)" text-anchor="middle" font-family="sans-serif" font-weight="500">四</text>
+      <text x="128" y="63" font-size="7.5" fill="rgba(61,90,71,0.55)" text-anchor="middle" font-family="sans-serif" font-weight="500">五</text>
+      <text x="148" y="63" font-size="7.5" fill="rgba(184,136,46,0.75)" text-anchor="middle" font-family="sans-serif" font-weight="700">六</text>
+      <text x="164" y="63" font-size="7.5" fill="rgba(212,60,40,0.7)"  text-anchor="middle" font-family="sans-serif" font-weight="700">日</text>
+      <line x1="36" y1="66" x2="164" y2="66" stroke="rgba(61,90,71,0.07)" stroke-width="0.7"/>
       <!-- row 1 -->
-      <text x="44"  y="85" font-size="11" fill="rgba(61,90,71,0.55)" text-anchor="middle" font-family="sans-serif">1</text>
-      <text x="68"  y="85" font-size="11" fill="rgba(61,90,71,0.55)" text-anchor="middle" font-family="sans-serif">2</text>
-      <text x="92"  y="85" font-size="11" fill="rgba(61,90,71,0.55)" text-anchor="middle" font-family="sans-serif">3</text>
-      <rect x="106" y="74" width="22" height="16" rx="6" fill="rgba(184,136,46,0.24)" stroke="rgba(184,136,46,0.6)" stroke-width="1"/>
-      <text x="117" y="85" font-size="11" fill="#7A5010" text-anchor="middle" font-family="sans-serif" font-weight="700">4</text>
-      <text x="140" y="85" font-size="11" fill="rgba(184,136,46,0.7)" text-anchor="middle" font-family="sans-serif">6</text>
-      <text x="162" y="85" font-size="11" fill="rgba(212,60,40,0.65)" text-anchor="middle" font-family="sans-serif">7</text>
+      <text x="48"  y="80" font-size="9" fill="rgba(61,90,71,0.5)" text-anchor="middle" font-family="sans-serif">1</text>
+      <text x="68"  y="80" font-size="9" fill="rgba(61,90,71,0.5)" text-anchor="middle" font-family="sans-serif">2</text>
+      <text x="88"  y="80" font-size="9" fill="rgba(61,90,71,0.5)" text-anchor="middle" font-family="sans-serif">3</text>
+      <rect x="98" y="71" width="20" height="14" rx="5" fill="rgba(184,136,46,0.22)" stroke="rgba(184,136,46,0.55)" stroke-width="0.9"/>
+      <text x="108" y="81" font-size="9" fill="#7A5010" text-anchor="middle" font-family="sans-serif" font-weight="700">4</text>
+      <text x="128" y="80" font-size="9" fill="rgba(61,90,71,0.5)" text-anchor="middle" font-family="sans-serif">5</text>
+      <text x="148" y="80" font-size="9" fill="rgba(184,136,46,0.65)" text-anchor="middle" font-family="sans-serif">6</text>
+      <text x="164" y="80" font-size="9" fill="rgba(212,60,40,0.6)"  text-anchor="middle" font-family="sans-serif">7</text>
       <!-- row 2 -->
-      <text x="44"  y="104" font-size="11" fill="rgba(61,90,71,0.55)" text-anchor="middle" font-family="sans-serif">8</text>
-      <text x="68"  y="104" font-size="11" fill="rgba(61,90,71,0.55)" text-anchor="middle" font-family="sans-serif">9</text>
-      <!-- event span row 2 -->
-      <rect x="80" y="93" width="88" height="16" rx="6" fill="rgba(212,90,58,0.12)" stroke="rgba(212,90,58,0.35)" stroke-width="0.9"/>
-      <text x="88"  y="104" font-size="11" fill="rgba(180,60,30,0.75)" text-anchor="middle" font-family="sans-serif">10</text>
-      <text x="116" y="104" font-size="11" fill="rgba(180,60,30,0.75)" text-anchor="middle" font-family="sans-serif">11</text>
-      <text x="140" y="104" font-size="11" fill="rgba(184,136,46,0.7)" text-anchor="middle" font-family="sans-serif">13</text>
-      <text x="162" y="104" font-size="11" fill="rgba(212,60,40,0.6)"  text-anchor="middle" font-family="sans-serif">14</text>
-      <!-- row 3: today highlight -->
-      <rect x="33" y="111" width="22" height="16" rx="6" fill="#3D5A47"/>
-      <text x="44"  y="122" font-size="11" fill="#fff" text-anchor="middle" font-family="sans-serif" font-weight="700">15</text>
-      <text x="68"  y="122" font-size="11" fill="rgba(61,90,71,0.55)" text-anchor="middle" font-family="sans-serif">16</text>
-      <!-- event dot -->
-      <circle cx="140" cy="118" r="3.5" fill="rgba(212,60,40,0.8)"/>
-      <text x="140" y="122" font-size="11" fill="rgba(212,60,40,0.8)" text-anchor="middle" font-family="sans-serif" font-weight="700">19</text>
-      <!-- event label — bigger readable -->
-      <rect x="66" y="130" width="80" height="13" rx="4" fill="rgba(212,90,58,0.16)" stroke="rgba(212,90,58,0.42)" stroke-width="0.8"/>
-      <text x="106" y="139.5" font-size="7.5" fill="rgba(180,50,30,0.85)" text-anchor="middle" font-family="sans-serif" letter-spacing="1.2" font-weight="700">品牌發表活動</text>
+      <text x="48"  y="97" font-size="9" fill="rgba(61,90,71,0.5)" text-anchor="middle" font-family="sans-serif">8</text>
+      <text x="68"  y="97" font-size="9" fill="rgba(61,90,71,0.5)" text-anchor="middle" font-family="sans-serif">9</text>
+      <rect x="77" y="88" width="76" height="14" rx="5" fill="rgba(212,90,58,0.1)" stroke="rgba(212,90,58,0.3)" stroke-width="0.8"/>
+      <text x="88"  y="97" font-size="9" fill="rgba(180,60,30,0.7)" text-anchor="middle" font-family="sans-serif">10</text>
+      <text x="108" y="97" font-size="9" fill="rgba(180,60,30,0.7)" text-anchor="middle" font-family="sans-serif">11</text>
+      <text x="128" y="97" font-size="9" fill="rgba(180,60,30,0.65)" text-anchor="middle" font-family="sans-serif">12</text>
+      <text x="148" y="97" font-size="9" fill="rgba(184,136,46,0.65)" text-anchor="middle" font-family="sans-serif">13</text>
+      <text x="164" y="97" font-size="9" fill="rgba(212,60,40,0.6)"  text-anchor="middle" font-family="sans-serif">14</text>
+      <!-- row 3: today -->
+      <rect x="37" y="104" width="20" height="14" rx="5" fill="#3D5A47"/>
+      <text x="47"  y="114" font-size="9" fill="#fff" text-anchor="middle" font-family="sans-serif" font-weight="700">15</text>
+      <text x="68"  y="114" font-size="9" fill="rgba(61,90,71,0.5)" text-anchor="middle" font-family="sans-serif">16</text>
+      <text x="88"  y="114" font-size="9" fill="rgba(61,90,71,0.5)" text-anchor="middle" font-family="sans-serif">17</text>
+      <text x="108" y="114" font-size="9" fill="rgba(61,90,71,0.5)" text-anchor="middle" font-family="sans-serif">18</text>
+      <text x="128" y="114" font-size="9" fill="rgba(212,60,40,0.75)" text-anchor="middle" font-family="sans-serif" font-weight="600">19</text>
+      <circle cx="128" cy="118.5" r="2" fill="rgba(212,60,40,0.75)"/>
+      <text x="148" y="114" font-size="9" fill="rgba(184,136,46,0.6)" text-anchor="middle" font-family="sans-serif">20</text>
+      <text x="164" y="114" font-size="9" fill="rgba(212,60,40,0.55)" text-anchor="middle" font-family="sans-serif">21</text>
+      <!-- event label -->
+      <rect x="74" y="122" width="72" height="10" rx="3" fill="rgba(212,90,58,0.15)" stroke="rgba(212,90,58,0.38)" stroke-width="0.6"/>
+      <text x="110" y="129.5" font-size="6" fill="rgba(180,50,30,0.8)" text-anchor="middle" font-family="sans-serif" letter-spacing="1" font-weight="600">品牌發表活動</text>
     </svg>
   </div>
   <div class="cb">
     <div class="c-eyebrow">S3 · 品牌・行銷</div>
     <div class="c-title">官網與近期活動</div>
-    <div class="c-desc">官網入口與品牌活動行事曆，一站掌握全局</div>
+    <div class="c-desc">富時代官網・精美活動入口・提升品牌形象與市場能見度</div>
   </div>
   <div class="cfoot">
     <div class="cta-label">開啟頁面</div>
@@ -497,63 +576,100 @@ footer  {animation:riseIn .45s .28s ease both;}
           <stop offset="0%" stop-color="#72C870"/>
           <stop offset="100%" stop-color="#3D8840"/>
         </radialGradient>
-        <filter id="treeGlow"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-        <filter id="treeSoft"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="treeGlow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="treeSoft"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="leafBlur"><feGaussianBlur stdDeviation="0.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
       </defs>
-      <!-- sky -->
+
+      <!-- sky bg -->
       <rect x="0" y="0" width="200" height="165" fill="url(#skyTree)"/>
-      <!-- simple cloud -->
-      <ellipse cx="32"  cy="20" rx="24" ry="11" fill="rgba(255,255,255,0.55)"/>
-      <ellipse cx="170" cy="18" rx="22" ry="10" fill="rgba(255,255,255,0.5)"/>
-      <!-- book shadow -->
-      <ellipse cx="100" cy="154" rx="74" ry="7" fill="rgba(60,40,15,0.18)" filter="url(#treeSoft)"/>
-      <!-- bottom book -->
-      <rect x="20" y="140" width="160" height="14" rx="4" fill="#7A5820" stroke="rgba(100,65,20,0.5)" stroke-width="0.8"/>
-      <!-- main cover -->
-      <rect x="16" y="130" width="168" height="16" rx="4" fill="#5A3D18" stroke="rgba(80,50,10,0.6)" stroke-width="0.8"/>
-      <!-- spine -->
-      <rect x="95" y="126" width="10" height="20" rx="2" fill="#3A2508"/>
-      <!-- LEFT PAGE -->
-      <path d="M95,126 Q68,118 26,112 Q12,110 14,130 Q48,134 93,132 Z" fill="url(#pageLA)" stroke="rgba(160,120,60,0.3)" stroke-width="0.8"/>
-      <line x1="24" y1="116" x2="86" y2="114" stroke="rgba(90,65,30,0.18)" stroke-width="1"/>
-      <line x1="24" y1="121" x2="80" y2="119" stroke="rgba(90,65,30,0.13)" stroke-width="0.9"/>
-      <!-- RIGHT PAGE -->
-      <path d="M105,126 Q132,118 174,112 Q188,110 186,130 Q152,134 107,132 Z" fill="url(#pageRA)" stroke="rgba(160,120,60,0.3)" stroke-width="0.8"/>
-      <line x1="114" y1="116" x2="178" y2="114" stroke="rgba(90,65,30,0.18)" stroke-width="1"/>
-      <line x1="114" y1="121" x2="172" y2="119" stroke="rgba(90,65,30,0.13)" stroke-width="0.9"/>
-      <!-- TRUNK — thicker, bolder -->
-      <ellipse cx="100" cy="127" rx="14" ry="6" fill="rgba(60,150,60,0.22)" filter="url(#treeGlow)"/>
-      <path d="M91,130 Q88,104 86,78 Q87,64 100,56 Q113,64 114,78 Q112,104 109,130 Z" fill="url(#trunkG)"/>
+      <!-- soft clouds -->
+      <ellipse cx="30"  cy="20" rx="22" ry="10" fill="rgba(255,255,255,0.55)"/>
+      <ellipse cx="46"  cy="14" rx="18" ry="12" fill="rgba(255,255,255,0.6)"/>
+      <ellipse cx="170" cy="18" rx="20" ry="9"  fill="rgba(255,255,255,0.5)"/>
+      <ellipse cx="185" cy="12" rx="14" ry="11" fill="rgba(255,255,255,0.55)"/>
+
+      <!-- ══ OPEN BOOK BASE ══ -->
+      <!-- book stack shadow -->
+      <ellipse cx="100" cy="152" rx="72" ry="8" fill="rgba(60,40,15,0.18)" filter="url(#treeSoft)"/>
+      <!-- bottom book (extra depth) -->
+      <rect x="22" y="138" width="156" height="14" rx="4" fill="#7A5820" stroke="rgba(100,65,20,0.5)" stroke-width="0.8"/>
+      <rect x="22" y="138" width="156" height="5"  rx="4" fill="rgba(160,110,50,0.6)"/>
+      <!-- main book cover base -->
+      <rect x="18" y="128" width="164" height="16" rx="4" fill="#5A3D18" stroke="rgba(80,50,10,0.6)" stroke-width="0.8"/>
+      <rect x="18" y="128" width="164" height="6"  rx="4" fill="rgba(120,80,30,0.5)"/>
+      <!-- spine in middle -->
+      <rect x="96" y="124" width="8" height="20" rx="2" fill="#3A2508"/>
+
+      <!-- LEFT PAGE — swept open to left -->
+      <path d="M96,124 Q70,118 30,112 Q16,110 18,128 Q50,132 94,130 Z" fill="url(#pageLA)" stroke="rgba(160,120,60,0.3)" stroke-width="0.8"/>
+      <!-- left page text lines -->
+      <line x1="28" y1="116" x2="88" y2="114" stroke="rgba(90,65,30,0.2)"  stroke-width="0.9"/>
+      <line x1="28" y1="120" x2="82" y2="118" stroke="rgba(90,65,30,0.15)" stroke-width="0.8"/>
+      <line x1="28" y1="124" x2="78" y2="122" stroke="rgba(90,65,30,0.12)" stroke-width="0.7"/>
+      <!-- left page small text hint -->
+      <rect x="28" y="112" width="30" height="4" rx="1" fill="rgba(232,160,32,0.3)"/>
+      <!-- right page -->
+      <path d="M104,124 Q130,118 170,112 Q184,110 182,128 Q150,132 106,130 Z" fill="url(#pageRA)" stroke="rgba(160,120,60,0.3)" stroke-width="0.8"/>
+      <line x1="112" y1="116" x2="172" y2="114" stroke="rgba(90,65,30,0.2)"  stroke-width="0.9"/>
+      <line x1="112" y1="120" x2="168" y2="118" stroke="rgba(90,65,30,0.15)" stroke-width="0.8"/>
+      <line x1="112" y1="124" x2="162" y2="122" stroke="rgba(90,65,30,0.12)" stroke-width="0.7"/>
+
+      <!-- ══ TREE TRUNK rising from book centre ══ -->
+      <!-- trunk glow -->
+      <ellipse cx="100" cy="125" rx="12" ry="6" fill="rgba(60,150,60,0.25)" filter="url(#treeGlow)"/>
+      <!-- trunk -->
+      <path d="M93,128 Q90,105 88,82 Q89,70 100,62 Q111,70 112,82 Q110,105 107,128 Z" fill="url(#trunkG)"/>
+      <!-- trunk highlight -->
+      <path d="M97,128 Q96,105 95,82 Q96,72 100,65 Q101,72 103,82 Q102,106 101,128 Z" fill="rgba(200,150,80,0.18)"/>
       <!-- roots -->
-      <path d="M91,130 Q78,133 66,130" fill="none" stroke="#5A3A18" stroke-width="5" stroke-linecap="round"/>
-      <path d="M109,130 Q122,133 134,130" fill="none" stroke="#5A3A18" stroke-width="5" stroke-linecap="round"/>
+      <path d="M93,128 Q82,130 72,128" fill="none" stroke="#5A3A18" stroke-width="4" stroke-linecap="round"/>
+      <path d="M107,128 Q118,130 128,128" fill="none" stroke="#5A3A18" stroke-width="4" stroke-linecap="round"/>
+      <path d="M95,128 Q88,135 80,136" fill="none" stroke="#5A3A18" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M105,128 Q112,135 120,136" fill="none" stroke="#5A3A18" stroke-width="2.5" stroke-linecap="round"/>
       <!-- branches -->
-      <path d="M100,76 Q82,66 70,52"  fill="none" stroke="#6A4820" stroke-width="4.5" stroke-linecap="round"/>
-      <path d="M100,76 Q118,66 130,52" fill="none" stroke="#6A4820" stroke-width="4.5" stroke-linecap="round"/>
-      <path d="M98,90  Q78,82 62,74"   fill="none" stroke="#6A4820" stroke-width="3"   stroke-linecap="round"/>
-      <path d="M102,90 Q122,82 138,74" fill="none" stroke="#6A4820" stroke-width="3"   stroke-linecap="round"/>
-      <!-- CANOPY — simpler, bigger -->
-      <circle cx="100" cy="38" r="56" fill="rgba(60,140,60,0.13)" filter="url(#treeGlow)"/>
-      <circle cx="78"  cy="48" r="26" fill="#286030" opacity="0.88"/>
-      <circle cx="122" cy="48" r="26" fill="#286030" opacity="0.88"/>
-      <circle cx="100" cy="34" r="28" fill="#2A6832"/>
-      <circle cx="82"  cy="40" r="23" fill="#3D8840"/>
-      <circle cx="118" cy="40" r="23" fill="#3D8840"/>
-      <circle cx="100" cy="28" r="25" fill="#448844"/>
-      <circle cx="88"  cy="32" r="20" fill="url(#canopy2G)"/>
-      <circle cx="112" cy="32" r="20" fill="url(#canopy2G)"/>
-      <circle cx="100" cy="18" r="22" fill="url(#canopyG)"/>
-      <!-- canopy shine -->
-      <ellipse cx="96" cy="12" rx="12" ry="7" fill="rgba(140,210,130,0.42)"/>
-      <!-- 2 falling leaves only — clean -->
-      <ellipse cx="52"  cy="70" rx="6" ry="3.5" fill="#5EAA50" transform="rotate(-30,52,70)"/>
-      <ellipse cx="148" cy="68" rx="6" ry="3.5" fill="#6ABB55" transform="rotate(40,148,68)"/>
+      <path d="M100,80 Q84,70 74,58"  fill="none" stroke="#6A4820" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M100,80 Q116,70 126,58" fill="none" stroke="#6A4820" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M98,92  Q80,84 66,78"   fill="none" stroke="#6A4820" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M102,92 Q120,84 134,78" fill="none" stroke="#6A4820" stroke-width="2.5" stroke-linecap="round"/>
+
+      <!-- ══ CANOPY ══ -->
+      <!-- outer glow halo -->
+      <circle cx="100" cy="46" r="52" fill="rgba(60,140,60,0.12)" filter="url(#treeGlow)"/>
+      <!-- back clusters -->
+      <circle cx="78"  cy="52" r="22" fill="#286030" opacity="0.85"/>
+      <circle cx="122" cy="52" r="22" fill="#286030" opacity="0.85"/>
+      <circle cx="100" cy="40" r="24" fill="#2A6832"/>
+      <!-- mid layer -->
+      <circle cx="82"  cy="44" r="20" fill="#3D8840"/>
+      <circle cx="118" cy="44" r="20" fill="#3D8840"/>
+      <circle cx="100" cy="32" r="22" fill="#448844"/>
+      <!-- front highlights -->
+      <circle cx="88"  cy="38" r="17" fill="url(#canopy2G)"/>
+      <circle cx="112" cy="38" r="17" fill="url(#canopy2G)"/>
+      <circle cx="100" cy="24" r="19" fill="url(#canopyG)"/>
+      <!-- canopy top shine -->
+      <ellipse cx="96" cy="18" rx="10" ry="6" fill="rgba(140,210,130,0.4)"/>
+
+      <!-- ══ FALLING LEAVES ══ -->
+      <ellipse cx="52"  cy="72" rx="5" ry="3" fill="#5EAA50" transform="rotate(-30,52,72)"  filter="url(#leafBlur)"/>
+      <ellipse cx="38"  cy="88" rx="4" ry="2.5" fill="#4A9840" transform="rotate(20,38,88)" filter="url(#leafBlur)"/>
+      <ellipse cx="148" cy="70" rx="5" ry="3" fill="#6ABB55" transform="rotate(40,148,70)" filter="url(#leafBlur)"/>
+      <ellipse cx="162" cy="86" rx="4" ry="2.5" fill="#4A9840" transform="rotate(-15,162,86)" filter="url(#leafBlur)"/>
+      <ellipse cx="60"  cy="55" rx="3.5" ry="2" fill="#72C860" transform="rotate(50,60,55)" filter="url(#leafBlur)"/>
+      <ellipse cx="140" cy="58" rx="3.5" ry="2" fill="#5EAA50" transform="rotate(-40,140,58)" filter="url(#leafBlur)"/>
+      <ellipse cx="44"  cy="110" rx="3" ry="2" fill="#4A9840" transform="rotate(25,44,110)" filter="url(#leafBlur)" opacity="0.7"/>
+      <ellipse cx="156" cy="105" rx="3" ry="2" fill="#5EAA50" transform="rotate(-20,156,105)" filter="url(#leafBlur)" opacity="0.7"/>
+
+      <!-- light rays from canopy -->
+      <line x1="72" y1="60" x2="55" y2="90"  stroke="rgba(180,240,160,0.2)" stroke-width="3"/>
+      <line x1="128" y1="60" x2="145" y2="90" stroke="rgba(180,240,160,0.2)" stroke-width="3"/>
     </svg>
   </div>
   <div class="cb">
     <div class="c-eyebrow">S4 · 知識中樞</div>
     <div class="c-title">知識中樞系統</div>
-    <div class="c-desc">話術庫・培訓邏輯・決策知識持續沉澱累積</div>
+    <div class="c-desc">話術庫・培訓系統・決策邏輯・持續優化知識庫</div>
   </div>
   <div class="cfoot">
     <div class="cta-label">進入 Notion</div>
@@ -570,57 +686,169 @@ footer  {animation:riseIn .45s .28s ease both;}
     <div class="num-badge">05</div>
     <svg viewBox="0 0 200 165" preserveAspectRatio="xMidYMid meet">
       <defs>
-        <radialGradient id="bgG5" cx="50%" cy="40%" r="60%">
-          <stop offset="0%" stop-color="#E8F8F8"/>
-          <stop offset="100%" stop-color="#D0ECEE"/>
-        </radialGradient>
         <linearGradient id="deskG5" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="#4ABBB8"/>
           <stop offset="100%" stop-color="#2A9898"/>
         </linearGradient>
-        <filter id="g5f"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <linearGradient id="monitorG5" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#2A6868"/>
+          <stop offset="100%" stop-color="#1A4848"/>
+        </linearGradient>
+        <linearGradient id="screenG5" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#D8EEF0"/>
+          <stop offset="100%" stop-color="#C0E0E4"/>
+        </linearGradient>
+        <linearGradient id="boardG5" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#FFFDF5"/>
+          <stop offset="100%" stop-color="#FFF5E0"/>
+        </linearGradient>
+        <radialGradient id="bgG5" cx="50%" cy="40%" r="60%">
+          <stop offset="0%" stop-color="#E8F8F8"/>
+          <stop offset="100%" stop-color="#D0ECEE"/>
+        </radialGradient>
+        <filter id="g5f"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="g5s"><feGaussianBlur stdDeviation="1" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
       </defs>
+
       <!-- background -->
       <rect x="0" y="0" width="200" height="165" fill="url(#bgG5)"/>
-      <!-- subtle wave lines -->
-      <path d="M0,45 Q50,35 100,45 Q150,55 200,45" fill="none" stroke="rgba(60,180,180,0.14)" stroke-width="2"/>
-      <path d="M0,65 Q50,55 100,65 Q150,75 200,65" fill="none" stroke="rgba(60,180,180,0.10)" stroke-width="1.5"/>
-      <!-- AI bubble — left (big, clear) -->
-      <rect x="12" y="20" width="110" height="44" rx="14" fill="rgba(255,255,255,0.92)" stroke="rgba(60,180,180,0.4)" stroke-width="1.2"/>
-      <polygon points="30,64 20,76 44,64" fill="rgba(255,255,255,0.92)" stroke="rgba(60,180,180,0.4)" stroke-width="1.2"/>
-      <polygon points="30,64 44,64 38,76" fill="rgba(255,255,255,0.92)"/>
-      <!-- AI label in bubble -->
-      <rect x="18" y="26" width="26" height="12" rx="4" fill="rgba(60,180,180,0.22)" stroke="rgba(60,180,180,0.6)" stroke-width="0.8"/>
-      <text x="31" y="35" font-size="7" fill="#1A7878" text-anchor="middle" font-family="sans-serif" font-weight="700">AI</text>
-      <!-- bubble text lines -->
-      <rect x="50" y="28" width="64" height="7" rx="3" fill="rgba(61,90,71,0.18)"/>
-      <rect x="50" y="38" width="50" height="7" rx="3" fill="rgba(61,90,71,0.12)"/>
-      <rect x="50" y="48" width="58" height="7" rx="3" fill="rgba(61,90,71,0.10)"/>
-      <!-- User bubble — right (big, clear) -->
-      <rect x="78" y="86" width="110" height="40" rx="14" fill="rgba(61,90,71,0.12)" stroke="rgba(61,90,71,0.28)" stroke-width="1.2"/>
-      <polygon points="170,86 180,74 156,86" fill="rgba(61,90,71,0.12)" stroke="rgba(61,90,71,0.28)" stroke-width="1.2"/>
-      <polygon points="170,86 156,86 162,74" fill="rgba(61,90,71,0.12)"/>
-      <!-- user label -->
-      <rect x="84" y="92" width="32" height="12" rx="4" fill="rgba(61,90,71,0.2)" stroke="rgba(61,90,71,0.5)" stroke-width="0.8"/>
-      <text x="100" y="101" font-size="7" fill="#1C2B22" text-anchor="middle" font-family="sans-serif" font-weight="700">顧問</text>
-      <!-- user text lines -->
-      <rect x="122" y="94" width="58" height="7" rx="3" fill="rgba(61,90,71,0.2)"/>
-      <rect x="122" y="104" width="44" height="7" rx="3" fill="rgba(61,90,71,0.14)"/>
-      <!-- typing indicator — bottom left bubble -->
-      <rect x="12" y="136" width="76" height="20" rx="10" fill="rgba(255,255,255,0.85)" stroke="rgba(60,180,180,0.35)" stroke-width="1"/>
-      <circle cx="30" cy="146" r="4" fill="rgba(60,180,180,0.6)"/>
-      <circle cx="44" cy="146" r="4" fill="rgba(60,180,180,0.45)"/>
-      <circle cx="58" cy="146" r="4" fill="rgba(60,180,180,0.3)"/>
-      <!-- score badge top right -->
-      <rect x="148" y="18" width="42" height="36" rx="10" fill="rgba(232,160,32,0.22)" stroke="rgba(184,136,46,0.65)" stroke-width="1"/>
-      <text x="169" y="34" font-size="9" fill="#7A5010" text-anchor="middle" font-family="sans-serif" font-weight="800">SOS</text>
-      <text x="169" y="46" font-size="7.5" fill="rgba(122,80,16,0.75)" text-anchor="middle" font-family="sans-serif" font-weight="600">應對模式</text>
+      <!-- subtle wave lines bg -->
+      <path d="M0,40 Q50,30 100,40 Q150,50 200,40" fill="none" stroke="rgba(60,180,180,0.12)" stroke-width="1.5"/>
+      <path d="M0,60 Q50,50 100,60 Q150,70 200,60" fill="none" stroke="rgba(60,180,180,0.10)" stroke-width="1.2"/>
+      <path d="M0,80 Q50,70 100,80 Q150,90 200,80" fill="none" stroke="rgba(60,180,180,0.08)" stroke-width="1"/>
+      <!-- dot pattern right -->
+      <circle cx="168" cy="32" r="1.8" fill="rgba(60,180,180,0.3)"/>
+      <circle cx="176" cy="32" r="1.8" fill="rgba(60,180,180,0.3)"/>
+      <circle cx="184" cy="32" r="1.8" fill="rgba(60,180,180,0.3)"/>
+      <circle cx="168" cy="40" r="1.8" fill="rgba(60,180,180,0.25)"/>
+      <circle cx="176" cy="40" r="1.8" fill="rgba(60,180,180,0.25)"/>
+      <circle cx="184" cy="40" r="1.8" fill="rgba(60,180,180,0.25)"/>
+      <circle cx="168" cy="48" r="1.8" fill="rgba(60,180,180,0.2)"/>
+      <circle cx="176" cy="48" r="1.8" fill="rgba(60,180,180,0.2)"/>
+
+      <!-- ══ DESK ══ -->
+      <rect x="0" y="128" width="200" height="37" rx="0" fill="url(#deskG5)"/>
+      <rect x="0" y="128" width="200" height="5"  rx="0" fill="rgba(100,220,220,0.35)"/>
+
+      <!-- ══ MONITOR ══ -->
+      <!-- monitor base -->
+      <rect x="88"  y="138" width="24" height="6"  rx="2" fill="#1A4848"/>
+      <rect x="84"  y="142" width="32" height="4"  rx="2" fill="#1A4848"/>
+      <!-- monitor stand -->
+      <rect x="98"  y="112" width="4"  height="28" rx="2" fill="#1E5050"/>
+      <!-- monitor body -->
+      <rect x="56"  y="42"  width="88" height="72" rx="6" fill="url(#monitorG5)" stroke="rgba(30,80,80,0.8)" stroke-width="1.5"/>
+      <!-- screen -->
+      <rect x="60"  y="46"  width="80" height="62" rx="3" fill="url(#screenG5)"/>
+      <!-- monitor bottom dots -->
+      <circle cx="94" cy="116" r="1.5" fill="rgba(80,200,180,0.6)"/>
+      <circle cx="100" cy="116" r="1.5" fill="rgba(80,200,180,0.8)"/>
+      <circle cx="106" cy="116" r="1.5" fill="rgba(80,200,180,0.6)"/>
+
+      <!-- ══ INSTRUCTOR IN SCREEN ══ -->
+      <!-- instructor bg in screen -->
+      <rect x="60" y="46" width="80" height="62" rx="3" fill="rgba(210,240,240,0.5)"/>
+      <!-- whiteboard/flipchart in screen -->
+      <rect x="96" y="50" width="40" height="50" rx="2" fill="url(#boardG5)" stroke="rgba(220,180,60,0.6)" stroke-width="1"/>
+      <!-- board top bar gold -->
+      <rect x="96" y="50" width="40" height="5" rx="2" fill="rgba(220,180,60,0.8)"/>
+      <!-- bulb drawing on board -->
+      <circle cx="116" cy="70" r="10" fill="rgba(232,160,32,0.2)" stroke="rgba(200,140,20,0.55)" stroke-width="1.2"/>
+      <circle cx="116" cy="68" r="7"  fill="rgba(232,160,32,0.35)"/>
+      <!-- filament -->
+      <path d="M113,72 Q116,68 119,72" fill="none" stroke="rgba(180,120,10,0.7)" stroke-width="1" stroke-linecap="round"/>
+      <!-- bulb base lines -->
+      <line x1="113" y1="78" x2="119" y2="78" stroke="rgba(180,120,10,0.6)" stroke-width="1.2"/>
+      <line x1="114" y1="81" x2="118" y2="81" stroke="rgba(180,120,10,0.5)" stroke-width="1"/>
+      <!-- board text lines -->
+      <line x1="99" y1="87" x2="133" y2="87" stroke="rgba(232,160,32,0.55)" stroke-width="1.2"/>
+      <line x1="99" y1="91" x2="128" y2="91" stroke="rgba(232,160,32,0.4)"  stroke-width="1"/>
+      <line x1="99" y1="95" x2="130" y2="95" stroke="rgba(232,160,32,0.3)"  stroke-width="0.9"/>
+      <!-- instructor body (flat style) -->
+      <!-- torso gold -->
+      <path d="M66,82 Q66,78 74,78 Q82,78 82,82 L84,108 L64,108 Z" fill="rgba(232,160,32,0.85)"/>
+      <!-- white collar inner -->
+      <rect x="69" y="78" width="10" height="8" rx="2" fill="rgba(255,252,245,0.9)"/>
+      <!-- head -->
+      <circle cx="74" cy="68" r="10" fill="#F0C898"/>
+      <!-- hair -->
+      <path d="M64,64 Q64,54 74,52 Q84,54 84,64 Q81,57 74,56 Q67,57 64,64Z" fill="#1A1A1A"/>
+      <!-- eyes -->
+      <circle cx="70" cy="66" r="1.8" fill="#1A1A1A"/>
+      <circle cx="78" cy="66" r="1.8" fill="#1A1A1A"/>
+      <circle cx="70.6" cy="65.4" r="0.6" fill="white"/>
+      <circle cx="78.6" cy="65.4" r="0.6" fill="white"/>
+      <!-- nose -->
+      <path d="M73,69 Q74,71 75,69" fill="none" stroke="rgba(140,90,50,0.5)" stroke-width="0.9" stroke-linecap="round"/>
+      <!-- smile -->
+      <path d="M70,73 Q74,76 78,73" fill="none" stroke="rgba(160,80,60,0.75)" stroke-width="1.2" stroke-linecap="round"/>
+      <!-- arm pointing at board -->
+      <path d="M82,84 Q90,82 96,78" fill="none" stroke="rgba(232,160,32,0.85)" stroke-width="6" stroke-linecap="round"/>
+      <circle cx="97" cy="77" r="4" fill="#F0C898"/>
+      <!-- pointer in hand -->
+      <line x1="98" y1="75" x2="104" y2="68" stroke="rgba(180,60,40,0.7)" stroke-width="1.5" stroke-linecap="round"/>
+      <!-- other arm holding marker -->
+      <path d="M66,86 Q60,92 58,100" fill="none" stroke="rgba(232,160,32,0.85)" stroke-width="6" stroke-linecap="round"/>
+      <circle cx="57" cy="102" r="4" fill="#F0C898"/>
+      <!-- marker in hand -->
+      <rect x="53" y="100" width="3" height="8" rx="1" fill="rgba(180,60,40,0.7)" transform="rotate(-20,55,104)"/>
+
+      <!-- ══ STUDENT LEFT ══ -->
+      <!-- laptop -->
+      <rect x="8"  y="120" width="44" height="30" rx="3" fill="rgba(240,245,245,0.9)" stroke="rgba(180,210,210,0.5)" stroke-width="0.7"/>
+      <rect x="10" y="122" width="40" height="24" rx="2" fill="rgba(200,235,235,0.8)"/>
+      <rect x="6"  y="148" width="48" height="5"  rx="2" fill="rgba(210,230,230,0.8)"/>
+      <circle cx="30" cy="133" r="3" fill="rgba(180,220,220,0.6)" stroke="rgba(120,180,180,0.4)" stroke-width="0.4"/>
+      <!-- student left body -->
+      <path d="M22,108 Q22,104 30,104 Q38,104 38,108 L40,128 L20,128 Z" fill="rgba(60,170,160,0.8)"/>
+      <!-- polo shirt detail -->
+      <circle cx="30" cy="108" r="2.5" fill="rgba(40,140,130,0.6)"/>
+      <line x1="30" y1="110" x2="30" y2="118" stroke="rgba(40,140,130,0.4)" stroke-width="0.8"/>
+      <!-- head L -->
+      <circle cx="30" cy="94" r="11" fill="#E8C088"/>
+      <!-- hair L short -->
+      <path d="M19,90 Q19,79 30,77 Q41,79 41,90 Q38,83 30,82 Q22,83 19,90Z" fill="#1A1A1A"/>
+      <!-- face L -->
+      <circle cx="26" cy="92" r="1.6" fill="#1A1A1A"/>
+      <circle cx="34" cy="92" r="1.6" fill="#1A1A1A"/>
+      <circle cx="26.5" cy="91.5" r="0.5" fill="white"/>
+      <circle cx="34.5" cy="91.5" r="0.5" fill="white"/>
+      <path d="M26,97 Q30,100 34,97" fill="none" stroke="rgba(160,80,60,0.7)" stroke-width="1" stroke-linecap="round"/>
+      <!-- arm on desk -->
+      <path d="M20,110 Q14,116 10,128" fill="none" stroke="rgba(60,170,160,0.8)" stroke-width="7" stroke-linecap="round"/>
+
+      <!-- ══ STUDENT RIGHT ══ -->
+      <!-- laptop R -->
+      <rect x="148" y="120" width="44" height="30" rx="3" fill="rgba(240,245,245,0.9)" stroke="rgba(180,210,210,0.5)" stroke-width="0.7"/>
+      <rect x="150" y="122" width="40" height="24" rx="2" fill="rgba(200,235,235,0.8)"/>
+      <rect x="146" y="148" width="48" height="5"  rx="2" fill="rgba(210,230,230,0.8)"/>
+      <circle cx="170" cy="133" r="3" fill="rgba(180,220,220,0.6)" stroke="rgba(120,180,180,0.4)" stroke-width="0.4"/>
+      <!-- student right body -->
+      <path d="M162,108 Q162,104 170,104 Q178,104 178,108 L180,128 L160,128 Z" fill="rgba(60,170,160,0.8)"/>
+      <!-- head R -->
+      <circle cx="170" cy="94" r="11" fill="#D4A870"/>
+      <!-- hair R long -->
+      <path d="M159,88 Q159,77 170,75 Q181,77 181,88 L181,102 Q178,95 170,94 Q162,95 159,102 Z" fill="#1A1A1A"/>
+      <!-- face R -->
+      <circle cx="166" cy="92" r="1.6" fill="#1A1A1A"/>
+      <circle cx="174" cy="92" r="1.6" fill="#1A1A1A"/>
+      <circle cx="166.5" cy="91.5" r="0.5" fill="white"/>
+      <circle cx="174.5" cy="91.5" r="0.5" fill="white"/>
+      <path d="M166,97 Q170,100 174,97" fill="none" stroke="rgba(160,80,60,0.7)" stroke-width="1" stroke-linecap="round"/>
+      <!-- arm -->
+      <path d="M180,110 Q186,116 190,128" fill="none" stroke="rgba(60,170,160,0.8)" stroke-width="7" stroke-linecap="round"/>
+
+      <!-- small plant on desk between laptops -->
+      <rect x="95" y="140" width="10" height="8"  rx="2" fill="rgba(120,160,200,0.55)"/>
+      <ellipse cx="100" cy="140" rx="9" ry="5" fill="rgba(80,160,80,0.6)"/>
+      <path d="M97,140 Q100,133 103,138" fill="none" stroke="rgba(50,130,50,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M100,140 Q96,132 99,135" fill="none" stroke="rgba(50,130,50,0.5)" stroke-width="1.2" stroke-linecap="round"/>
     </svg>
   </div>
   <div class="cb">
     <div class="c-eyebrow">S5 · 溝通策略</div>
     <div class="c-title">話術教材庫</div>
-    <div class="c-desc">AI 陪練對話，強化異議處理與情境應對能力</div>
+    <div class="c-desc">話術應對・對話模型・SOS 異議・情境演練</div>
   </div>
   <div class="cfoot">
     <div class="cta-label">開啟教材庫</div>
@@ -833,15 +1061,12 @@ footer  {animation:riseIn .45s .28s ease both;}
 
       <!-- warm ambient overlay to unify everything -->
       <rect x="0" y="0" width="200" height="165" fill="rgba(240,200,120,0.03)"/>
-      <!-- 精選物件 badge — prominent -->
-      <rect x="52" y="88" width="96" height="22" rx="6" fill="rgba(26,22,12,0.72)" stroke="rgba(200,160,50,0.55)" stroke-width="0.9"/>
-      <text x="100" y="102" font-size="10" fill="rgba(230,185,80,0.95)" text-anchor="middle" font-family="sans-serif" font-weight="700" letter-spacing="2">✦ 頂級物件展廳 ✦</text>
     </svg>
   </div>
   <div class="cb">
     <div class="c-eyebrow">S6 · 精選物件</div>
     <div class="c-title">頂級物件展廳</div>
-    <div class="c-desc">精選頂級物件展示，精準配對高端客戶需求</div>
+    <div class="c-desc">精選物件・文華新站・精準配對客戶需求</div>
   </div>
   <div class="cfoot">
     <div class="cta-label">查看物件</div>
@@ -851,9 +1076,24 @@ footer  {animation:riseIn .45s .28s ease both;}
 
 </div><!-- /grid -->
 
+<!-- ══ QUICK TOOLBAR ══ -->
+<div class="qtoolbar">
+  <div class="qt-label">快速工具</div>
+  <a class="qt-btn" href="https://reliable-fenglisu-95766f.netlify.app" target="_blank">
+    <div class="qt-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+    顧問防呆手冊 · 邀約研討會
+    <span class="qt-tag">S5</span>
+  </a>
+  <a class="qt-btn" href="https://singular-lokum-68e17a.netlify.app" target="_blank">
+    <div class="qt-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+    顧問防呆手冊 · 諮詢現場
+    <span class="qt-tag">S1</span>
+  </a>
+</div>
+
 <footer>
   <div class="f-left">Richtime © 2026 <span class="f-gem">◆</span> 內部版僅供團隊使用</div>
-  <div class="f-right">AI DECISION ENGINE · V 1.6</div>
+  <div class="f-right">AI DECISION ENGINE · V 1.5</div>
 </footer>
 </div>
 </body>
