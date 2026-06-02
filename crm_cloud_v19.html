@@ -968,6 +968,9 @@ select:focus,input:focus,textarea:focus {
 .funnel-chip:hover { border-color: var(--navy); }
 .funnel-chip.active { background: var(--navy); color: #fff; border-color: var(--navy); }
 .funnel-chip-hot.active { background: #c0392b; border-color: #c0392b; }
+.funnel-chip-new { border-color: rgba(46,125,82,.35); color: #2e7d52; }
+.funnel-chip-new:hover { border-color: #2e7d52; background: #edf7f1; }
+.funnel-chip-new.active { background: #2e7d52; color: #fff; border-color: #2e7d52; }
 
 /* ── 漏斗卡片 ── */
 .funnel-row {
@@ -1684,6 +1687,7 @@ function claimSeminarLead() {}
         <!-- ✅ 流程快篩按鈕列 -->
         <div style="padding:.625rem 1.25rem;border-bottom:1px solid var(--cream2);display:flex;gap:.5rem;flex-wrap:wrap">
           <button class="funnel-chip active" onclick="setFunnelFilter('all',this)">全部</button>
+          <button class="funnel-chip funnel-chip-new" onclick="setFunnelFilter('recent',this)">🆕 近期新增</button>
           <button class="funnel-chip" onclick="setFunnelFilter('sem',this)">🎓 研討會名單</button>
           <button class="funnel-chip funnel-chip-hot" onclick="setFunnelFilter('pendingConsult',this)">🔥 待約諮詢</button>
           <button class="funnel-chip" onclick="setFunnelFilter('consulted',this)">✅ 已諮詢</button>
@@ -5529,11 +5533,28 @@ function renderCustomers() {
   else if (_funnelFilter === 'pendingConsult') mc = mc.filter(function(c){ return isSemF(c) && !isConsultedF(c) && isActive(c); });
   else if (_funnelFilter === 'consulted')mc = mc.filter(isConsultedF);
   else if (_funnelFilter === 'closed')   mc = mc.filter(function(c){ return !isActive(c); });
+  else if (_funnelFilter === 'recent') {
+    var cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 14);
+    mc = mc.filter(function(c){
+      if (!c.creationDate) return false;
+      var d = new Date(c.creationDate);
+      return !isNaN(d) && d >= cutoff;
+    });
+  }
   if (ftrust) mc = mc.filter(function(c){ return c.currentStatus && c.currentStatus.indexOf(ftrust) !== -1; });
   if (sr) mc = mc.filter(function(c){ return (c.customerName+' '+(c.contactInfo||'')+' '+(c.notes||'')).toLowerCase().indexOf(sr) !== -1; });
-  // 預設按成交機率排序
-  mc.sort(function(a,b){ return calcCloseProb(b) - calcCloseProb(a); });
-  document.getElementById('listCount').textContent = '共 '+mc.length+' 筆';
+  // 近期新增模式：按建檔日期排序（最新在上）；其他模式按成交機率
+  if (_funnelFilter === 'recent') {
+    mc.sort(function(a,b){
+      var da = a.creationDate ? new Date(a.creationDate) : new Date(0);
+      var db = b.creationDate ? new Date(b.creationDate) : new Date(0);
+      return db - da;
+    });
+  } else {
+    mc.sort(function(a,b){ return calcCloseProb(b) - calcCloseProb(a); });
+  }
+  var countLabel = (_funnelFilter === 'recent') ? '🆕 近14天新增 ' : '共 ';
+  document.getElementById('listCount').textContent = countLabel + mc.length + ' 筆';
   var con = document.getElementById('customerListContainer');
   if (!mc.length) { con.innerHTML='<div class="empty-state"><div class="empty-icon">🔍</div>沒有符合的客戶</div>'; return; }
   con.innerHTML = mc.map(function(c){
@@ -5569,8 +5590,16 @@ function renderCustomers() {
         ? '<span style="background:#fff3e0;color:#e65100;font-size:11px;padding:2px 8px;border-radius:20px;font-weight:700">⚠️ 待約諮詢'+(daysSince!==null?' '+daysSince+'天':'')+'</span>'
         : '');
 
+    // 近期新增 badge（只在 recent 模式顯示）
+    var newLeadTag = '';
+    if (_funnelFilter === 'recent' && daysSince !== null) {
+      var dColor = daysSince <= 3 ? '#1b5e20' : daysSince <= 7 ? '#2e6b42' : '#5c7a5e';
+      var dBg = daysSince <= 3 ? '#e8f5e9' : daysSince <= 7 ? '#edf7f1' : '#f1f8f2';
+      newLeadTag = '<span style="background:'+dBg+';color:'+dColor+';font-size:11px;padding:2px 8px;border-radius:20px;font-weight:700">🆕 第'+daysSince+'天</span>';
+    }
+
     return '<div class="customer-item" onclick="showDetail(\''+c.id.toString()+'\')">' +
-      '<div class="customer-head"><span class="customer-name">'+c.customerName+'</span><span style="display:flex;gap:.375rem;align-items:center;flex-wrap:wrap">'+semTag+consultTag+riskBadge+'</span></div>'+
+      '<div class="customer-head"><span class="customer-name">'+c.customerName+'</span><span style="display:flex;gap:.375rem;align-items:center;flex-wrap:wrap">'+newLeadTag+semTag+consultTag+riskBadge+'</span></div>'+
       manInfo+
       '<div class="customer-meta">📞 '+(c.contactInfo||'—')+' ｜ '+(c.salesPerson||'未指定')+'</div>'+
       '</div>';
