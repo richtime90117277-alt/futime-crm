@@ -736,6 +736,9 @@ body.lib-bigtext .decode-signal { font-size: 19px !important; }
     <div class="sidebar-item" id="nav-case-yaqi" onclick="showCaseYaqi();autoCloseSidebar()">
       <span class="s-icon">🌱</span><span class="s-name">雅琪兩年案例全解析</span>
     </div>
+    <div class="sidebar-item" id="nav-case-loan-calc" onclick="showCaseLoanCalc();autoCloseSidebar()">
+      <span class="s-icon">📐</span><span class="s-name">亞琦案例｜貸款收支比試算</span>
+    </div>
 
     <div class="sidebar-label" style="font-family:'Noto Serif TC',serif;text-transform:none;font-size:11px;letter-spacing:.2em;color:var(--gold)">我 的 紀 錄</div>
     <div class="sidebar-item" id="nav-journal" onclick="openJournal();autoCloseSidebar()">
@@ -4027,6 +4030,181 @@ function showCaseYaqi() {
   html += '<div style="font-size:22px;margin-bottom:10px;">🧠</div>';
   html += '<div style="font-family:\'Noto Serif TC\',serif;font-size:14px;font-weight:700;color:var(--text);line-height:1.8;margin-bottom:10px;">「經營客戶如同投資，<br>需要等待和耐心。<br>把一個客人的資產規劃好，<br>自然從一個人變成家庭、家族。」</div>';
   html += '<div style="font-size:11px;color:var(--text-dim);">—— 智偉哥，20260602 早會</div>';
+  html += '</div>';
+
+  renderMain(html);
+}
+
+
+
+// ══════════════════════════════════════
+// 📐 亞琦案例｜貸款收支比試算SOP
+// ══════════════════════════════════════
+function showCaseLoanCalc() {
+  setActive('nav-case-loan-calc');
+  setTotal(SCRIPTS.length);
+
+  var html = '';
+
+  // HERO
+  html += '<div style="background:linear-gradient(135deg,#3A5A8A 0%,#2C4470 100%);border-radius:var(--radius);padding:24px 22px 20px;margin-bottom:20px;position:relative;overflow:hidden;">';
+  html += '<div style="position:absolute;top:-20px;right:-20px;font-size:100px;opacity:.06;line-height:1;">📐</div>';
+  html += '<div style="font-size:10px;font-weight:700;letter-spacing:.18em;color:rgba(255,255,255,0.55);margin-bottom:6px;text-transform:uppercase;">富時代 · 實戰案例</div>';
+  html += '<div style="font-family:\'Noto Serif TC\',serif;font-size:22px;font-weight:700;color:#fff;margin-bottom:6px;line-height:1.3;">明智案例<br>貸款收支比試算全流程</div>';
+  html += '<div style="font-size:12px;color:rgba(255,255,255,0.65);line-height:1.6;">2026/06/03 早會｜雅琪示範試算<br>「把每個數字算清楚，焦慮自然消失」</div>';
+  html += '</div>';
+
+  // 案例基本資料
+  html += '<div style="margin-bottom:18px;">';
+  html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;"><span style="font-size:16px;">🏠</span><span style="font-family:\'Noto Serif TC\',serif;font-size:16px;font-weight:700;color:var(--text);">案例基本資料</span></div>';
+  html += '<div style="background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);padding:16px 18px;">';
+
+  var basics = [
+    ['👤','客戶','明智（彩薇的朋友）'],
+    ['🏢','物件','預售屋，總價 1,853萬，民國116年預計交屋'],
+    ['👥','合資方式','5人合資，明智佔20%，工程款分7期'],
+    ['💰','個人頭期款','45萬（1,853萬 × 20% ÷ 工程款結構）'],
+    ['📅','每期工程款','簽約12%，後續13%分7期，每期平均約2%，大概三到四個月一期，每期約36萬左右']
+  ];
+  for (var i=0; i<basics.length; i++) {
+    html += '<div style="display:flex;gap:12px;padding:10px 0;' + (i<basics.length-1?'border-bottom:1px solid var(--border-light);':'') + 'align-items:flex-start;">';
+    html += '<span style="font-size:15px;flex-shrink:0;width:20px;text-align:center;">' + basics[i][0] + '</span>';
+    html += '<div style="display:flex;flex:1;gap:8px;flex-wrap:wrap;"><span style="font-size:12px;font-weight:700;color:var(--text-dim);min-width:72px;">' + basics[i][1] + '</span>';
+    html += '<span style="font-size:12.5px;color:var(--text);flex:1;">' + basics[i][2] + '</span></div></div>';
+  }
+  html += '</div></div>';
+
+  // 收支試算表
+  html += '<div style="margin-bottom:18px;">';
+  html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;"><span style="font-size:16px;">📊</span><span style="font-family:\'Noto Serif TC\',serif;font-size:16px;font-weight:700;color:var(--text);">收支試算表</span><span style="font-size:10px;color:var(--text-dim);">雅琪現場示範</span></div>';
+
+  // 收入區
+  html += '<div style="background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:10px;">';
+  html += '<div style="padding:10px 14px;background:rgba(42,89,52,0.07);border-bottom:1px solid var(--border-light);">';
+  html += '<span style="font-size:12px;font-weight:700;color:var(--olive);">▲ 收入（銀行認列）</span></div>';
+
+  var incomes = [
+    ['薪資轉帳','主要收入來源','認列'],
+    ['租金收入','名下有出租房產','認列'],
+    ['投資型保單月配息','確定每月固定撥付','認列'],
+    ['合計','','11.8萬 / 月']
+  ];
+  for (var i=0; i<incomes.length; i++) {
+    var isBold = i===3;
+    var bg = isBold ? 'background:rgba(42,89,52,0.05);' : '';
+    html += '<div style="display:grid;grid-template-columns:1fr 1fr 80px;' + bg + 'padding:10px 14px;' + (i<incomes.length-1?'border-bottom:1px solid var(--border-light);':'') + '">';
+    html += '<span style="font-size:' + (isBold?'13':'12') + 'px;font-weight:' + (isBold?'900':'500') + ';color:var(--text);">' + incomes[i][0] + '</span>';
+    html += '<span style="font-size:11px;color:var(--text-dim);">' + incomes[i][1] + '</span>';
+    html += '<span style="font-size:' + (isBold?'13':'12') + 'px;font-weight:' + (isBold?'900':'500') + ';color:' + (isBold?'var(--olive)':'var(--text-sub)') + ';text-align:right;">' + incomes[i][2] + '</span>';
+    html += '</div>';
+  }
+  html += '</div>';
+
+  // 支出區
+  html += '<div style="background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:10px;">';
+  html += '<div style="padding:10px 14px;background:rgba(180,60,60,0.07);border-bottom:1px solid var(--border-light);">';
+  html += '<span style="font-size:12px;font-weight:700;color:#B43C3C;">▼ 現有支出（銀行認列）</span></div>';
+
+  var expenses = [
+    ['房貸','爸爸名下但自己繳，銀行查不到','16,120元'],
+    ['租屋費','租金6,800元+車位2,000元','8,800元'],
+    ['車貸','認列計入','認列'],
+    ['合計','','32,120元']
+  ];
+  for (var i=0; i<expenses.length; i++) {
+    var isBold = i===3;
+    var bg = isBold ? 'background:rgba(180,60,60,0.05);' : '';
+    html += '<div style="display:grid;grid-template-columns:1fr 1fr 80px;' + bg + 'padding:10px 14px;' + (i<expenses.length-1?'border-bottom:1px solid var(--border-light);':'') + '">';
+    html += '<span style="font-size:' + (isBold?'13':'12') + 'px;font-weight:' + (isBold?'900':'500') + ';color:var(--text);">' + expenses[i][0] + '</span>';
+    html += '<span style="font-size:11px;color:var(--text-dim);">' + expenses[i][1] + '</span>';
+    html += '<span style="font-size:' + (isBold?'13':'12') + 'px;font-weight:' + (isBold?'900':'500') + ';color:' + (isBold?'#B43C3C':'var(--text-sub)') + ';text-align:right;">' + expenses[i][2] + '</span>';
+    html += '</div>';
+  }
+  html += '</div>';
+  html += '</div>';
+
+  // 核心試算：反推薪資
+  html += '<div style="margin-bottom:18px;">';
+  html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;"><span style="font-size:16px;">🧮</span><span style="font-family:\'Noto Serif TC\',serif;font-size:16px;font-weight:700;color:var(--text);">核心試算：反推所需薪資</span></div>';
+  html += '<div style="background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;">';
+
+  var calcs = [
+    ['新屋月付','1,853萬 × 20% ≈ 370萬貸款，30年3%試算','56,000元','#3A5A8A'],
+    ['＋現有認列支出','房貸16,120元（最大項）','32,120元','#B43C3C'],
+    ['＝總月支出','56,000 + 16,120（主項）','72,120元','var(--text)'],
+    ['÷ 負債比0.6','銀行認列貸款佔月收入60%上限','÷ 0.6','var(--gold)'],
+    ['＝需要月薪','反推結果','12萬','var(--olive)']
+  ];
+  for (var i=0; i<calcs.length; i++) {
+    var isKey = i===4;
+    var bg = isKey ? 'background:rgba(42,89,52,0.07);' : (i===3?'background:rgba(184,148,60,0.06);':'');
+    html += '<div style="display:grid;grid-template-columns:120px 1fr 80px;' + bg + 'padding:12px 14px;' + (i<calcs.length-1?'border-bottom:1px solid var(--border-light);':'') + '">';
+    html += '<span style="font-size:13px;font-weight:700;color:' + calcs[i][3] + ';">' + calcs[i][0] + '</span>';
+    html += '<span style="font-size:11px;color:var(--text-dim);padding:0 8px;">' + calcs[i][1] + '</span>';
+    html += '<span style="font-size:' + (isKey?'16':'13') + 'px;font-weight:' + (isKey?'900':'600') + ';color:' + calcs[i][3] + ';text-align:right;">' + calcs[i][2] + '</span>';
+    html += '</div>';
+  }
+  html += '</div></div>';
+
+  // 現況 vs 目標
+  html += '<div style="margin-bottom:18px;">';
+  html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;"><span style="font-size:16px;">🎯</span><span style="font-family:\'Noto Serif TC\',serif;font-size:16px;font-weight:700;color:var(--text);">現況 vs 目標</span></div>';
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">';
+  html += '<div style="background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;">';
+  html += '<div style="font-size:10px;font-weight:700;color:var(--text-dim);letter-spacing:.08em;margin-bottom:6px;">現在月收入</div>';
+  html += '<div style="font-family:\'Noto Serif TC\',serif;font-size:26px;font-weight:900;color:#3A5A8A;">11.8萬</div>';
+  html += '<div style="font-size:10.5px;color:var(--text-sub);margin-top:4px;">薪資＋租金＋保單配息</div></div>';
+  html += '<div style="background:#fff;border:1.5px solid var(--olive);border-radius:var(--radius);padding:16px;text-align:center;">';
+  html += '<div style="font-size:10px;font-weight:700;color:var(--text-dim);letter-spacing:.08em;margin-bottom:6px;">核貸需要月收入</div>';
+  html += '<div style="font-family:\'Noto Serif TC\',serif;font-size:26px;font-weight:900;color:var(--olive);">12萬</div>';
+  html += '<div style="font-size:10.5px;color:var(--text-sub);margin-top:4px;">72,120 ÷ 0.6 反推</div></div>';
+  html += '</div>';
+  html += '<div style="background:rgba(42,89,52,0.07);border:1.5px solid var(--olive);border-radius:var(--radius);padding:14px 16px;">';
+  html += '<div style="font-size:12px;font-weight:700;color:var(--olive);margin-bottom:6px;">✅ 結論</div>';
+  html += '<div style="font-size:13px;color:var(--text);line-height:1.7;">現在收入 11.8萬，目標 12萬，<strong>差額約 2萬</strong>。<br>只要在 116年交屋前把每月收入補足到 12萬就可以輕鬆核貸——「那可以吧，應該多兩萬塊，很容易啊！」</div>';
+  html += '</div></div>';
+
+  // 重要公式卡片
+  html += '<div style="margin-bottom:18px;">';
+  html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;"><span style="font-size:16px;">📌</span><span style="font-family:\'Noto Serif TC\',serif;font-size:16px;font-weight:700;color:var(--text);">記住這三個公式</span></div>';
+  html += '<div style="display:flex;flex-direction:column;gap:8px;">';
+
+  var formulas = [
+    ['收支比 0.7','月支出 ÷ 月收入 ≤ 0.7（大部分銀行用這個）','#3A5A8A'],
+    ['負債比 0.6','銀行認列貸款 ÷ 月收入 ≤ 0.6（反推薪資用這個）','var(--gold)'],
+    ['反推薪資公式','所有認列月支出（含新屋）÷ 0.6 = 最低需要月收入','var(--olive)']
+  ];
+  for (var i=0; i<formulas.length; i++) {
+    html += '<div style="background:#fff;border:1.5px solid var(--border);border-left:4px solid ' + formulas[i][2] + ';border-radius:var(--radius);padding:13px 15px;">';
+    html += '<div style="font-size:13px;font-weight:700;color:' + formulas[i][2] + ';margin-bottom:4px;">' + formulas[i][0] + '</div>';
+    html += '<div style="font-size:12px;color:var(--text-sub);">' + formulas[i][1] + '</div></div>';
+  }
+  html += '</div></div>';
+
+  // 注意事項
+  html += '<div style="margin-bottom:18px;">';
+  html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;"><span style="font-size:16px;">⚠️</span><span style="font-family:\'Noto Serif TC\',serif;font-size:16px;font-weight:700;color:var(--text);">試算時容易漏的</span></div>';
+  html += '<div style="display:flex;flex-direction:column;gap:8px;">';
+
+  var notes = [
+    ['貸款名下的問題','明智的房貸是爸爸名下，銀行查不到——但這筆月付仍然是他自己在繳，是他真實的現金流壓力，試算時要列進去。'],
+    ['保單要看是「月配息」還是「保單價值金」','月配息確定每月進帳→銀行認列。保單價值金是可借金額，不是每月收入，不能算進月收入。'],
+    ['蝦皮等副業收入','銀行通常不認列不穩定的副業收入，試算時先排除，讓數字更保守。'],
+    ['信貸最高額度','信貸最高可達月收入的22倍，可作為短期資金補充工具，但利率要注意。']
+  ];
+  for (var i=0; i<notes.length; i++) {
+    html += '<div style="display:flex;gap:12px;padding:11px 13px;background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);align-items:flex-start;">';
+    html += '<span style="font-size:15px;flex-shrink:0;margin-top:1px;">⚡</span>';
+    html += '<div><div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;">' + notes[i][0] + '</div>';
+    html += '<div style="font-size:11.5px;color:var(--text-sub);line-height:1.5;">' + notes[i][1] + '</div></div></div>';
+  }
+  html += '</div></div>';
+
+  // 底部金句
+  html += '<div style="background:linear-gradient(135deg,rgba(58,90,138,0.08) 0%,rgba(184,148,60,0.06) 100%);border:1.5px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center;margin-bottom:40px;">';
+  html += '<div style="font-size:22px;margin-bottom:10px;">📐</div>';
+  html += '<div style="font-family:\'Noto Serif TC\',serif;font-size:14px;font-weight:700;color:var(--text);line-height:1.8;margin-bottom:10px;">「算得越細，<br>客戶會越清楚，<br>比較不會怕。」</div>';
+  html += '<div style="font-size:11px;color:var(--text-dim);">—— 20260603 雅琪早會｜明智案例試算</div>';
   html += '</div>';
 
   renderMain(html);
