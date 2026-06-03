@@ -840,8 +840,9 @@ body{
   display:flex;flex-direction:column;
   align-items:center;justify-content:center;
   z-index:99999;
+  cursor:pointer;
   overflow:hidden;
-">
+" onclick="doLogin()">
 
   <!-- 背景粒子光暈 -->
   <div style="position:absolute;top:-20%;left:-10%;width:60%;height:60%;background:radial-gradient(circle,rgba(201,146,43,.08) 0%,transparent 70%);pointer-events:none"></div>
@@ -880,34 +881,8 @@ body{
       數字不說謊。<br>決策從這裡開始。
     </div>
 
-    <!-- 密碼輸入區 -->
-    <div style="max-width:280px;margin:0 auto 12px">
-      <input id="loginPwInput" type="password" placeholder="輸入密碼" autocomplete="off"
-        style="
-          width:100%;
-          background:rgba(201,146,43,.07);
-          border:1px solid rgba(201,146,43,.4);
-          border-radius:100px;
-          padding:13px 24px;
-          color:#2c1f0e;
-          font-size:13px;
-          font-family:'DM Mono',Menlo,Consolas,monospace;
-          letter-spacing:3px;
-          text-align:center;
-          outline:none;
-          transition:all .3s ease;
-        "
-        onfocus="this.style.borderColor='rgba(201,146,43,.8)';this.style.boxShadow='0 0 0 3px rgba(201,146,43,.12)'"
-        onblur="this.style.borderColor='rgba(201,146,43,.4)';this.style.boxShadow='none'"
-        onkeydown="if(event.key==='Enter') doLogin()"
-      />
-    </div>
-
-    <!-- 錯誤提示 -->
-    <div id="loginPwError" style="height:20px;margin-bottom:12px;font-size:11px;color:#c0392b;letter-spacing:1px;font-family:'DM Mono',monospace;opacity:0;transition:opacity .3s"></div>
-
     <!-- CTA 按鈕 -->
-    <div onclick="doLogin()" style="
+    <div style="
       display:inline-flex;align-items:center;gap:10px;
       background:linear-gradient(135deg,rgba(201,146,43,.12),rgba(201,146,43,.06));
       border:1px solid rgba(201,146,43,.45);
@@ -2616,8 +2591,6 @@ body{
     <button class="btn-save" onclick="showSyncModal()" style="flex:1;background:linear-gradient(135deg,#1a6b3a,#27ae60)">🔗 同步至 CRM</button>
     <!-- ★ 儲存報告至雲端 -->
     <button class="btn-save" onclick="showSaveReportModal()" style="flex:1;background:linear-gradient(135deg,#7c3aed,#5b21b6)">💾 儲存報告</button>
-    <!-- ★ 存至 Notion -->
-    <button class="btn-save" id="notionSaveBtn" onclick="saveToNotion()" style="flex:1;background:linear-gradient(135deg,#1a1a2e,#2d2d4e);font-size:13px">📋 存至 Notion</button>
     <!-- ★ QR code 分享 -->
     <button class="btn-save" onclick="showQRModal()" style="flex:1;background:linear-gradient(135deg,#92400e,#c9922b);font-size:13px">📲 傳給客戶</button>
     <button class="bbk" style="width:100%" onclick="sw('I')">← 修改</button>
@@ -2907,6 +2880,68 @@ body{
         ↑ 拖動滑桿，立刻看到猶豫的代價
       </div>
       </div><!-- /padding -->
+    </div>
+  </div>
+
+  <!-- ─ BLOCK B2：每月可額外存多少 ─ -->
+  <div id="extraSaveCard" style="display:none;background:linear-gradient(135deg,rgba(52,211,153,.08),rgba(16,185,129,.04));border:1.5px solid rgba(52,211,153,.25);border-radius:14px;padding:18px;margin-bottom:14px">
+    <div style="font-size:9px;letter-spacing:3px;color:#34d399;margin-bottom:12px;font-family:'DM Mono',Menlo,Consolas,monospace;font-weight:bold">💡 MONTHLY SAVING — 每月可額外存多少</div>
+
+    <!-- 說明文字 -->
+    <div style="font-size:11px;color:rgba(44,31,14,.75);margin-bottom:14px;line-height:1.9;border-left:3px solid rgba(52,211,153,.4);padding-left:10px">
+      工程款不是一次付清，是<strong>分期攤還</strong>。<br>
+      你每個月多存一點，到交屋時就多一份底氣。<br>
+      <span style="color:rgba(44,31,14,.5)">填入你每月還能額外存的金額，讓系統幫你算。</span>
+    </div>
+
+    <!-- 輸入 -->
+    <div style="display:flex;gap:12px;align-items:flex-end;margin-bottom:14px;flex-wrap:wrap">
+      <div class="fl" style="flex:1;min-width:160px;margin-bottom:0">
+        <label style="color:#065f46">每月可額外存入（元）</label>
+        <input type="number" inputmode="decimal" id="fExtraSave" placeholder="例：15000" oninput="calcExtraSave()" style="border-color:rgba(52,211,153,.3);font-size:16px;font-weight:bold;color:#065f46">
+      </div>
+      <div style="font-size:10px;color:rgba(44,31,14,.5);padding-bottom:10px">× <span id="extraSaveMonths">—</span> 個月</div>
+    </div>
+
+    <!-- 結果 -->
+    <div id="extraSaveResult" style="display:none">
+
+      <!-- 累計金額 vs 缺口 -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+        <div style="background:#f0faf4;border:1px solid rgba(52,211,153,.25);border-radius:10px;padding:12px;text-align:center">
+          <div style="font-size:9px;color:rgba(44,31,14,.7);letter-spacing:1px;margin-bottom:5px">到交屋可累計</div>
+          <div style="font-size:22px;font-weight:900;color:#065f46;font-family:'DM Mono',Menlo,Consolas,monospace" id="extraSaveTotal">—</div>
+          <div style="font-size:10px;color:#34d399;margin-top:3px">萬元</div>
+        </div>
+        <div id="extraSaveGapBox" style="border-radius:10px;padding:12px;text-align:center">
+          <div style="font-size:9px;color:rgba(44,31,14,.7);letter-spacing:1px;margin-bottom:5px" id="extraSaveGapLabel">—</div>
+          <div style="font-size:22px;font-weight:900;font-family:'DM Mono',Menlo,Consolas,monospace" id="extraSaveGapVal">—</div>
+          <div style="font-size:10px;margin-top:3px" id="extraSaveGapSub">—</div>
+        </div>
+      </div>
+
+      <!-- 視覺化進度條 -->
+      <div style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:rgba(44,31,14,.6);margin-bottom:5px">
+          <span>月存累計進度</span>
+          <span id="extraSavePctLabel">—</span>
+        </div>
+        <div style="height:10px;background:rgba(201,146,43,.1);border-radius:5px;overflow:hidden">
+          <div id="extraSaveBar" style="height:100%;width:0%;background:linear-gradient(90deg,#34d399,#6ee7b7);border-radius:5px;transition:width .6s ease"></div>
+        </div>
+      </div>
+
+      <!-- 話術 -->
+      <div style="background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.2);border-radius:10px;padding:12px">
+        <div style="font-size:9px;letter-spacing:2px;color:#34d399;margin-bottom:6px;font-family:'DM Mono',Menlo,Consolas,monospace">💬 建議話術</div>
+        <div style="font-size:12px;color:#1a3a2a;line-height:2;font-style:italic" id="extraSaveScript">—</div>
+      </div>
+
+    </div>
+
+    <!-- 未輸入提示 -->
+    <div id="extraSavePlaceholder" style="text-align:center;padding:12px;color:rgba(44,31,14,.4);font-size:11px">
+      ↑ 填入金額，立刻看到你的「月存底氣」
     </div>
   </div>
 
@@ -6752,23 +6787,8 @@ function setGrowth(v){
 }
 
 // ══ 登入系統 ════════════════════════════════════════════════════════
-var _LOGIN_PW = 'money';
-
 function doLogin() {
-  var input = document.getElementById('loginPwInput');
-  var errEl = document.getElementById('loginPwError');
-  var pw = input ? input.value : '';
-
-  if(pw !== _LOGIN_PW) {
-    // 密碼錯誤
-    if(errEl){ errEl.textContent='密碼錯誤，請再試一次'; errEl.style.opacity='1'; }
-    if(input){ input.value=''; input.style.borderColor='rgba(192,57,43,.6)'; input.focus();
-      setTimeout(function(){ input.style.borderColor='rgba(201,146,43,.4)'; },1500); }
-    return;
-  }
-
-  // 密碼正確
-  if(errEl) errEl.style.opacity='0';
+  // v35：直接點擊進入，無需顧問選擇
   var loginEl = document.getElementById('vLogin');
   if(loginEl){
     loginEl.style.opacity='0';
@@ -7087,7 +7107,78 @@ function calcFund() {
   else if(final >= 0)  fnote.textContent = '⚠️ 最後剩 '+final+' 萬，可搭配信貸補位，整體仍站得住。';
   else                 fnote.textContent = '🔴 資金缺口 '+Math.abs(final)+' 萬——需要補充資金來源';
 
+  // 顯示「每月可額外存」卡片
+  var _delivery = parseInt((g("iDelivery")||{value:"36"}).value)||36;
+  var esc = g("extraSaveCard");
+  if(esc) { esc.style.display = totalFund > 0 ? "block" : "none"; }
+  if(g("extraSaveMonths")) g("extraSaveMonths").textContent = _delivery;
+  calcExtraSave();
+
   updateConclusion();
+}
+
+function calcExtraSave() {
+  var totalFund  = parseFloat((g("fTotalFund")||{}).value)||0;
+  var extraMonth = parseFloat((g("fExtraSave")||{}).value)||0;
+  var delivery   = parseInt((g("iDelivery")||{value:"36"}).value)||36;
+
+  var rEl  = g("extraSaveResult");
+  var phEl = g("extraSavePlaceholder");
+  if(!rEl || !phEl) return;
+
+  if(!extraMonth || !totalFund) {
+    rEl.style.display  = "none";
+    phEl.style.display = "block";
+    return;
+  }
+
+  rEl.style.display  = "block";
+  phEl.style.display = "none";
+
+  var totalExtra = Math.round(extraMonth * delivery / 10000 * 10) / 10;
+  var finalText  = (g("fundFinalVal")||{textContent:"0"}).textContent.replace(/[^0-9.-]/g,"");
+  var finalVal   = parseFloat(finalText)||0;
+  var gapBox   = g("extraSaveGapBox");
+  var gapLabel = g("extraSaveGapLabel");
+  var gapVal   = g("extraSaveGapVal");
+  var gapSub   = g("extraSaveGapSub");
+  var barEl    = g("extraSaveBar");
+  var pctLabel = g("extraSavePctLabel");
+  var scriptEl = g("extraSaveScript");
+  var totalEl  = g("extraSaveTotal");
+
+  if(totalEl) totalEl.textContent = totalExtra;
+
+  var pct = 100;
+  if(finalVal < 0) {
+    pct = Math.min(100, Math.round(totalExtra / Math.abs(finalVal) * 100));
+  }
+  if(barEl) barEl.style.width = pct + "%";
+  if(pctLabel) pctLabel.textContent = pct + "%";
+
+  if(finalVal < 0) {
+    var newFinal = Math.round((finalVal + totalExtra) * 10) / 10;
+    if(newFinal >= 0) {
+      if(gapBox) gapBox.setAttribute("style",gapBox.getAttribute("style")+";background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.3)");
+      if(gapLabel) gapLabel.textContent = "加上月存後，缺口補足";
+      if(gapVal) { gapVal.textContent = "+"+newFinal; gapVal.style.color = "#065f46"; }
+      if(gapSub) { gapSub.textContent = "萬（仍有餘裕）"; gapSub.style.color = "#34d399"; }
+      if(scriptEl) scriptEl.innerHTML = "你每個月多存 <strong>"+(extraMonth/10000).toFixed(1)+"萬</strong>，"+delivery+"個月後就能補足所有工程款缺口，還多 <strong>"+newFinal+"萬</strong>。這不叫勉強，這叫計畫。";
+    } else {
+      if(gapBox) gapBox.setAttribute("style",gapBox.getAttribute("style")+";background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2)");
+      if(gapLabel) gapLabel.textContent = "仍有缺口";
+      if(gapVal) { gapVal.textContent = newFinal; gapVal.style.color = "#f87171"; }
+      if(gapSub) { gapSub.textContent = "萬（建議再加存或信貸補位）"; gapSub.style.color = "#f87171"; }
+      if(scriptEl) scriptEl.innerHTML = "加上月存後，還差 <strong>"+Math.abs(newFinal)+"萬</strong>。可搭配信貸補差，或請家人短暫支援，交屋後退還。";
+    }
+  } else {
+    if(gapBox) gapBox.setAttribute("style",gapBox.getAttribute("style")+";background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.2)");
+    if(gapLabel) gapLabel.textContent = "交屋後總底氣";
+    var combinedFinal = Math.round((finalVal + totalExtra) * 10) / 10;
+    if(gapVal) { gapVal.textContent = combinedFinal; gapVal.style.color = "#065f46"; }
+    if(gapSub) { gapSub.textContent = "萬（結餘 + 月存累計）"; gapSub.style.color = "#34d399"; }
+    if(scriptEl) scriptEl.innerHTML = "你每個月多存 <strong>"+(extraMonth/10000).toFixed(1)+"萬</strong>，"+delivery+"個月後累積 <strong>"+totalExtra+"萬</strong>，加上本來的結餘，交屋後帳戶會有 <strong>"+combinedFinal+"萬</strong>。這筆錢可以裝潢、可以備用，從容不迫。";
+  }
 }
 
 function calcBottom() {
@@ -8253,114 +8344,6 @@ function doSyncCRM() {
     g('syncMsg').style.color = '#e05c4a';
     g('syncMsg').textContent = '❌ 網路錯誤：' + e.message;
   });
-}
-
-// ══ 存至 Notion ══════════════════════════════════════════════
-var _NOTION_DB_SOURCE = 'bface84d-bba2-4807-977d-f7155e4461cf';
-
-async function saveToNotion() {
-  var C = window._C || {};
-  var nm  = (g('iName')||{}).value || '';
-  var adv = (g('iAdv')||{}).value || '';
-  var prop= (g('iProp')||{}).value || '';
-
-  if (!nm) { showToast('請先填寫客戶姓名','error',2500); return; }
-  if (!C.inc) { showToast('請先產生報告再存至 Notion','error',2500); return; }
-
-  var btn = g('notionSaveBtn');
-  btn.disabled = true;
-  btn.textContent = '⏳ 存入中...';
-
-  var today = new Date();
-  var todayISO = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
-  var rem  = Math.round(C.inc + C.ts - C.exp - C.effMn);
-  var _roi = window._roi || {};
-  var fnLabels = getActiveFnLabels();
-  var motives  = fnLabels.join('、') || '未選擇';
-  var dwWan    = C.dw  > 0 ? Math.round(C.dw/10000)  : 0;
-  var mn10     = _roi.profit > 0 ? _roi.profit : 0;
-  var annRate  = _roi.ann    > 0 ? parseFloat(_roi.ann) : 0;
-  var mnPay    = C.effMn > 0 ? Math.round(C.effMn) : 0;
-
-  var motivesArr = fnLabels.filter(function(m){
-    return ['自住','換屋','投資','資產傳承','節稅規劃','以房養老'].indexOf(m) !== -1;
-  });
-
-  var clientNote = (g('iClientNote')&&g('iClientNote').value) ? g('iClientNote').value : '（待補充）';
-
-  var pageContent = '## 👤 客戶基本資料\n\n'
-    + '| 欄位 | 內容 |\n|------|------|\n'
-    + '| 客戶姓名 | ' + nm + ' |\n'
-    + '| 負責顧問 | ' + (adv||'—') + ' |\n'
-    + '| 諮詢日期 | ' + todayISO + ' |\n'
-    + '| 購房動機 | ' + motives + ' |\n'
-    + '| 目標物件 | ' + (prop||'—') + ' |\n\n'
-    + '## 💰 財務狀況\n\n'
-    + '| 項目 | 金額 |\n|------|------|\n'
-    + '| 月收入 | ' + Math.round(C.inc||0).toLocaleString() + ' 元 |\n'
-    + '| 月支出 | ' + Math.round(C.exp||0).toLocaleString() + ' 元 |\n'
-    + '| 月供房貸 | ' + mnPay.toLocaleString() + ' 元 |\n'
-    + '| 月結餘 | ' + (rem>=0?'+':'') + rem.toLocaleString() + ' 元 |\n'
-    + '| 自備款 | ' + dwWan + ' 萬 |\n\n'
-    + '## 📈 投資分析\n\n'
-    + '| 項目 | 數值 |\n|------|------|\n'
-    + '| 10年增值 | +' + mn10 + ' 萬 |\n'
-    + '| 年化報酬率 | ' + annRate + ' % |\n'
-    + '| 目標總價 | ' + (C.pr>0?Math.round(C.pr/10000)+'萬':'—') + ' |\n\n'
-    + '## 📝 顧問備註\n\n' + clientNote + '\n\n---\n'
-    + '_由 富時代 Asset Planner 自動建檔 · ' + todayISO + '_';
-
-  var payload = {
-    task: 'create_notion_record',
-    data_source_id: _NOTION_DB_SOURCE,
-    properties: {
-      '客戶姓名': nm,
-      '負責顧問': adv || '',
-      '目標物件': prop || '',
-      'date:諮詢日期:start': todayISO,
-      'date:諮詢日期:is_datetime': 0,
-      '購房動機': JSON.stringify(motivesArr),
-      '自備款（萬）': dwWan,
-      '月結餘（元）': rem,
-      '月供房貸（元）': mnPay,
-      '10年增值（萬）': mn10,
-      '年化報酬率（%）': annRate,
-      '簽約狀態': '洽談中'
-    },
-    page_content: pageContent
-  };
-
-  try {
-    var resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        mcp_servers: [{ type: 'url', url: 'https://mcp.notion.com/mcp', name: 'notion-mcp' }],
-        system: 'You are a Notion integration assistant. The user sends JSON with task=create_notion_record. Use notion-create-pages MCP tool to create ONE page in the database data_source_id with the given properties and page_content as page body (markdown). Return ONLY JSON: {"success":true,"url":"<page_url>"} or {"success":false,"error":"<msg>"}. No extra text.',
-        messages: [{ role: 'user', content: JSON.stringify(payload) }]
-      })
-    });
-
-    var data = await resp.json();
-    var resultText = (data.content||[]).map(function(b){ return b.type==='text'?b.text:''; }).join('');
-    var result = {};
-    try { result = JSON.parse(resultText.replace(/```json|```/g,'').trim()); } catch(e){}
-
-    btn.disabled = false;
-    btn.textContent = '📋 存至 Notion';
-
-    if (result && result.success) {
-      showToast('✅ 已存至 Notion！報告建檔成功', 'success', 3000);
-    } else {
-      showToast('⚠️ Notion 建檔失敗：' + (result.error||'請稍後再試'), 'error', 3500);
-    }
-  } catch(e) {
-    btn.disabled = false;
-    btn.textContent = '📋 存至 Notion';
-    showToast('❌ 網路錯誤：' + e.message, 'error', 3000);
-  }
 }
 
 // ══ printPDF 函數 ═══════════════════════════════
