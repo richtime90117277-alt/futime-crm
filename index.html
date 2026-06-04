@@ -11,7 +11,7 @@ body { font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif; background:
 .header-label { font-size: 11px; letter-spacing: 0.2em; color: #666; margin-bottom: 6px; }
 .header h1 { font-size: 20px; font-weight: 800; color: #fff; letter-spacing: 0.06em; }
 .header p { font-size: 12px; color: #888; margin-top: 8px; }
-.container { max-width: 560px; margin: 0 auto; padding: 16px 16px 100px; }
+.container { max-width: 560px; margin: 0 auto; padding: 16px 16px 120px; }
 .chapter { margin-bottom: 8px; }
 .chapter-header {
   display: flex; align-items: center; gap: 12px;
@@ -23,7 +23,7 @@ body { font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif; background:
 .chapter-header.open { color: #fff; }
 .chapter-emoji { font-size: 22px; }
 .chapter-info { flex: 1; }
-.chapter-title { font-size: 11px; opacity: 0.7; letter-spacing: 0.08em; }
+.chapter-title-label { font-size: 11px; opacity: 0.7; letter-spacing: 0.08em; }
 .chapter-subtitle { font-size: 16px; font-weight: 700; }
 .chapter-arrow { font-size: 11px; opacity: 0.6; transition: transform 0.25s; }
 .chapter-arrow.open { transform: rotate(180deg); }
@@ -35,32 +35,59 @@ body { font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif; background:
   background: #fff; border: 1px solid #e8e8e8;
   margin-bottom: 6px; transition: all 0.2s;
 }
+.node:hover { background: #f9f9f9; }
 .node-dot {
   width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
   font-weight: 700; font-size: 11px;
   display: flex; align-items: center; justify-content: center;
-  transition: all 0.2s;
 }
 .node-info { flex: 1; }
 .node-name { font-weight: 600; font-size: 14px; color: #333; }
 .node-hint { font-size: 11.5px; color: #999; margin-top: 2px; }
 .node-arrow { font-size: 14px; color: #ccc; }
 .divider { text-align: center; padding: 2px 0 4px; color: #d0d0d0; font-size: 13px; }
+
+/* Result Panel */
 .result-panel {
   position: fixed; bottom: 0; left: 0; right: 0;
-  background: #fff; padding: 20px 20px 32px;
-  max-height: 55vh; overflow-y: auto;
-  box-shadow: 0 -8px 32px rgba(0,0,0,0.12);
+  background: #fff; padding: 0;
+  max-height: 60vh; overflow-y: auto;
+  box-shadow: 0 -8px 32px rgba(0,0,0,0.15);
   display: none; border-top: 2px solid #eee;
+  flex-direction: column;
 }
-.result-panel.show { display: block; }
-.result-header { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
-.result-badge { padding: 3px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; }
-.result-title { font-size: 14px; font-weight: 600; color: #333; flex: 1; }
-.result-close { background: none; border: none; font-size: 18px; color: #bbb; cursor: pointer; }
+.result-panel.show { display: flex; }
+.result-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 14px 16px 10px; border-bottom: 1px solid #f0f0f0;
+  position: sticky; top: 0; background: #fff; z-index: 1;
+}
+.result-badge { padding: 3px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+.result-node-name { font-size: 14px; font-weight: 600; color: #333; flex: 1; }
+.result-close { background: none; border: none; font-size: 18px; color: #bbb; cursor: pointer; padding: 4px; }
+.result-body { padding: 16px; }
 .result-content { font-size: 13.5px; line-height: 2; color: #444; white-space: pre-wrap; }
-.loading { text-align: center; color: #999; font-size: 14px; padding: 20px 0; }
-.loading-icon { font-size: 24px; margin-bottom: 8px; }
+
+/* Drill buttons */
+.drill-section { margin-top: 16px; padding-top: 14px; border-top: 1px solid #f0f0f0; }
+.drill-label { font-size: 11px; color: #aaa; letter-spacing: 0.08em; margin-bottom: 8px; }
+.drill-buttons { display: flex; flex-direction: column; gap: 8px; }
+.drill-btn {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px; border-radius: 10px; cursor: pointer;
+  background: #f8f8f8; border: 1px solid #eee;
+  font-size: 13px; color: #444; text-align: left;
+  transition: all 0.2s;
+}
+.drill-btn:hover { background: #f0f0f0; border-color: #ddd; }
+.drill-btn-icon { font-size: 16px; flex-shrink: 0; }
+.drill-btn-text { flex: 1; line-height: 1.4; }
+.drill-btn-arrow { font-size: 12px; color: #bbb; flex-shrink: 0; }
+
+/* Loading */
+.loading { text-align: center; color: #999; font-size: 14px; padding: 30px 0; }
+.loading-spinner { font-size: 28px; margin-bottom: 10px; animation: spin 1.5s linear infinite; display: inline-block; }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
@@ -76,24 +103,31 @@ body { font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif; background:
 <div class="result-panel" id="resultPanel">
   <div class="result-header">
     <div class="result-badge" id="resultBadge"></div>
-    <div class="result-title" id="resultTitle"></div>
+    <div class="result-node-name" id="resultNodeName"></div>
     <button class="result-close" onclick="closeResult()">✕</button>
   </div>
-  <div id="resultContent"></div>
+  <div class="result-body" id="resultBody">
+    <div class="loading"><div class="loading-spinner">⏳</div><div>AI 正在生成訓練內容…</div></div>
+  </div>
 </div>
 
 <script>
 const WORKER_URL = "https://futime-training.richtime90117277.workers.dev";
 
 const SYSTEM = `你是富時代房地產顧問公司的資深訓練師，專門訓練新人業務。
-用繁體中文回答，風格實戰、簡潔、有畫面感。
-每次回答固定格式：
-【這一步的目標】一句話說清楚。
-【新人該做什麼】3-4個具體動作，條列。
-【常見錯誤】2個新人最容易犯的錯。
-【可以直接用的話術】1-2句，加上引號。
-【下一步】接到哪個環節，一句話帶過。
-回答控制在200字以內，精準不廢話。`;
+用繁體中文回答，風格實戰、簡潔、有畫面感。口語化，像在手把手教學員。
+
+固定格式回答（每段之間空一行）：
+【目標】一句話。
+【做什麼】3-4個具體動作，用① ② ③標示。
+【常見錯誤】2個，用✗標示。
+【話術】1-2句，加引號，可直接說出口的。
+【下一步】接到哪個環節，一句話。
+
+全部控制在180字以內，精準不廢話。
+
+最後加上這行（JSON格式，不要有其他文字）：
+DRILLS:["繼續深入的子題1","繼續深入的子題2","繼續深入的子題3"]`;
 
 const chapters = [
   { id:"A", emoji:"🎯", title:"一部曲", subtitle:"開發名單", color:"#5b7cc4",
@@ -115,7 +149,10 @@ const chapters = [
 ];
 
 let openChapter = null;
-let currentColor = "#333";
+let currentColor = "#5b7cc4";
+let currentContext = "";
+
+const drillIcons = ["💬","🎯","⚡"];
 
 function render() {
   const app = document.getElementById("app");
@@ -126,7 +163,7 @@ function render() {
            onclick="toggleChapter('${ch.id}')">
         <span class="chapter-emoji">${ch.emoji}</span>
         <div class="chapter-info">
-          <div class="chapter-title">${ch.title}</div>
+          <div class="chapter-title-label">${ch.title}</div>
           <div class="chapter-subtitle">${ch.subtitle}</div>
         </div>
         <span class="chapter-arrow ${openChapter===ch.id?'open':''}">▼</span>
@@ -134,7 +171,7 @@ function render() {
       <div class="nodes ${openChapter===ch.id?'open':''}"
            style="border-left: 2px dashed ${ch.color}55">
         ${ch.nodes.map(node => `
-          <div class="node" onclick="askAI('${ch.id}','${node.id}')">
+          <div class="node" onclick="askNode('${ch.id}','${node.id}')">
             <div class="node-dot" style="background:${ch.color}20;color:${ch.color}">${node.id}</div>
             <div class="node-info">
               <div class="node-name">${node.name}</div>
@@ -154,23 +191,35 @@ function toggleChapter(id) {
   render();
 }
 
-async function askAI(chapterId, nodeId) {
+function askNode(chapterId, nodeId) {
   const ch = chapters.find(c => c.id === chapterId);
   const node = ch.nodes.find(n => n.id === nodeId);
   currentColor = ch.color;
+  currentContext = `${ch.title}${ch.subtitle} → ${node.name}（${node.hint}）`;
 
-  const panel = document.getElementById("resultPanel");
-  const content = document.getElementById("resultContent");
   const badge = document.getElementById("resultBadge");
-  const title = document.getElementById("resultTitle");
-
-  panel.style.borderTopColor = ch.color;
-  panel.classList.add("show");
   badge.style.background = ch.color + "20";
   badge.style.color = ch.color;
   badge.textContent = `${ch.title} ${ch.subtitle}`;
-  title.textContent = node.name;
-  content.innerHTML = `<div class="loading"><div class="loading-icon">⏳</div>AI 正在生成訓練內容…</div>`;
+  document.getElementById("resultNodeName").textContent = node.name;
+
+  const prompt = `請說明「${currentContext}」這個環節。針對房地產新人業務訓練。`;
+  callAI(prompt);
+}
+
+function drillDown(topic) {
+  const prompt = `針對「${currentContext}」這個環節，請深入說明：${topic}。包含具體話術和新人常犯的錯誤。`;
+  document.getElementById("resultNodeName").textContent = topic;
+  callAI(prompt);
+}
+
+async function callAI(prompt) {
+  const panel = document.getElementById("resultPanel");
+  const body = document.getElementById("resultBody");
+
+  panel.style.borderTopColor = currentColor;
+  panel.classList.add("show");
+  body.innerHTML = `<div class="loading"><div class="loading-spinner">⏳</div><div>AI 正在生成訓練內容…</div></div>`;
 
   try {
     const res = await fetch(WORKER_URL, {
@@ -180,14 +229,39 @@ async function askAI(chapterId, nodeId) {
         model: "claude-sonnet-4-20250514",
         max_tokens: 1000,
         system: SYSTEM,
-        messages: [{ role: "user", content: `請說明「${ch.title}${ch.subtitle} → ${node.name}」這個環節（${node.hint}）。針對房地產新人業務訓練。` }],
+        messages: [{ role: "user", content: prompt }],
       }),
     });
     const data = await res.json();
-    const text = data.content?.find(b => b.type === "text")?.text || "無法取得內容";
-    content.innerHTML = `<div class="result-content">${text}</div>`;
+    const full = data.content?.find(b => b.type === "text")?.text || "無法取得內容";
+
+    // 解析 DRILLS
+    const drillMatch = full.match(/DRILLS:\[([^\]]+)\]/);
+    let drills = ["實際話術範本", "常見客戶問題應對", "新人最容易犯的錯"];
+    if (drillMatch) {
+      try {
+        drills = JSON.parse("[" + drillMatch[1] + "]");
+      } catch(e) {}
+    }
+    const mainText = full.replace(/DRILLS:\[[^\]]+\]/, "").trim();
+
+    body.innerHTML = `
+      <div class="result-content">${mainText}</div>
+      <div class="drill-section">
+        <div class="drill-label">繼續深入 →</div>
+        <div class="drill-buttons">
+          ${drills.map((d, i) => `
+            <div class="drill-btn" onclick="drillDown('${d.replace(/'/g,"\\'")}')">
+              <span class="drill-btn-icon">${drillIcons[i] || "💡"}</span>
+              <span class="drill-btn-text">${d}</span>
+              <span class="drill-btn-arrow">▶</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
   } catch(e) {
-    content.innerHTML = `<div class="result-content">⚠️ 連線失敗，請再試一次。</div>`;
+    body.innerHTML = `<div class="result-content">⚠️ 連線失敗，請再試一次。</div>`;
   }
 }
 
