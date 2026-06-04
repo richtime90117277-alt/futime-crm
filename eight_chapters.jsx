@@ -65,6 +65,8 @@ const chapters = [
   },
 ];
 
+const WORKER_URL = "https://futime-training.richtime90117277.workers.dev";
+
 const SYSTEM = `你是富時代房地產顧問公司的資深訓練師，專門訓練新人業務。
 用繁體中文回答，風格實戰、簡潔、有畫面感。
 每次回答固定格式：
@@ -89,7 +91,7 @@ export default function App() {
     const prompt = `請說明「${chapter.title}${chapter.subtitle} → ${node.name}」這個環節（${node.hint}）。針對房地產新人業務訓練。`;
 
     try {
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
+      const res = await fetch(WORKER_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -122,7 +124,6 @@ export default function App() {
           const isOpen = openChapter === ch.id;
           return (
             <div key={ch.id} style={{ marginBottom: 8 }}>
-              {/* Chapter header */}
               <div onClick={() => { setOpenChapter(isOpen ? null : ch.id); setResult(null); setActiveNode(null); }}
                 style={{
                   display: "flex", alignItems: "center", gap: 12,
@@ -141,7 +142,6 @@ export default function App() {
                 <span style={{ fontSize: 11, opacity: 0.6, transform: isOpen ? "rotate(180deg)" : "none", transition: "transform 0.25s" }}>▼</span>
               </div>
 
-              {/* Nodes */}
               {isOpen && (
                 <div style={{ paddingLeft: 12, borderLeft: `2px dashed ${ch.color}55`, marginLeft: 20, marginTop: 6 }}>
                   {ch.nodes.map((node) => {
@@ -187,7 +187,6 @@ export default function App() {
         })}
       </div>
 
-      {/* Result panel */}
       {(result || loading) && (
         <div style={{
           position: "fixed", bottom: 0, left: 0, right: 0,
