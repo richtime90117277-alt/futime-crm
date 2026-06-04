@@ -7,11 +7,54 @@
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif; background: #f7f7f5; min-height: 100vh; }
+
 .header { background: #1a1a2e; padding: 24px 20px 20px; text-align: center; }
 .header-label { font-size: 11px; letter-spacing: 0.2em; color: #666; margin-bottom: 6px; }
 .header h1 { font-size: 20px; font-weight: 800; color: #fff; letter-spacing: 0.06em; }
 .header p { font-size: 12px; color: #888; margin-top: 8px; }
-.container { max-width: 560px; margin: 0 auto; padding: 16px 16px 120px; }
+
+/* Login */
+.login-screen {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  background: #f7f7f5; padding: 20px;
+}
+.login-card {
+  background: #fff; border-radius: 16px; padding: 36px 28px;
+  width: 100%; max-width: 360px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  text-align: center;
+}
+.login-logo { font-size: 36px; margin-bottom: 16px; }
+.login-title { font-size: 20px; font-weight: 800; color: #1a1a2e; margin-bottom: 6px; }
+.login-sub { font-size: 13px; color: #999; margin-bottom: 28px; }
+.login-input {
+  width: 100%; padding: 14px 16px; border-radius: 10px;
+  border: 1.5px solid #e8e8e8; font-size: 15px;
+  font-family: inherit; outline: none; margin-bottom: 14px;
+  transition: border-color 0.2s;
+}
+.login-input:focus { border-color: #5b7cc4; }
+.login-btn {
+  width: 100%; padding: 14px; border-radius: 10px;
+  background: #1a1a2e; color: #fff; border: none;
+  font-size: 15px; font-weight: 700; cursor: pointer;
+  font-family: inherit; transition: opacity 0.2s;
+}
+.login-btn:hover { opacity: 0.85; }
+
+/* Main */
+.main-screen { display: none; }
+.user-bar {
+  background: #fff; border-bottom: 1px solid #eee;
+  padding: 10px 16px; display: flex; align-items: center; justify-content: space-between;
+}
+.user-name { font-size: 13px; color: #555; }
+.user-name span { font-weight: 700; color: #1a1a2e; }
+.progress-bar-wrap { flex: 1; margin: 0 12px; height: 6px; background: #eee; border-radius: 3px; }
+.progress-bar-fill { height: 6px; background: #5b7cc4; border-radius: 3px; transition: width 0.5s; }
+.progress-text { font-size: 11px; color: #999; white-space: nowrap; }
+
+.container { max-width: 560px; margin: 0 auto; padding: 16px 16px 60px; }
 .chapter { margin-bottom: 8px; }
 .chapter-header {
   display: flex; align-items: center; gap: 12px;
@@ -25,17 +68,23 @@ body { font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif; background:
 .chapter-info { flex: 1; }
 .chapter-title-label { font-size: 11px; opacity: 0.7; letter-spacing: 0.08em; }
 .chapter-subtitle { font-size: 16px; font-weight: 700; }
+.chapter-meta { display: flex; align-items: center; gap: 6px; }
 .chapter-arrow { font-size: 11px; opacity: 0.6; transition: transform 0.25s; }
 .chapter-arrow.open { transform: rotate(180deg); }
+.chapter-done { font-size: 11px; background: rgba(255,255,255,0.25); padding: 2px 8px; border-radius: 10px; }
+
 .nodes { padding-left: 12px; margin-left: 20px; margin-top: 6px; display: none; }
 .nodes.open { display: block; }
-.node {
+
+.node { margin-bottom: 8px; }
+.node-header {
   display: flex; align-items: center; gap: 12px;
   padding: 12px 16px; border-radius: 10px; cursor: pointer;
   background: #fff; border: 1px solid #e8e8e8;
-  margin-bottom: 6px; transition: all 0.2s;
+  transition: all 0.2s;
 }
-.node:hover { background: #f9f9f9; }
+.node-header:hover { background: #f9f9f9; }
+.node-header.done { background: #f0fff8; border-color: #b8e8d4; }
 .node-dot {
   width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
   font-weight: 700; font-size: 11px;
@@ -44,71 +93,69 @@ body { font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif; background:
 .node-info { flex: 1; }
 .node-name { font-weight: 600; font-size: 14px; color: #333; }
 .node-hint { font-size: 11.5px; color: #999; margin-top: 2px; }
-.node-arrow { font-size: 14px; color: #ccc; }
-.divider { text-align: center; padding: 2px 0 4px; color: #d0d0d0; font-size: 13px; }
+.node-status { font-size: 14px; }
 
-/* Result Panel */
-.result-panel {
-  position: fixed; bottom: 0; left: 0; right: 0;
-  background: #fff; padding: 0;
-  max-height: 60vh; overflow-y: auto;
-  box-shadow: 0 -8px 32px rgba(0,0,0,0.15);
-  display: none; border-top: 2px solid #eee;
-  flex-direction: column;
+/* Node content (inline) */
+.node-content { display: none; margin-top: 4px; }
+.node-content.open {
+  display: block;
+  background: #fff; border-radius: 10px;
+  border: 1px solid #eee; border-left: 3px solid #5b7cc4;
+  padding: 16px;
 }
-.result-panel.show { display: flex; }
-.result-header {
-  display: flex; align-items: center; gap: 8px;
-  padding: 14px 16px 10px; border-bottom: 1px solid #f0f0f0;
-  position: sticky; top: 0; background: #fff; z-index: 1;
-}
-.result-badge { padding: 3px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; white-space: nowrap; }
-.result-node-name { font-size: 14px; font-weight: 600; color: #333; flex: 1; }
-.result-close { background: none; border: none; font-size: 18px; color: #bbb; cursor: pointer; padding: 4px; }
-.result-body { padding: 16px; }
-.result-content { font-size: 13.5px; line-height: 2; color: #444; white-space: pre-wrap; }
+.node-content-text { font-size: 13px; line-height: 1.9; color: #444; white-space: pre-wrap; }
+.node-content-loading { text-align: center; padding: 20px; color: #aaa; font-size: 13px; }
 
-/* Drill buttons */
-.drill-section { margin-top: 16px; padding-top: 14px; border-top: 1px solid #f0f0f0; }
-.drill-label { font-size: 11px; color: #aaa; letter-spacing: 0.08em; margin-bottom: 8px; }
-.drill-buttons { display: flex; flex-direction: column; gap: 8px; }
+.drill-section { margin-top: 14px; padding-top: 12px; border-top: 1px solid #f0f0f0; }
+.drill-label { font-size: 11px; color: #aaa; letter-spacing: 0.06em; margin-bottom: 8px; }
+.drill-buttons { display: flex; flex-direction: column; gap: 6px; }
 .drill-btn {
   display: flex; align-items: center; gap: 10px;
-  padding: 12px 14px; border-radius: 10px; cursor: pointer;
+  padding: 11px 14px; border-radius: 9px; cursor: pointer;
   background: #f8f8f8; border: 1px solid #eee;
-  font-size: 13px; color: #444; text-align: left;
+  font-size: 12.5px; color: #444; text-align: left;
   transition: all 0.2s;
 }
-.drill-btn:hover { background: #f0f0f0; border-color: #ddd; }
-.drill-btn-icon { font-size: 16px; flex-shrink: 0; }
+.drill-btn:hover { background: #f0f0f0; }
+.drill-btn-icon { font-size: 14px; flex-shrink: 0; }
 .drill-btn-text { flex: 1; line-height: 1.4; }
-.drill-btn-arrow { font-size: 12px; color: #bbb; flex-shrink: 0; }
+.drill-btn-arrow { font-size: 11px; color: #bbb; }
 
-/* Loading */
-.loading { text-align: center; color: #999; font-size: 14px; padding: 30px 0; }
-.loading-spinner { font-size: 28px; margin-bottom: 10px; animation: spin 1.5s linear infinite; display: inline-block; }
-@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.saved-badge {
+  display: inline-block; font-size: 10px; background: #e8f5ee;
+  color: #2a9d5c; padding: 2px 8px; border-radius: 10px; margin-top: 10px;
+}
+
+.divider { text-align: center; padding: 2px 0 4px; color: #d0d0d0; font-size: 13px; }
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="header-label">RICHTIMES 富時代</div>
-  <h1>八部曲訓練系統</h1>
-  <p>點選任一節點，AI 即時生成訓練內容</p>
+<!-- Login -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">🏡</div>
+    <div class="login-title">富時代訓練系統</div>
+    <div class="login-sub">輸入你的姓名開始學習</div>
+    <input class="login-input" id="nameInput" type="text" placeholder="請輸入姓名" maxlength="10">
+    <button class="login-btn" onclick="doLogin()">開始學習</button>
+  </div>
 </div>
 
-<div class="container" id="app"></div>
-
-<div class="result-panel" id="resultPanel">
-  <div class="result-header">
-    <div class="result-badge" id="resultBadge"></div>
-    <div class="result-node-name" id="resultNodeName"></div>
-    <button class="result-close" onclick="closeResult()">✕</button>
+<!-- Main -->
+<div class="main-screen" id="mainScreen">
+  <div class="header">
+    <div class="header-label">RICHTIMES 富時代</div>
+    <h1>八部曲訓練系統</h1>
   </div>
-  <div class="result-body" id="resultBody">
-    <div class="loading"><div class="loading-spinner">⏳</div><div>AI 正在生成訓練內容…</div></div>
+  <div class="user-bar">
+    <div class="user-name">👋 <span id="displayName"></span></div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+    </div>
+    <div class="progress-text" id="progressText">0%</div>
   </div>
+  <div class="container" id="app"></div>
 </div>
 
 <script>
@@ -116,18 +163,15 @@ const WORKER_URL = "https://futime-training.richtime90117277.workers.dev";
 
 const SYSTEM = `你是富時代房地產顧問公司的資深訓練師，專門訓練新人業務。
 用繁體中文回答，風格實戰、簡潔、有畫面感。口語化，像在手把手教學員。
-
 固定格式回答（每段之間空一行）：
 【目標】一句話。
 【做什麼】3-4個具體動作，用① ② ③標示。
 【常見錯誤】2個，用✗標示。
 【話術】1-2句，加引號，可直接說出口的。
 【下一步】接到哪個環節，一句話。
-
 全部控制在180字以內，精準不廢話。
-
-最後加上這行（JSON格式，不要有其他文字）：
-DRILLS:["繼續深入的子題1","繼續深入的子題2","繼續深入的子題3"]`;
+最後加上這行（JSON格式）：
+DRILLS:["子題1","子題2","子題3"]`;
 
 const chapters = [
   { id:"A", emoji:"🎯", title:"一部曲", subtitle:"開發名單", color:"#5b7cc4",
@@ -148,15 +192,54 @@ const chapters = [
     nodes:[{id:"H1",name:"顧問思維 vs 業務思維",hint:"為什麼不能只想著賣"},{id:"H2",name:"信任感是設計出來的",hint:"每個細節都在塑造印象"},{id:"H3",name:"轉介紹的時機與話術",hint:"成交後最黃金的 72 小時"}]},
 ];
 
+const TOTAL_NODES = chapters.reduce((a,c) => a + c.nodes.length, 0);
 let openChapter = null;
-let currentColor = "#5b7cc4";
-let currentContext = "";
+let openNode = null;
+let userName = "";
+let savedData = {};
 
-const drillIcons = ["💬","🎯","⚡"];
+function getKey() { return "futime_" + userName; }
+
+function loadData() {
+  const raw = localStorage.getItem(getKey());
+  savedData = raw ? JSON.parse(raw) : {};
+}
+
+function saveData() {
+  localStorage.setItem(getKey(), JSON.stringify(savedData));
+  updateProgress();
+}
+
+function updateProgress() {
+  const done = Object.keys(savedData).length;
+  const pct = Math.round(done / TOTAL_NODES * 100);
+  document.getElementById("progressFill").style.width = pct + "%";
+  document.getElementById("progressText").textContent = pct + "%";
+}
+
+function doLogin() {
+  const name = document.getElementById("nameInput").value.trim();
+  if (!name) { alert("請輸入姓名"); return; }
+  userName = name;
+  document.getElementById("loginScreen").style.display = "none";
+  document.getElementById("mainScreen").style.display = "block";
+  document.getElementById("displayName").textContent = name;
+  loadData();
+  updateProgress();
+  render();
+  // enter key
+  document.getElementById("nameInput").addEventListener("keydown", e => { if(e.key==="Enter") doLogin(); });
+}
+
+document.getElementById("nameInput").addEventListener("keydown", e => { if(e.key==="Enter") doLogin(); });
+
+function isDone(nodeId) { return !!savedData[nodeId]; }
 
 function render() {
   const app = document.getElementById("app");
-  app.innerHTML = chapters.map((ch, ci) => `
+  app.innerHTML = chapters.map((ch, ci) => {
+    const doneCnt = ch.nodes.filter(n => isDone(n.id)).length;
+    return `
     <div class="chapter">
       <div class="chapter-header ${openChapter===ch.id?'open':''}"
            style="${openChapter===ch.id?`background:${ch.color};border-color:${ch.color};box-shadow:0 4px 20px ${ch.color}40`:''}"
@@ -166,60 +249,82 @@ function render() {
           <div class="chapter-title-label">${ch.title}</div>
           <div class="chapter-subtitle">${ch.subtitle}</div>
         </div>
-        <span class="chapter-arrow ${openChapter===ch.id?'open':''}">▼</span>
+        <div class="chapter-meta">
+          ${doneCnt>0?`<span class="chapter-done">${doneCnt}/${ch.nodes.length}</span>`:''}
+          <span class="chapter-arrow ${openChapter===ch.id?'open':''}">▼</span>
+        </div>
       </div>
-      <div class="nodes ${openChapter===ch.id?'open':''}"
-           style="border-left: 2px dashed ${ch.color}55">
-        ${ch.nodes.map(node => `
-          <div class="node" onclick="askNode('${ch.id}','${node.id}')">
-            <div class="node-dot" style="background:${ch.color}20;color:${ch.color}">${node.id}</div>
-            <div class="node-info">
-              <div class="node-name">${node.name}</div>
-              <div class="node-hint">${node.hint}</div>
+      <div class="nodes ${openChapter===ch.id?'open':''}" style="border-left: 2px dashed ${ch.color}55">
+        ${ch.nodes.map(node => {
+          const done = isDone(node.id);
+          const isOpen = openNode === node.id;
+          const saved = savedData[node.id];
+          return `
+          <div class="node">
+            <div class="node-header ${done?'done':''}" onclick="toggleNode('${ch.id}','${node.id}')">
+              <div class="node-dot" style="background:${done?ch.color:ch.color+'20'};color:${done?'#fff':ch.color}">${node.id}</div>
+              <div class="node-info">
+                <div class="node-name">${node.name}</div>
+                <div class="node-hint">${node.hint}</div>
+              </div>
+              <span class="node-status">${done?'✅':isOpen?'▼':'▶'}</span>
             </div>
-            <span class="node-arrow">▶</span>
-          </div>
-        `).join('')}
+            <div class="node-content ${isOpen?'open':''}" style="border-left-color:${ch.color}" id="content_${node.id}">
+              ${isOpen ? renderContent(node.id, ch) : ''}
+            </div>
+          </div>`;
+        }).join('')}
       </div>
       ${ci < chapters.length-1 ? '<div class="divider">↓</div>' : ''}
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
+}
+
+function renderContent(nodeId, ch) {
+  const saved = savedData[nodeId];
+  if (!saved) {
+    return `<div class="node-content-loading">⏳ 載入中…</div>`;
+  }
+  return buildContentHTML(saved.text, saved.drills, nodeId, ch.color);
+}
+
+function buildContentHTML(text, drills, nodeId, color) {
+  const icons = ["💬","🎯","⚡"];
+  const drillHTML = drills && drills.length ? `
+    <div class="drill-section">
+      <div class="drill-label">繼續深入 →</div>
+      <div class="drill-buttons">
+        ${drills.map((d,i) => `
+          <div class="drill-btn" onclick="drillDown('${nodeId}','${d.replace(/'/g,"\\'")}','${color}')">
+            <span class="drill-btn-icon">${icons[i]||'💡'}</span>
+            <span class="drill-btn-text">${d}</span>
+            <span class="drill-btn-arrow">▶</span>
+          </div>`).join('')}
+      </div>
+    </div>` : '';
+  return `
+    <div class="node-content-text">${text}</div>
+    <div class="saved-badge">✓ 已儲存到你的學習紀錄</div>
+    ${drillHTML}`;
 }
 
 function toggleChapter(id) {
   openChapter = openChapter === id ? null : id;
+  openNode = null;
   render();
 }
 
-function askNode(chapterId, nodeId) {
-  const ch = chapters.find(c => c.id === chapterId);
+async function toggleNode(chId, nodeId) {
+  const ch = chapters.find(c => c.id === chId);
+  if (openNode === nodeId) { openNode = null; render(); return; }
+  openNode = nodeId;
+  render();
+
+  if (savedData[nodeId]) return; // 已有快取，直接顯示
+
+  // 呼叫 AI
   const node = ch.nodes.find(n => n.id === nodeId);
-  currentColor = ch.color;
-  currentContext = `${ch.title}${ch.subtitle} → ${node.name}（${node.hint}）`;
-
-  const badge = document.getElementById("resultBadge");
-  badge.style.background = ch.color + "20";
-  badge.style.color = ch.color;
-  badge.textContent = `${ch.title} ${ch.subtitle}`;
-  document.getElementById("resultNodeName").textContent = node.name;
-
-  const prompt = `請說明「${currentContext}」這個環節。針對房地產新人業務訓練。`;
-  callAI(prompt);
-}
-
-function drillDown(topic) {
-  const prompt = `針對「${currentContext}」這個環節，請深入說明：${topic}。包含具體話術和新人常犯的錯誤。`;
-  document.getElementById("resultNodeName").textContent = topic;
-  callAI(prompt);
-}
-
-async function callAI(prompt) {
-  const panel = document.getElementById("resultPanel");
-  const body = document.getElementById("resultBody");
-
-  panel.style.borderTopColor = currentColor;
-  panel.classList.add("show");
-  body.innerHTML = `<div class="loading"><div class="loading-spinner">⏳</div><div>AI 正在生成訓練內容…</div></div>`;
+  const prompt = `請說明「${ch.title}${ch.subtitle} → ${node.name}」（${node.hint}）。針對房地產新人業務訓練。`;
 
   try {
     const res = await fetch(WORKER_URL, {
@@ -234,42 +339,72 @@ async function callAI(prompt) {
     });
     const data = await res.json();
     const full = data.content?.find(b => b.type === "text")?.text || "無法取得內容";
-
-    // 解析 DRILLS
     const drillMatch = full.match(/DRILLS:\[([^\]]+)\]/);
-    let drills = ["實際話術範本", "常見客戶問題應對", "新人最容易犯的錯"];
-    if (drillMatch) {
-      try {
-        drills = JSON.parse("[" + drillMatch[1] + "]");
-      } catch(e) {}
-    }
-    const mainText = full.replace(/DRILLS:\[[^\]]+\]/, "").trim();
+    let drills = ["實際話術範本", "常見客戶問題", "新人最容易犯的錯"];
+    if (drillMatch) { try { drills = JSON.parse("[" + drillMatch[1] + "]"); } catch(e){} }
+    const text = full.replace(/DRILLS:\[[^\]]+\]/, "").trim();
 
-    body.innerHTML = `
-      <div class="result-content">${mainText}</div>
-      <div class="drill-section">
-        <div class="drill-label">繼續深入 →</div>
-        <div class="drill-buttons">
-          ${drills.map((d, i) => `
-            <div class="drill-btn" onclick="drillDown('${d.replace(/'/g,"\\'")}')">
-              <span class="drill-btn-icon">${drillIcons[i] || "💡"}</span>
-              <span class="drill-btn-text">${d}</span>
-              <span class="drill-btn-arrow">▶</span>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-    `;
+    savedData[nodeId] = { text, drills, savedAt: new Date().toISOString() };
+    saveData();
+
+    const el = document.getElementById("content_" + nodeId);
+    if (el) el.innerHTML = buildContentHTML(text, drills, nodeId, ch.color);
   } catch(e) {
-    body.innerHTML = `<div class="result-content">⚠️ 連線失敗，請再試一次。</div>`;
+    const el = document.getElementById("content_" + nodeId);
+    if (el) el.innerHTML = `<div class="node-content-text">⚠️ 連線失敗，請再試一次。</div>`;
   }
 }
 
-function closeResult() {
-  document.getElementById("resultPanel").classList.remove("show");
-}
+async function drillDown(nodeId, topic, color) {
+  const ch = chapters.find(c => c.nodes.some(n => n.id === nodeId));
+  const node = ch.nodes.find(n => n.id === nodeId);
+  const drillKey = nodeId + "_" + topic;
 
-render();
+  // 在當前內容下方插入 loading
+  const el = document.getElementById("content_" + nodeId);
+  const existing = document.getElementById("drill_" + drillKey);
+  if (existing) { existing.scrollIntoView({behavior:"smooth"}); return; }
+
+  const drillEl = document.createElement("div");
+  drillEl.id = "drill_" + drillKey;
+  drillEl.style.cssText = `margin-top:8px;padding:14px;border-radius:10px;background:#f8f8f8;border:1px solid #eee;border-left:3px solid ${color}`;
+  drillEl.innerHTML = `<div style="font-size:12px;font-weight:700;color:#999;margin-bottom:8px">↳ ${topic}</div><div style="font-size:13px;color:#aaa;text-align:center;padding:10px">⏳ 生成中…</div>`;
+  el.appendChild(drillEl);
+  drillEl.scrollIntoView({behavior:"smooth", block:"start"});
+
+  const prompt = `針對「${ch.title}${ch.subtitle} → ${node.name}」，請深入說明：${topic}。包含具體話術和新人常犯的錯誤。`;
+
+  try {
+    const res = await fetch(WORKER_URL, {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({
+        model:"claude-sonnet-4-20250514", max_tokens:1000,
+        system: SYSTEM,
+        messages:[{role:"user",content:prompt}]
+      })
+    });
+    const data = await res.json();
+    const full = data.content?.find(b=>b.type==="text")?.text || "無法取得內容";
+    const drillMatch = full.match(/DRILLS:\[([^\]]+)\]/);
+    let drills = ["更多話術", "實戰案例", "進階技巧"];
+    if (drillMatch) { try { drills = JSON.parse("[" + drillMatch[1] + "]"); } catch(e){} }
+    const text = full.replace(/DRILLS:\[[^\]]+\]/, "").trim();
+    const icons = ["💬","🎯","⚡"];
+    drillEl.innerHTML = `
+      <div style="font-size:12px;font-weight:700;color:${color};margin-bottom:10px">↳ ${topic}</div>
+      <div style="font-size:13px;line-height:1.9;color:#444;white-space:pre-wrap">${text}</div>
+      <div style="margin-top:12px;padding-top:10px;border-top:1px solid #eee">
+        <div style="font-size:11px;color:#aaa;margin-bottom:6px">繼續深入 →</div>
+        ${drills.map((d,i)=>`
+          <div onclick="drillDown('${nodeId}','${d.replace(/'/g,"\\'")}','${color}')"
+               style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:8px;background:#fff;border:1px solid #eee;margin-bottom:5px;cursor:pointer;font-size:12px;color:#444">
+            <span>${icons[i]||'💡'}</span><span style="flex:1">${d}</span><span style="color:#bbb">▶</span>
+          </div>`).join('')}
+      </div>`;
+  } catch(e) {
+    drillEl.innerHTML += `<div style="font-size:13px;color:#c00">⚠️ 連線失敗</div>`;
+  }
+}
 </script>
 </body>
 </html>
