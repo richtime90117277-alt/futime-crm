@@ -823,13 +823,29 @@ function renderContentHTML(d) {
 }
 
 async function doDrill(topic, btn) {
+  // 產生 KV key（節點ID + 子題名稱）
+  const drillKey = `drill_${currentNode.id}_${topic.replace(/[^a-zA-Z0-9一-鿿]/g,"_").slice(0,30)}`;
+  
   btn.style.opacity="0.5"; btn.style.pointerEvents="none";
   const el = document.createElement("div");
   el.className="drill-result";
-  el.innerHTML=`<div class="drill-result-title">↳ ${topic}</div><div style="color:var(--muted)">⏳ 生成中…</div>`;
+  el.innerHTML=`<div class="drill-result-title">↳ ${topic}</div><div style="color:var(--muted)">⏳ 讀取中…</div>`;
   btn.parentNode.insertBefore(el, btn.nextSibling);
   el.scrollIntoView({behavior:"smooth",block:"nearest"});
-  const prompt=`針對「${currentChapter.title}${currentChapter.subtitle} → ${currentNode.name}」，深入說明：${topic}。繁體中文，實戰口吻，含話術和常見錯誤，200字內。最後加：DRILLS:["子題1","子題2","子題3"]`;
+
+  // 先查 KV 快取
+  try {
+    const cacheRes = await fetch(`${WORKER_URL}/kv?key=${drillKey}`);
+    const cacheJson = await cacheRes.json();
+    if (cacheJson.value) {
+      renderDrillResult(el, topic, cacheJson.value.text, cacheJson.value.sub);
+      return;
+    }
+  } catch(e) {}
+
+  // 沒有快取，呼叫 AI
+  el.innerHTML=`<div class="drill-result-title">↳ ${topic}</div><div style="color:var(--muted)">⏳ 生成中…</div>`;
+  const prompt=`針對「${currentChapter.title}${currentChapter.subtitle} → ${currentNode.name}」，深入說明：${topic}。繁體中文，實戰口吻，符合富時代顧問定位（先資產後買房），含話術和常見錯誤，200字內。最後加：DRILLS:["子題1","子題2","子題3"]`;
   try {
     const res=await fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:800,messages:[{role:"user",content:prompt}]})});
     const data=await res.json();
@@ -837,14 +853,27 @@ async function doDrill(topic, btn) {
     const dm=full.match(/DRILLS:\[([^\]]+)\]/);
     let sub=[]; if(dm){try{sub=JSON.parse("["+dm[1]+"]");}catch(e){}}
     const text=full.replace(/DRILLS:\[[^\]]+\]/,"").trim();
-    const icons=["💬","🎯","⚡"];
-    el.innerHTML=`<div class="drill-result-title" style="color:var(--gold)">↳ ${topic}</div><div style="white-space:pre-wrap">${text}</div>
-    ${sub.length?`<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
-      <div style="font-size:10px;color:var(--muted);margin-bottom:6px;font-family:'DM Mono',monospace">繼續深入 →</div>
-      ${sub.map((s,i)=>`<div onclick="doDrill('${s.replace(/'/g,"\\'")}',this)" style="display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:8px;background:var(--surface);border:1px solid var(--border);margin-bottom:5px;cursor:pointer;font-size:12px;color:var(--text)">
-        <span>${icons[i]||'💡'}</span><span style="flex:1">${s}</span><span style="color:var(--border)">▶</span></div>`).join('')}
-      </div>`:''}`; 
-  } catch(e) { el.innerHTML+=`<div style="color:var(--red)">⚠️ 失敗</div>`; }
+
+    // 存進 KV
+    await fetch(`${WORKER_URL}/kv`, {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ key: drillKey, value: { text, sub } })
+    });
+
+    renderDrillResult(el, topic, text, sub);
+  } catch(e) { el.innerHTML+=`<div style="color:var(--red)">⚠️ 失敗，請再試</div>`; }
+}
+
+function renderDrillResult(el, topic, text, sub) {
+  const icons=["💬","🎯","⚡"];
+  el.innerHTML=`<div class="drill-result-title" style="color:var(--gold)">↳ ${topic}</div>
+  <div style="white-space:pre-wrap;font-size:13px;line-height:1.9">${text}</div>
+  <div style="font-size:10px;color:var(--green);font-family:'DM Mono',monospace;margin-top:8px">✓ 已儲存</div>
+  ${sub && sub.length ? `<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
+    <div style="font-size:10px;color:var(--muted);margin-bottom:6px;font-family:'DM Mono',monospace">繼續深入 →</div>
+    ${sub.map((s,i)=>`<div onclick="doDrill('${s.replace(/'/g,"\'")}',this)" style="display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:8px;background:var(--surface);border:1px solid var(--border);margin-bottom:5px;cursor:pointer;font-size:12px;color:var(--text)">
+      <span>${icons[i]||'💡'}</span><span style="flex:1">${s}</span><span style="color:var(--border)">▶</span></div>`).join('')}
+    </div>` : ''}`;
 }
 
 // ── Library ──
