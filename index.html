@@ -307,39 +307,82 @@ const chapters = [
     nodes:[{id:"H1",name:"顧問思維 vs 業務思維",hint:"為什麼不能只想著賣"},{id:"H2",name:"信任感是設計出來的",hint:"每個細節都在塑造印象"},{id:"H3",name:"轉介紹的時機與話術",hint:"成交後最黃金的 72 小時"}]},
 ];
 
-// ── Storage ──
-function loadStore() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch(e) { return {}; }
-}
-function saveStore(store) { localStorage.setItem(STORAGE_KEY, JSON.stringify(store)); }
+// ── KV Cloud Storage ──
+const KV_BASE = WORKER_URL;
 
-// store structure: { [nodeId]: { versions: [{data, note, savedAt}], currentVer: 0 } }
+async function kvGet(nodeId) {
+  try {
+    const res = await fetch(`${KV_BASE}/kv?key=node_${nodeId}`);
+    const json = await res.json();
+    return json.value || null;
+  } catch(e) { return null; }
+}
 
-function getNodeStore(nodeId) {
-  const store = loadStore();
-  return store[nodeId] || null;
+async function kvSet(nodeId, value) {
+  try {
+    await fetch(`${KV_BASE}/kv`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ key: `node_${nodeId}`, value })
+    });
+  } catch(e) {}
 }
-function saveVersion(nodeId, data, note="") {
-  const store = loadStore();
-  if (!store[nodeId]) store[nodeId] = { versions:[], currentVer:0 };
-  store[nodeId].versions.unshift({ data, note, savedAt: new Date().toISOString() });
-  store[nodeId].currentVer = 0;
-  saveStore(store);
+
+async function kvDelete(nodeId) {
+  try {
+    await fetch(`${KV_BASE}/kv?key=node_${nodeId}`, { method: "DELETE" });
+  } catch(e) {}
 }
-function saveNote(nodeId, verIdx, note) {
-  const store = loadStore();
-  if (store[nodeId] && store[nodeId].versions[verIdx]) {
-    store[nodeId].versions[verIdx].note = note;
-    saveStore(store);
+
+async function kvList() {
+  try {
+    const res = await fetch(`${KV_BASE}/kv/list`);
+    const json = await res.json();
+    return json.keys || [];
+  } catch(e) { return []; }
+}
+
+// store structure: { versions: [{data, note, savedAt}], currentVer: 0 }
+// In-memory cache to avoid repeated fetches
+const memCache = {};
+
+async function getNodeStore(nodeId) {
+  if (memCache[nodeId] !== undefined) return memCache[nodeId];
+  const val = await kvGet(nodeId);
+  memCache[nodeId] = val;
+  return val;
+}
+
+async function saveVersion(nodeId, data, note="") {
+  let ns = await getNodeStore(nodeId);
+  if (!ns) ns = { versions: [], currentVer: 0 };
+  ns.versions.unshift({ data, note, savedAt: new Date().toISOString() });
+  ns.currentVer = 0;
+  memCache[nodeId] = ns;
+  await kvSet(nodeId, ns);
+}
+
+async function saveNote(nodeId, verIdx, note) {
+  const ns = await getNodeStore(nodeId);
+  if (ns && ns.versions[verIdx]) {
+    ns.versions[verIdx].note = note;
+    memCache[nodeId] = ns;
+    await kvSet(nodeId, ns);
   }
 }
-function deleteVersion(nodeId, verIdx) {
-  const store = loadStore();
-  if (!store[nodeId]) return;
-  store[nodeId].versions.splice(verIdx, 1);
-  if (store[nodeId].versions.length === 0) { delete store[nodeId]; }
-  else { store[nodeId].currentVer = 0; }
-  saveStore(store);
+
+async function deleteVersion(nodeId, verIdx) {
+  const ns = await getNodeStore(nodeId);
+  if (!ns) return;
+  ns.versions.splice(verIdx, 1);
+  if (ns.versions.length === 0) {
+    memCache[nodeId] = null;
+    await kvDelete(nodeId);
+  } else {
+    ns.currentVer = 0;
+    memCache[nodeId] = ns;
+    await kvSet(nodeId, ns);
+  }
 }
 
 // ── State ──
@@ -362,8 +405,10 @@ function switchTab(tab) {
 }
 
 // ── Sidebar ──
-function buildSidebar() {
-  const store = loadStore();
+async function buildSidebar() {
+  const store = {};
+  // load all from memCache (already fetched)
+  chapters.forEach(ch => ch.nodes.forEach(n => { if(memCache[n.id]) store[n.id] = memCache[n.id]; }));
   const sb = document.getElementById("sidebar");
   sb.innerHTML = chapters.map(ch => {
     const isOpen = openChapters[ch.id];
@@ -397,21 +442,23 @@ function buildSidebar() {
 
 function toggleSbChapter(chId) {
   openChapters[chId] = !openChapters[chId];
-  buildSidebar();
+  buildSidebar(); // initial load
 }
 
-function selectNode(chId, nodeId) {
+async function selectNode(chId, nodeId) {
   currentChapter = chapters.find(c=>c.id===chId);
   currentNode = currentChapter.nodes.find(n=>n.id===nodeId);
   openChapters[chId] = true;
   currentVerIdx = 0;
+  // Pre-load this node from KV
+  if (memCache[nodeId] === undefined) memCache[nodeId] = await kvGet(nodeId);
   buildSidebar();
   renderTeachMain();
 }
 
 // ── Teach Main ──
-function renderTeachMain() {
-  const ns = getNodeStore(currentNode.id);
+async function renderTeachMain() {
+  const ns = await getNodeStore(currentNode.id);
   const main = document.getElementById("teachMain");
 
   let verHtml = '';
@@ -468,16 +515,17 @@ function switchVer(idx) {
 
 function confirmDeleteVer() {
   if (confirm('確定刪除這個版本？')) {
-    deleteVersion(currentNode.id, currentVerIdx);
-    currentVerIdx = 0;
-    buildSidebar();
-    renderTeachMain();
+    deleteVersion(currentNode.id, currentVerIdx).then(() => {
+      currentVerIdx = 0;
+      buildSidebar();
+      renderTeachMain();
+    });
   }
 }
 
-function doSaveNote() {
+async function doSaveNote() {
   const val = document.getElementById("noteInput").value;
-  saveNote(currentNode.id, currentVerIdx, val);
+  await saveNote(currentNode.id, currentVerIdx, val);
   const btn = document.querySelector('.note-save-btn');
   btn.textContent = '✓ 已儲存'; btn.style.background='#4caf82';
   setTimeout(()=>{ btn.textContent='儲存筆記'; btn.style.background=''; }, 1500);
@@ -503,10 +551,10 @@ async function generateNew() {
     let raw = apiData.content?.find(b=>b.type==="text")?.text || "{}";
     raw = raw.replace(/```json|```/g,"").trim();
     const d = JSON.parse(raw);
-    saveVersion(currentNode.id, d);
+    await saveVersion(currentNode.id, d);
     currentVerIdx = 0;
-    buildSidebar();
-    renderTeachMain();
+    await buildSidebar();
+    await renderTeachMain();
   } catch(e) {
     document.getElementById("teachContent").innerHTML = `<div style="color:#e05555;padding:20px">⚠️ 生成失敗，請再試一次。<br><small style="color:#666">${e.message}</small></div>`;
   }
@@ -588,8 +636,13 @@ async function doDrill(topic, btn) {
 }
 
 // ── Library ──
-function renderLibrary() {
-  const store = loadStore();
+async function renderLibrary() {
+  // Fetch all nodes from KV
+  const keys = await kvList();
+  const nodeIds = keys.map(k => k.name.replace("node_",""));
+  for (const id of nodeIds) { if (!memCache[id]) memCache[id] = await kvGet(id); }
+  const store = {};
+  for (const id of nodeIds) { if (memCache[id]) store[id] = memCache[id]; }
   const grid = document.getElementById("libGrid");
   let totalVers = 0;
   let totalNodes = 0;
@@ -627,8 +680,12 @@ function goToNode(chId, nodeId) {
   selectNode(chId, nodeId);
 }
 
-function exportAll() {
-  const store = loadStore();
+async function exportAll() {
+  const keys = await kvList();
+  const nodeIds = keys.map(k => k.name.replace("node_",""));
+  for (const id of nodeIds) { if (!memCache[id]) memCache[id] = await kvGet(id); }
+  const store = {};
+  for (const id of nodeIds) { if (memCache[id]) store[id] = memCache[id]; }
   let text = "富時代八部曲教學素材庫\n匯出時間：" + new Date().toLocaleString('zh-TW') + "\n\n";
   chapters.forEach(ch => {
     ch.nodes.forEach(node => {
