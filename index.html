@@ -212,6 +212,93 @@ body { font-family:'Noto Serif TC',serif; background:var(--bg); color:var(--text
   font-size:10px; letter-spacing:0.2em; color:var(--muted);
   font-family:'DM Mono',monospace; padding:16px 0 8px;
 }
+
+/* ── TODAY PAGE ── */
+.today-page { max-width: 700px; margin: 0 auto; padding: 24px 24px 80px; }
+.today-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border);
+}
+.today-title { font-size: 22px; font-weight: 900; }
+.today-date { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--gold); }
+.today-node-label {
+  font-size: 11px; letter-spacing: 0.15em; color: var(--gold);
+  font-family: 'DM Mono', monospace; margin-bottom: 6px;
+}
+.today-node-title { font-size: 22px; font-weight: 900; margin-bottom: 20px; }
+.set-today-btn {
+  background: var(--gold); color: var(--bg); border: none;
+  padding: 8px 16px; border-radius: 8px; font-size: 12px;
+  font-family: inherit; font-weight: 700; cursor: pointer;
+  transition: all 0.2s; white-space: nowrap;
+}
+.set-today-btn:hover { background: var(--gold2); }
+.today-empty { text-align: center; padding: 80px 20px; }
+
+/* ── MOBILE RESPONSIVE ── */
+@media (max-width: 768px) {
+  .teach-layout { flex-direction: column; }
+  
+  .sidebar {
+    width: 100%; height: auto; position: static;
+    border-right: none; border-bottom: 1px solid var(--border);
+    overflow-y: visible;
+  }
+  
+  .sb-chapter { }
+  .sb-ch-header { padding: 12px 16px; }
+  .sb-node { padding: 10px 16px 10px 36px; }
+  
+  .teach-main { padding: 16px 16px 80px; }
+  
+  .teach-top-bar { flex-direction: column; gap: 10px; }
+  .teach-actions { display: flex; gap: 6px; width: 100%; }
+  .action-btn { flex: 1; text-align: center; padding: 10px 8px; font-size: 12px; }
+  
+  .teach-node-title { font-size: 20px; }
+  
+  .ver-selector { flex-wrap: wrap; gap: 6px; }
+  .ver-tabs { flex-wrap: wrap; }
+  
+  .tc-body { font-size: 14px; padding: 14px 16px; }
+  .script-text { font-size: 15px; padding: 14px 16px; margin: 0 14px 14px; }
+  
+  .qa-item { padding: 10px 12px; }
+  .qa-text { font-size: 13px; }
+  
+  .drill-btn { padding: 10px 12px; }
+  .drill-text { font-size: 12px; }
+  
+  .note-input { font-size: 14px; }
+  
+  /* Library mobile */
+  .library-page { padding: 16px 16px 60px; }
+  .lib-item { padding: 12px 14px; gap: 10px; }
+  .lib-node-name { font-size: 13px; }
+  
+  /* Nav */
+  .nav-tabs { padding: 0 12px; gap: 2px; }
+  .brand-small { font-size: 10px; margin-right: 8px; }
+  .tab-btn { padding: 8px 12px; font-size: 12px; }
+  .date-badge { font-size: 10px; padding: 3px 8px; }
+  
+  /* Fix vertical text issue - ensure proper text flow */
+  .teach-main * { 
+    writing-mode: horizontal-tb !important;
+    text-orientation: mixed !important;
+  }
+  
+  /* Content cards full width on mobile */
+  .teach-cards { gap: 10px; }
+  .teach-card { border-radius: 10px; }
+  .tc-label { padding: 8px 14px; font-size: 9px; }
+}
+
+@media (max-width: 480px) {
+  .teach-node-title { font-size: 18px; }
+  .home-hero h1 { font-size: 28px; }
+  .chapters-grid { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
@@ -219,9 +306,22 @@ body { font-family:'Noto Serif TC',serif; background:var(--bg); color:var(--text
 <!-- NAV -->
 <div class="nav-tabs">
   <div class="brand-small">RICHTIMES 富時代</div>
-  <button class="tab-btn active" onclick="switchTab('teach')">🎓 晨會教學</button>
+  <button class="tab-btn active" onclick="switchTab('today')">📌 今日晨會</button>
+  <button class="tab-btn" onclick="switchTab('teach')">🎓 教學地圖</button>
   <button class="tab-btn" onclick="switchTab('library')">📚 素材庫</button>
   <div class="date-badge" id="dateBadge"></div>
+</div>
+
+<!-- PAGE: TODAY -->
+<div class="page active" id="pageToday">
+  <div class="today-page" id="todayPage">
+    <div class="today-empty" id="todayEmpty" style="display:none">
+      <div style="font-size:48px;opacity:0.3;margin-bottom:12px">📌</div>
+      <div style="font-size:15px;color:var(--muted)">今日還沒有晨會內容</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:6px">請主管到「教學地圖」生成今日節點後，點「設為今日晨會」</div>
+    </div>
+    <div id="todayContent"></div>
+  </div>
 </div>
 
 <!-- PAGE: TEACH -->
@@ -398,10 +498,120 @@ document.getElementById("dateBadge").textContent = (() => {
 })();
 
 function switchTab(tab) {
-  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', ['teach','library'][i]===tab));
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', ['today','teach','library'][i]===tab));
+  document.getElementById('pageToday').classList.toggle('active', tab==='today');
   document.getElementById('pageTeach').classList.toggle('active', tab==='teach');
   document.getElementById('pageLibrary').classList.toggle('active', tab==='library');
   if (tab==='library') renderLibrary();
+  if (tab==='today') renderToday();
+}
+
+// ── Today ──
+async function setToday(chId, nodeId) {
+  const todayData = {
+    chId, nodeId,
+    date: new Date().toDateString()
+  };
+  await fetch(WORKER_URL + "/kv", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({ key: "today", value: todayData })
+  });
+  // Show feedback
+  const btn = document.querySelector('.set-today-btn');
+  if (btn) { btn.textContent = "✓ 已設定！"; btn.style.background = "#4caf82"; }
+  setTimeout(() => renderToday(), 500);
+}
+
+async function renderToday() {
+  const todayEl = document.getElementById("todayContent");
+  const emptyEl = document.getElementById("todayEmpty");
+  
+  try {
+    const res = await fetch(WORKER_URL + "/kv?key=today");
+    const json = await res.json();
+    const todayData = json.value;
+    
+    if (!todayData) {
+      emptyEl.style.display = "block";
+      todayEl.innerHTML = "";
+      return;
+    }
+    
+    emptyEl.style.display = "none";
+    
+    const ch = chapters.find(c => c.id === todayData.chId);
+    const node = ch ? ch.nodes.find(n => n.id === todayData.nodeId) : null;
+    if (!ch || !node) { emptyEl.style.display = "block"; return; }
+    
+    // Load node content
+    if (!memCache[node.id]) memCache[node.id] = await kvGet(node.id);
+    const ns = memCache[node.id];
+    
+    const now = new Date();
+    const dateStr = `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}`;
+    
+    todayEl.innerHTML = `
+      <div class="today-header">
+        <div>
+          <div class="today-date">📌 ${dateStr} 今日晨會</div>
+          <div class="today-title">${ch.emoji} ${ch.subtitle}</div>
+        </div>
+      </div>
+      <div class="today-node-label">${ch.title} · ${ch.subtitle}</div>
+      <div class="today-node-title" style="color:${ch.color}">${node.name}</div>
+      ${ns && ns.versions && ns.versions.length > 0 
+        ? renderTodayContent(ns.versions[0].data, ch.color, node, ch)
+        : `<div style="color:var(--muted);font-size:14px">此節點還沒有內容，請到「教學地圖」生成。</div>`
+      }
+    `;
+  } catch(e) {
+    emptyEl.style.display = "block";
+    todayEl.innerHTML = "";
+  }
+}
+
+function renderTodayContent(d, color, node, ch) {
+  return `
+  <div class="teach-cards">
+    <div class="teach-card">
+      <div class="tc-label" style="color:${color};background:${color}18">🎯 今日目標</div>
+      <div class="tc-body" style="font-size:16px;font-weight:700;color:${color}">${d.goal||''}</div>
+    </div>
+    <div class="teach-card">
+      <div class="tc-label" style="color:#aaa">📋 新人該做什麼</div>
+      <div class="tc-body"><ul>${(d.actions||[]).map((a,i)=>`<li data-num="${['①','②','③','④'][i]||'·'}">${a}</li>`).join('')}</ul></div>
+    </div>
+    <div class="teach-card script-card">
+      <div class="tc-label">💬 可以直接用的話術</div>
+      <div class="script-text">${d.script||''}</div>
+    </div>
+    <div class="teach-card">
+      <div class="tc-label" style="color:#e05555;background:#e0555518">⚠️ 常見錯誤</div>
+      <div class="tc-body">${(d.errors||[]).map(e=>`<div class="err-item">${e}</div>`).join('')}</div>
+    </div>
+  </div>
+  <div class="qa-card" style="margin-top:14px">
+    <div class="qa-header"><div class="qa-tag">INTERACTION · 互動提問</div></div>
+    <div class="qa-list">
+      ${(d.questions||[]).map((q,i)=>`
+        <div class="qa-item" onclick="this.classList.toggle('revealed')">
+          <div class="qa-num">${i+1}</div>
+          <div><div class="qa-text">${q.q}</div><div class="qa-reveal">💡 ${q.hint}</div></div>
+        </div>`).join('')}
+    </div>
+  </div>
+  <div class="drill-section" style="margin-top:14px">
+    <div class="drill-header">DRILL DOWN — 繼續深入</div>
+    <div class="drill-btns">
+      ${(d.drills||[]).map((dt,i)=>`
+        <div class="drill-btn" onclick="doDrill('${dt.replace(/'/g,"\'")}',this)">
+          <span class="drill-icon">${['💬','🎯','⚡'][i]||'💡'}</span>
+          <span class="drill-text">${dt}</span>
+          <span class="drill-arrow">▶</span>
+        </div>`).join('')}
+    </div>
+  </div>`;
 }
 
 // ── Sidebar ──
@@ -443,6 +653,7 @@ async function buildSidebar() {
 function toggleSbChapter(chId) {
   openChapters[chId] = !openChapters[chId];
   buildSidebar(); // initial load
+renderToday(); // load today content
 }
 
 async function selectNode(chId, nodeId) {
@@ -487,6 +698,7 @@ async function renderTeachMain() {
         <div class="teach-node-title">${currentNode.name}</div>
       </div>
       <div class="teach-actions">
+        ${currentVer ? `<button class="set-today-btn" onclick="setToday('${currentChapter.id}','${currentNode.id}')">📌 設為今日晨會</button>` : ''}
         ${currentVer ? `<button class="action-btn" onclick="generateNew()">🔄 新增版本</button>` : ''}
         <button class="action-btn primary" onclick="generateNew()">${currentVer?'＋再生成':'▶ 開始生成'}</button>
       </div>
