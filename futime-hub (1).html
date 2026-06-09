@@ -3,977 +3,1098 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>富時代｜八部曲晨會教學系統</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>富時代 · 決策引擎</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Noto+Sans+TC:wght@300;400;500;700&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #0f0f13; --surface: #16161c; --surface2: #1e1e26;
-  --border: #2a2a36; --gold: #c9a84c; --gold2: #f0d080;
-  --text: #e8e4dc; --muted: #888; --green: #4caf82; --red: #e05555;
-}
-* { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'Noto Serif TC',serif; background:var(--bg); color:var(--text); min-height:100vh; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
-/* ── NAV TABS ── */
-.nav-tabs {
-  position:fixed; top:0; left:0; right:0; z-index:100;
-  background:var(--surface); border-bottom:1px solid var(--border);
-  display:flex; align-items:center; padding:0 24px; height:52px; gap:4px;
-}
-.brand-small { font-size:11px; letter-spacing:0.2em; color:var(--gold); margin-right:20px; white-space:nowrap; }
-.tab-btn {
-  padding:8px 18px; border-radius:8px; cursor:pointer;
-  font-size:13px; font-family:inherit; border:none;
-  background:none; color:var(--muted); transition:all 0.2s;
-}
-.tab-btn.active { background:var(--surface2); color:var(--text); }
-.tab-btn:hover:not(.active) { color:var(--text); }
-.date-badge {
-  margin-left:auto; font-family:'DM Mono',monospace; font-size:11px;
-  color:var(--muted); border:1px solid var(--border); padding:3px 10px; border-radius:20px;
+:root{
+  --ink:    #1C2B22;
+  --ink2:   #2F4237;
+  --moss:   #3D5A47;
+  --sage:   #6A8F78;
+  --mist:   #9ABFAA;
+  --foam:   #E8F2EC;
+  --cream:  #F7F3EA;
+  --paper:  #FDFAF5;
+  --gold:   #B8882E;
+  --gold2:  #DEB86A;
+  --amber:  #E8A020;
+  --rose:   #D45A3A;
+  --border: rgba(58,86,68,0.10);
+  --shadow: rgba(26,40,32,0.07);
 }
 
-.page { display:none; padding-top:52px; min-height:100vh; }
-.page.active { display:block; }
+html,body{width:100%;height:100%;overflow:hidden;background:#F7F3EA;font-family:'Noto Sans TC',sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;}
 
-/* ══════════════════════════════════
-   PAGE 1: 教學
-══════════════════════════════════ */
-.teach-layout { display:flex; min-height:calc(100vh - 52px); }
+/* warm linen bg */
+.bg-paper{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 80% 50% at 5% 0%,   rgba(232,160,32,0.10) 0%,transparent 55%),
+    radial-gradient(ellipse 65% 50% at 95% 100%,  rgba(61,90,71,0.08)  0%,transparent 55%),
+    radial-gradient(ellipse 60% 60% at 50% 45%,  rgba(255,252,244,0.7) 0%,transparent 80%);}
+.bg-linen{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.22;
+  background-image:
+    repeating-linear-gradient(0deg,  transparent,transparent 4px,rgba(58,86,68,0.018) 4px,rgba(58,86,68,0.018) 5px),
+    repeating-linear-gradient(90deg, transparent,transparent 4px,rgba(58,86,68,0.012) 4px,rgba(58,86,68,0.012) 5px);}
 
-/* Sidebar */
-.sidebar {
-  width:260px; flex-shrink:0; border-right:1px solid var(--border);
-  background:var(--surface); overflow-y:auto;
-  position:sticky; top:52px; height:calc(100vh - 52px);
-}
-.sb-chapter { border-bottom:1px solid var(--border); }
-.sb-ch-header {
-  padding:14px 16px; cursor:pointer; display:flex; align-items:center; gap:10px;
-  transition:background 0.2s; user-select:none;
-}
-.sb-ch-header:hover { background:var(--surface2); }
-.sb-ch-emoji { font-size:18px; }
-.sb-ch-info { flex:1; }
-.sb-ch-num { font-size:10px; color:var(--muted); letter-spacing:0.1em; }
-.sb-ch-name { font-size:14px; font-weight:700; }
-.sb-ch-arrow { font-size:10px; color:var(--muted); transition:transform 0.2s; }
-.sb-ch-arrow.open { transform:rotate(180deg); }
-.sb-nodes { display:none; }
-.sb-nodes.open { display:block; }
-.sb-node {
-  padding:10px 16px 10px 44px; cursor:pointer;
-  font-size:13px; color:var(--muted); transition:all 0.2s;
-  display:flex; align-items:center; gap:8px; border-left:2px solid transparent;
-}
-.sb-node:hover { color:var(--text); background:var(--surface2); }
-.sb-node.active { color:var(--gold); border-left-color:var(--gold); background:var(--surface2); }
-.sb-node-dot { width:6px; height:6px; border-radius:50%; background:var(--border); flex-shrink:0; }
-.sb-node.has-data .sb-node-dot { background:var(--green); }
-.sb-node.active .sb-node-dot { background:var(--gold); }
-.sb-ver-badge {
-  font-family:'DM Mono',monospace; font-size:9px; color:var(--muted);
-  background:var(--surface); border:1px solid var(--border);
-  padding:1px 5px; border-radius:4px; margin-left:auto;
-}
+.wrap{position:relative;z-index:1;width:100%;height:100dvh;display:flex;flex-direction:column;overflow:hidden;background:#F7F3EA;}
 
-/* Main content */
-.teach-main { flex:1; overflow-y:auto; padding:28px 32px 60px; max-width:800px; }
+/* ══ HEADER — full bright ══ */
+header{
+  flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 36px 13px;
+  position:relative;
+  background:linear-gradient(135deg,#FFFDF7 0%,#FFF8EC 50%,#F9F4E8 100%);
+  border-bottom:1px solid rgba(184,136,46,0.18);
+  box-shadow:0 2px 20px rgba(26,40,32,0.06);
+}
+.h-rule{position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent 0%,var(--amber) 25%,var(--gold2) 50%,var(--amber) 75%,transparent 100%);}
 
-.teach-top-bar {
-  display:flex; align-items:flex-start; justify-content:space-between;
-  margin-bottom:24px; gap:16px;
-}
-.teach-title-area { flex:1; }
-.teach-ch-label { font-size:11px; color:var(--gold); letter-spacing:0.15em; margin-bottom:4px; }
-.teach-node-title { font-size:26px; font-weight:900; }
-.teach-actions { display:flex; gap:8px; flex-shrink:0; }
-.action-btn {
-  background:var(--surface); border:1px solid var(--border);
-  color:var(--muted); padding:8px 14px; border-radius:8px;
-  cursor:pointer; font-size:12px; font-family:inherit; transition:all 0.2s; white-space:nowrap;
-}
-.action-btn:hover { color:var(--text); border-color:var(--gold); }
-.action-btn.primary { background:var(--gold); color:var(--bg); border-color:var(--gold); font-weight:700; }
-.action-btn.primary:hover { background:var(--gold2); }
+.logo-area{display:flex;align-items:center;gap:14px;}
+.logo-mark{
+  width:46px;height:46px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(140deg,#3D5A47 0%,#1C2B22 100%);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;
+  box-shadow:0 3px 14px rgba(29,43,34,0.25),0 0 0 2.5px rgba(184,136,46,0.35);}
+.logo-mark::after{content:'';position:absolute;inset:4px;border-radius:50%;border:1px solid rgba(222,184,106,0.35);}
+.logo-kanji{font-family:'Playfair Display',serif;font-size:17px;color:#F0D880;line-height:1;position:relative;z-index:1;font-weight:700;}
 
-/* Version selector */
-.ver-selector {
-  display:flex; align-items:center; gap:8px; margin-bottom:20px;
-  padding:10px 14px; background:var(--surface); border:1px solid var(--border); border-radius:10px;
-}
-.ver-label { font-size:11px; color:var(--muted); font-family:'DM Mono',monospace; }
-.ver-tabs { display:flex; gap:6px; flex-wrap:wrap; flex:1; }
-.ver-tab {
-  padding:4px 12px; border-radius:6px; cursor:pointer; font-size:11px;
-  background:var(--surface2); border:1px solid var(--border); color:var(--muted);
-  font-family:'DM Mono',monospace; transition:all 0.2s; white-space:nowrap;
-}
-.ver-tab.active { background:var(--gold); color:var(--bg); border-color:var(--gold); font-weight:700; }
-.ver-tab:hover:not(.active) { border-color:var(--gold); color:var(--text); }
-.ver-del { font-size:11px; color:var(--muted); cursor:pointer; padding:2px 6px; border-radius:4px; }
-.ver-del:hover { color:var(--red); }
+.brand-col{display:flex;flex-direction:column;gap:3px;}
+.brand-sup{font-size:7.5px;letter-spacing:0.3em;color:var(--sage);font-weight:300;text-transform:uppercase;}
+.brand-name{display:flex;align-items:baseline;gap:6px;line-height:1;}
 
-/* Note area */
-.note-area {
-  margin-top:16px; padding:14px 16px;
-  background:var(--surface2); border:1px solid var(--border); border-radius:10px;
-  border-left:3px solid var(--gold);
+/* ── vivid title on light bg ── */
+.brand-cn{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(20px,2.2vw,30px);font-weight:900;
+  color:var(--ink);letter-spacing:0.04em;position:relative;
 }
-.note-label { font-size:10px; color:var(--gold); letter-spacing:0.15em; font-family:'DM Mono',monospace; margin-bottom:8px; }
-.note-input {
-  width:100%; background:none; border:none; outline:none;
-  color:var(--text); font-size:13px; font-family:inherit; line-height:1.7;
-  resize:none; min-height:60px;
+.brand-cn::after{
+  content:'';position:absolute;bottom:-2px;left:0;right:0;height:2.5px;
+  background:linear-gradient(90deg,var(--rose),var(--amber));border-radius:2px;}
+.brand-ai{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(18px,2vw,27px);font-weight:700;font-style:italic;
+  background:linear-gradient(135deg,#D43A20 0%,#E87020 50%,#D4A020 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
-.note-input::placeholder { color:var(--muted); }
-.note-save-btn {
-  margin-top:8px; padding:5px 14px; border-radius:6px; font-size:11px;
-  background:var(--gold); color:var(--bg); border:none; cursor:pointer; font-family:inherit; font-weight:700;
+.brand-suffix{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(20px,2.2vw,30px);font-weight:900;
+  color:var(--moss);letter-spacing:0.02em;
 }
 
-/* Empty state */
-.empty-state {
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  min-height:400px; gap:12px; color:var(--muted); text-align:center;
-}
-.empty-icon { font-size:48px; opacity:0.3; }
-.empty-text { font-size:14px; }
+.h-right{display:flex;align-items:center;gap:14px;}
+.h-pill{display:flex;align-items:center;gap:6px;padding:5px 13px;border-radius:100px;background:var(--foam);border:1px solid rgba(58,86,68,0.18);}
+.h-dot{width:5px;height:5px;border-radius:50%;background:#4BB870;flex-shrink:0;animation:pulse 2.5s ease infinite;}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(75,184,112,0.45)}50%{opacity:.85;box-shadow:0 0 0 5px rgba(75,184,112,0)}}
+.h-pill-text{font-size:9px;letter-spacing:0.1em;color:var(--moss);font-weight:500;}
+.h-meta{text-align:right;}
+.h-meta-top{font-size:7.5px;letter-spacing:0.2em;color:var(--mist);font-weight:300;}
+.h-bignum{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,3vw,42px);color:rgba(58,86,68,0.08);letter-spacing:-0.04em;font-weight:300;line-height:1;}
 
-/* Loading */
-.tv-loading { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:300px; gap:16px; }
-.loading-ring { width:40px; height:40px; border-radius:50%; border:3px solid var(--border); border-top-color:var(--gold); animation:spin 0.8s linear infinite; }
-@keyframes spin { to { transform:rotate(360deg); } }
-.loading-text { font-size:13px; color:var(--muted); letter-spacing:0.1em; }
+/* ══ DIVIDER ══ */
+.divider{flex-shrink:0;display:flex;align-items:center;gap:12px;padding:7px 36px 6px;background:#F7F3EA;}
+.div-ornament{font-size:9px;color:var(--amber);opacity:0.9;flex-shrink:0;}
+.div-label{font-size:9px;letter-spacing:0.22em;color:var(--moss);white-space:nowrap;font-weight:500;text-transform:uppercase;}
+.div-line{flex:1;height:1px;background:linear-gradient(90deg,rgba(58,86,68,0.2),transparent);}
 
-/* Teaching cards */
-.teach-cards { display:flex; flex-direction:column; gap:14px; }
-.teach-card { background:var(--surface); border:1px solid var(--border); border-radius:14px; overflow:hidden; animation:fadeUp 0.35s ease both; }
-.teach-card:nth-child(2){animation-delay:.07s} .teach-card:nth-child(3){animation-delay:.14s}
-.teach-card:nth-child(4){animation-delay:.21s} .teach-card:nth-child(5){animation-delay:.28s}
-@keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-.tc-label { padding:10px 20px; font-size:10px; letter-spacing:0.25em; font-family:'DM Mono',monospace; border-bottom:1px solid var(--border); }
-.tc-body { padding:18px 20px; font-size:14px; line-height:1.85; color:var(--text); }
-.tc-body ul { list-style:none; display:flex; flex-direction:column; gap:8px; }
-.tc-body ul li { display:flex; gap:10px; }
-.tc-body ul li::before { content:attr(data-num); color:var(--gold); font-weight:700; flex-shrink:0; }
-.err-item { display:flex; gap:10px; margin-bottom:8px; color:#e8a0a0; }
-.err-item::before { content:'✗'; color:var(--red); flex-shrink:0; }
-.script-card { background:var(--surface2); border-color:var(--gold); }
-.script-card .tc-label { background:var(--gold); color:var(--bg); border-bottom:none; }
-.script-text { font-size:17px; font-weight:700; line-height:1.7; color:var(--gold2); padding:18px 20px; border-left:3px solid var(--gold); margin:0 20px 20px; border-radius:0 8px 8px 0; background:rgba(201,168,76,0.06); }
-.qa-card { background:var(--surface2); border:1px solid var(--border); border-radius:14px; overflow:hidden; }
-.qa-header { padding:12px 20px; background:#1a2a1a; border-bottom:1px solid var(--border); }
-.qa-tag { font-size:10px; letter-spacing:0.2em; color:var(--green); font-family:'DM Mono',monospace; }
-.qa-list { padding:14px 20px; display:flex; flex-direction:column; gap:8px; }
-.qa-item { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:12px 16px; cursor:pointer; transition:all 0.2s; display:flex; align-items:flex-start; gap:12px; }
-.qa-item:hover { border-color:var(--green); }
-.qa-num { width:22px; height:22px; border-radius:50%; background:#1a2a1a; color:var(--green); font-size:10px; font-weight:700; font-family:'DM Mono',monospace; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
-.qa-text { font-size:13px; line-height:1.6; flex:1; }
-.qa-reveal { display:none; margin-top:8px; padding-top:8px; border-top:1px solid var(--border); font-size:12px; color:var(--muted); line-height:1.7; }
-.qa-item.revealed .qa-reveal { display:block; }
-.qa-item.revealed { border-color:var(--green); background:#111a11; }
-.drill-section { margin-top:14px; }
-.drill-header { font-size:10px; letter-spacing:0.2em; color:var(--muted); margin-bottom:8px; font-family:'DM Mono',monospace; }
-.drill-btns { display:flex; flex-direction:column; gap:6px; }
-.drill-btn { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:12px 16px; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; gap:10px; text-align:left; }
-.drill-btn:hover { border-color:var(--gold); background:var(--surface2); }
-.drill-icon { font-size:15px; flex-shrink:0; }
-.drill-text { flex:1; font-size:13px; color:var(--text); line-height:1.4; }
-.drill-arrow { font-size:11px; color:var(--border); }
-.drill-result { margin-top:6px; padding:16px 18px; background:var(--surface2); border:1px solid var(--border); border-left:3px solid var(--gold); border-radius:10px; font-size:13px; line-height:1.9; color:var(--text); white-space:pre-wrap; animation:fadeUp 0.3s ease; }
-.drill-result-title { font-size:10px; color:var(--gold); letter-spacing:0.15em; margin-bottom:10px; font-family:'DM Mono',monospace; }
+/* ══ GRID ══ */
+.grid{flex:1;min-height:0;display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:1fr;gap:10px;padding:0 36px 14px;background:#F7F3EA;}
 
-/* ══════════════════════════════════
-   PAGE 2: 素材庫
-══════════════════════════════════ */
-.library-page { padding:28px 32px 60px; max-width:900px; margin:0 auto; }
-.lib-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; }
-.lib-title { font-size:22px; font-weight:900; }
-.lib-stats { font-size:13px; color:var(--muted); }
-.lib-grid { display:flex; flex-direction:column; gap:8px; }
-.lib-item {
-  background:var(--surface); border:1px solid var(--border); border-radius:12px;
-  padding:16px 20px; display:flex; align-items:center; gap:16px;
-  cursor:pointer; transition:all 0.2s;
+/* ══ CARD ══ */
+.card{
+  position:relative;overflow:hidden;border-radius:16px;
+  background:var(--paper);border:1px solid rgba(58,86,68,0.08);
+  display:flex;flex-direction:column;text-decoration:none;color:inherit;min-height:0;
+  transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .28s,border-color .28s;
+  box-shadow:0 1px 0 rgba(255,255,255,0.9) inset,0 2px 12px var(--shadow);
 }
-.lib-item:hover { border-color:var(--gold); background:var(--surface2); }
-.lib-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
-.lib-info { flex:1; }
-.lib-node-name { font-size:15px; font-weight:700; margin-bottom:3px; }
-.lib-meta { font-size:11px; color:var(--muted); font-family:'DM Mono',monospace; }
-.lib-ver-count {
-  font-size:12px; font-family:'DM Mono',monospace;
-  background:var(--surface2); border:1px solid var(--border);
-  padding:4px 12px; border-radius:20px; color:var(--muted); white-space:nowrap;
-}
-.lib-empty { text-align:center; padding:60px 20px; color:var(--muted); font-size:14px; }
-.lib-chapter-label {
-  font-size:10px; letter-spacing:0.2em; color:var(--muted);
-  font-family:'DM Mono',monospace; padding:16px 0 8px;
-}
+.card:hover{transform:translateY(-4px) scale(1.007);border-color:rgba(184,136,46,0.3);
+  box-shadow:0 1px 0 rgba(255,255,255,0.9) inset,0 16px 44px rgba(26,40,32,0.12),0 0 0 1px rgba(184,136,46,0.15);}
 
-/* ── TODAY PAGE ── */
-.today-page { max-width: 700px; margin: 0 auto; padding: 24px 24px 80px; }
-.today-header {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border);
-}
-.today-title { font-size: 22px; font-weight: 900; }
-.today-date { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--gold); }
-.today-node-label {
-  font-size: 11px; letter-spacing: 0.15em; color: var(--gold);
-  font-family: 'DM Mono', monospace; margin-bottom: 6px;
-}
-.today-node-title { font-size: 22px; font-weight: 900; margin-bottom: 20px; }
-.set-today-btn {
-  background: var(--gold); color: var(--bg); border: none;
-  padding: 8px 16px; border-radius: 8px; font-size: 12px;
-  font-family: inherit; font-weight: 700; cursor: pointer;
-  transition: all 0.2s; white-space: nowrap;
-}
-.set-today-btn:hover { background: var(--gold2); }
-.today-empty { text-align: center; padding: 80px 20px; }
+.c-accent{position:absolute;top:0;left:0;right:0;height:2px;border-radius:16px 16px 0 0;opacity:0;transition:opacity .3s;}
+.card:hover .c-accent{opacity:1;}
+.ca-green{background:linear-gradient(90deg,transparent,#3D5A47,#7BAA88,transparent);}
+.ca-gold {background:linear-gradient(90deg,transparent,var(--amber),var(--gold2),transparent);}
+.ca-rose {background:linear-gradient(90deg,transparent,var(--rose),var(--amber),transparent);}
+.ca-teal {background:linear-gradient(90deg,transparent,#2E7A6A,#5AA890,transparent);}
 
-/* ── MOBILE RESPONSIVE ── */
-@media (max-width: 768px) {
-  .teach-layout { flex-direction: column; }
-  
-  .sidebar {
-    width: 100%; height: auto; position: static;
-    border-right: none; border-bottom: 1px solid var(--border);
-    overflow-y: visible;
-  }
-  
-  .sb-chapter { }
-  .sb-ch-header { padding: 12px 16px; }
-  .sb-node { padding: 10px 16px 10px 36px; }
-  
-  .teach-main { padding: 16px 16px 80px; }
-  
-  .teach-top-bar { flex-direction: column; gap: 10px; }
-  .teach-actions { display: flex; gap: 6px; width: 100%; }
-  .action-btn { flex: 1; text-align: center; padding: 10px 8px; font-size: 12px; }
-  
-  .teach-node-title { font-size: 20px; }
-  
-  .ver-selector { flex-wrap: wrap; gap: 6px; }
-  .ver-tabs { flex-wrap: wrap; }
-  
-  .tc-body { font-size: 14px; padding: 14px 16px; }
-  .script-text { font-size: 15px; padding: 14px 16px; margin: 0 14px 14px; }
-  
-  .qa-item { padding: 10px 12px; }
-  .qa-text { font-size: 13px; }
-  
-  .drill-btn { padding: 10px 12px; }
-  .drill-text { font-size: 12px; }
-  
-  .note-input { font-size: 14px; }
-  
-  /* Library mobile */
-  .library-page { padding: 16px 16px 60px; }
-  .lib-item { padding: 12px 14px; gap: 10px; }
-  .lib-node-name { font-size: 13px; }
-  
-  /* Nav */
-  .nav-tabs { padding: 0 12px; gap: 2px; }
-  .brand-small { font-size: 10px; margin-right: 8px; }
-  .tab-btn { padding: 8px 12px; font-size: 12px; }
-  .date-badge { font-size: 10px; padding: 3px 8px; }
-  
-  /* Fix vertical text issue - ensure proper text flow */
-  .teach-main * { 
-    writing-mode: horizontal-tb !important;
-    text-orientation: mixed !important;
-  }
-  
-  /* Content cards full width on mobile */
-  .teach-cards { gap: 10px; }
-  .teach-card { border-radius: 10px; }
-  .tc-label { padding: 8px 14px; font-size: 9px; }
+/* ══ ILL ══ */
+.ill{flex:0 0 50%;min-height:0;overflow:hidden;position:relative;border-radius:16px 16px 0 0;}
+.ill-bg{position:absolute;inset:0;transition:transform .4s ease;}
+.card:hover .ill-bg{transform:scale(1.04);}
+.ill-fade{position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(to bottom,transparent 45%,var(--paper) 100%);}
+.ill svg{position:absolute;inset:0;width:100%;height:100%;}
+.num-badge{position:absolute;top:10px;left:12px;z-index:10;
+  font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:0.06em;font-weight:600;
+  color:var(--ink);background:rgba(253,250,245,0.88);
+  border:1px solid rgba(58,86,68,0.18);padding:3px 9px;border-radius:4px;backdrop-filter:blur(8px);}
+
+/* ILL BGs — all warm bright */
+.s1-bg{background:linear-gradient(145deg,#E8F5EE 0%,#D8EEE2 100%);}
+.s2-bg{background:linear-gradient(145deg,#FFF8EE 0%,#F5EDDC 100%);}
+.s3-bg{background:linear-gradient(145deg,#FFF5F0 0%,#FDEADE 100%);}
+.s4-bg{background:linear-gradient(145deg,#FFFAEE 0%,#F8F0DC 100%);}
+.s5-bg{background:linear-gradient(145deg,#F0F8F4 0%,#E2F0E8 100%);}
+.s6-bg{background:linear-gradient(145deg,#F2F8FF 0%,#E4EEF8 100%);}
+
+/* ══ CARD BODY ══ */
+.cb{padding:11px 14px 0;flex:1;display:flex;flex-direction:column;min-height:0;}
+.c-eyebrow{font-size:9.5px;letter-spacing:0.24em;color:var(--sage);margin-bottom:4px;font-weight:300;text-transform:uppercase;}
+.c-title{font-family:'Playfair Display',serif;font-size:clamp(15px,1.35vw,19px);color:var(--ink);line-height:1.28;margin-bottom:5px;font-weight:700;}
+.c-desc{font-size:clamp(11px,0.9vw,13px);color:#6A8070;line-height:1.68;flex:1;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;}
+.chips{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px;}
+.chip{font-size:9.5px;color:var(--moss);background:var(--foam);border:1px solid rgba(58,86,68,0.14);padding:2px 9px;border-radius:100px;white-space:nowrap;transition:all .2s;}
+.card:hover .chip{background:rgba(58,86,68,0.09);border-color:rgba(58,86,68,0.28);}
+
+/* ══ CARD FOOT ══ */
+.cfoot{flex-shrink:0;padding:8px 14px 12px;display:flex;align-items:center;justify-content:space-between;margin-top:auto;border-top:1px solid rgba(58,86,68,0.05);}
+.cta-label{font-size:10px;letter-spacing:0.18em;color:var(--mist);transition:color .2s;text-transform:uppercase;}
+.card:hover .cta-label{color:var(--moss);}
+.arrow-ring{width:26px;height:26px;border-radius:50%;border:1px solid rgba(58,86,68,0.14);display:flex;align-items:center;justify-content:center;background:transparent;transition:all .25s cubic-bezier(.34,1.56,.64,1);}
+.card:hover .arrow-ring{border-color:var(--amber);background:var(--amber);transform:scale(1.12);}
+.arrow-ring svg{width:9px;height:9px;stroke:var(--mist);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:stroke .2s;}
+.card:hover .arrow-ring svg{stroke:#fff;}
+
+/* S5 buttons */
+.s5-btns{flex-shrink:0;display:flex;flex-direction:column;gap:7px;padding:10px 12px 14px;border-top:1px solid rgba(58,86,68,0.05);margin-top:auto;}
+.s5-btn{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:10px;border:1px solid rgba(58,86,68,0.11);background:rgba(58,86,68,0.03);text-decoration:none;color:#587068;font-size:15px;font-weight:500;transition:all .2s;white-space:nowrap;}
+.s5-btn:hover{border-color:rgba(58,86,68,0.28);color:var(--ink2);background:rgba(58,86,68,0.07);}
+.s5-btn svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;opacity:0.55;}
+.s5-btn:hover svg{opacity:1;}
+.s5-pip{width:4px;height:4px;border-radius:50%;background:rgba(58,86,68,0.18);margin-left:auto;flex-shrink:0;transition:all .2s;}
+.s5-btn:hover .s5-pip{background:var(--amber);box-shadow:0 0 5px rgba(232,160,32,0.5);}
+
+/* ══ QUICK TOOLBAR ══ */
+.qtoolbar{
+  flex-shrink:0;
+  display:flex;align-items:center;gap:8px;
+  padding:6px 36px;
+  border-top:1px solid var(--border);
+  background:rgba(248,245,238,0.85);
+}
+.qt-label{
+  font-size:8px;letter-spacing:0.18em;text-transform:uppercase;
+  color:var(--mist);white-space:nowrap;margin-right:4px;
+  font-family:'Cormorant Garamond',serif;
+}
+.qt-btn{
+  display:flex;align-items:center;gap:7px;
+  padding:5px 14px 5px 10px;
+  border-radius:20px;
+  border:1px solid rgba(58,86,68,0.13);
+  background:rgba(58,86,68,0.04);
+  text-decoration:none;
+  color:var(--ink2);
+  font-size:11px;font-weight:500;
+  white-space:nowrap;
+  transition:all .2s;
+  cursor:pointer;
+}
+.qt-btn:hover{
+  background:rgba(58,86,68,0.09);
+  border-color:rgba(58,86,68,0.22);
+  transform:translateY(-1px);
+  box-shadow:0 3px 10px var(--shadow);
+}
+.qt-icon{
+  width:16px;height:16px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.qt-icon svg{width:14px;height:14px;stroke:var(--moss);stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+.qt-tag{
+  font-size:7.5px;letter-spacing:0.08em;
+  background:var(--foam);color:var(--sage);
+  border-radius:10px;padding:1px 7px;
+  border:1px solid rgba(58,86,68,0.10);
+  margin-left:2px;
 }
 
-@media (max-width: 480px) {
-  .teach-node-title { font-size: 18px; }
-  .home-hero h1 { font-size: 28px; }
-  .chapters-grid { grid-template-columns: 1fr; }
+/* ══ PAGE FOOTER ══ */
+footer{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:7px 36px;border-top:1px solid var(--border);background:rgba(253,250,245,0.7);}
+.f-left,.f-right{font-size:8.5px;letter-spacing:0.14em;color:var(--mist);}
+.f-gem{color:var(--amber);opacity:0.5;margin:0 8px;}
+
+/* ══ ANIM ══ */
+@keyframes riseIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+header   {animation:riseIn .45s .00s ease both;}
+.divider {animation:riseIn .45s .08s ease both;}
+.grid    {animation:riseIn .5s  .16s ease both;}
+.qtoolbar{animation:riseIn .45s .24s ease both;}
+footer   {animation:riseIn .45s .32s ease both;}
+
+/* ══ MOBILE ══ */
+@media(max-width:768px){
+  html,body{overflow:hidden;}
+  header{padding:10px 16px 9px;}
+  .logo-mark{width:38px;height:38px;}
+  .logo-kanji{font-size:14px;}
+  .brand-cn,.brand-suffix{font-size:18px;}
+  .brand-ai{font-size:16px;}
+  .brand-sup{font-size:7px;}
+  .h-pill,.h-meta{display:none;}
+  .divider{padding:5px 14px 4px;}
+  .grid{grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:8px;padding:0 14px 10px;}
+  .card{border-radius:12px;}
+  .card:hover{transform:none;}
+  .num-badge{font-size:9px;top:8px;left:10px;padding:2px 7px;}
+  .cb{padding:7px 11px 0;}
+  .c-eyebrow{font-size:6.5px;margin-bottom:2px;}
+  .c-title{font-size:11px;margin-bottom:2px;}
+  .c-desc{font-size:8px;line-height:1.5;-webkit-line-clamp:2;}
+  .chips{display:none;}
+  .cfoot{padding:6px 11px 9px;}
+  .cta-label{font-size:7px;}
+  .arrow-ring{width:20px;height:20px;}
+  .arrow-ring svg{width:8px;height:8px;}
+  .s5-btns{gap:4px;padding:5px 11px 9px;}
+  .s5-btn{padding:5px 9px;font-size:8.5px;gap:6px;border-radius:6px;}
+  .qtoolbar{padding:5px 14px;gap:6px;overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;}
+  .qt-label{display:none;}
+  .qt-btn{font-size:9.5px;padding:4px 10px 4px 8px;gap:5px;}
+  .qt-icon{width:14px;height:14px;}
+  .qt-icon svg{width:12px;height:12px;}
+  .qt-tag{font-size:6.5px;padding:1px 5px;}
+  footer{padding:6px 14px;}
+  .f-left,.f-right{font-size:7.5px;}
 }
 </style>
 </head>
 <body>
+<div class="bg-paper"></div>
+<div class="bg-linen"></div>
+<div class="wrap">
 
-<!-- NAV -->
-<div class="nav-tabs">
-  <div class="brand-small">RICHTIMES 富時代</div>
-  <button class="tab-btn active" onclick="switchTab('today')">📌 今日晨會</button>
-  <button class="tab-btn" onclick="switchTab('teach')">🎓 教學地圖</button>
-  <button class="tab-btn" onclick="switchTab('library')">📚 素材庫</button>
-  <div class="date-badge" id="dateBadge"></div>
+<!-- ══ HEADER ══ -->
+<header>
+  <div class="logo-area">
+    <div class="logo-mark"><span class="logo-kanji">富</span></div>
+    <div class="brand-col">
+      <div class="brand-sup">Richtime Internal Portal · 2026</div>
+      <div class="brand-name">
+        <span class="brand-cn">富時代</span>
+        <span class="brand-ai">AI</span>
+        <span class="brand-suffix">決策引擎</span>
+      </div>
+    </div>
+  </div>
+  <div class="h-right">
+    <div class="h-pill"><div class="h-dot"></div><span class="h-pill-text">系統運行中</span></div>
+    <div class="h-meta">
+      <div class="h-meta-top">V 1.5 · SIX SYSTEMS</div>
+      <div class="h-bignum">06</div>
+    </div>
+  </div>
+  <div class="h-rule"></div>
+</header>
+
+<!-- ══ DIVIDER ══ -->
+<div class="divider">
+  <div class="div-ornament">◆</div>
+  <div class="div-label">Six Core Systems · 六大核心系統入口</div>
+  <div class="div-line"></div>
 </div>
 
-<!-- PAGE: TODAY -->
-<div class="page active" id="pageToday">
-  <div class="today-page" id="todayPage">
-    <div class="today-empty" id="todayEmpty" style="display:none">
-      <div style="font-size:48px;opacity:0.3;margin-bottom:12px">📌</div>
-      <div style="font-size:15px;color:var(--muted)">今日還沒有晨會內容</div>
-      <div style="font-size:12px;color:var(--muted);margin-top:6px">請主管到「教學地圖」生成今日節點後，點「設為今日晨會」</div>
-    </div>
-    <div id="todayContent"></div>
+<!-- ══ GRID ══ -->
+<div class="grid">
+
+<!-- ─── S1 五邊形 + 清楚標籤 ─── -->
+<a class="card" href="https://richtime90117277-alt.github.io/futime-crm/crm_cloud_v19.html" target="_blank">
+  <div class="c-accent ca-green"></div>
+  <div class="ill">
+    <div class="ill-bg s1-bg"></div>
+    <div class="ill-fade"></div>
+    <div class="num-badge">01</div>
+    <svg viewBox="0 0 200 165" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <radialGradient id="pgFill" cx="40%" cy="30%" r="70%">
+          <stop offset="0%" stop-color="#5A8A6A"/>
+          <stop offset="100%" stop-color="#1E3228"/>
+        </radialGradient>
+        <filter id="gp1"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="gp1s"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <!-- soft glow behind -->
+      <polygon points="100,20 162,58 140,128 60,128 38,58" fill="rgba(61,90,71,0.15)" filter="url(#gp1)"/>
+      <!-- filled pentagon -->
+      <polygon points="100,24 158,60 137,122 63,122 42,60" fill="url(#pgFill)"/>
+      <!-- sheen -->
+      <polygon points="100,24 158,60 140,60 100,30" fill="rgba(255,255,255,0.08)"/>
+      <!-- border -->
+      <polygon points="100,24 158,60 137,122 63,122 42,60" fill="none" stroke="rgba(200,230,210,0.22)" stroke-width="1.2"/>
+      <!-- inner ring -->
+      <polygon points="100,46 136,68 122,106 78,106 64,68" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="0.9"/>
+      <!-- centre -->
+      <circle cx="100" cy="76" r="16" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>
+      <circle cx="100" cy="76" r="7" fill="rgba(232,160,32,0.9)"/>
+      <circle cx="100" cy="76" r="3" fill="#fff"/>
+      <!-- corner dots -->
+      <circle cx="100" cy="24" r="5" fill="#DEB86A" filter="url(#gp1s)"/>
+      <circle cx="158" cy="60" r="3.5" fill="rgba(255,255,255,0.6)"/>
+      <circle cx="137" cy="122" r="3.5" fill="rgba(255,255,255,0.45)"/>
+      <circle cx="63"  cy="122" r="3.5" fill="rgba(255,255,255,0.45)"/>
+      <circle cx="42"  cy="60"  r="3.5" fill="rgba(255,255,255,0.55)"/>
+      <!-- connector lines -->
+      <line x1="100" y1="60"  x2="100" y2="29"  stroke="rgba(255,255,255,0.2)"  stroke-width="0.9" stroke-dasharray="3 2"/>
+      <line x1="113" y1="69"  x2="153" y2="62"  stroke="rgba(255,255,255,0.16)" stroke-width="0.9" stroke-dasharray="3 2"/>
+      <line x1="111" y1="83"  x2="132" y2="118" stroke="rgba(255,255,255,0.14)" stroke-width="0.9" stroke-dasharray="3 2"/>
+      <line x1="89"  y1="83"  x2="68"  y2="118" stroke="rgba(255,255,255,0.14)" stroke-width="0.9" stroke-dasharray="3 2"/>
+      <line x1="87"  y1="69"  x2="47"  y2="62"  stroke="rgba(255,255,255,0.16)" stroke-width="0.9" stroke-dasharray="3 2"/>
+      <!-- LABELS — outside pentagon, clearly visible on light bg -->
+      <!-- top: 需求分析 -->
+      <rect x="74" y="5" width="52" height="14" rx="4" fill="rgba(232,160,32,0.2)" stroke="rgba(184,136,46,0.6)" stroke-width="0.7"/>
+      <text x="100" y="15" font-size="7.5" fill="#7A5010" text-anchor="middle" font-family="sans-serif" font-weight="600">需求分析</text>
+      <!-- top-right: 決策路圖 -->
+      <rect x="160" y="48" width="36" height="14" rx="4" fill="rgba(61,90,71,0.12)" stroke="rgba(61,90,71,0.4)" stroke-width="0.7"/>
+      <text x="178" y="57.5" font-size="7" fill="#2A4830" text-anchor="middle" font-family="sans-serif" font-weight="600">決策路圖</text>
+      <!-- bot-right: 節點預判 -->
+      <rect x="140" y="126" width="36" height="14" rx="4" fill="rgba(61,90,71,0.10)" stroke="rgba(61,90,71,0.35)" stroke-width="0.7"/>
+      <text x="158" y="135.5" font-size="7" fill="#2A4830" text-anchor="middle" font-family="sans-serif" font-weight="600">節點預判</text>
+      <!-- bot-left: 客戶評估 -->
+      <rect x="24" y="126" width="36" height="14" rx="4" fill="rgba(61,90,71,0.10)" stroke="rgba(61,90,71,0.35)" stroke-width="0.7"/>
+      <text x="42" y="135.5" font-size="7" fill="#2A4830" text-anchor="middle" font-family="sans-serif" font-weight="600">客戶評估</text>
+      <!-- top-left: 情境應對 -->
+      <rect x="4" y="48" width="36" height="14" rx="4" fill="rgba(61,90,71,0.10)" stroke="rgba(61,90,71,0.35)" stroke-width="0.7"/>
+      <text x="22" y="57.5" font-size="7" fill="#2A4830" text-anchor="middle" font-family="sans-serif" font-weight="600">情境應對</text>
+    </svg>
   </div>
+  <div class="cb">
+    <div class="c-eyebrow">S1 · 核心系統</div>
+    <div class="c-title">顧問決策系統</div>
+    <div class="c-desc">客戶狀態評估・需求分析・決策節點預判・即時支援輔助</div>
+    <div class="chips"><span class="chip">決策節點</span><span class="chip">客戶分析</span><span class="chip">情境應對</span></div>
+  </div>
+  <div class="cfoot">
+    <div class="cta-label">進入系統</div>
+    <div class="arrow-ring"><svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
+  </div>
+</a>
+
+<!-- ─── S2 小屋 ─── -->
+<a class="card" href="https://richtime90117277-alt.github.io/futime-crm/asset-planner.html" target="_blank">
+  <div class="c-accent ca-gold"></div>
+  <div class="ill">
+    <div class="ill-bg s2-bg"></div>
+    <div class="ill-fade"></div>
+    <div class="num-badge">02</div>
+    <svg viewBox="0 0 200 165" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <linearGradient id="roofG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#C8882A"/>
+          <stop offset="100%" stop-color="#8A5A10"/>
+        </linearGradient>
+        <linearGradient id="wallG2" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#5A7850"/>
+          <stop offset="100%" stop-color="#3A5234"/>
+        </linearGradient>
+        <linearGradient id="skyG" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#C8E8F8" stop-opacity="0.6"/>
+          <stop offset="100%" stop-color="#E8F4FD" stop-opacity="0.1"/>
+        </linearGradient>
+        <filter id="gh"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <rect x="0" y="0" width="200" height="165" fill="url(#skyG)"/>
+      <!-- clouds -->
+      <ellipse cx="38" cy="28" rx="20" ry="9" fill="rgba(255,255,255,0.7)"/>
+      <ellipse cx="52" cy="23" rx="16" ry="11" fill="rgba(255,255,255,0.75)"/>
+      <ellipse cx="26" cy="26" rx="12" ry="7"  fill="rgba(255,255,255,0.6)"/>
+      <ellipse cx="158" cy="22" rx="17" ry="8"  fill="rgba(255,255,255,0.65)"/>
+      <ellipse cx="170" cy="17" rx="13" ry="9"  fill="rgba(255,255,255,0.7)"/>
+      <!-- sun -->
+      <circle cx="170" cy="32" r="12" fill="rgba(255,220,80,0.55)"/>
+      <circle cx="170" cy="32" r="8"  fill="rgba(255,200,40,0.7)"/>
+      <!-- ground -->
+      <ellipse cx="100" cy="136" rx="78" ry="10" fill="rgba(58,86,68,0.13)" filter="url(#gh)"/>
+      <rect x="18" y="130" width="164" height="8" rx="4" fill="rgba(80,120,60,0.22)"/>
+      <!-- house shadow -->
+      <ellipse cx="102" cy="134" rx="54" ry="7" fill="rgba(26,40,32,0.1)"/>
+      <!-- body -->
+      <rect x="54" y="78" width="92" height="58" rx="3" fill="url(#wallG2)"/>
+      <!-- roof -->
+      <polygon points="44,80 100,28 156,80" fill="url(#roofG)"/>
+      <polygon points="100,28 156,80 148,80 100,34" fill="rgba(255,255,255,0.1)"/>
+      <polygon points="44,80 100,80 100,28" fill="rgba(0,0,0,0.04)"/>
+      <!-- chimney -->
+      <rect x="128" y="42" width="11" height="24" rx="2" fill="#7A5020"/>
+      <rect x="125" y="38" width="17" height="7"  rx="2" fill="#8A6030"/>
+      <!-- smoke puffs -->
+      <circle cx="133" cy="32" r="5"  fill="rgba(200,200,200,0.4)"/>
+      <circle cx="136" cy="24" r="4"  fill="rgba(200,200,200,0.3)"/>
+      <circle cx="132" cy="17" r="3"  fill="rgba(200,200,200,0.2)"/>
+      <!-- door -->
+      <rect x="84" y="100" width="32" height="36" rx="16" fill="#1A2820"/>
+      <rect x="84" y="100" width="32" height="20" rx="0"  fill="#1A2820"/>
+      <rect x="84" y="100" width="32" height="36" rx="5"  fill="none" stroke="rgba(222,184,106,0.55)" stroke-width="1"/>
+      <circle cx="113" cy="118" r="2.2" fill="rgba(222,184,106,0.9)"/>
+      <!-- windows -->
+      <rect x="60" y="87" width="22" height="18" rx="3" fill="rgba(200,230,255,0.65)" stroke="rgba(255,255,255,0.5)" stroke-width="0.8"/>
+      <line x1="71" y1="87" x2="71" y2="105" stroke="rgba(255,255,255,0.5)" stroke-width="0.7"/>
+      <line x1="60" y1="96" x2="82" y2="96"  stroke="rgba(255,255,255,0.5)" stroke-width="0.7"/>
+      <rect x="118" y="87" width="22" height="18" rx="3" fill="rgba(255,210,120,0.55)" stroke="rgba(255,255,255,0.5)" stroke-width="0.8"/>
+      <line x1="129" y1="87" x2="129" y2="105" stroke="rgba(255,255,255,0.5)" stroke-width="0.7"/>
+      <line x1="118" y1="96" x2="140" y2="96"  stroke="rgba(255,255,255,0.5)" stroke-width="0.7"/>
+      <!-- window light glow -->
+      <ellipse cx="129" cy="105" rx="12" ry="5" fill="rgba(255,200,80,0.12)" filter="url(#gh)"/>
+      <!-- ROI tag -->
+      <rect x="136" y="28" width="52" height="15" rx="5" fill="rgba(232,160,32,0.22)" stroke="rgba(184,136,46,0.6)" stroke-width="0.8"/>
+      <text x="162" y="38.5" font-size="8.5" fill="#7A5010" text-anchor="middle" font-family="sans-serif" font-weight="700">+ROI 142%</text>
+      <!-- walkway -->
+      <polygon points="88,136 112,136 116,144 84,144" fill="rgba(180,160,120,0.35)"/>
+      <!-- garden plants -->
+      <circle cx="54" cy="126" r="5" fill="rgba(80,160,80,0.6)"/>
+      <circle cx="48" cy="122" r="4" fill="rgba(100,180,100,0.55)"/>
+      <line x1="54" y1="131" x2="54" y2="138" stroke="rgba(60,100,40,0.55)" stroke-width="1.5"/>
+      <line x1="48" y1="126" x2="48" y2="133" stroke="rgba(60,100,40,0.55)" stroke-width="1.5"/>
+      <circle cx="148" cy="126" r="5" fill="rgba(220,100,100,0.6)"/>
+      <circle cx="154" cy="122" r="4" fill="rgba(240,140,140,0.55)"/>
+      <line x1="148" y1="131" x2="148" y2="138" stroke="rgba(60,100,40,0.55)" stroke-width="1.5"/>
+      <line x1="154" y1="126" x2="154" y2="133" stroke="rgba(60,100,40,0.55)" stroke-width="1.5"/>
+    </svg>
+  </div>
+  <div class="cb">
+    <div class="c-eyebrow">S2 · 規劃工具</div>
+    <div class="c-title">AI 資產規劃報告</div>
+    <div class="c-desc">ROI 分析・多策略比較・AI 自動生成個案報告</div>
+  </div>
+  <div class="cfoot">
+    <div class="cta-label">開啟工具</div>
+    <div class="arrow-ring"><svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
+  </div>
+</a>
+
+<!-- ─── S3 行事曆 ─── -->
+<a class="card" href="https://www.notion.so/625809993b2746b7842e022bd0279fe7" target="_blank">
+  <div class="c-accent ca-rose"></div>
+  <div class="ill">
+    <div class="ill-bg s3-bg"></div>
+    <div class="ill-fade"></div>
+    <div class="num-badge">03</div>
+    <svg viewBox="0 0 200 165" preserveAspectRatio="xMidYMid meet">
+      <defs><filter id="gc"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+      <!-- shadow -->
+      <rect x="32" y="30" width="136" height="112" rx="10" fill="rgba(212,90,58,0.07)" filter="url(#gc)"/>
+      <!-- body -->
+      <rect x="28" y="22" width="144" height="112" rx="9" fill="rgba(255,255,255,0.88)" stroke="rgba(212,90,58,0.2)" stroke-width="0.8"/>
+      <!-- header -->
+      <rect x="28" y="22" width="144" height="30" rx="9" fill="#D45A3A"/>
+      <rect x="28" y="38" width="144" height="14" rx="0" fill="#D45A3A"/>
+      <text x="100" y="41" font-size="10" fill="rgba(255,255,255,0.95)" text-anchor="middle" font-family="sans-serif" font-weight="700" letter-spacing="1">2026 · 品牌活動</text>
+      <!-- ring clips -->
+      <rect x="62"  y="14" width="9" height="16" rx="4.5" fill="#B84030"/>
+      <rect x="130" y="14" width="9" height="16" rx="4.5" fill="#B84030"/>
+      <!-- day headers -->
+      <text x="48"  y="63" font-size="7.5" fill="rgba(61,90,71,0.55)" text-anchor="middle" font-family="sans-serif" font-weight="500">一</text>
+      <text x="68"  y="63" font-size="7.5" fill="rgba(61,90,71,0.55)" text-anchor="middle" font-family="sans-serif" font-weight="500">二</text>
+      <text x="88"  y="63" font-size="7.5" fill="rgba(61,90,71,0.55)" text-anchor="middle" font-family="sans-serif" font-weight="500">三</text>
+      <text x="108" y="63" font-size="7.5" fill="rgba(61,90,71,0.55)" text-anchor="middle" font-family="sans-serif" font-weight="500">四</text>
+      <text x="128" y="63" font-size="7.5" fill="rgba(61,90,71,0.55)" text-anchor="middle" font-family="sans-serif" font-weight="500">五</text>
+      <text x="148" y="63" font-size="7.5" fill="rgba(184,136,46,0.75)" text-anchor="middle" font-family="sans-serif" font-weight="700">六</text>
+      <text x="164" y="63" font-size="7.5" fill="rgba(212,60,40,0.7)"  text-anchor="middle" font-family="sans-serif" font-weight="700">日</text>
+      <line x1="36" y1="66" x2="164" y2="66" stroke="rgba(61,90,71,0.07)" stroke-width="0.7"/>
+      <!-- row 1 -->
+      <text x="48"  y="80" font-size="9" fill="rgba(61,90,71,0.5)" text-anchor="middle" font-family="sans-serif">1</text>
+      <text x="68"  y="80" font-size="9" fill="rgba(61,90,71,0.5)" text-anchor="middle" font-family="sans-serif">2</text>
+      <text x="88"  y="80" font-size="9" fill="rgba(61,90,71,0.5)" text-anchor="middle" font-family="sans-serif">3</text>
+      <rect x="98" y="71" width="20" height="14" rx="5" fill="rgba(184,136,46,0.22)" stroke="rgba(184,136,46,0.55)" stroke-width="0.9"/>
+      <text x="108" y="81" font-size="9" fill="#7A5010" text-anchor="middle" font-family="sans-serif" font-weight="700">4</text>
+      <text x="128" y="80" font-size="9" fill="rgba(61,90,71,0.5)" text-anchor="middle" font-family="sans-serif">5</text>
+      <text x="148" y="80" font-size="9" fill="rgba(184,136,46,0.65)" text-anchor="middle" font-family="sans-serif">6</text>
+      <text x="164" y="80" font-size="9" fill="rgba(212,60,40,0.6)"  text-anchor="middle" font-family="sans-serif">7</text>
+      <!-- row 2 -->
+      <text x="48"  y="97" font-size="9" fill="rgba(61,90,71,0.5)" text-anchor="middle" font-family="sans-serif">8</text>
+      <text x="68"  y="97" font-size="9" fill="rgba(61,90,71,0.5)" text-anchor="middle" font-family="sans-serif">9</text>
+      <rect x="77" y="88" width="76" height="14" rx="5" fill="rgba(212,90,58,0.1)" stroke="rgba(212,90,58,0.3)" stroke-width="0.8"/>
+      <text x="88"  y="97" font-size="9" fill="rgba(180,60,30,0.7)" text-anchor="middle" font-family="sans-serif">10</text>
+      <text x="108" y="97" font-size="9" fill="rgba(180,60,30,0.7)" text-anchor="middle" font-family="sans-serif">11</text>
+      <text x="128" y="97" font-size="9" fill="rgba(180,60,30,0.65)" text-anchor="middle" font-family="sans-serif">12</text>
+      <text x="148" y="97" font-size="9" fill="rgba(184,136,46,0.65)" text-anchor="middle" font-family="sans-serif">13</text>
+      <text x="164" y="97" font-size="9" fill="rgba(212,60,40,0.6)"  text-anchor="middle" font-family="sans-serif">14</text>
+      <!-- row 3: today -->
+      <rect x="37" y="104" width="20" height="14" rx="5" fill="#3D5A47"/>
+      <text x="47"  y="114" font-size="9" fill="#fff" text-anchor="middle" font-family="sans-serif" font-weight="700">15</text>
+      <text x="68"  y="114" font-size="9" fill="rgba(61,90,71,0.5)" text-anchor="middle" font-family="sans-serif">16</text>
+      <text x="88"  y="114" font-size="9" fill="rgba(61,90,71,0.5)" text-anchor="middle" font-family="sans-serif">17</text>
+      <text x="108" y="114" font-size="9" fill="rgba(61,90,71,0.5)" text-anchor="middle" font-family="sans-serif">18</text>
+      <text x="128" y="114" font-size="9" fill="rgba(212,60,40,0.75)" text-anchor="middle" font-family="sans-serif" font-weight="600">19</text>
+      <circle cx="128" cy="118.5" r="2" fill="rgba(212,60,40,0.75)"/>
+      <text x="148" y="114" font-size="9" fill="rgba(184,136,46,0.6)" text-anchor="middle" font-family="sans-serif">20</text>
+      <text x="164" y="114" font-size="9" fill="rgba(212,60,40,0.55)" text-anchor="middle" font-family="sans-serif">21</text>
+      <!-- event label -->
+      <rect x="74" y="122" width="72" height="10" rx="3" fill="rgba(212,90,58,0.15)" stroke="rgba(212,90,58,0.38)" stroke-width="0.6"/>
+      <text x="110" y="129.5" font-size="6" fill="rgba(180,50,30,0.8)" text-anchor="middle" font-family="sans-serif" letter-spacing="1" font-weight="600">品牌發表活動</text>
+    </svg>
+  </div>
+  <div class="cb">
+    <div class="c-eyebrow">S3 · 品牌・行銷</div>
+    <div class="c-title">官網與近期活動</div>
+    <div class="c-desc">富時代官網・精美活動入口・提升品牌形象與市場能見度</div>
+  </div>
+  <div class="cfoot">
+    <div class="cta-label">開啟頁面</div>
+    <div class="arrow-ring"><svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
+  </div>
+</a>
+
+<!-- ─── S4 翻開書本 ─── -->
+<a class="card" href="https://futime-training.pages.dev/" target="_blank">
+  <div class="c-accent ca-gold"></div>
+  <div class="ill">
+    <div class="ill-bg s4-bg"></div>
+    <div class="ill-fade"></div>
+    <div class="num-badge">04</div>
+    <svg viewBox="0 0 200 165" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <linearGradient id="skyTree" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#C8E8F8" stop-opacity="0.7"/>
+          <stop offset="100%" stop-color="#E8F5EA" stop-opacity="0.2"/>
+        </linearGradient>
+        <linearGradient id="pageLA" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#F5EDD8"/>
+          <stop offset="100%" stop-color="#FAF4E8"/>
+        </linearGradient>
+        <linearGradient id="pageRA" x1="1" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#FAF4E8"/>
+          <stop offset="100%" stop-color="#F0E6CC"/>
+        </linearGradient>
+        <linearGradient id="trunkG" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#5A3A18"/>
+          <stop offset="50%" stop-color="#8A5C28"/>
+          <stop offset="100%" stop-color="#5A3A18"/>
+        </linearGradient>
+        <radialGradient id="canopyG" cx="50%" cy="60%" r="50%">
+          <stop offset="0%" stop-color="#5EAA60"/>
+          <stop offset="60%" stop-color="#3D8840"/>
+          <stop offset="100%" stop-color="#286030"/>
+        </radialGradient>
+        <radialGradient id="canopy2G" cx="50%" cy="55%" r="50%">
+          <stop offset="0%" stop-color="#72C870"/>
+          <stop offset="100%" stop-color="#3D8840"/>
+        </radialGradient>
+        <filter id="treeGlow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="treeSoft"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="leafBlur"><feGaussianBlur stdDeviation="0.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+
+      <!-- sky bg -->
+      <rect x="0" y="0" width="200" height="165" fill="url(#skyTree)"/>
+      <!-- soft clouds -->
+      <ellipse cx="30"  cy="20" rx="22" ry="10" fill="rgba(255,255,255,0.55)"/>
+      <ellipse cx="46"  cy="14" rx="18" ry="12" fill="rgba(255,255,255,0.6)"/>
+      <ellipse cx="170" cy="18" rx="20" ry="9"  fill="rgba(255,255,255,0.5)"/>
+      <ellipse cx="185" cy="12" rx="14" ry="11" fill="rgba(255,255,255,0.55)"/>
+
+      <!-- ══ OPEN BOOK BASE ══ -->
+      <!-- book stack shadow -->
+      <ellipse cx="100" cy="152" rx="72" ry="8" fill="rgba(60,40,15,0.18)" filter="url(#treeSoft)"/>
+      <!-- bottom book (extra depth) -->
+      <rect x="22" y="138" width="156" height="14" rx="4" fill="#7A5820" stroke="rgba(100,65,20,0.5)" stroke-width="0.8"/>
+      <rect x="22" y="138" width="156" height="5"  rx="4" fill="rgba(160,110,50,0.6)"/>
+      <!-- main book cover base -->
+      <rect x="18" y="128" width="164" height="16" rx="4" fill="#5A3D18" stroke="rgba(80,50,10,0.6)" stroke-width="0.8"/>
+      <rect x="18" y="128" width="164" height="6"  rx="4" fill="rgba(120,80,30,0.5)"/>
+      <!-- spine in middle -->
+      <rect x="96" y="124" width="8" height="20" rx="2" fill="#3A2508"/>
+
+      <!-- LEFT PAGE — swept open to left -->
+      <path d="M96,124 Q70,118 30,112 Q16,110 18,128 Q50,132 94,130 Z" fill="url(#pageLA)" stroke="rgba(160,120,60,0.3)" stroke-width="0.8"/>
+      <!-- left page text lines -->
+      <line x1="28" y1="116" x2="88" y2="114" stroke="rgba(90,65,30,0.2)"  stroke-width="0.9"/>
+      <line x1="28" y1="120" x2="82" y2="118" stroke="rgba(90,65,30,0.15)" stroke-width="0.8"/>
+      <line x1="28" y1="124" x2="78" y2="122" stroke="rgba(90,65,30,0.12)" stroke-width="0.7"/>
+      <!-- left page small text hint -->
+      <rect x="28" y="112" width="30" height="4" rx="1" fill="rgba(232,160,32,0.3)"/>
+      <!-- right page -->
+      <path d="M104,124 Q130,118 170,112 Q184,110 182,128 Q150,132 106,130 Z" fill="url(#pageRA)" stroke="rgba(160,120,60,0.3)" stroke-width="0.8"/>
+      <line x1="112" y1="116" x2="172" y2="114" stroke="rgba(90,65,30,0.2)"  stroke-width="0.9"/>
+      <line x1="112" y1="120" x2="168" y2="118" stroke="rgba(90,65,30,0.15)" stroke-width="0.8"/>
+      <line x1="112" y1="124" x2="162" y2="122" stroke="rgba(90,65,30,0.12)" stroke-width="0.7"/>
+
+      <!-- ══ TREE TRUNK rising from book centre ══ -->
+      <!-- trunk glow -->
+      <ellipse cx="100" cy="125" rx="12" ry="6" fill="rgba(60,150,60,0.25)" filter="url(#treeGlow)"/>
+      <!-- trunk -->
+      <path d="M93,128 Q90,105 88,82 Q89,70 100,62 Q111,70 112,82 Q110,105 107,128 Z" fill="url(#trunkG)"/>
+      <!-- trunk highlight -->
+      <path d="M97,128 Q96,105 95,82 Q96,72 100,65 Q101,72 103,82 Q102,106 101,128 Z" fill="rgba(200,150,80,0.18)"/>
+      <!-- roots -->
+      <path d="M93,128 Q82,130 72,128" fill="none" stroke="#5A3A18" stroke-width="4" stroke-linecap="round"/>
+      <path d="M107,128 Q118,130 128,128" fill="none" stroke="#5A3A18" stroke-width="4" stroke-linecap="round"/>
+      <path d="M95,128 Q88,135 80,136" fill="none" stroke="#5A3A18" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M105,128 Q112,135 120,136" fill="none" stroke="#5A3A18" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- branches -->
+      <path d="M100,80 Q84,70 74,58"  fill="none" stroke="#6A4820" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M100,80 Q116,70 126,58" fill="none" stroke="#6A4820" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M98,92  Q80,84 66,78"   fill="none" stroke="#6A4820" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M102,92 Q120,84 134,78" fill="none" stroke="#6A4820" stroke-width="2.5" stroke-linecap="round"/>
+
+      <!-- ══ CANOPY ══ -->
+      <!-- outer glow halo -->
+      <circle cx="100" cy="46" r="52" fill="rgba(60,140,60,0.12)" filter="url(#treeGlow)"/>
+      <!-- back clusters -->
+      <circle cx="78"  cy="52" r="22" fill="#286030" opacity="0.85"/>
+      <circle cx="122" cy="52" r="22" fill="#286030" opacity="0.85"/>
+      <circle cx="100" cy="40" r="24" fill="#2A6832"/>
+      <!-- mid layer -->
+      <circle cx="82"  cy="44" r="20" fill="#3D8840"/>
+      <circle cx="118" cy="44" r="20" fill="#3D8840"/>
+      <circle cx="100" cy="32" r="22" fill="#448844"/>
+      <!-- front highlights -->
+      <circle cx="88"  cy="38" r="17" fill="url(#canopy2G)"/>
+      <circle cx="112" cy="38" r="17" fill="url(#canopy2G)"/>
+      <circle cx="100" cy="24" r="19" fill="url(#canopyG)"/>
+      <!-- canopy top shine -->
+      <ellipse cx="96" cy="18" rx="10" ry="6" fill="rgba(140,210,130,0.4)"/>
+
+      <!-- ══ FALLING LEAVES ══ -->
+      <ellipse cx="52"  cy="72" rx="5" ry="3" fill="#5EAA50" transform="rotate(-30,52,72)"  filter="url(#leafBlur)"/>
+      <ellipse cx="38"  cy="88" rx="4" ry="2.5" fill="#4A9840" transform="rotate(20,38,88)" filter="url(#leafBlur)"/>
+      <ellipse cx="148" cy="70" rx="5" ry="3" fill="#6ABB55" transform="rotate(40,148,70)" filter="url(#leafBlur)"/>
+      <ellipse cx="162" cy="86" rx="4" ry="2.5" fill="#4A9840" transform="rotate(-15,162,86)" filter="url(#leafBlur)"/>
+      <ellipse cx="60"  cy="55" rx="3.5" ry="2" fill="#72C860" transform="rotate(50,60,55)" filter="url(#leafBlur)"/>
+      <ellipse cx="140" cy="58" rx="3.5" ry="2" fill="#5EAA50" transform="rotate(-40,140,58)" filter="url(#leafBlur)"/>
+      <ellipse cx="44"  cy="110" rx="3" ry="2" fill="#4A9840" transform="rotate(25,44,110)" filter="url(#leafBlur)" opacity="0.7"/>
+      <ellipse cx="156" cy="105" rx="3" ry="2" fill="#5EAA50" transform="rotate(-20,156,105)" filter="url(#leafBlur)" opacity="0.7"/>
+
+      <!-- light rays from canopy -->
+      <line x1="72" y1="60" x2="55" y2="90"  stroke="rgba(180,240,160,0.2)" stroke-width="3"/>
+      <line x1="128" y1="60" x2="145" y2="90" stroke="rgba(180,240,160,0.2)" stroke-width="3"/>
+    </svg>
+  </div>
+  <div class="cb">
+    <div class="c-eyebrow">S4 · 知識中樞</div>
+    <div class="c-title">八部曲新人起步</div>
+    <div class="c-desc">八部曲新人起步・培訓系統・決策邏輯・持續優化知識庫</div>
+  </div>
+  <div class="cfoot">
+    <div class="cta-label">八部曲起步</div>
+    <div class="arrow-ring"><svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
+  </div>
+</a>
+
+<!-- ─── S5 兩人對話（真臉）─── -->
+<a class="card" href="https://richtime90117277-alt.github.io/futime-crm/LIB.html" target="_blank">
+  <div class="c-accent ca-teal"></div>
+  <div class="ill">
+    <div class="ill-bg s5-bg"></div>
+    <div class="ill-fade"></div>
+    <div class="num-badge">05</div>
+    <svg viewBox="0 0 200 165" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <linearGradient id="deskG5" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#4ABBB8"/>
+          <stop offset="100%" stop-color="#2A9898"/>
+        </linearGradient>
+        <linearGradient id="monitorG5" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#2A6868"/>
+          <stop offset="100%" stop-color="#1A4848"/>
+        </linearGradient>
+        <linearGradient id="screenG5" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#D8EEF0"/>
+          <stop offset="100%" stop-color="#C0E0E4"/>
+        </linearGradient>
+        <linearGradient id="boardG5" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#FFFDF5"/>
+          <stop offset="100%" stop-color="#FFF5E0"/>
+        </linearGradient>
+        <radialGradient id="bgG5" cx="50%" cy="40%" r="60%">
+          <stop offset="0%" stop-color="#E8F8F8"/>
+          <stop offset="100%" stop-color="#D0ECEE"/>
+        </radialGradient>
+        <filter id="g5f"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="g5s"><feGaussianBlur stdDeviation="1" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+
+      <!-- background -->
+      <rect x="0" y="0" width="200" height="165" fill="url(#bgG5)"/>
+      <!-- subtle wave lines bg -->
+      <path d="M0,40 Q50,30 100,40 Q150,50 200,40" fill="none" stroke="rgba(60,180,180,0.12)" stroke-width="1.5"/>
+      <path d="M0,60 Q50,50 100,60 Q150,70 200,60" fill="none" stroke="rgba(60,180,180,0.10)" stroke-width="1.2"/>
+      <path d="M0,80 Q50,70 100,80 Q150,90 200,80" fill="none" stroke="rgba(60,180,180,0.08)" stroke-width="1"/>
+      <!-- dot pattern right -->
+      <circle cx="168" cy="32" r="1.8" fill="rgba(60,180,180,0.3)"/>
+      <circle cx="176" cy="32" r="1.8" fill="rgba(60,180,180,0.3)"/>
+      <circle cx="184" cy="32" r="1.8" fill="rgba(60,180,180,0.3)"/>
+      <circle cx="168" cy="40" r="1.8" fill="rgba(60,180,180,0.25)"/>
+      <circle cx="176" cy="40" r="1.8" fill="rgba(60,180,180,0.25)"/>
+      <circle cx="184" cy="40" r="1.8" fill="rgba(60,180,180,0.25)"/>
+      <circle cx="168" cy="48" r="1.8" fill="rgba(60,180,180,0.2)"/>
+      <circle cx="176" cy="48" r="1.8" fill="rgba(60,180,180,0.2)"/>
+
+      <!-- ══ DESK ══ -->
+      <rect x="0" y="128" width="200" height="37" rx="0" fill="url(#deskG5)"/>
+      <rect x="0" y="128" width="200" height="5"  rx="0" fill="rgba(100,220,220,0.35)"/>
+
+      <!-- ══ MONITOR ══ -->
+      <!-- monitor base -->
+      <rect x="88"  y="138" width="24" height="6"  rx="2" fill="#1A4848"/>
+      <rect x="84"  y="142" width="32" height="4"  rx="2" fill="#1A4848"/>
+      <!-- monitor stand -->
+      <rect x="98"  y="112" width="4"  height="28" rx="2" fill="#1E5050"/>
+      <!-- monitor body -->
+      <rect x="56"  y="42"  width="88" height="72" rx="6" fill="url(#monitorG5)" stroke="rgba(30,80,80,0.8)" stroke-width="1.5"/>
+      <!-- screen -->
+      <rect x="60"  y="46"  width="80" height="62" rx="3" fill="url(#screenG5)"/>
+      <!-- monitor bottom dots -->
+      <circle cx="94" cy="116" r="1.5" fill="rgba(80,200,180,0.6)"/>
+      <circle cx="100" cy="116" r="1.5" fill="rgba(80,200,180,0.8)"/>
+      <circle cx="106" cy="116" r="1.5" fill="rgba(80,200,180,0.6)"/>
+
+      <!-- ══ INSTRUCTOR IN SCREEN ══ -->
+      <!-- instructor bg in screen -->
+      <rect x="60" y="46" width="80" height="62" rx="3" fill="rgba(210,240,240,0.5)"/>
+      <!-- whiteboard/flipchart in screen -->
+      <rect x="96" y="50" width="40" height="50" rx="2" fill="url(#boardG5)" stroke="rgba(220,180,60,0.6)" stroke-width="1"/>
+      <!-- board top bar gold -->
+      <rect x="96" y="50" width="40" height="5" rx="2" fill="rgba(220,180,60,0.8)"/>
+      <!-- bulb drawing on board -->
+      <circle cx="116" cy="70" r="10" fill="rgba(232,160,32,0.2)" stroke="rgba(200,140,20,0.55)" stroke-width="1.2"/>
+      <circle cx="116" cy="68" r="7"  fill="rgba(232,160,32,0.35)"/>
+      <!-- filament -->
+      <path d="M113,72 Q116,68 119,72" fill="none" stroke="rgba(180,120,10,0.7)" stroke-width="1" stroke-linecap="round"/>
+      <!-- bulb base lines -->
+      <line x1="113" y1="78" x2="119" y2="78" stroke="rgba(180,120,10,0.6)" stroke-width="1.2"/>
+      <line x1="114" y1="81" x2="118" y2="81" stroke="rgba(180,120,10,0.5)" stroke-width="1"/>
+      <!-- board text lines -->
+      <line x1="99" y1="87" x2="133" y2="87" stroke="rgba(232,160,32,0.55)" stroke-width="1.2"/>
+      <line x1="99" y1="91" x2="128" y2="91" stroke="rgba(232,160,32,0.4)"  stroke-width="1"/>
+      <line x1="99" y1="95" x2="130" y2="95" stroke="rgba(232,160,32,0.3)"  stroke-width="0.9"/>
+      <!-- instructor body (flat style) -->
+      <!-- torso gold -->
+      <path d="M66,82 Q66,78 74,78 Q82,78 82,82 L84,108 L64,108 Z" fill="rgba(232,160,32,0.85)"/>
+      <!-- white collar inner -->
+      <rect x="69" y="78" width="10" height="8" rx="2" fill="rgba(255,252,245,0.9)"/>
+      <!-- head -->
+      <circle cx="74" cy="68" r="10" fill="#F0C898"/>
+      <!-- hair -->
+      <path d="M64,64 Q64,54 74,52 Q84,54 84,64 Q81,57 74,56 Q67,57 64,64Z" fill="#1A1A1A"/>
+      <!-- eyes -->
+      <circle cx="70" cy="66" r="1.8" fill="#1A1A1A"/>
+      <circle cx="78" cy="66" r="1.8" fill="#1A1A1A"/>
+      <circle cx="70.6" cy="65.4" r="0.6" fill="white"/>
+      <circle cx="78.6" cy="65.4" r="0.6" fill="white"/>
+      <!-- nose -->
+      <path d="M73,69 Q74,71 75,69" fill="none" stroke="rgba(140,90,50,0.5)" stroke-width="0.9" stroke-linecap="round"/>
+      <!-- smile -->
+      <path d="M70,73 Q74,76 78,73" fill="none" stroke="rgba(160,80,60,0.75)" stroke-width="1.2" stroke-linecap="round"/>
+      <!-- arm pointing at board -->
+      <path d="M82,84 Q90,82 96,78" fill="none" stroke="rgba(232,160,32,0.85)" stroke-width="6" stroke-linecap="round"/>
+      <circle cx="97" cy="77" r="4" fill="#F0C898"/>
+      <!-- pointer in hand -->
+      <line x1="98" y1="75" x2="104" y2="68" stroke="rgba(180,60,40,0.7)" stroke-width="1.5" stroke-linecap="round"/>
+      <!-- other arm holding marker -->
+      <path d="M66,86 Q60,92 58,100" fill="none" stroke="rgba(232,160,32,0.85)" stroke-width="6" stroke-linecap="round"/>
+      <circle cx="57" cy="102" r="4" fill="#F0C898"/>
+      <!-- marker in hand -->
+      <rect x="53" y="100" width="3" height="8" rx="1" fill="rgba(180,60,40,0.7)" transform="rotate(-20,55,104)"/>
+
+      <!-- ══ STUDENT LEFT ══ -->
+      <!-- laptop -->
+      <rect x="8"  y="120" width="44" height="30" rx="3" fill="rgba(240,245,245,0.9)" stroke="rgba(180,210,210,0.5)" stroke-width="0.7"/>
+      <rect x="10" y="122" width="40" height="24" rx="2" fill="rgba(200,235,235,0.8)"/>
+      <rect x="6"  y="148" width="48" height="5"  rx="2" fill="rgba(210,230,230,0.8)"/>
+      <circle cx="30" cy="133" r="3" fill="rgba(180,220,220,0.6)" stroke="rgba(120,180,180,0.4)" stroke-width="0.4"/>
+      <!-- student left body -->
+      <path d="M22,108 Q22,104 30,104 Q38,104 38,108 L40,128 L20,128 Z" fill="rgba(60,170,160,0.8)"/>
+      <!-- polo shirt detail -->
+      <circle cx="30" cy="108" r="2.5" fill="rgba(40,140,130,0.6)"/>
+      <line x1="30" y1="110" x2="30" y2="118" stroke="rgba(40,140,130,0.4)" stroke-width="0.8"/>
+      <!-- head L -->
+      <circle cx="30" cy="94" r="11" fill="#E8C088"/>
+      <!-- hair L short -->
+      <path d="M19,90 Q19,79 30,77 Q41,79 41,90 Q38,83 30,82 Q22,83 19,90Z" fill="#1A1A1A"/>
+      <!-- face L -->
+      <circle cx="26" cy="92" r="1.6" fill="#1A1A1A"/>
+      <circle cx="34" cy="92" r="1.6" fill="#1A1A1A"/>
+      <circle cx="26.5" cy="91.5" r="0.5" fill="white"/>
+      <circle cx="34.5" cy="91.5" r="0.5" fill="white"/>
+      <path d="M26,97 Q30,100 34,97" fill="none" stroke="rgba(160,80,60,0.7)" stroke-width="1" stroke-linecap="round"/>
+      <!-- arm on desk -->
+      <path d="M20,110 Q14,116 10,128" fill="none" stroke="rgba(60,170,160,0.8)" stroke-width="7" stroke-linecap="round"/>
+
+      <!-- ══ STUDENT RIGHT ══ -->
+      <!-- laptop R -->
+      <rect x="148" y="120" width="44" height="30" rx="3" fill="rgba(240,245,245,0.9)" stroke="rgba(180,210,210,0.5)" stroke-width="0.7"/>
+      <rect x="150" y="122" width="40" height="24" rx="2" fill="rgba(200,235,235,0.8)"/>
+      <rect x="146" y="148" width="48" height="5"  rx="2" fill="rgba(210,230,230,0.8)"/>
+      <circle cx="170" cy="133" r="3" fill="rgba(180,220,220,0.6)" stroke="rgba(120,180,180,0.4)" stroke-width="0.4"/>
+      <!-- student right body -->
+      <path d="M162,108 Q162,104 170,104 Q178,104 178,108 L180,128 L160,128 Z" fill="rgba(60,170,160,0.8)"/>
+      <!-- head R -->
+      <circle cx="170" cy="94" r="11" fill="#D4A870"/>
+      <!-- hair R long -->
+      <path d="M159,88 Q159,77 170,75 Q181,77 181,88 L181,102 Q178,95 170,94 Q162,95 159,102 Z" fill="#1A1A1A"/>
+      <!-- face R -->
+      <circle cx="166" cy="92" r="1.6" fill="#1A1A1A"/>
+      <circle cx="174" cy="92" r="1.6" fill="#1A1A1A"/>
+      <circle cx="166.5" cy="91.5" r="0.5" fill="white"/>
+      <circle cx="174.5" cy="91.5" r="0.5" fill="white"/>
+      <path d="M166,97 Q170,100 174,97" fill="none" stroke="rgba(160,80,60,0.7)" stroke-width="1" stroke-linecap="round"/>
+      <!-- arm -->
+      <path d="M180,110 Q186,116 190,128" fill="none" stroke="rgba(60,170,160,0.8)" stroke-width="7" stroke-linecap="round"/>
+
+      <!-- small plant on desk between laptops -->
+      <rect x="95" y="140" width="10" height="8"  rx="2" fill="rgba(120,160,200,0.55)"/>
+      <ellipse cx="100" cy="140" rx="9" ry="5" fill="rgba(80,160,80,0.6)"/>
+      <path d="M97,140 Q100,133 103,138" fill="none" stroke="rgba(50,130,50,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M100,140 Q96,132 99,135" fill="none" stroke="rgba(50,130,50,0.5)" stroke-width="1.2" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <div class="cb">
+    <div class="c-eyebrow">S5 · 溝通策略</div>
+    <div class="c-title">話術教材庫</div>
+    <div class="c-desc">話術應對・對話模型・SOS 異議・情境演練</div>
+  </div>
+  <div class="cfoot">
+    <div class="cta-label">開啟教材庫</div>
+    <div class="arrow-ring"><svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
+  </div>
+</a>
+
+<!-- ─── S6 豪華客廳（有人氣）─── -->
+<a class="card" href="https://www.notion.so/68f46f920de14f07bc4161d221a83995" target="_blank">
+  <div class="c-accent ca-teal"></div>
+  <div class="ill">
+    <div class="ill-bg s6-bg"></div>
+    <div class="ill-fade"></div>
+    <div class="num-badge">06</div>
+    <svg viewBox="0 0 200 165" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <linearGradient id="wallS6" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#F5EDD8"/>
+          <stop offset="55%" stop-color="#EDE2C8"/>
+          <stop offset="100%" stop-color="#E0D0B0"/>
+        </linearGradient>
+        <linearGradient id="floorS6" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#C8A060"/>
+          <stop offset="100%" stop-color="#A07838"/>
+        </linearGradient>
+        <linearGradient id="sofaS6" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#EDE4D0"/>
+          <stop offset="100%" stop-color="#D8CCBA"/>
+        </linearGradient>
+        <linearGradient id="tvWallS6" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#D8C8A8"/>
+          <stop offset="100%" stop-color="#C8B890"/>
+        </linearGradient>
+        <linearGradient id="goldStripe" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#E8C860"/>
+          <stop offset="50%" stop-color="#C8A030"/>
+          <stop offset="100%" stop-color="#E8C860"/>
+        </linearGradient>
+        <linearGradient id="ottomanS6" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#C88040"/>
+          <stop offset="100%" stop-color="#A06020"/>
+        </linearGradient>
+        <linearGradient id="ceilS6" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#FDF8EE"/>
+          <stop offset="100%" stop-color="#F5EDD8"/>
+        </linearGradient>
+        <filter id="s6glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="s6soft"><feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="s6spot"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+
+      <!-- ══ CEILING (light) ══ -->
+      <rect x="0" y="0" width="200" height="38" fill="url(#ceilS6)"/>
+      <!-- coffered ceiling -->
+      <rect x="20" y="5"  width="160" height="26" rx="2" fill="rgba(220,200,160,0.25)" stroke="rgba(200,160,50,0.3)" stroke-width="0.6"/>
+      <rect x="28" y="10" width="144" height="16" rx="1" fill="rgba(200,180,130,0.2)"  stroke="rgba(200,160,50,0.18)" stroke-width="0.5"/>
+      <!-- ceiling lights warm -->
+      <circle cx="60"  cy="6" r="4"  fill="rgba(255,230,150,0.95)" filter="url(#s6glow)"/>
+      <circle cx="100" cy="6" r="4"  fill="rgba(255,230,150,0.95)" filter="url(#s6glow)"/>
+      <circle cx="140" cy="6" r="4"  fill="rgba(255,230,150,0.95)" filter="url(#s6glow)"/>
+      <!-- soft light pools -->
+      <polygon points="52,10 68,10 76,38 44,38"   fill="rgba(255,220,120,0.10)"/>
+      <polygon points="92,10 108,10 116,38 84,38"  fill="rgba(255,220,120,0.12)"/>
+      <polygon points="132,10 148,10 156,38 124,38" fill="rgba(255,220,120,0.10)"/>
+
+      <!-- ══ WALL ══ -->
+      <rect x="0" y="38" width="200" height="80" fill="url(#wallS6)"/>
+
+      <!-- ══ TV FEATURE WALL (centre — lighter wood tone) ══ -->
+      <rect x="52" y="36" width="96" height="82" fill="url(#tvWallS6)" stroke="rgba(180,140,60,0.3)" stroke-width="0.7"/>
+      <!-- gold vertical accent stripes -->
+      <rect x="62"  y="36" width="3"   height="82" fill="url(#goldStripe)" opacity="0.75"/>
+      <rect x="72"  y="36" width="1.5" height="82" fill="url(#goldStripe)" opacity="0.4"/>
+      <rect x="124" y="36" width="3"   height="82" fill="url(#goldStripe)" opacity="0.75"/>
+      <rect x="134" y="36" width="1.5" height="82" fill="url(#goldStripe)" opacity="0.4"/>
+      <!-- TV screen (dark recessed) -->
+      <rect x="75" y="44" width="50" height="36" rx="2" fill="rgba(30,22,12,0.75)" stroke="rgba(180,140,50,0.5)" stroke-width="0.8"/>
+      <rect x="77" y="46" width="46" height="32" rx="1" fill="rgba(20,15,8,0.8)"/>
+      <!-- subtle screen reflection -->
+      <rect x="77" y="46" width="22" height="32" rx="1" fill="rgba(255,255,255,0.03)"/>
+      <circle cx="100" cy="82" r="1.2" fill="rgba(100,180,255,0.6)"/>
+      <!-- decorative mirrors/panels flanking TV -->
+      <rect x="54" y="40" width="20" height="60" rx="1" fill="rgba(230,215,185,0.55)" stroke="rgba(180,140,50,0.4)" stroke-width="0.7"/>
+      <rect x="54" y="40" width="20" height="60" rx="1" fill="rgba(255,240,200,0.15)"/>
+      <!-- subtle reflection lines in mirror -->
+      <line x1="58" y1="44" x2="70" y2="56" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/>
+      <rect x="126" y="40" width="20" height="60" rx="1" fill="rgba(230,215,185,0.55)" stroke="rgba(180,140,50,0.4)" stroke-width="0.7"/>
+      <rect x="126" y="40" width="20" height="60" rx="1" fill="rgba(255,240,200,0.15)"/>
+      <line x1="130" y1="44" x2="142" y2="56" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/>
+
+      <!-- ══ SIDE WALLS ══ -->
+      <rect x="0"   y="38" width="52" height="80" fill="rgba(240,228,205,0.9)"/>
+      <rect x="148" y="38" width="52" height="80" fill="rgba(240,228,205,0.9)"/>
+      <!-- wall panel moulding left -->
+      <rect x="4"  y="42" width="42" height="36" rx="1" fill="none" stroke="rgba(180,145,80,0.35)" stroke-width="0.7"/>
+      <rect x="4"  y="82" width="42" height="32" rx="1" fill="none" stroke="rgba(180,145,80,0.25)" stroke-width="0.6"/>
+      <!-- left abstract painting (warm tones) -->
+      <rect x="8"  y="46" width="34" height="28" rx="1.5" fill="rgba(200,175,130,0.35)" stroke="rgba(180,140,50,0.5)" stroke-width="1"/>
+      <rect x="9"  y="47" width="32" height="26" rx="1" fill="rgba(220,195,150,0.25)"/>
+      <path d="M12,58 Q20,50 28,56 Q36,62 40,54" fill="none" stroke="rgba(180,130,50,0.55)" stroke-width="1.5"/>
+      <ellipse cx="22" cy="60" rx="7" ry="5" fill="rgba(160,110,40,0.3)"/>
+      <ellipse cx="34" cy="55" rx="4" ry="3" fill="rgba(200,150,60,0.25)"/>
+      <!-- right wall panel -->
+      <rect x="154" y="42" width="42" height="64" rx="1" fill="none" stroke="rgba(180,145,80,0.28)" stroke-width="0.6"/>
+      <!-- right abstract painting -->
+      <rect x="158" y="46" width="34" height="28" rx="1.5" fill="rgba(200,175,130,0.35)" stroke="rgba(180,140,50,0.5)" stroke-width="1"/>
+      <rect x="159" y="47" width="32" height="26" rx="1" fill="rgba(215,185,140,0.25)"/>
+      <line x1="162" y1="52" x2="188" y2="70" stroke="rgba(190,140,50,0.4)" stroke-width="1.5"/>
+      <line x1="162" y1="65" x2="185" y2="52" stroke="rgba(160,110,35,0.32)" stroke-width="1"/>
+      <circle cx="174" cy="58" rx="6" ry="5" fill="rgba(200,150,60,0.2)"/>
+
+      <!-- ══ FLOOR (warm wood) ══ -->
+      <rect x="0" y="118" width="200" height="47" fill="url(#floorS6)"/>
+      <line x1="0" y1="124" x2="200" y2="124" stroke="rgba(140,90,20,0.22)" stroke-width="0.8"/>
+      <line x1="0" y1="130" x2="200" y2="130" stroke="rgba(140,90,20,0.18)" stroke-width="0.7"/>
+      <line x1="0" y1="136" x2="200" y2="136" stroke="rgba(140,90,20,0.14)" stroke-width="0.6"/>
+      <line x1="0" y1="142" x2="200" y2="142" stroke="rgba(140,90,20,0.10)" stroke-width="0.5"/>
+      <line x1="0" y1="148" x2="200" y2="148" stroke="rgba(140,90,20,0.08)" stroke-width="0.5"/>
+      <line x1="50"  y1="118" x2="50"  y2="165" stroke="rgba(140,90,20,0.12)" stroke-width="0.5"/>
+      <line x1="100" y1="118" x2="100" y2="165" stroke="rgba(140,90,20,0.12)" stroke-width="0.5"/>
+      <line x1="150" y1="118" x2="150" y2="165" stroke="rgba(140,90,20,0.10)" stroke-width="0.5"/>
+      <!-- area rug (light pattern) -->
+      <ellipse cx="100" cy="138" rx="82" ry="20" fill="rgba(180,155,110,0.22)"/>
+      <ellipse cx="100" cy="138" rx="76" ry="17" fill="none" stroke="rgba(180,145,80,0.28)" stroke-width="0.8"/>
+      <ellipse cx="100" cy="138" rx="68" ry="13" fill="none" stroke="rgba(180,145,80,0.18)" stroke-width="0.5"/>
+      <path d="M40,138 Q70,130 100,138 Q130,146 160,138" fill="none" stroke="rgba(200,165,90,0.15)" stroke-width="1"/>
+
+      <!-- ══ LEFT SOFA (cream) ══ -->
+      <rect x="2"  y="104" width="76" height="24" rx="4" fill="url(#sofaS6)" stroke="rgba(200,180,140,0.4)" stroke-width="0.7"/>
+      <rect x="4"  y="96"  width="22" height="22" rx="4" fill="rgba(248,240,225,0.98)" stroke="rgba(200,175,130,0.35)" stroke-width="0.6"/>
+      <rect x="29" y="96"  width="22" height="22" rx="4" fill="rgba(240,232,215,0.98)" stroke="rgba(200,175,130,0.28)" stroke-width="0.5"/>
+      <rect x="54" y="96"  width="22" height="22" rx="4" fill="rgba(248,240,225,0.98)" stroke="rgba(200,175,130,0.35)" stroke-width="0.6"/>
+      <line x1="15" y1="96" x2="15" y2="118" stroke="rgba(190,165,120,0.3)" stroke-width="0.6"/>
+      <line x1="40" y1="96" x2="40" y2="118" stroke="rgba(190,165,120,0.3)" stroke-width="0.6"/>
+      <line x1="65" y1="96" x2="65" y2="118" stroke="rgba(190,165,120,0.3)" stroke-width="0.6"/>
+      <rect x="0"  y="100" width="6"  height="28" rx="3" fill="rgba(235,220,195,0.98)"/>
+      <rect x="72" y="100" width="6"  height="28" rx="3" fill="rgba(228,212,185,0.98)"/>
+      <rect x="5"  y="126" width="5"  height="10" rx="2" fill="rgba(120,85,30,0.7)"/>
+      <rect x="68" y="126" width="5"  height="10" rx="2" fill="rgba(120,85,30,0.7)"/>
+      <!-- gold cushion accent -->
+      <rect x="56" y="97" width="18" height="16" rx="3" fill="rgba(210,165,50,0.65)" stroke="rgba(225,185,70,0.5)" stroke-width="0.6"/>
+      <line x1="56" y1="105" x2="74" y2="105" stroke="rgba(230,195,90,0.4)" stroke-width="0.7"/>
+
+      <!-- ══ RIGHT SOFA (cream, mirrored) ══ -->
+      <rect x="122" y="104" width="76" height="24" rx="4" fill="url(#sofaS6)" stroke="rgba(200,180,140,0.4)" stroke-width="0.7"/>
+      <rect x="124" y="96"  width="22" height="22" rx="4" fill="rgba(248,240,225,0.98)" stroke="rgba(200,175,130,0.35)" stroke-width="0.6"/>
+      <rect x="149" y="96"  width="22" height="22" rx="4" fill="rgba(240,232,215,0.98)" stroke="rgba(200,175,130,0.28)" stroke-width="0.5"/>
+      <rect x="174" y="96"  width="22" height="22" rx="4" fill="rgba(248,240,225,0.98)" stroke="rgba(200,175,130,0.35)" stroke-width="0.6"/>
+      <line x1="135" y1="96" x2="135" y2="118" stroke="rgba(190,165,120,0.3)" stroke-width="0.6"/>
+      <line x1="160" y1="96" x2="160" y2="118" stroke="rgba(190,165,120,0.3)" stroke-width="0.6"/>
+      <line x1="185" y1="96" x2="185" y2="118" stroke="rgba(190,165,120,0.3)" stroke-width="0.6"/>
+      <rect x="122" y="100" width="6"  height="28" rx="3" fill="rgba(235,220,195,0.98)"/>
+      <rect x="194" y="100" width="6"  height="28" rx="3" fill="rgba(228,212,185,0.98)"/>
+      <rect x="127" y="126" width="5"  height="10" rx="2" fill="rgba(120,85,30,0.7)"/>
+      <rect x="190" y="126" width="5"  height="10" rx="2" fill="rgba(120,85,30,0.7)"/>
+      <rect x="124" y="97" width="18" height="16" rx="3" fill="rgba(210,165,50,0.65)" stroke="rgba(225,185,70,0.5)" stroke-width="0.6"/>
+      <line x1="124" y1="105" x2="142" y2="105" stroke="rgba(230,195,90,0.4)" stroke-width="0.7"/>
+
+      <!-- ══ OTTOMAN (caramel leather) ══ -->
+      <rect x="68" y="118" width="64" height="26" rx="4" fill="url(#ottomanS6)" stroke="rgba(180,120,40,0.55)" stroke-width="0.9"/>
+      <circle cx="84"  cy="125" r="2" fill="rgba(120,65,15,0.55)"/>
+      <circle cx="100" cy="125" r="2" fill="rgba(120,65,15,0.55)"/>
+      <circle cx="116" cy="125" r="2" fill="rgba(120,65,15,0.55)"/>
+      <circle cx="84"  cy="135" r="2" fill="rgba(120,65,15,0.55)"/>
+      <circle cx="100" cy="135" r="2" fill="rgba(120,65,15,0.55)"/>
+      <circle cx="116" cy="135" r="2" fill="rgba(120,65,15,0.55)"/>
+      <line x1="68" y1="130"  x2="132" y2="130" stroke="rgba(130,70,15,0.3)" stroke-width="0.7"/>
+      <line x1="84"  y1="118" x2="84"  y2="144" stroke="rgba(130,70,15,0.22)" stroke-width="0.5"/>
+      <line x1="100" y1="118" x2="100" y2="144" stroke="rgba(130,70,15,0.22)" stroke-width="0.5"/>
+      <line x1="116" y1="118" x2="116" y2="144" stroke="rgba(130,70,15,0.22)" stroke-width="0.5"/>
+      <rect x="68" y="118" width="64" height="5" rx="4" fill="rgba(255,200,120,0.18)"/>
+      <rect x="72"  y="141" width="5" height="8" rx="2" fill="rgba(100,60,15,0.75)"/>
+      <rect x="123" y="141" width="5" height="8" rx="2" fill="rgba(100,60,15,0.75)"/>
+
+      <!-- ══ COFFEE TABLE ══ -->
+      <rect x="76" y="114" width="48" height="8" rx="2" fill="rgba(175,135,65,0.8)" stroke="rgba(200,160,60,0.45)" stroke-width="0.6"/>
+      <rect x="76" y="114" width="48" height="3" rx="2" fill="rgba(255,230,160,0.2)"/>
+      <!-- books -->
+      <rect x="80" y="110" width="12" height="4" rx="0.5" fill="rgba(50,35,12,0.75)"/>
+      <rect x="80" y="107" width="10" height="3" rx="0.5" fill="rgba(75,55,20,0.65)"/>
+      <!-- white rose bouquet -->
+      <path d="M98,114 Q100,106 102,103 Q104,106 106,114Z" fill="rgba(175,135,65,0.75)" stroke="rgba(155,115,45,0.4)" stroke-width="0.4"/>
+      <ellipse cx="102" cy="114" rx="4" ry="2" fill="rgba(150,110,45,0.6)"/>
+      <circle cx="100" cy="101" r="4"   fill="rgba(255,252,248,0.95)"/>
+      <circle cx="104" cy="100" r="3.5" fill="rgba(255,250,245,0.9)"/>
+      <circle cx="98"  cy="100" r="3.5" fill="rgba(252,248,243,0.85)"/>
+      <circle cx="102" cy="97"  r="3"   fill="rgba(255,255,252,0.95)"/>
+      <circle cx="99"  cy="97"  r="2.5" fill="rgba(255,252,248,0.9)"/>
+      <!-- candle -->
+      <rect x="110" y="108" width="5" height="8" rx="0.5" fill="rgba(248,238,218,0.9)"/>
+      <ellipse cx="112" cy="107" rx="2.5" ry="3.5" fill="rgba(255,200,50,0.6)" filter="url(#s6soft)"/>
+      <ellipse cx="112" cy="108" rx="1.1" ry="1.6" fill="rgba(255,235,100,0.95)"/>
+
+      <!-- ══ TABLE LAMPS (warm shades) ══ -->
+      <rect x="34" y="84" width="4" height="30" rx="2" fill="rgba(170,130,55,0.75)"/>
+      <circle cx="36" cy="83" r="3.5" fill="rgba(190,150,65,0.8)"/>
+      <path d="M25,71 L47,71 L45,57 L27,57 Z" fill="rgba(248,232,185,0.88)" stroke="rgba(210,175,95,0.45)" stroke-width="0.6"/>
+      <ellipse cx="36" cy="71" rx="14" ry="6" fill="rgba(255,225,130,0.3)" filter="url(#s6spot)"/>
+      <rect x="162" y="84" width="4" height="30" rx="2" fill="rgba(170,130,55,0.75)"/>
+      <circle cx="164" cy="83" r="3.5" fill="rgba(190,150,65,0.8)"/>
+      <path d="M153,71 L175,71 L173,57 L155,57 Z" fill="rgba(248,232,185,0.88)" stroke="rgba(210,175,95,0.45)" stroke-width="0.6"/>
+      <ellipse cx="164" cy="71" rx="14" ry="6" fill="rgba(255,225,130,0.3)" filter="url(#s6spot)"/>
+
+      <!-- ══ DECORATIVE PLANT ══ -->
+      <rect x="184" y="92" width="12" height="26" rx="3" fill="rgba(120,85,38,0.65)"/>
+      <ellipse cx="190" cy="92" rx="11" ry="6" fill="rgba(60,110,55,0.65)"/>
+      <ellipse cx="185" cy="88" rx="8"  ry="5" fill="rgba(75,130,65,0.6)"/>
+      <ellipse cx="195" cy="88" rx="8"  ry="5" fill="rgba(65,120,55,0.58)"/>
+      <ellipse cx="190" cy="83" rx="9"  ry="6" fill="rgba(80,140,70,0.65)"/>
+
+      <!-- warm ambient overlay to unify everything -->
+      <rect x="0" y="0" width="200" height="165" fill="rgba(240,200,120,0.03)"/>
+    </svg>
+  </div>
+  <div class="cb">
+    <div class="c-eyebrow">S6 · 精選物件</div>
+    <div class="c-title">頂級物件展廳</div>
+    <div class="c-desc">精選物件・文華新站・精準配對客戶需求</div>
+  </div>
+  <div class="cfoot">
+    <div class="cta-label">查看物件</div>
+    <div class="arrow-ring"><svg viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg></div>
+  </div>
+</a>
+
+</div><!-- /grid -->
+
+<!-- ══ QUICK TOOLBAR ══ -->
+<div class="qtoolbar">
+  <div class="qt-label">快速工具</div>
+  <a class="qt-btn" href="https://reliable-fenglisu-95766f.netlify.app" target="_blank">
+    <div class="qt-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+    顧問防呆手冊 · 邀約研討會
+    <span class="qt-tag">S5</span>
+  </a>
+  <a class="qt-btn" href="https://singular-lokum-68e17a.netlify.app" target="_blank">
+    <div class="qt-icon"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+    顧問防呆手冊 · 諮詢現場
+    <span class="qt-tag">S1</span>
+  </a>
 </div>
 
-<!-- PAGE: TEACH -->
-<div class="page active" id="pageTeach">
-  <div class="teach-layout">
-    <div class="sidebar" id="sidebar"></div>
-    <div class="teach-main" id="teachMain">
-      <div class="empty-state">
-        <div class="empty-icon">👈</div>
-        <div class="empty-text">從左側選擇今日晨會節點</div>
-      </div>
-    </div>
-  </div>
+<footer>
+  <div class="f-left">Richtime © 2026 <span class="f-gem">◆</span> 內部版僅供團隊使用</div>
+  <div class="f-right">AI DECISION ENGINE · V 1.5</div>
+</footer>
 </div>
-
-<!-- PAGE: LIBRARY -->
-<div class="page" id="pageLibrary">
-  <div class="library-page">
-    <div class="lib-header">
-      <div>
-        <div class="lib-title">📚 素材庫</div>
-        <div class="lib-stats" id="libStats"></div>
-      </div>
-      <button class="action-btn" onclick="exportAll()">匯出全部</button>
-    </div>
-    <div class="lib-grid" id="libGrid"></div>
-  </div>
-</div>
-
-<script>
-const WORKER_URL = "https://futime-training.richtime90117277.workers.dev";
-const STORAGE_KEY = "futime_v2";
-
-const SYSTEM = `你是富時代房地產顧問公司的資深訓練師，正在帶領晨會教學。
-
-【富時代核心哲學——必須貫穿所有內容】
-富時代是資產顧問，不是房仲。核心理念是「先資產、後買房」。
-- 不動產有六大功能：自住、收租、增值、節稅、傳承、槓桿
-- 顧問的角色是幫客戶釐清「買房對你的人生目標有什麼幫助」
-- 絕對不主動推物件、不說「看房」、不像傳統仲介開口就問「有沒有在找房」
-- 話術要像財務顧問、像朋友，不像業務員
-- 開場先關心客戶的財務狀況與人生規劃，不是房子本身
-- 信任是設計出來的，每個動作都在塑造「我是你的顧問，不是要賺你錢的業務」
-- 異議處理不是說服，是讓客戶自己想通
-
-【話術風格】
-- 口語自然，像朋友聊天，不像背稿
-- 不說「我們的物件」「這個案子」「帶你去看」
-- 多說「你現在的資產配置」「幫你做個規劃」「站在你的角度」
-
-用繁體中文回答，口語化、有畫面感、像在現場手把手教學新人。
-請用以下JSON格式輸出（只輸出JSON，不要有其他文字）：
-{
-  "goal": "這一步的目標——用顧問思維描述（一句話）",
-  "actions": ["具體動作1（符合顧問定位）", "具體動作2", "具體動作3", "具體動作4"],
-  "errors": ["新人最容易犯的仲介式錯誤1", "新人最容易犯的仲介式錯誤2"],
-  "script": "符合富時代顧問風格的話術（1-2句，加引號，像在跟朋友聊天）",
-  "next": "下一步接到哪個環節（一句話）",
-  "questions": [
-    {"q": "問新人的問題1（測試顧問思維）", "hint": "參考答案1"},
-    {"q": "問新人的問題2", "hint": "參考答案2"},
-    {"q": "問新人的問題3", "hint": "參考答案3"}
-  ],
-  "drills": ["可繼續深入的子題1", "可繼續深入的子題2", "可繼續深入的子題3"]
-}`;
-
-
-// ── Markdown 簡易渲染 ──
-function mdRender(text) {
-  if (!text) return '';
-  return text
-    .replace(/##\s+(.+)/g, '<div style="font-size:15px;font-weight:900;color:var(--gold2);margin:12px 0 6px">$1</div>')
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/^-\s+(.+)/gm, '<div style="display:flex;gap:8px;margin:4px 0"><span style="color:var(--gold)">·</span><span>$1</span></div>')
-    .replace(/^(\d+)\.\s+(.+)/gm, '<div style="display:flex;gap:8px;margin:4px 0"><span style="color:var(--gold);font-weight:700">$1.</span><span>$2</span></div>')
-    .replace(/「(.+?)」/g, '<span style="color:var(--gold2)">「$1」</span>')
-    .replace(/\n\n/g, '<div style="height:8px"></div>')
-    .replace(/\n/g, '<br>');
-}
-
-const chapters = [
-  { id:"A", emoji:"🎯", title:"一部曲", subtitle:"開發名單", color:"#5b7cc4",
-    nodes:[{id:"A1",name:"市場開發與曝光",hint:"研討會／異業合作／社群／轉介"},{id:"A2",name:"初步接觸與諮詢",hint:"主動邀約、了解背景動機"}]},
-  { id:"B", emoji:"🤝", title:"二部曲", subtitle:"建立信任", color:"#3a9d8c",
-    nodes:[{id:"B1",name:"見面前準備",hint:"資料預習／場地選擇"},{id:"B2",name:"開場前五分鐘",hint:"暖場、說明目的、禁忌動作"},{id:"B3",name:"傾聽技巧",hint:"關鍵問題設計、讓客戶多說"}]},
-  { id:"C", emoji:"🔍", title:"三部曲", subtitle:"需求與痛點", color:"#7a6cc4",
-    nodes:[{id:"C1",name:"需求訪談",hint:"房地產六大功能釐清購屋目的"},{id:"C2",name:"財務健檢",hint:"收支盤點、風險評估、貸款初判"}]},
-  { id:"D", emoji:"🏠", title:"四部曲", subtitle:"物件配對", color:"#c98a3a",
-    nodes:[{id:"D1",name:"資產配置建議",hint:"依財務狀況提供合適產品規劃"},{id:"D2",name:"產品媒合與推薦",hint:"利弊分析、回報試算、進出策略"}]},
-  { id:"E", emoji:"🛡️", title:"五部曲", subtitle:"異議處理", color:"#c4564b",
-    nodes:[{id:"E1",name:"股票族應對",hint:"聽懂但不動／積桿放大"},{id:"E2",name:"問媽媽族應對",hint:"凡事問媽媽／女兒主導"},{id:"E3",name:"價格族應對",hint:"教科書殺價型"},{id:"E4",name:"合資族應對",hint:"姊妹合資資金不明"},{id:"E5",name:"無殼族應對",hint:"退休焦慮無殼"}]},
-  { id:"F", emoji:"✍️", title:"六部曲", subtitle:"締結成交", color:"#2a9d5c",
-    nodes:[{id:"F1",name:"簽約流程與陪同",hint:"注意事項、契約條款解說"},{id:"F2",name:"貸款協助",hint:"試算、銀行媒合、送件追蹤"}]},
-  { id:"G", emoji:"📞", title:"七部曲", subtitle:"售後服務", color:"#5a8cc4",
-    nodes:[{id:"G1",name:"交屋驗收",hint:"點交、驗屋、過戶流程"},{id:"G2",name:"代租代管",hint:"出租行銷、租客篩選、租務管理"},{id:"G3",name:"年度資產檢視",hint:"每年檢視配置、動態調整建議"}]},
-  { id:"H", emoji:"💡", title:"跨部曲", subtitle:"心法", color:"#a08060",
-    nodes:[{id:"H1",name:"顧問思維 vs 業務思維",hint:"為什麼不能只想著賣"},{id:"H2",name:"信任感是設計出來的",hint:"每個細節都在塑造印象"},{id:"H3",name:"轉介紹的時機與話術",hint:"成交後最黃金的 72 小時"}]},
-];
-
-// ── KV Cloud Storage ──
-const KV_BASE = WORKER_URL;
-
-async function kvGet(nodeId) {
-  try {
-    const res = await fetch(`${KV_BASE}/kv?key=node_${nodeId}`);
-    const json = await res.json();
-    return json.value || null;
-  } catch(e) { return null; }
-}
-
-async function kvSet(nodeId, value) {
-  try {
-    await fetch(`${KV_BASE}/kv`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ key: `node_${nodeId}`, value })
-    });
-  } catch(e) {}
-}
-
-async function kvDelete(nodeId) {
-  try {
-    await fetch(`${KV_BASE}/kv?key=node_${nodeId}`, { method: "DELETE" });
-  } catch(e) {}
-}
-
-async function kvList() {
-  try {
-    const res = await fetch(`${KV_BASE}/kv/list`);
-    const json = await res.json();
-    return json.keys || [];
-  } catch(e) { return []; }
-}
-
-// store structure: { versions: [{data, note, savedAt}], currentVer: 0 }
-// In-memory cache to avoid repeated fetches
-const memCache = {};
-
-async function getNodeStore(nodeId) {
-  if (memCache[nodeId] !== undefined) return memCache[nodeId];
-  const val = await kvGet(nodeId);
-  memCache[nodeId] = val;
-  return val;
-}
-
-async function saveVersion(nodeId, data, note="") {
-  let ns = await getNodeStore(nodeId);
-  if (!ns) ns = { versions: [], currentVer: 0 };
-  ns.versions.unshift({ data, note, savedAt: new Date().toISOString() });
-  ns.currentVer = 0;
-  memCache[nodeId] = ns;
-  await kvSet(nodeId, ns);
-}
-
-async function saveNote(nodeId, verIdx, note) {
-  const ns = await getNodeStore(nodeId);
-  if (ns && ns.versions[verIdx]) {
-    ns.versions[verIdx].note = note;
-    memCache[nodeId] = ns;
-    await kvSet(nodeId, ns);
-  }
-}
-
-async function deleteVersion(nodeId, verIdx) {
-  const ns = await getNodeStore(nodeId);
-  if (!ns) return;
-  ns.versions.splice(verIdx, 1);
-  if (ns.versions.length === 0) {
-    memCache[nodeId] = null;
-    await kvDelete(nodeId);
-  } else {
-    ns.currentVer = 0;
-    memCache[nodeId] = ns;
-    await kvSet(nodeId, ns);
-  }
-}
-
-// ── State ──
-let currentChapter = null;
-let currentNode = null;
-let currentVerIdx = 0;
-let openChapters = {};
-
-// ── Init ──
-document.getElementById("dateBadge").textContent = (() => {
-  const n = new Date();
-  return `${n.getFullYear()}.${String(n.getMonth()+1).padStart(2,'0')}.${String(n.getDate()).padStart(2,'0')} 晨會`;
-})();
-
-function switchTab(tab) {
-  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', ['today','teach','library'][i]===tab));
-  document.getElementById('pageToday').classList.toggle('active', tab==='today');
-  document.getElementById('pageTeach').classList.toggle('active', tab==='teach');
-  document.getElementById('pageLibrary').classList.toggle('active', tab==='library');
-  if (tab==='library') renderLibrary();
-  if (tab==='today') renderToday();
-}
-
-// ── Today ──
-async function setToday(chId, nodeId) {
-  const todayData = {
-    chId, nodeId,
-    date: new Date().toDateString()
-  };
-  await fetch(WORKER_URL + "/kv", {
-    method: "POST",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({ key: "today", value: todayData })
-  });
-  // Show feedback
-  const btn = document.querySelector('.set-today-btn');
-  if (btn) { btn.textContent = "✓ 已設定！"; btn.style.background = "#4caf82"; }
-  setTimeout(() => renderToday(), 500);
-}
-
-async function renderToday() {
-  const todayEl = document.getElementById("todayContent");
-  const emptyEl = document.getElementById("todayEmpty");
-  
-  try {
-    const res = await fetch(WORKER_URL + "/kv?key=today");
-    const json = await res.json();
-    const todayData = json.value;
-    
-    if (!todayData) {
-      emptyEl.style.display = "block";
-      todayEl.innerHTML = "";
-      return;
-    }
-    
-    emptyEl.style.display = "none";
-    
-    const ch = chapters.find(c => c.id === todayData.chId);
-    const node = ch ? ch.nodes.find(n => n.id === todayData.nodeId) : null;
-    if (!ch || !node) { emptyEl.style.display = "block"; return; }
-    
-    // Load node content
-    if (!memCache[node.id]) memCache[node.id] = await kvGet(node.id);
-    const ns = memCache[node.id];
-    
-    const now = new Date();
-    const dateStr = `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}`;
-    
-    todayEl.innerHTML = `
-      <div class="today-header">
-        <div>
-          <div class="today-date">📌 ${dateStr} 今日晨會</div>
-          <div class="today-title">${ch.emoji} ${ch.subtitle}</div>
-        </div>
-      </div>
-      <div class="today-node-label">${ch.title} · ${ch.subtitle}</div>
-      <div class="today-node-title" style="color:${ch.color}">${node.name}</div>
-      ${ns && ns.versions && ns.versions.length > 0 
-        ? renderTodayContent(ns.versions[0].data, ch.color, node, ch)
-        : `<div style="color:var(--muted);font-size:14px">此節點還沒有內容，請到「教學地圖」生成。</div>`
-      }
-    `;
-  } catch(e) {
-    emptyEl.style.display = "block";
-    todayEl.innerHTML = "";
-  }
-}
-
-function renderTodayContent(d, color, node, ch) {
-  // Set global context so doDrill works from today page
-  currentChapter = ch;
-  currentNode = node;
-  return `
-  <div class="teach-cards">
-    <div class="teach-card">
-      <div class="tc-label" style="color:${color};background:${color}18">🎯 今日目標</div>
-      <div class="tc-body" style="font-size:16px;font-weight:700;color:${color}">${d.goal||''}</div>
-    </div>
-    <div class="teach-card">
-      <div class="tc-label" style="color:#aaa">📋 新人該做什麼</div>
-      <div class="tc-body"><ul>${(d.actions||[]).map((a,i)=>`<li data-num="${['①','②','③','④'][i]||'·'}">${a}</li>`).join('')}</ul></div>
-    </div>
-    <div class="teach-card script-card">
-      <div class="tc-label">💬 可以直接用的話術</div>
-      <div class="script-text">${d.script||''}</div>
-    </div>
-    <div class="teach-card">
-      <div class="tc-label" style="color:#e05555;background:#e0555518">⚠️ 常見錯誤</div>
-      <div class="tc-body">${(d.errors||[]).map(e=>`<div class="err-item">${e}</div>`).join('')}</div>
-    </div>
-  </div>
-  <div class="qa-card" style="margin-top:14px">
-    <div class="qa-header"><div class="qa-tag">INTERACTION · 互動提問</div></div>
-    <div class="qa-list">
-      ${(d.questions||[]).map((q,i)=>`
-        <div class="qa-item" onclick="this.classList.toggle('revealed')">
-          <div class="qa-num">${i+1}</div>
-          <div><div class="qa-text">${q.q}</div><div class="qa-reveal">💡 ${q.hint}</div></div>
-        </div>`).join('')}
-    </div>
-  </div>
-  <div class="drill-section" style="margin-top:14px">
-    <div class="drill-header">DRILL DOWN — 繼續深入</div>
-    <div class="drill-btns">
-      ${(d.drills||[]).map((dt,i)=>`
-        <div class="drill-btn" onclick="doDrill('${dt.replace(/'/g,"\'")}',this)">
-          <span class="drill-icon">${['💬','🎯','⚡'][i]||'💡'}</span>
-          <span class="drill-text">${dt}</span>
-          <span class="drill-arrow">▶</span>
-        </div>`).join('')}
-    </div>
-  </div>`;
-}
-
-// ── Sidebar ──
-async function buildSidebar() {
-  const store = {};
-  // load all from memCache (already fetched)
-  chapters.forEach(ch => ch.nodes.forEach(n => { if(memCache[n.id]) store[n.id] = memCache[n.id]; }));
-  const sb = document.getElementById("sidebar");
-  sb.innerHTML = chapters.map(ch => {
-    const isOpen = openChapters[ch.id];
-    return `
-    <div class="sb-chapter">
-      <div class="sb-ch-header" onclick="toggleSbChapter('${ch.id}')">
-        <span class="sb-ch-emoji">${ch.emoji}</span>
-        <div class="sb-ch-info">
-          <div class="sb-ch-num">${ch.title}</div>
-          <div class="sb-ch-name">${ch.subtitle}</div>
-        </div>
-        <span class="sb-ch-arrow ${isOpen?'open':''}">▼</span>
-      </div>
-      <div class="sb-nodes ${isOpen?'open':''}">
-        ${ch.nodes.map(node => {
-          const ns = store[node.id];
-          const isActive = currentNode && currentNode.id === node.id;
-          const verCount = ns ? ns.versions.length : 0;
-          return `
-          <div class="sb-node ${isActive?'active':''} ${ns?'has-data':''}"
-               onclick="selectNode('${ch.id}','${node.id}')">
-            <div class="sb-node-dot"></div>
-            <span style="flex:1;font-size:12px">${node.name}</span>
-            ${verCount>0?`<span class="sb-ver-badge">v${verCount}</span>`:''}
-          </div>`;
-        }).join('')}
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function toggleSbChapter(chId) {
-  openChapters[chId] = !openChapters[chId];
-  buildSidebar(); // initial load
-renderToday(); // load today content
-}
-
-async function selectNode(chId, nodeId) {
-  currentChapter = chapters.find(c=>c.id===chId);
-  currentNode = currentChapter.nodes.find(n=>n.id===nodeId);
-  openChapters[chId] = true;
-  currentVerIdx = 0;
-  // Pre-load this node from KV
-  if (memCache[nodeId] === undefined) memCache[nodeId] = await kvGet(nodeId);
-  buildSidebar();
-  renderTeachMain();
-}
-
-// ── Teach Main ──
-async function renderTeachMain() {
-  const ns = await getNodeStore(currentNode.id);
-  const main = document.getElementById("teachMain");
-
-  let verHtml = '';
-  if (ns && ns.versions.length > 0) {
-    verHtml = `
-    <div class="ver-selector">
-      <span class="ver-label">版本</span>
-      <div class="ver-tabs">
-        ${ns.versions.map((v,i) => {
-          const d = new Date(v.savedAt);
-          const label = `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-          return `<span class="ver-tab ${i===currentVerIdx?'active':''}" onclick="switchVer(${i})">${label}</span>`;
-        }).join('')}
-      </div>
-      ${ns.versions.length>1?`<span class="ver-del" onclick="confirmDeleteVer()" title="刪除此版本">🗑</span>`:''}
-    </div>`;
-  }
-
-  const currentVer = ns ? ns.versions[currentVerIdx] : null;
-  const noteVal = currentVer ? (currentVer.note||'') : '';
-
-  main.innerHTML = `
-    <div class="teach-top-bar">
-      <div class="teach-title-area">
-        <div class="teach-ch-label">${currentChapter.title} · ${currentChapter.subtitle}</div>
-        <div class="teach-node-title">${currentNode.name}</div>
-      </div>
-      <div class="teach-actions">
-        ${currentVer ? `<button class="set-today-btn" onclick="setToday('${currentChapter.id}','${currentNode.id}')">📌 設為今日晨會</button>` : ''}
-        ${currentVer ? `<button class="action-btn" onclick="generateNew()">🔄 新增版本</button>` : ''}
-        <button class="action-btn primary" onclick="generateNew()">${currentVer?'＋再生成':'▶ 開始生成'}</button>
-      </div>
-    </div>
-    ${verHtml}
-    <div id="teachContent">
-      ${currentVer ? renderContentHTML(currentVer.data) : `
-        <div class="empty-state">
-          <div class="empty-icon">${currentChapter.emoji}</div>
-          <div class="empty-text">點「開始生成」讓 AI 準備今日教學內容</div>
-        </div>`}
-    </div>
-    ${currentVer ? `
-    <div class="note-area" style="margin-top:20px">
-      <div class="note-label">📝 主管筆記 · 今日補充</div>
-      <textarea class="note-input" id="noteInput" placeholder="記錄今天討論的補充、學員反應、特別案例…" rows="3">${noteVal}</textarea>
-      <button class="note-save-btn" onclick="doSaveNote()">儲存筆記</button>
-    </div>` : ''}
-  `;
-}
-
-function switchVer(idx) {
-  currentVerIdx = idx;
-  renderTeachMain();
-}
-
-function confirmDeleteVer() {
-  if (confirm('確定刪除這個版本？')) {
-    deleteVersion(currentNode.id, currentVerIdx).then(() => {
-      currentVerIdx = 0;
-      buildSidebar();
-      renderTeachMain();
-    });
-  }
-}
-
-async function doSaveNote() {
-  const val = document.getElementById("noteInput").value;
-  await saveNote(currentNode.id, currentVerIdx, val);
-  const btn = document.querySelector('.note-save-btn');
-  btn.textContent = '✓ 已儲存'; btn.style.background='#4caf82';
-  setTimeout(()=>{ btn.textContent='儲存筆記'; btn.style.background=''; }, 1500);
-}
-
-async function generateNew() {
-  const main = document.getElementById("teachMain");
-  const contentEl = document.getElementById("teachContent");
-  if (contentEl) {
-    contentEl.innerHTML = `<div class="tv-loading"><div class="loading-ring"></div><div class="loading-text">AI 正在準備教學內容…</div></div>`;
-  } else {
-    renderTeachMain();
-    document.getElementById("teachContent").innerHTML = `<div class="tv-loading"><div class="loading-ring"></div><div class="loading-text">AI 正在準備教學內容…</div></div>`;
-  }
-
-  const prompt = `請為晨會教學生成「${currentChapter.title}${currentChapter.subtitle} → ${currentNode.name}」的內容。（${currentNode.hint}）針對房地產新人業務。`;
-  try {
-    const res = await fetch(WORKER_URL, {
-      method:"POST", headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({ model:"claude-sonnet-4-20250514", max_tokens:1500, system:SYSTEM, messages:[{role:"user",content:prompt}] })
-    });
-    const apiData = await res.json();
-    let raw = apiData.content?.find(b=>b.type==="text")?.text || "{}";
-    raw = raw.replace(/```json|```/g,"").trim();
-    const d = JSON.parse(raw);
-    await saveVersion(currentNode.id, d);
-    currentVerIdx = 0;
-    await buildSidebar();
-    await renderTeachMain();
-  } catch(e) {
-    document.getElementById("teachContent").innerHTML = `<div style="color:#e05555;padding:20px">⚠️ 生成失敗，請再試一次。<br><small style="color:#666">${e.message}</small></div>`;
-  }
-}
-
-function renderContentHTML(d) {
-  const color = currentChapter.color;
-  return `
-  <div class="teach-cards">
-    <div class="teach-card">
-      <div class="tc-label" style="color:${color};background:${color}18">🎯 今日目標</div>
-      <div class="tc-body" style="font-size:16px;font-weight:700;color:${color}">${d.goal||''}</div>
-    </div>
-    <div class="teach-card">
-      <div class="tc-label" style="color:#aaa">📋 新人該做什麼</div>
-      <div class="tc-body"><ul>${(d.actions||[]).map((a,i)=>`<li data-num="${['①','②','③','④'][i]||'·'}">${a}</li>`).join('')}</ul></div>
-    </div>
-    <div class="teach-card">
-      <div class="tc-label" style="color:#e05555;background:#e0555518">⚠️ 常見錯誤</div>
-      <div class="tc-body">${(d.errors||[]).map(e=>`<div class="err-item">${e}</div>`).join('')}</div>
-    </div>
-    <div class="teach-card script-card">
-      <div class="tc-label">💬 可以直接用的話術</div>
-      <div class="script-text">${d.script||''}</div>
-    </div>
-    <div class="teach-card">
-      <div class="tc-label" style="color:#aaa">→ 下一步</div>
-      <div class="tc-body" style="color:var(--muted)">${d.next||''}</div>
-    </div>
-  </div>
-  <div class="qa-card" style="margin-top:14px">
-    <div class="qa-header">
-      <div class="qa-tag">INTERACTION · 互動提問</div>
-    </div>
-    <div class="qa-list">
-      ${(d.questions||[]).map((q,i)=>`
-        <div class="qa-item" onclick="this.classList.toggle('revealed')">
-          <div class="qa-num">${i+1}</div>
-          <div><div class="qa-text">${q.q}</div><div class="qa-reveal">💡 ${q.hint}</div></div>
-        </div>`).join('')}
-    </div>
-  </div>
-  <div class="drill-section" style="margin-top:14px">
-    <div class="drill-header">DRILL DOWN — 繼續深入</div>
-    <div class="drill-btns">
-      ${(d.drills||[]).map((dt,i)=>`
-        <div class="drill-btn" onclick="doDrill('${dt.replace(/'/g,"\\'")}',this)">
-          <span class="drill-icon">${['💬','🎯','⚡'][i]||'💡'}</span>
-          <span class="drill-text">${dt}</span>
-          <span class="drill-arrow">▶</span>
-        </div>`).join('')}
-    </div>
-  </div>`;
-}
-
-async function doDrill(topic, btn) {
-  // 產生 KV key（節點ID + 子題名稱）
-  const drillKey = `drill_${currentNode.id}_${topic.replace(/[^a-zA-Z0-9一-鿿]/g,"_").slice(0,30)}`;
-  
-  btn.style.opacity="0.5"; btn.style.pointerEvents="none";
-  const el = document.createElement("div");
-  el.className="drill-result";
-  el.innerHTML=`<div class="drill-result-title">↳ ${topic}</div><div style="color:var(--muted)">⏳ 讀取中…</div>`;
-  btn.parentNode.insertBefore(el, btn.nextSibling);
-  el.scrollIntoView({behavior:"smooth",block:"nearest"});
-
-  // 先查 KV 快取
-  try {
-    const cacheRes = await fetch(`${WORKER_URL}/kv?key=${drillKey}`);
-    const cacheJson = await cacheRes.json();
-    if (cacheJson.value) {
-      renderDrillResult(el, topic, cacheJson.value.text, cacheJson.value.sub);
-      return;
-    }
-  } catch(e) {}
-
-  // 沒有快取，呼叫 AI
-  el.innerHTML=`<div class="drill-result-title">↳ ${topic}</div><div style="color:var(--muted)">⏳ 生成中…</div>`;
-  const prompt=`針對「${currentChapter.title}${currentChapter.subtitle} → ${currentNode.name}」，深入說明：${topic}。繁體中文，實戰口吻，符合富時代顧問定位（先資產後買房），含話術和常見錯誤，200字內。最後加：DRILLS:["子題1","子題2","子題3"]`;
-  try {
-    const res=await fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:800,messages:[{role:"user",content:prompt}]})});
-    const data=await res.json();
-    const full=data.content?.find(b=>b.type==="text")?.text||"";
-    const dm=full.match(/DRILLS:\[([^\]]+)\]/);
-    let sub=[]; if(dm){try{sub=JSON.parse("["+dm[1]+"]");}catch(e){}}
-    const text=full.replace(/DRILLS:\[[^\]]+\]/,"").trim();
-
-    // 存進 KV
-    await fetch(`${WORKER_URL}/kv`, {
-      method:"POST", headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({ key: drillKey, value: { text, sub } })
-    });
-
-    renderDrillResult(el, topic, text, sub);
-  } catch(e) { el.innerHTML+=`<div style="color:var(--red)">⚠️ 失敗，請再試</div>`; }
-}
-
-function renderDrillResult(el, topic, text, sub) {
-  const icons=["💬","🎯","⚡"];
-  el.innerHTML=`<div class="drill-result-title" style="color:var(--gold)">↳ ${topic}</div>
-  <div style="font-size:13px;line-height:1.9">${mdRender(text)}</div>
-  <div style="font-size:10px;color:var(--green);font-family:'DM Mono',monospace;margin-top:8px">✓ 已儲存</div>
-  ${sub && sub.length ? `<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
-    <div style="font-size:10px;color:var(--muted);margin-bottom:6px;font-family:'DM Mono',monospace">繼續深入 →</div>
-    ${sub.map((s,i)=>`<div onclick="doDrill('${s.replace(/'/g,"\'")}',this)" style="display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:8px;background:var(--surface);border:1px solid var(--border);margin-bottom:5px;cursor:pointer;font-size:12px;color:var(--text)">
-      <span>${icons[i]||'💡'}</span><span style="flex:1">${s}</span><span style="color:var(--border)">▶</span></div>`).join('')}
-    </div>` : ''}`;
-}
-
-// ── Library ──
-async function renderLibrary() {
-  // Fetch all nodes from KV
-  const keys = await kvList();
-  const nodeIds = keys.map(k => k.name.replace("node_",""));
-  for (const id of nodeIds) { if (!memCache[id]) memCache[id] = await kvGet(id); }
-  const store = {};
-  for (const id of nodeIds) { if (memCache[id]) store[id] = memCache[id]; }
-  const grid = document.getElementById("libGrid");
-  let totalVers = 0;
-  let totalNodes = 0;
-  const rows = [];
-
-  chapters.forEach(ch => {
-    const chNodes = ch.nodes.filter(n => store[n.id]);
-    if (chNodes.length === 0) return;
-    rows.push(`<div class="lib-chapter-label">${ch.emoji} ${ch.title} · ${ch.subtitle}</div>`);
-    chNodes.forEach(node => {
-      const ns = store[node.id];
-      const verCount = ns.versions.length;
-      totalVers += verCount; totalNodes++;
-      const latest = new Date(ns.versions[0].savedAt);
-      const dateStr = `${latest.getMonth()+1}/${latest.getDate()} ${String(latest.getHours()).padStart(2,'0')}:${String(latest.getMinutes()).padStart(2,'0')}`;
-      const hasNote = ns.versions.some(v=>v.note&&v.note.trim());
-      rows.push(`
-        <div class="lib-item" onclick="goToNode('${ch.id}','${node.id}')">
-          <div class="lib-dot" style="background:${ch.color}"></div>
-          <div class="lib-info">
-            <div class="lib-node-name">${node.name} ${hasNote?'📝':''}</div>
-            <div class="lib-meta">最近更新 ${dateStr}</div>
-          </div>
-          <div class="lib-ver-count">${verCount} 個版本</div>
-        </div>`);
-    });
-  });
-
-  document.getElementById("libStats").textContent = `共 ${totalNodes} 個節點 · ${totalVers} 個版本`;
-  grid.innerHTML = rows.length ? rows.join('') : `<div class="lib-empty">還沒有任何教學紀錄<br>去晨會教學頁生成第一個節點吧！</div>`;
-}
-
-function goToNode(chId, nodeId) {
-  switchTab('teach');
-  selectNode(chId, nodeId);
-}
-
-async function exportAll() {
-  const keys = await kvList();
-  const nodeIds = keys.map(k => k.name.replace("node_",""));
-  for (const id of nodeIds) { if (!memCache[id]) memCache[id] = await kvGet(id); }
-  const store = {};
-  for (const id of nodeIds) { if (memCache[id]) store[id] = memCache[id]; }
-  let text = "富時代八部曲教學素材庫\n匯出時間：" + new Date().toLocaleString('zh-TW') + "\n\n";
-  chapters.forEach(ch => {
-    ch.nodes.forEach(node => {
-      const ns = store[node.id];
-      if (!ns) return;
-      text += `${"═".repeat(50)}\n`;
-      text += `【${ch.title} ${ch.subtitle} → ${node.name}】\n`;
-      text += `${"─".repeat(50)}\n`;
-      ns.versions.forEach((v,i) => {
-        const d = new Date(v.savedAt);
-        text += `版本 ${i+1}（${d.toLocaleString('zh-TW')}）\n`;
-        const data = v.data;
-        text += `目標：${data.goal||''}\n`;
-        text += `做什麼：\n${(data.actions||[]).map((a,j)=>`  ${['①','②','③','④'][j]} ${a}`).join('\n')}\n`;
-        text += `常見錯誤：\n${(data.errors||[]).map(e=>`  ✗ ${e}`).join('\n')}\n`;
-        text += `話術：${data.script||''}\n`;
-        text += `下一步：${data.next||''}\n`;
-        if (v.note && v.note.trim()) text += `主管筆記：${v.note}\n`;
-        text += '\n';
-      });
-    });
-  });
-  const blob = new Blob([text], {type:'text/plain;charset=utf-8'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `富時代素材庫_${new Date().toISOString().slice(0,10)}.txt`;
-  a.click();
-}
-
-buildSidebar();
-</script>
 </body>
 </html>
