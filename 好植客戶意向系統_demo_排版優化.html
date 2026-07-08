@@ -60,6 +60,18 @@
   .section-label::before{content:"";width:5px;height:17px;border-radius:2px;background:var(--green)}
   .section-label .count{font-family:'JetBrains Mono';color:var(--hot);font-weight:700}
 
+  .toolbar{display:flex;flex-wrap:wrap;gap:var(--sp-3);align-items:center;margin-bottom:var(--sp-4)}
+  .qbox{flex:1 1 200px;border:1px solid var(--line);background:var(--paper);border-radius:var(--r-sm);padding:9px 13px;font-family:inherit;font-size:13.5px;color:var(--ink)}
+  .qbox:focus{outline:2px solid var(--green-l);border-color:transparent}
+  .ftabs{display:flex;background:var(--paper);border:1px solid var(--line);border-radius:var(--r-full);padding:3px;flex-shrink:0}
+  .ftab{border:0;background:transparent;font-family:inherit;font-size:12.5px;font-weight:700;color:var(--muted);padding:6px 13px;border-radius:var(--r-full);cursor:pointer;transition:.15s var(--ease)}
+  .ftab.on{background:var(--green);color:#fff}
+  .qsel{border:1px solid var(--line);background:var(--paper);border-radius:var(--r-sm);padding:9px 12px;font-family:inherit;font-size:12.5px;color:var(--ink);flex-shrink:0;cursor:pointer}
+  .empty{text-align:center;color:var(--muted);font-size:13.5px;padding:var(--sp-7) 0}
+  .lead.flash{animation:flashnew 1.8s var(--ease)}
+  @keyframes flashnew{0%{box-shadow:0 0 0 3px var(--green-l)}100%{box-shadow:none}}
+  .tag.new{background:var(--green);color:#fff}
+
   /* alert */
   .alert{background:#fff4f1;border:1px solid #f3c9bf;border-left:4px solid var(--hot);border-radius:var(--r-md);padding:var(--sp-4) var(--sp-4);margin-bottom:var(--sp-6);display:flex;gap:var(--sp-3);align-items:flex-start}
   .alert .ico{font-size:18px;flex-shrink:0}
@@ -180,8 +192,8 @@
     </div>
 
     <div class="kpis">
-      <div class="kpi accent"><div class="n">8</div><div class="l">重點熱客（需跟進）</div></div>
-      <div class="kpi"><div class="n">86</div><div class="l">本週來人</div></div>
+      <div class="kpi accent"><div class="n" id="kpiHot">8</div><div class="l">重點熱客（需跟進）</div></div>
+      <div class="kpi"><div class="n" id="kpiTotal">86</div><div class="l">本週來人</div></div>
       <div class="kpi"><div class="n">2</div><div class="l">本週成交</div></div>
       <div class="kpi"><div class="n" style="color:var(--hot)">1</div><div class="l">退戶預警</div></div>
     </div>
@@ -191,8 +203,22 @@
       <div class="txt"><b>退戶預警：</b>C-13F 呂胡玉鈴（1806萬，已簽約）出現猶豫訊號、家人有不同意見。建議今日內由 紫君 主動穩單，避免退戶。 <b>救回一筆＝1806萬</b></div>
     </div>
 
-    <div class="section-label">該優先跟進 <span class="count">· 依熱度排序</span></div>
+    <div class="section-label">該優先跟進 <span class="count" id="leadCount">· 依熱度排序</span></div>
+    <div class="toolbar">
+      <input type="text" id="qSearch" class="qbox" placeholder="搜尋客戶姓名或業務…">
+      <div class="ftabs" id="levelTabs">
+        <button class="ftab on" data-level="all">全部</button>
+        <button class="ftab" data-level="hot">熱客</button>
+        <button class="ftab" data-level="warm">溫客</button>
+        <button class="ftab" data-level="cold">冷客</button>
+      </div>
+      <select id="qSort" class="qsel">
+        <option value="score">依分數排序</option>
+        <option value="recent">依最新登記</option>
+      </select>
+    </div>
     <div class="leads" id="leadList"></div>
+    <div class="empty" id="emptyState" style="display:none">沒有符合條件的客戶，試著換個搜尋字或篩選條件。</div>
   </div>
 
   <!-- ============ 跑單填寫端 ============ -->
@@ -205,7 +231,11 @@
       <div class="ph-body">
         <div class="field">
           <label>客戶姓名 / 年齡</label>
-          <input type="text" placeholder="例：李珹艷 66" value="李珹艷 66">
+          <input type="text" id="fName" placeholder="例：李珹艷 66" value="李珹艷 66">
+        </div>
+        <div class="field">
+          <label>承辦業務</label>
+          <input type="text" id="fAgent" placeholder="例：淑真" value="">
         </div>
         <div class="field">
           <label>購屋動機（自住換屋為主流）</label>
@@ -213,8 +243,8 @@
             <button class="chip" data-pts="25">自住</button>
             <button class="chip" data-pts="23">換屋</button>
             <button class="chip" data-pts="18">工作/環境</button>
-            <button class="chip" data-pts="14">置產</button>
-            <button class="chip sel" data-pts="10">投資</button>
+            <button class="chip" data-pts="14" data-invest="1">置產</button>
+            <button class="chip sel" data-pts="10" data-invest="1">投資</button>
           </div>
         </div>
         <div class="field">
@@ -238,10 +268,12 @@
           </div>
         </div>
         <div class="field">
-          <label>有出價／談價嗎？（回測：最強成交訊號）</label>
-          <div class="chips" data-group="bid">
+          <label>出價狀況（回測：出價分級 &gt; 有沒有出價）</label>
+          <div class="chips" data-group="offer">
             <button class="chip sel" data-pts="0">還沒出價</button>
-            <button class="chip" data-pts="75" data-flag="bid">已出價／談價中</button>
+            <button class="chip" data-pts="8">探索性低出價</button>
+            <button class="chip" data-pts="40" data-flag="floor">貼近底價在談</button>
+            <button class="chip" data-pts="55" data-flag="floor">到價／當日下訂</button>
           </div>
         </div>
         <div class="field">
@@ -270,6 +302,13 @@
           </div>
         </div>
         <div class="field">
+          <label>特殊訊號（可複選）</label>
+          <div class="chips" data-group="signal">
+            <button class="chip" data-pts="15" data-flag="referral">老客戶／屋主介紹</button>
+            <button class="chip" data-pts="-30" data-flag="resale">心態像在買中古／成屋</button>
+          </div>
+        </div>
+        <div class="field">
           <label>未購原因（可複選）</label>
           <div class="chips" data-group="block">
             <button class="chip" data-pts="-10" data-flag="b">資金不足</button>
@@ -286,8 +325,8 @@
         </div>
         <div class="breakdown" id="breakdown"></div>
 
-        <button class="submit" onclick="fakeSubmit()">送出登記</button>
-        <div class="hint">分數每一項都看得到從哪來。預算低於本案、又收入不足，<br>系統會自動判為買不起 → 沉到底，不浪費跟進火力。</div>
+        <button class="submit" onclick="submitLead()">送出登記 · 同步主管看板</button>
+        <div class="hint">投資／置產客預算不足本案 → 直接鎖 D；自住客預算不足只扣分、不鎖級。<br>出價分三級計分，「心態像買中古」會取消所有出價/回訪托底並倒扣。</div>
       </div>
     </div>
   </div>
@@ -295,8 +334,8 @@
 </div>
 
 <div class="note">
-  示範資料取自好植第 39 週實際來客名單　·　熱度分數由「看房時長 × 決策者 × 比較狀態 × 預算」自動運算<br>
-  （運算規則 = 二十年業務判斷，可依案場調整）
+  示範資料取自好植第 39 週實際來客名單　·　v5 引擎：預算為投資／置產客的資格門檻，出價與回訪分級托底，心態旗標可覆蓋托底<br>
+  （運算規則 = 二十年業務判斷＋五個月成交回測校準，可依案場調整）
 </div>
 
 <!-- drawer -->
@@ -372,10 +411,29 @@ const leads=[
 const fmtScore=s=>s;
 function levelText(l){return l==='hot'?'熱客':l==='warm'?'溫客':'冷客'}
 
+let filterLevel='all', filterQ='', sortBy='score', newestId=null;
+
+function updateKpis(){
+  document.getElementById('kpiHot').textContent=leads.filter(d=>d.level==='hot').length;
+  document.getElementById('kpiTotal').textContent=leads.length;
+}
+
 function renderLeads(){
   const el=document.getElementById('leadList');
-  el.innerHTML=leads.sort((a,b)=>b.score-a.score).map((d,i)=>`
-    <div class="lead ${d.level}" onclick="openDrawer(${leads.indexOf(d)})">
+  const empty=document.getElementById('emptyState');
+  let list=leads.map((d,i)=>({...d,_idx:i}));
+  if(filterLevel!=='all') list=list.filter(d=>d.level===filterLevel);
+  if(filterQ){
+    const q=filterQ.trim().toLowerCase();
+    list=list.filter(d=>(d.name+d.agent).toLowerCase().includes(q));
+  }
+  if(sortBy==='recent'){ list=list.slice().reverse(); }
+  else{ list=list.slice().sort((a,b)=>b.score-a.score); }
+  document.getElementById('leadCount').textContent=`· 共 ${list.length} 筆`;
+  if(list.length===0){ el.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display='none';
+  el.innerHTML=list.map(d=>`
+    <div class="lead ${d.level} ${d._idx===newestId?'flash':''}" onclick="openDrawer(${d._idx})">
       <div class="score">
         <div class="v">${d.score}</div>
         <div class="b">${levelText(d.level)}</div>
@@ -383,17 +441,30 @@ function renderLeads(){
       <div class="who">
         <div class="name">${d.name}<span>${d.age?d.age+'歲':''} · ${d.region}</span></div>
         <div class="tags">
+          ${d._idx===newestId?`<span class="tag new">✓ 剛送出</span>`:''}
           ${d.tags.map(t=>`<span class="tag">${t}</span>`).join('')}
           ${d.block?`<span class="tag block">⚑ ${d.block}</span>`:''}
         </div>
       </div>
       <div class="meta">
-        <div class="agent">${d.agent}</div>
+        <div class="agent">${d.agent||'—'}</div>
         <div>來源 ${d.media}</div>
         <div class="${d.stale?'stale':'ok'}">${d.stale?'⏱ '+d.lastFollow:'✓ '+d.lastFollow}</div>
       </div>
     </div>`).join('');
+  updateKpis();
 }
+
+document.getElementById('qSearch').addEventListener('input',e=>{filterQ=e.target.value;renderLeads();});
+document.getElementById('qSort').addEventListener('change',e=>{sortBy=e.target.value;renderLeads();});
+document.getElementById('levelTabs').querySelectorAll('.ftab').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.ftab').forEach(x=>x.classList.remove('on'));
+    btn.classList.add('on');
+    filterLevel=btn.dataset.level;
+    renderLeads();
+  });
+});
 
 function openDrawer(idx){
   const d=leads[idx];
@@ -419,38 +490,75 @@ function switchView(v){
   document.getElementById('btnAgent').classList.toggle('on',v==='agent');
 }
 
-// ---- 跑單端即時計分（v4：回測校準 — 出價>回訪>決策者）----
-function recalc(){
+// ---- 跑單端即時計分（v5：預算資格門檻＋出價分級托底＋心態旗標覆蓋）----
+function scoreForm(){
   let total=0, parts=[];
   const get=g=>document.querySelector(`.chips[data-group="${g}"] .chip.sel`);
-  const motive=get('motive'), bud=get('bud'), inc=get('income'), dm=get('dm'), cmp=get('cmp'), rev=get('revisit'), bid=get('bid');
+  const motive=get('motive'), bud=get('bud'), inc=get('income'), dm=get('dm'), cmp=get('cmp'), rev=get('revisit'), offer=get('offer');
   if(motive){total+=+motive.dataset.pts; parts.push(`動機 +${motive.dataset.pts}`);}
   if(bud){total+=+bud.dataset.pts; parts.push(`預算 +${bud.dataset.pts}`);}
   if(dm){total+=+dm.dataset.pts; parts.push(`決策者 ${dm.dataset.pts>=0?'+':''}${dm.dataset.pts}`);}
   if(cmp){total+=+cmp.dataset.pts; parts.push(`比較 +${cmp.dataset.pts}`);}
+
+  const resaleActive=[...document.querySelectorAll('.chips[data-group="signal"] .chip.sel')].some(c=>c.dataset.flag==='resale');
+  const referralActive=[...document.querySelectorAll('.chips[data-group="signal"] .chip.sel')].some(c=>c.dataset.flag==='referral');
+
+  // 預算資格門檻：投資／置產客不足預算 → 直接鎖 D；自住客只扣分不鎖級
   const under = bud && bud.dataset.flag==='under';
   const lowinc = inc && inc.dataset.flag==='lowinc';
-  if(under && lowinc){ total-=18; parts.push(`<b style="color:var(--hot)">⚑買不起 −18</b>`); }
-  else if(under){ total-=8; parts.push(`<span style="color:var(--hot)">預算低於本案 −8</span>`); }
+  const isInvestor = motive && motive.dataset.invest==='1';
+  let hardLocked=false;
+  if(under && isInvestor){
+    hardLocked=true;
+    parts.push(`<b style="color:var(--hot)">⚑ 投資／置產客預算不足本案 → 鎖定 D</b>`);
+  }else if(under && lowinc){
+    total-=18; parts.push(`<b style="color:var(--hot)">預算不足＋收入不足 −18</b>`);
+  }else if(under){
+    total-=8; parts.push(`<span style="color:var(--hot)">自住客預算低於本案 −8（僅扣分）</span>`);
+  }
+
   document.querySelectorAll('.chips[data-group="block"] .chip.sel').forEach(c=>{
     total+=+c.dataset.pts; parts.push(`${c.textContent} ${c.dataset.pts}`);
   });
-  // 回訪 = 行為強訊號,托底
+
+  // 回訪托底
   const revisited = rev && rev.dataset.flag==='rv';
-  if(revisited){ total=Math.max(total, +rev.dataset.pts); parts.push(`<b style="color:var(--green-l)">↑${rev.textContent}：托底至 ${rev.dataset.pts}</b>`); }
-  // 出價 = 最強訊號(回測),托底到準成交,凌駕一切
-  const bidded = bid && bid.dataset.flag==='bid';
-  if(bidded){ total=Math.max(total, +bid.dataset.pts); parts.push(`<b style="color:var(--hot)">🔥已出價：最強成交訊號，托底至 ${bid.dataset.pts}</b>`); }
+  if(revisited && !resaleActive){ total=Math.max(total, +rev.dataset.pts); parts.push(`<b style="color:var(--green-l)">↑${rev.textContent}：托底至 ${rev.dataset.pts}</b>`); }
+
+  // 出價分級：探索性低出價只加分不托底；貼近底價/到價才托底
+  if(offer){
+    total+=+offer.dataset.pts;
+    if(offer.dataset.flag==='floor' && !resaleActive){
+      total=Math.max(total, +offer.dataset.pts);
+      parts.push(`<b style="color:var(--hot)">🔥${offer.textContent}：托底至 ${offer.dataset.pts}</b>`);
+    }else if(+offer.dataset.pts!==0){
+      parts.push(`出價（${offer.textContent}）+${offer.dataset.pts}`);
+    }
+  }
+
+  if(referralActive){ total+=15; parts.push(`<b style="color:var(--green-l)">介紹加分 +15</b>`); }
+  if(resaleActive){ total-=30; parts.push(`<b style="color:var(--hot)">⚑ 心態像買中古：取消所有托底並 −30</b>`); }
+
+  if(hardLocked) total=Math.min(total, 14);
   total=Math.max(0,Math.min(99,total));
+
+  let level, badgeText;
+  if(total>=45){level='hot';badgeText='🔴 A · 立即逼單'}
+  else if(total>=30){level='warm';badgeText='🟠 B · 積極培養'}
+  else if(total>=18){level='cold';badgeText='🔵 C · 定期保溫'}
+  else{level='cold';badgeText='⚪ D · 買不起/觀察'}
+
+  return {total,parts,level,badgeText,hardLocked};
+}
+
+function recalc(){
+  const r=scoreForm();
   const sc=document.getElementById('liveScore'), bd=document.getElementById('liveBadge');
-  sc.textContent=total;
-  let col,txt;
-  if(total>=45){col='#ff8a7a';txt='🔴 A · 立即逼單'}
-  else if(total>=30){col='#f5c380';txt='🟠 B · 積極培養'}
-  else if(total>=18){col='#9ecbe0';txt='🔵 C · 定期保溫'}
-  else{col='#c9d4d2';txt='⚪ D · 買不起/觀察'}
-  sc.style.color=col;bd.textContent=txt;
-  document.getElementById('breakdown').innerHTML='<div class="bd-label">分數來源</div>'+parts.map(p=>`<span class="bd-pill">${p}</span>`).join('');
+  sc.textContent=r.total;
+  const colMap={hot:'#ff8a7a',warm:'#f5c380',cold:'#9ecbe0'};
+  sc.style.color = r.total<18? '#c9d4d2' : colMap[r.level];
+  bd.textContent=r.badgeText;
+  document.getElementById('breakdown').innerHTML='<div class="bd-label">分數來源</div>'+r.parts.map(p=>`<span class="bd-pill">${p}</span>`).join('');
 }
 document.querySelectorAll('.chips').forEach(g=>{
   g.querySelectorAll('.chip').forEach(c=>{
@@ -462,11 +570,56 @@ document.querySelectorAll('.chips').forEach(g=>{
     });
   });
 });
-function fakeSubmit(){
+function submitLead(){
+  const r=scoreForm();
+  const nameRaw=(document.getElementById('fName').value||'新客戶').trim();
+  const agentRaw=(document.getElementById('fAgent').value||'').trim();
+  const m=nameRaw.match(/^(.*?)\s*(\d{1,3})?$/);
+  const name=(m&&m[1])?m[1]:nameRaw;
+  const age=m&&m[2]?+m[2]:null;
+
+  const get=g=>document.querySelector(`.chips[data-group="${g}"] .chip.sel`);
+  const motive=get('motive'), bud=get('bud'), dm=get('dm'), cmp=get('cmp'), rev=get('revisit'), offer=get('offer');
+  const tags=[];
+  if(offer && +offer.dataset.pts>0) tags.push(`出價：${offer.textContent}`);
+  if(rev && rev.dataset.flag==='rv') tags.push(rev.textContent);
+  if(motive) tags.push(motive.textContent);
+  const blockChips=[...document.querySelectorAll('.chips[data-group="block"] .chip.sel')].map(c=>c.textContent);
+
+  const newLead={
+    name, age, region:'—', media: agentRaw?'業務登記':'跑單登記', unit:'—', agent: agentRaw||'—',
+    score:r.total, level:r.level, lastFollow:'剛剛登記', stale:false,
+    tags: tags.slice(0,3),
+    block: r.hardLocked ? '預算不足本案' : (blockChips[0]||''),
+    detail:{
+      動機: motive?motive.textContent:'—',
+      預算: bud?bud.textContent:'—',
+      出價狀況: offer?offer.textContent:'—',
+      回訪: rev?rev.textContent:'初訪',
+      決策者: dm?dm.textContent:'—',
+      比較狀態: cmp?cmp.textContent:'—'
+    },
+    narr:'此筆由跑單端即時登記送出，內容為現場填寫的原始選項，尚未補現場記錄。',
+    next: r.level==='hot' ? '⭐ 系統判定 A 級，建議立即安排逼單動作。' :
+          r.level==='warm' ? '🟠 系統判定 B 級，建議積極培養、安排下一次接觸。' :
+          r.hardLocked ? '⚑ 預算不足本案且為投資／置產客，建議列 D、不投入火力。' :
+          '系統判定 C/D 級，建議定期保溫即可。'
+  };
+  leads.push(newLead);
+  newestId=leads.length-1;
+  filterLevel='all';
+  document.querySelectorAll('.ftab').forEach(x=>x.classList.remove('on'));
+  document.querySelector('.ftab[data-level="all"]').classList.add('on');
+  filterQ=''; document.getElementById('qSearch').value='';
+  sortBy='recent'; document.getElementById('qSort').value='recent';
+  renderLeads();
+
   const btn=document.querySelector('.submit');
   btn.textContent='✓ 已送出 · 主管端已更新';
   btn.style.background='var(--green-l)';
-  setTimeout(()=>{btn.textContent='送出登記';btn.style.background='';},1800);
+  setTimeout(()=>{btn.textContent='送出登記 · 同步主管看板';btn.style.background='';},1800);
+  switchView('dash');
+  setTimeout(()=>openDrawer(newestId),300);
 }
 
 renderLeads();
