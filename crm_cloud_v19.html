@@ -1859,13 +1859,14 @@ var HARDCODED_API_URL = 'https://script.google.com/macros/s/AKfycbxPExuVTXkz8ucG
 var currentUser = null, currentRole = null;
 var customers = [];
 var MANAGERS = ['總經理','CRM營運長','知識長','AI訓練長'];
-var DEFAULT_SALES = ['阮智偉','廖一龍','鄭采崴','張書菡','王鈞志','吳玉如','商國泰','郭淑真','高亞琦','陳淑美','侯明智','許亞茵','曾素蘭','林紫君','黃中興','黃彥程','孫運迪','陳丰彥','劉常裕','施向宇','莊環蔭','廉海桃','劉晁綱','游馥宇'];
+var DEFAULT_SALES = ['阮智偉','廖一龍','鄭采崴','張書菡','王鈞志','吳玉如','商國泰','郭淑真','高亞琦','陳淑美','侯明智','許亞茵','曾素蘭','林紫君','黃中興','黃彥程','孫運迪','陳丰彥','劉常裕','施向宇','莊環蔭','廉海桃','劉晁綱','游馥宇','董品漢'];
 var SALES = [];
 // 密碼已移至後端（Apps Script 系統密碼工作表）
 // HTML 不存任何密碼，由 verifyPassword action 驗證
 var PASSWORDS = {}; // 保留空物件避免舊代碼報錯
 var STAGE_NAMES = ['','客戶開發','初步接觸','需求分析','產品匹配','異議處理','成交締結','售後服務','轉介紹'];
 var STAFF_KEY = 'futime_sales_list';
+var REMOVED_KEY = 'futime_removed_staff';
 var PASSWORDS_KEY = 'futime_passwords';
 // ── 登入狀態持久化（解決安卓下拉頁面重渲染導致登出問題）──
 var SESSION_KEY = 'futime_session_v1';
@@ -1887,11 +1888,21 @@ function setStaffPassword(name, pwd) {
 }
 
 // ── 業務名單（從 localStorage 讀取，沒有就用預設）──
+function getRemovedStaff() {
+  try { var r = localStorage.getItem(REMOVED_KEY); return r ? JSON.parse(r) : []; }
+  catch(e) { return []; }
+}
+function saveRemovedStaff(list) {
+  try { localStorage.setItem(REMOVED_KEY, JSON.stringify(list)); } catch(e) {}
+}
 function loadSalesList() {
+  var base;
   try {
     var saved = localStorage.getItem(STAFF_KEY);
-    SALES = saved ? JSON.parse(saved) : DEFAULT_SALES.slice();
-  } catch(e) { SALES = DEFAULT_SALES.slice(); }
+    base = saved ? JSON.parse(saved) : DEFAULT_SALES.slice();
+  } catch(e) { base = DEFAULT_SALES.slice(); }
+  var removed = getRemovedStaff();
+  SALES = base.filter(function(s){ return removed.indexOf(s) === -1; });
   loadPasswords();
 }
 function saveSalesList() {
@@ -1907,8 +1918,12 @@ function addStaff() {
   if (SALES.indexOf(name) !== -1) { showToast('⚠️ 此姓名已存在'); return; }
   SALES.push(name);
   PASSWORDS[name] = pwd;
+  var _rm = getRemovedStaff().filter(function(s){ return s !== name; });
+  saveRemovedStaff(_rm);
   saveSalesList();
-  savePasswords();
+  callAPI({ action: 'setPassword', user: name, password: pwd }, function(res){
+    if (!(res && res.success)) { showToast('⚠️ 名單已加，但密碼寫入後端失敗，請用改密碼重設'); }
+  });
   document.getElementById('newStaffName').value = '';
   document.getElementById('newStaffPwd').value = '';
   renderStaffList();
@@ -1919,6 +1934,8 @@ function addStaff() {
 function removeStaff(name) {
   if (!confirm('確定要移除「'+name+'」？\n（此業務的客戶資料不會被刪除）')) return;
   SALES = SALES.filter(function(s){ return s !== name; });
+  var _rm = getRemovedStaff();
+  if (_rm.indexOf(name) === -1) { _rm.push(name); saveRemovedStaff(_rm); }
   saveSalesList();
   renderStaffList();
   rebuildSalesSelects();
