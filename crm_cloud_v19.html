@@ -2759,8 +2759,6 @@ function saveAllWeekScores() {
   var wkStart2Date = new Date(nowTai2);
   wkStart2Date.setDate(nowTai2.getDate() - dft2);
   wkStart2Date.setHours(0, 0, 0, 0);
-    String(wkStart2Date.getMonth()+1).padStart(2,'0') + '-' +
-    String(wkStart2Date.getDate()).padStart(2,'0');
 
   customers.forEach(function(c) {
     var sp = c.salesPerson || '未指定';
