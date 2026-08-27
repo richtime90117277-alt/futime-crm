@@ -2079,21 +2079,33 @@ function populateSalesFilter() {
   var prev = fs.value || '';
   var esc = function(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); };
   var active = SALES.slice();
-  // 掃客戶資料，找出不在現役名單、非空白的負責業務 → 視為離職
+  // 離職業務 = 已移除名單(getRemovedStaff) ∪ 客戶資料中出現、但不在現役名單的負責業務
+  var seen = {};
   var former = [];
+  (typeof getRemovedStaff === 'function' ? getRemovedStaff() : []).forEach(function(s){
+    s = (s || '').toString().trim();
+    if (s && active.indexOf(s) === -1 && !seen[s]) { seen[s] = 1; former.push(s); }
+  });
   if (typeof customers !== 'undefined' && customers && customers.length) {
-    var seen = {};
     customers.forEach(function(c){
       var sp = (c.salesPerson || '').toString().trim();
       if (!sp || active.indexOf(sp) !== -1 || seen[sp]) return;
       seen[sp] = 1; former.push(sp);
     });
-    former.sort();
+  }
+  former.sort();
+  // 統計每位離職業務名下客戶數，讓使用者知道有沒有名單可拉
+  var cntByOwner = {};
+  if (typeof customers !== 'undefined' && customers) {
+    customers.forEach(function(c){ var sp=(c.salesPerson||'').toString().trim(); if(sp) cntByOwner[sp]=(cntByOwner[sp]||0)+1; });
   }
   var html = '<option value="">全部業務</option>';
   html += '<optgroup label="在職業務">' + active.map(function(s){ return '<option value="'+esc(s)+'">'+esc(s)+'</option>'; }).join('') + '</optgroup>';
   if (former.length) {
-    html += '<optgroup label="離職業務">' + former.map(function(s){ return '<option value="'+esc(s)+'">'+esc(s)+'（已離職）</option>'; }).join('') + '</optgroup>';
+    html += '<optgroup label="離職業務">' + former.map(function(s){
+      var n = cntByOwner[s] || 0;
+      return '<option value="'+esc(s)+'">'+esc(s)+'（已離職・'+n+' 位客戶）</option>';
+    }).join('') + '</optgroup>';
   }
   fs.innerHTML = html;
   // 還原先前選擇（若仍存在）
@@ -2404,6 +2416,7 @@ function calcScore(c) {
 
 
 function renderAllLeaderboards() {
+  if (!_weekHistoryLoaded) loadWeekScoreHistory();
   renderLeaderboard();
   renderCustomerCountLB();
   renderSeminarLB();
@@ -2660,11 +2673,14 @@ function getCurrentWeekLabel() {
 
 // ── 儲存所有業務本週積分到Google Sheets ──
 // ══════════════════════════════════════════════
-// 📅 排行榜週期歷史（本機快照）
-// 後端無讀取已存週積分的 action，故在「儲存本週積分 / 補存歷史」時
-// 於本機記錄快照，供之後切換檢視「上週 / 更早」。
+// 📅 排行榜週期歷史
+// 優先讀後端已存的週積分（getWeekScores action）；
+// 後端沒有該 action 時，退回本機快照（於「儲存本週積分 / 補存歷史」時建立）。
 // ══════════════════════════════════════════════
 var WEEK_SNAP_KEY = 'futime_week_snapshots';
+var _weekHistoryServer = {};   // { "2026-W30": [{name,score,count}], ... } 來自後端
+var _weekHistoryLoaded = false;
+
 function getWeekSnapshots() {
   try { var r = localStorage.getItem(WEEK_SNAP_KEY); return r ? JSON.parse(r) : {}; }
   catch(e) { return {}; }
@@ -2681,18 +2697,54 @@ function saveWeekSnapshot(weekLabel, rows) {
   buildLbWeekPicker();
 }
 
-// 下拉選單：本週 + 已快照的過往週
+// 從後端抓歷史週積分（若後端有 getWeekScores action）
+function loadWeekScoreHistory() {
+  if (typeof callAPI !== 'function') return;
+  callAPI({ action: 'getWeekScores' }, function(res) {
+    _weekHistoryLoaded = true;
+    if (!res || res.success === false) return;
+    var map = {};
+    var pushRow = function(wk, name, score, count) {
+      if (!wk || !name) return;
+      if (!map[wk]) map[wk] = [];
+      map[wk].push({ name: name, score: Number(score) || 0, count: (count == null ? null : Number(count)) });
+    };
+    // 支援幾種常見回傳格式
+    var weeksObj = res.weeks || res.history || res.data;
+    if (weeksObj && !Array.isArray(weeksObj) && typeof weeksObj === 'object') {
+      Object.keys(weeksObj).forEach(function(wk){
+        (weeksObj[wk] || []).forEach(function(r){ pushRow(wk, r.salesPerson || r.name, r.score, r.count); });
+      });
+    }
+    var arr = Array.isArray(res) ? res : (res.rows || (Array.isArray(res.data) ? res.data : null));
+    if (arr) {
+      arr.forEach(function(r){ pushRow(r.weekLabel || r.week || r.period, r.salesPerson || r.name, r.score, r.count); });
+    }
+    if (Object.keys(map).length) { _weekHistoryServer = map; buildLbWeekPicker(); }
+  });
+}
+
+// 合併：後端歷史 + 本機快照（同週後端優先）
+function getMergedWeekHistory() {
+  var merged = {};
+  var snaps = getWeekSnapshots();
+  Object.keys(snaps).forEach(function(wk){ merged[wk] = { source: '本機', rows: snaps[wk].rows, savedAt: snaps[wk].savedAt }; });
+  Object.keys(_weekHistoryServer).forEach(function(wk){ merged[wk] = { source: '雲端', rows: _weekHistoryServer[wk], savedAt: null }; });
+  return merged;
+}
+
+// 下拉選單：本週 + 過往週（雲端 / 本機）
 function buildLbWeekPicker() {
   var sel = document.getElementById('lbWeekPicker');
   if (!sel) return;
   var prev = sel.value;
-  var snaps = getWeekSnapshots();
-  var weeks = Object.keys(snaps).sort().reverse();
+  var hist = getMergedWeekHistory();
+  var weeks = Object.keys(hist).sort().reverse();
   var curLabel = (typeof getCurrentWeekLabel === 'function') ? getCurrentWeekLabel() : '';
   var opts = '<option value="">本週（即時計算）</option>';
   weeks.forEach(function(w){
     if (w === curLabel) return; // 本週用即時那筆
-    opts += '<option value="'+w+'">'+w+'（本機記錄）</option>';
+    opts += '<option value="'+w+'">'+w+'（'+hist[w].source+'記錄）</option>';
   });
   sel.innerHTML = opts;
   if (prev) sel.value = prev;
@@ -2717,15 +2769,15 @@ function onLbWeekPick() {
 function renderWeekSnapshot(weekLabel) {
   var container = document.getElementById('leaderboardList');
   if (!container) return;
-  var snap = getWeekSnapshots()[weekLabel];
+  var snap = getMergedWeekHistory()[weekLabel];
   var labelEl = document.getElementById('lbWeekLabel');
   if (!snap || !snap.rows || !snap.rows.length) {
-    container.innerHTML = '<div class="empty-state"><div class="empty-icon">📅</div><p>此週無本機記錄</p></div>';
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">📅</div><p>此週無記錄</p></div>';
     if (labelEl) labelEl.textContent = '';
     return;
   }
   var rows = snap.rows.slice().sort(function(a,b){ return (b.score||0) - (a.score||0); });
-  if (labelEl) labelEl.textContent = '📅 ' + weekLabel + '（於 ' + new Date(snap.savedAt).toLocaleString('zh-TW') + ' 記錄）';
+  if (labelEl) labelEl.textContent = '📅 ' + weekLabel + '（' + snap.source + '記錄' + (snap.savedAt ? '・' + new Date(snap.savedAt).toLocaleString('zh-TW') : '') + '）';
   _lastWeekRank = rows;
   _lastWeekRankLabel = weekLabel;
   var medals = ['🥇','🥈','🥉'];
@@ -6748,36 +6800,81 @@ function _todayStr() {
   return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
 }
 
+// 客戶完整欄位（依八部曲順序）— [表頭, 取值函式]
+var CUSTOMER_EXPORT_COLS = [
+  ['客戶姓名', function(c){ return c.customerName; }],
+  ['聯絡方式', function(c){ return c.contactInfo; }],
+  ['負責業務', function(c){ return c.salesPerson; }],
+  ['年齡', function(c){ return c.customerAge; }],
+  ['名單類型', function(c){ return c.clientType; }],
+  ['名單來源', function(c){ return c.leadSource; }],
+  ['來源細節', function(c){ return c.leadSourceDetail; }],
+  ['介紹人', function(c){ return c.referralBy; }],
+  ['介紹人聯絡方式', function(c){ return c.referralByContact; }],
+  ['客戶族群', function(c){ return (c.clientSegment && String(c.clientSegment).trim()) || (typeof inferCustomerType==='function'?inferCustomerType(c):''); }],
+  ['偏好區域', function(c){ return c.preferredArea; }],
+  ['建檔日期', function(c){ return c.creationDate; }],
+  ['最後更新', function(c){ return c.updatedAt; }],
+  ['目前部曲', function(c){ return (typeof STAGE_NAMES!=='undefined') ? (STAGE_NAMES[stageOf(c)]||'') : stageOf(c); }],
+  ['客戶溫度', function(c){ return typeof inferTemperature==='function' ? inferTemperature(c) : ''; }],
+  ['成交機率(%)', function(c){ return isActive(c) ? calcCloseProb(c) : ''; }],
+  ['客戶狀態', function(c){ return c.customerActive; }],
+  ['研討會', function(c){ return c.seminarAttended; }],
+  ['研討會月份', function(c){ return c.seminarDate; }],
+  ['諮詢狀態', function(c){ return c.consult2026 || c.viewingStatus; }],
+  ['家庭成員', function(c){ return c.familyMembers; }],
+  ['KEY MAN（決策者）', function(c){ return c.keyMan; }],
+  ['居住狀況', function(c){ return c.livingStatus; }],
+  ['家人支持度', function(c){ return c.familySupport; }],
+  ['信任分(1-10)', function(c){ return c.trustScore; }],
+  ['專業分(1-10)', function(c){ return c.professionalScore; }],
+  ['信任狀態', function(c){ return c.currentStatus; }],
+  ['購屋目的', function(c){ return c.purchasePurpose; }],
+  ['購買時間軸', function(c){ return c.buyingTimeline; }],
+  ['自有資金＆來源', function(c){ return c.budget; }],
+  ['月付能力', function(c){ return c.monthlyPayment; }],
+  ['痛點分析', function(c){ return c.painPoints || c.painPointsNote; }],
+  ['客戶需求', function(c){ return c.customerNeeds; }],
+  ['看過哪些案子', function(c){ return c.viewedProperties; }],
+  ['為什麼沒有買', function(c){ return c.whyNotBought; }],
+  ['配對／推薦物件', function(c){ return c.matchedProperty || c.recommendedProperty; }],
+  ['客戶異議', function(c){ return c.objections; }],
+  ['解決方案', function(c){ return c.solutions; }],
+  ['簽約狀態', function(c){ return c.contractStatus; }],
+  ['成交金額(萬)', function(c){ return c.dealAmount; }],
+  ['簽約日期', function(c){ return c.contractDate; }],
+  ['滿意度(1-10)', function(c){ return c.satisfactionScore; }],
+  ['售後服務記錄', function(c){ return c.afterSalesService; }],
+  ['貸款協助', function(c){ return c.loanHelp; }],
+  ['裝潢建議', function(c){ return c.decorAdvice; }],
+  ['資產健檢', function(c){ return c.assetReview; }],
+  ['轉介紹數', function(c){ return c.referralCount; }],
+  ['轉介紹名單', function(c){ return c.referralList; }],
+  ['轉介紹活動', function(c){ return c.referralEvent; }],
+  ['聯絡偏好', function(c){ return c.contactPref; }],
+  ['方便聯絡時段', function(c){ return c.contactTime; }],
+  ['個性類型', function(c){ return c.personalityType; }],
+  ['最後跟進結果', function(c){ return c.lastFollowupResult; }],
+  ['下次跟進動作', function(c){ return c.nextFollowupAction; }],
+  ['下次跟進日期', function(c){ return c.nextFollowupDate; }],
+  ['跟進目標', function(c){ return c.nextFollowupGoal; }],
+  ['備註／跟進歷史', function(c){ return c.notes; }]
+];
+
 function exportCustomersCSV() {
   var list = (_lastCustomerView && _lastCustomerView.length !== undefined) ? _lastCustomerView : null;
   if (!list) { renderCustomers(); list = _lastCustomerView || []; }
   if (!list.length) { showToast('⚠️ 目前沒有可匯出的客戶'); return; }
-  var header = ['客戶姓名','聯絡方式','負責業務','年齡','客戶族群','名單來源','目前部曲','購買時間軸','成交機率(%)','簽約狀態','成交金額(萬)','研討會','諮詢狀態','建檔日期','最後更新','痛點','備註'];
-  var rows = [header];
+  var rows = [CUSTOMER_EXPORT_COLS.map(function(col){ return col[0]; })];
   list.forEach(function(c){
-    var seg = (c.clientSegment && String(c.clientSegment).trim()) || (typeof inferCustomerType === 'function' ? inferCustomerType(c) : '');
-    rows.push([
-      c.customerName || '',
-      c.contactInfo || '',
-      c.salesPerson || '',
-      c.customerAge || '',
-      seg,
-      c.leadSource || '',
-      (typeof STAGE_NAMES !== 'undefined' ? (STAGE_NAMES[stageOf(c)] || '') : stageOf(c)),
-      c.buyingTimeline || '',
-      isActive(c) ? calcCloseProb(c) : '',
-      c.contractStatus || '',
-      c.dealAmount || '',
-      c.seminarAttended || '',
-      c.consult2026 || c.viewingStatus || '',
-      c.creationDate || '',
-      c.updatedAt || '',
-      c.painPoints || '',
-      c.notes || ''
-    ]);
+    rows.push(CUSTOMER_EXPORT_COLS.map(function(col){
+      var v;
+      try { v = col[1](c); } catch(e) { v = ''; }
+      return (v == null) ? '' : v;
+    }));
   });
   downloadCSV('富時代客戶名單_' + _todayStr() + '.csv', rows);
-  showToast('✅ 已匯出 ' + list.length + ' 筆客戶');
+  showToast('✅ 已匯出 ' + list.length + ' 筆客戶（' + CUSTOMER_EXPORT_COLS.length + ' 欄）');
 }
 
 function exportLeaderboardCSV() {
