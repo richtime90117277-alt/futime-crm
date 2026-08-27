@@ -1632,6 +1632,7 @@ function claimSeminarLead() {}
           </div>
           <div class="form-group" id="filterSalesGroup" style="display:none;flex:1;min-width:120px">
             <label>業務篩選</label>
+            <input type="text" id="filterSalesSearch" placeholder="搜尋業務…" oninput="filterSalesSearch()" style="margin-bottom:.4rem">
             <select id="filterSales" onchange="renderCustomers()"><option value="">全部業務</option></select>
           </div>
           <div class="form-group" style="flex:1;min-width:120px">
@@ -1695,7 +1696,10 @@ function claimSeminarLead() {}
         </div>
         <div style="padding:.75rem 1.5rem;border-bottom:1px solid var(--cream2);display:flex;align-items:center;justify-content:space-between">
           <span id="listCount" style="font-size:13px;color:var(--text-muted)">載入中...</span>
-          <button onclick="fetchCustomers()" style="background:none;border:none;color:var(--navy);font-size:13px;cursor:pointer;font-family:inherit;font-weight:600">🔄 重新整理</button>
+          <div style="display:flex;gap:1rem;align-items:center">
+            <button onclick="exportCustomersCSV()" style="background:none;border:none;color:var(--navy);font-size:13px;cursor:pointer;font-family:inherit;font-weight:600">⬇️ 匯出 CSV</button>
+            <button onclick="fetchCustomers()" style="background:none;border:none;color:var(--navy);font-size:13px;cursor:pointer;font-family:inherit;font-weight:600">🔄 重新整理</button>
+          </div>
         </div>
         <div id="customerListContainer"><div class="empty-state"><div class="empty-icon">⏳</div>載入中...</div></div>
       </div>
@@ -1724,12 +1728,19 @@ function claimSeminarLead() {}
           <div style="display:flex;gap:.5rem;margin-bottom:1.25rem">
             <button id="lbTabWeek" onclick="switchLbTab('week')" style="flex:1;padding:.6rem;border-radius:8px;border:2px solid var(--gold);background:var(--navy);color:#fff;font-size:13px;font-weight:700;cursor:pointer">🗓️ 本週積分</button>
             <button id="lbTabTotal" onclick="switchLbTab('total')" style="flex:1;padding:.6rem;border-radius:8px;border:2px solid #dde3ea;background:var(--cream2);color:var(--navy);font-size:13px;font-weight:700;cursor:pointer">📊 累積總分</button>
+            <button onclick="exportLeaderboardCSV()" title="匯出目前分頁排名" style="flex-shrink:0;padding:.6rem .9rem;border-radius:8px;border:2px solid #dde3ea;background:var(--cream2);color:var(--navy);font-size:13px;font-weight:700;cursor:pointer">⬇️ CSV</button>
+          </div>
+          <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem;flex-wrap:wrap">
+            <label style="font-size:12px;font-weight:700;color:var(--navy)">檢視週期</label>
+            <select id="lbWeekPicker" onchange="onLbWeekPick()" style="flex:1;min-width:160px;padding:.4rem .6rem;border:1.5px solid #e0d8c8;border-radius:6px;font-size:13px;font-family:inherit">
+              <option value="">本週（即時計算）</option>
+            </select>
           </div>
           <div id="lbWeekLabel" style="font-size:12px;color:var(--text-muted);margin-bottom:.75rem;text-align:center"></div>
           <!-- 本週排行 -->
           <div id="lbWeekPanel">
             <div id="leaderboardList"></div>
-            <div style="margin-top:1rem;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+            <div id="lbWeekSaveRow" style="margin-top:1rem;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
               <button onclick="saveAllWeekScores()" style="flex:1;min-width:140px;padding:.65rem 1rem;background:linear-gradient(135deg,var(--gold),#c9a84c);color:var(--navy);border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer">💾 儲存本週積分</button>
               <div id="lbSaveStatus" style="font-size:12px;color:var(--text-soft)"></div>
             </div>
@@ -1799,6 +1810,28 @@ function claimSeminarLead() {}
             <button onclick="addStaff()" class="btn btn-primary" style="width:auto;padding:.875rem 1.5rem;margin-top:0;white-space:nowrap">➕ 新增</button>
           </div>
           <div id="staffList"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><div class="card-icon">🔄</div><h3>批次轉移客戶</h3></div>
+        <div class="card-body">
+          <div style="background:var(--cream2);border-radius:10px;padding:.875rem 1rem;margin-bottom:1rem;font-size:13px;color:var(--text-soft);line-height:1.8">
+            業務離職後，可把他名下的所有客戶一次轉給接手的業務。<br>
+            ⚠️ 會逐筆更新雲端資料，客戶數多時請耐心等候，中途勿關閉頁面。
+          </div>
+          <div style="display:flex;gap:.75rem;flex-wrap:wrap;align-items:flex-end">
+            <div class="form-group" style="flex:1;min-width:150px;margin:0">
+              <label>來源業務（原負責人）</label>
+              <select id="reassignFrom"><option value="">請選擇</option></select>
+            </div>
+            <div class="form-group" style="flex:1;min-width:150px;margin:0">
+              <label>目標業務（新負責人）</label>
+              <select id="reassignTo"><option value="">請選擇</option></select>
+            </div>
+            <button onclick="bulkReassignCustomers()" class="btn btn-primary" style="width:auto;padding:.875rem 1.5rem;margin-top:0;white-space:nowrap">🔄 轉移</button>
+          </div>
+          <div id="reassignStatus" style="font-size:13px;color:var(--text-soft);margin-top:.75rem"></div>
         </div>
       </div>
     </div>
@@ -1959,6 +1992,60 @@ function renderStaffList() {
       +'<button onclick="removeStaff(\''+name+'\')" style="background:var(--danger-bg);color:var(--danger);border:1px solid #f5c6c3;padding:.35rem .75rem;border-radius:6px;cursor:pointer;font-size:12px;font-family:inherit;white-space:nowrap">移除</button>'
       +'</div></div>';
   }).join('');
+  populateReassignSelects();
+}
+
+// ── 批次轉移客戶：填充來源 / 目標業務下拉 ──
+function populateReassignSelects() {
+  var fromEl = document.getElementById('reassignFrom');
+  var toEl = document.getElementById('reassignTo');
+  if (!fromEl || !toEl) return;
+  var prevFrom = fromEl.value, prevTo = toEl.value;
+  // 來源：現役 + 客戶資料中出現、+ 已記錄的離職者（去重）
+  var names = {};
+  SALES.forEach(function(s){ names[s] = 1; });
+  (typeof getRemovedStaff === 'function' ? getRemovedStaff() : []).forEach(function(s){ if (s) names[s] = 1; });
+  if (typeof customers !== 'undefined' && customers) {
+    customers.forEach(function(c){ var sp = (c.salesPerson||'').toString().trim(); if (sp) names[sp] = 1; });
+  }
+  var fromList = Object.keys(names).sort();
+  fromEl.innerHTML = '<option value="">請選擇</option>' + fromList.map(function(s){
+    var tag = SALES.indexOf(s) === -1 ? '（已離職）' : '';
+    return '<option value="'+s.replace(/"/g,'&quot;')+'">'+s+tag+'</option>';
+  }).join('');
+  toEl.innerHTML = '<option value="">請選擇</option>' + SALES.map(function(s){
+    return '<option value="'+s.replace(/"/g,'&quot;')+'">'+s+'</option>';
+  }).join('');
+  if (prevFrom) { fromEl.value = prevFrom; }
+  if (prevTo) { toEl.value = prevTo; }
+}
+
+function bulkReassignCustomers() {
+  var from = (document.getElementById('reassignFrom')||{}).value || '';
+  var to = (document.getElementById('reassignTo')||{}).value || '';
+  var statusEl = document.getElementById('reassignStatus');
+  if (!from || !to) { showToast('⚠️ 請選擇來源與目標業務'); return; }
+  if (from === to) { showToast('⚠️ 來源與目標不能相同'); return; }
+  var targets = customers.filter(function(c){ return (c.salesPerson||'').toString().trim() === from; });
+  if (!targets.length) { showToast('「'+from+'」名下沒有客戶'); return; }
+  if (!confirm('確定將「'+from+'」名下 '+targets.length+' 位客戶全部轉給「'+to+'」？\n此動作會逐筆更新雲端資料。')) return;
+
+  var done = 0, failed = 0;
+  if (statusEl) statusEl.textContent = '轉移中… 0 / ' + targets.length;
+  (function next(i) {
+    if (i >= targets.length) {
+      if (statusEl) statusEl.textContent = '✅ 完成：成功 ' + done + ' 筆' + (failed ? '，失敗 ' + failed + ' 筆（請重試）' : '');
+      showToast(failed ? ('部分完成：成功 '+done+'，失敗 '+failed) : ('✅ 已轉移 '+done+' 位客戶給 '+to));
+      fetchCustomers();
+      return;
+    }
+    var updated = Object.assign({}, targets[i], { salesPerson: to });
+    callAPI({ action: 'update', customer: updated }, function(res) {
+      if (res && res.success) done++; else failed++;
+      if (statusEl) statusEl.textContent = '轉移中… ' + (i + 1) + ' / ' + targets.length;
+      next(i + 1);
+    });
+  })(0);
 }
 
 function promptChangePassword(name) {
@@ -1982,10 +2069,48 @@ function rebuildSalesSelects() {
     sp.innerHTML = '<option value="">── 請選擇業務人員 ──</option>'+SALES.map(function(s){ return '<option>'+s+'</option>'; }).join('');
   }
   // 更新篩選器
+  populateSalesFilter();
+}
+
+// ── 業務篩選下拉：現役 + 離職（只存在於客戶資料裡的負責業務）──
+function populateSalesFilter() {
   var fs = document.getElementById('filterSales');
-  if (fs) {
-    fs.innerHTML = '<option value="">全部業務</option>'+SALES.map(function(s){ return '<option>'+s+'</option>'; }).join('');
+  if (!fs) return;
+  var prev = fs.value || '';
+  var esc = function(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); };
+  var active = SALES.slice();
+  // 掃客戶資料，找出不在現役名單、非空白的負責業務 → 視為離職
+  var former = [];
+  if (typeof customers !== 'undefined' && customers && customers.length) {
+    var seen = {};
+    customers.forEach(function(c){
+      var sp = (c.salesPerson || '').toString().trim();
+      if (!sp || active.indexOf(sp) !== -1 || seen[sp]) return;
+      seen[sp] = 1; former.push(sp);
+    });
+    former.sort();
   }
+  var html = '<option value="">全部業務</option>';
+  html += '<optgroup label="在職業務">' + active.map(function(s){ return '<option value="'+esc(s)+'">'+esc(s)+'</option>'; }).join('') + '</optgroup>';
+  if (former.length) {
+    html += '<optgroup label="離職業務">' + former.map(function(s){ return '<option value="'+esc(s)+'">'+esc(s)+'（已離職）</option>'; }).join('') + '</optgroup>';
+  }
+  fs.innerHTML = html;
+  // 還原先前選擇（若仍存在）
+  if (prev) { fs.value = prev; if (fs.value !== prev) fs.value = ''; }
+  filterSalesSearch();
+}
+
+// ── 業務篩選下拉：打字即時篩 option ──
+function filterSalesSearch() {
+  var input = document.getElementById('filterSalesSearch');
+  var fs = document.getElementById('filterSales');
+  if (!fs) return;
+  var kw = input ? (input.value || '').trim().toLowerCase() : '';
+  Array.prototype.forEach.call(fs.querySelectorAll('option'), function(o){
+    if (!o.value) { o.hidden = false; return; }
+    o.hidden = kw ? o.textContent.toLowerCase().indexOf(kw) === -1 : false;
+  });
 }
 
 // ── 取得 API URL（優先 localStorage 自訂網址、其次 HARDCODED）──
@@ -2224,9 +2349,7 @@ function initApp() {
     sp.innerHTML = '<option value="">── 請選擇業務人員 ──</option>';
     SALES.forEach(function(s){ sp.innerHTML += '<option>'+s+'</option>'; });
     document.getElementById('filterSalesGroup').style.display = 'block';
-    var fs = document.getElementById('filterSales');
-    fs.innerHTML = '<option value="">全部業務</option>';
-    SALES.forEach(function(s){ fs.innerHTML += '<option>'+s+'</option>'; });
+    populateSalesFilter();
     document.getElementById('reportsTab').style.display = '';
     document.getElementById('staffTab').style.display = '';   // 管理員看業務管理
     // 日誌 tab 已廢棄，改用備註欄記錄跟進
@@ -2536,6 +2659,93 @@ function getCurrentWeekLabel() {
 }
 
 // ── 儲存所有業務本週積分到Google Sheets ──
+// ══════════════════════════════════════════════
+// 📅 排行榜週期歷史（本機快照）
+// 後端無讀取已存週積分的 action，故在「儲存本週積分 / 補存歷史」時
+// 於本機記錄快照，供之後切換檢視「上週 / 更早」。
+// ══════════════════════════════════════════════
+var WEEK_SNAP_KEY = 'futime_week_snapshots';
+function getWeekSnapshots() {
+  try { var r = localStorage.getItem(WEEK_SNAP_KEY); return r ? JSON.parse(r) : {}; }
+  catch(e) { return {}; }
+}
+function saveWeekSnapshot(weekLabel, rows) {
+  if (!weekLabel || !rows || !rows.length) return;
+  try {
+    var all = getWeekSnapshots();
+    all[weekLabel] = { savedAt: new Date().toISOString(), rows: rows };
+    var keys = Object.keys(all).sort().reverse();      // 新→舊
+    keys.slice(16).forEach(function(k){ delete all[k]; }); // 只留最近 16 週
+    localStorage.setItem(WEEK_SNAP_KEY, JSON.stringify(all));
+  } catch(e) {}
+  buildLbWeekPicker();
+}
+
+// 下拉選單：本週 + 已快照的過往週
+function buildLbWeekPicker() {
+  var sel = document.getElementById('lbWeekPicker');
+  if (!sel) return;
+  var prev = sel.value;
+  var snaps = getWeekSnapshots();
+  var weeks = Object.keys(snaps).sort().reverse();
+  var curLabel = (typeof getCurrentWeekLabel === 'function') ? getCurrentWeekLabel() : '';
+  var opts = '<option value="">本週（即時計算）</option>';
+  weeks.forEach(function(w){
+    if (w === curLabel) return; // 本週用即時那筆
+    opts += '<option value="'+w+'">'+w+'（本機記錄）</option>';
+  });
+  sel.innerHTML = opts;
+  if (prev) sel.value = prev;
+}
+
+function onLbWeekPick() {
+  var sel = document.getElementById('lbWeekPicker');
+  var val = sel ? sel.value : '';
+  var saveRow = document.getElementById('lbWeekSaveRow');
+  var histPanel = document.getElementById('lbHistoryPanel');
+  if (!val) {
+    if (saveRow) saveRow.style.display = '';
+    if (histPanel && currentRole === 'manager') histPanel.style.display = 'block';
+    renderLeaderboard();
+  } else {
+    if (saveRow) saveRow.style.display = 'none';
+    if (histPanel) histPanel.style.display = 'none';
+    renderWeekSnapshot(val);
+  }
+}
+
+function renderWeekSnapshot(weekLabel) {
+  var container = document.getElementById('leaderboardList');
+  if (!container) return;
+  var snap = getWeekSnapshots()[weekLabel];
+  var labelEl = document.getElementById('lbWeekLabel');
+  if (!snap || !snap.rows || !snap.rows.length) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">📅</div><p>此週無本機記錄</p></div>';
+    if (labelEl) labelEl.textContent = '';
+    return;
+  }
+  var rows = snap.rows.slice().sort(function(a,b){ return (b.score||0) - (a.score||0); });
+  if (labelEl) labelEl.textContent = '📅 ' + weekLabel + '（於 ' + new Date(snap.savedAt).toLocaleString('zh-TW') + ' 記錄）';
+  _lastWeekRank = rows;
+  _lastWeekRankLabel = weekLabel;
+  var medals = ['🥇','🥈','🥉'];
+  var maxScore = rows[0].score || 1;
+  container.innerHTML = rows.map(function(r, i){
+    var medal = medals[i] || ('　' + (i+1) + '.');
+    var isMe = (currentRole === 'sales' && r.name === currentUser);
+    var highlight = isMe ? 'background:linear-gradient(135deg,#fffbea,#fff3cd);border:2px solid #f0c040;' : 'background:#fff;border:1px solid var(--cream2);';
+    var pct = Math.round(((r.score||0) / maxScore) * 100);
+    return '<div style="' + highlight + 'border-radius:10px;padding:.5rem .875rem;margin-bottom:.375rem;display:flex;align-items:center;gap:.625rem">' +
+      '<span style="font-size:18px;flex-shrink:0;min-width:24px;text-align:center">' + medal + '</span>' +
+      '<span style="font-weight:700;font-size:14px;color:var(--navy);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + r.name + '</span>' +
+      '<div style="flex:2;margin:0 .75rem"><div style="background:var(--cream2);border-radius:99px;height:6px;overflow:hidden">' +
+        '<div style="height:100%;width:' + ((r.score||0) > 0 ? pct : 0) + '%;background:linear-gradient(90deg,#1a3c5e,#c9a84c);border-radius:99px"></div>' +
+      '</div>' + (r.count != null ? '<div style="font-size:10px;color:var(--text-muted);margin-top:2px">' + r.count + ' 位客戶</div>' : '') + '</div>' +
+      '<span style="font-size:17px;font-weight:800;color:' + ((r.score||0) > 0 ? 'var(--gold)' : 'var(--text-muted)') + ';white-space:nowrap">' + (r.score||0) + '<span style="font-size:11px;font-weight:500;color:var(--text-soft)"> 分</span></span>' +
+    '</div>';
+  }).join('');
+}
+
 function saveAllWeekScores() {
   var statusEl = document.getElementById('lbSaveStatus');
   if (statusEl) statusEl.textContent = '儲存中...';
@@ -2584,6 +2794,7 @@ function saveAllWeekScores() {
       done++;
       if (done === salesList.length) {
         if (statusEl) statusEl.textContent = '✅ 已儲存（' + weekLabel + '）';
+        saveWeekSnapshot(weekLabel, salesList.map(function(sp){ return { name: sp, score: scoreMap[sp] || 0, count: countMap[sp] || 0 }; }));
         setTimeout(function(){ if(statusEl) statusEl.textContent = ''; }, 3000);
       }
     });
@@ -2619,6 +2830,7 @@ function saveSystemScoresToWeek() {
     if (res && res.success) {
       if (statusEl) statusEl.textContent = '✅ 已補存 ' + res.count + ' 位業務（' + weekLabel + '）';
       showToast('✅ ' + weekLabel + ' 歷史積分補存完成！');
+      saveWeekSnapshot(weekLabel, scores.map(function(s){ return { name: s.salesPerson, score: s.score || 0, count: null }; }));
       document.getElementById('historyWeekLabel').value = '';
     } else {
       if (statusEl) statusEl.textContent = '❌ 失敗：' + (res ? res.error : '未知錯誤');
@@ -2647,6 +2859,7 @@ function renderTotalLeaderboard() {
 
   // 排序
   var sorted = Object.keys(scoreMap).filter(function(sp){ return scoreMap[sp] > 0; }).sort(function(a,b){ return scoreMap[b]-scoreMap[a]; });
+  _lastTotalRank = sorted.map(function(sp){ return { name: sp, score: scoreMap[sp], count: countMap[sp] }; });
 
   if (sorted.length === 0) {
     container.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:1rem">尚無客戶資料</div>';
@@ -2687,6 +2900,11 @@ function renderTotalLeaderboard() {
 function renderLeaderboard() {
   var container = document.getElementById('leaderboardList');
   if (!container) return;
+
+  buildLbWeekPicker();
+  // 若使用者正在檢視某個過往快照週，交給 renderWeekSnapshot 處理
+  var _wp = document.getElementById('lbWeekPicker');
+  if (_wp && _wp.value) { renderWeekSnapshot(_wp.value); return; }
 
   // 更新週標籤顯示
   var weekLabel = getCurrentWeekLabel();
@@ -2738,6 +2956,8 @@ function renderLeaderboard() {
   var ranked = SALES.map(function(sp) {
     return { name: sp, score: scoreMap[sp] || 0, count: countMap[sp] || 0 };
   }).sort(function(a, b) { return b.score - a.score; });
+  _lastWeekRank = ranked;
+  _lastWeekRankLabel = weekLabel;
 
   if (ranked.length === 0) {
     container.innerHTML = '<div class="empty-state"><div class="empty-icon">🏆</div><p>尚無資料</p></div>';
@@ -2796,6 +3016,8 @@ function fetchCustomers() {
         });
         return clean;
       });
+      populateSalesFilter();
+      populateReassignSelects();
       loadTargets(function() {
         renderDashboard();
         renderCompanyTargetCard();
@@ -2891,6 +3113,12 @@ function inferCustomerType(c) {
   // 年齡輔助判斷
   if (age >= 60) return '退休規劃';
   if (age > 0 && age <= 28) return '新鮮人';
+
+  // 家庭人數 / 婚姻訊號：單人家庭不應預設「雙薪」
+  var fam = String(c.familyMembers || '') + ' ' + String(c.livingStatus || '');
+  var solo = /(?:^|[^\d])1\s*人|單身|未婚|一人|獨居|喪偶|離婚/.test(fam);
+  var couple = /雙薪|夫妻|配偶|已婚|先生|太太|老公|老婆|伴侶|另一半|[2２兩]\s*人|小孩|子女|孩子/.test(fam + ' ' + text);
+  if (solo && !couple) return age >= 55 ? '退休規劃' : (age > 0 && age <= 32 ? '新鮮人' : '租屋族');
 
   // 預設：最常見的族群
   return '雙薪無殼';
@@ -5570,6 +5798,7 @@ function renderCustomers() {
   } else {
     mc.sort(function(a,b){ return calcCloseProb(b) - calcCloseProb(a); });
   }
+  _lastCustomerView = mc;
   var countLabel = (_funnelFilter === 'recent') ? '🆕 近14天新增 ' : '共 ';
   document.getElementById('listCount').textContent = countLabel + mc.length + ' 筆';
   var con = document.getElementById('customerListContainer');
@@ -5653,7 +5882,7 @@ function openTool(tool, customerId) {
 function buildGenomeCard(c, stage) {
   var prob = isActive(c) ? calcCloseProb(c) : 0;
   var temp = inferTemperature(c);
-  var type = inferCustomerType(c);
+  var type = (c.clientSegment && String(c.clientSegment).trim()) || inferCustomerType(c);
   var days = daysSinceUpdate(c);
 
   // 溫度顏色對應
@@ -5877,7 +6106,10 @@ function showEdit(id) {
   document.getElementById('detailModal').classList.remove('active');
 
   var isSalesLocked = currentRole==='sales';
-  var salesOpts = SALES.map(function(s){ return '<option'+(s===c.salesPerson?' selected':'')+'>'+s+'</option>'; }).join('');
+  var salesListForEdit = SALES.slice();
+  // 若這位客戶目前的負責業務已離職（不在現役名單），仍補進選項，避免顯示空白
+  if (c.salesPerson && salesListForEdit.indexOf(c.salesPerson) === -1) salesListForEdit.push(c.salesPerson);
+  var salesOpts = salesListForEdit.map(function(s){ return '<option'+(s===c.salesPerson?' selected':'')+'>'+s+'</option>'; }).join('');
   var srcOpts = ['','緣故','轉介紹','社群經營','展場活動','網路廣告','其他'].map(function(s){ return '<option'+(s===c.leadSource?' selected':'')+'>'+s+'</option>'; }).join('');
   var acqOpts = ['','主動搭訕','經過介紹','活動認識','線上接觸'].map(function(s){ return '<option'+(s===c.acquisitionMethod?' selected':'')+'>'+s+'</option>'; }).join('');
   var statusOpts = ['','基礎信任(1-4分)','中度信任(5-7分)','高度信任(8-10分)'].map(function(s){ return '<option'+(s===c.currentStatus?' selected':'')+'>'+s+'</option>'; }).join('');
@@ -6486,6 +6718,90 @@ function updateBookingStatus(bookingId, newStatus) {
       alert('更新失敗：' + (res && res.error ? res.error : '未知錯誤'));
     }
   });
+}
+
+// ══════════════════════════════════════════════
+// 📥 CSV 匯出（客戶名單 / 積分排行榜）
+// ══════════════════════════════════════════════
+var _lastCustomerView = null;   // renderCustomers() 最後一次篩選後的清單
+var _lastWeekRank = null;       // renderLeaderboard() 本週排名
+var _lastWeekRankLabel = '';
+var _lastTotalRank = null;      // renderTotalLeaderboard() 累積排名
+
+function downloadCSV(filename, rows) {
+  var csv = rows.map(function(r){
+    return r.map(function(v){
+      v = (v == null ? '' : String(v));
+      return /[",\n\r]/.test(v) ? '"' + v.replace(/"/g,'""') + '"' : v;
+    }).join(',');
+  }).join('\r\n');
+  var blob = new Blob(['﻿' + csv], { type:'text/csv;charset=utf-8;' }); // BOM：Excel 中文不亂碼
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+}
+
+function _todayStr() {
+  var d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+function exportCustomersCSV() {
+  var list = (_lastCustomerView && _lastCustomerView.length !== undefined) ? _lastCustomerView : null;
+  if (!list) { renderCustomers(); list = _lastCustomerView || []; }
+  if (!list.length) { showToast('⚠️ 目前沒有可匯出的客戶'); return; }
+  var header = ['客戶姓名','聯絡方式','負責業務','年齡','客戶族群','名單來源','目前部曲','購買時間軸','成交機率(%)','簽約狀態','成交金額(萬)','研討會','諮詢狀態','建檔日期','最後更新','痛點','備註'];
+  var rows = [header];
+  list.forEach(function(c){
+    var seg = (c.clientSegment && String(c.clientSegment).trim()) || (typeof inferCustomerType === 'function' ? inferCustomerType(c) : '');
+    rows.push([
+      c.customerName || '',
+      c.contactInfo || '',
+      c.salesPerson || '',
+      c.customerAge || '',
+      seg,
+      c.leadSource || '',
+      (typeof STAGE_NAMES !== 'undefined' ? (STAGE_NAMES[stageOf(c)] || '') : stageOf(c)),
+      c.buyingTimeline || '',
+      isActive(c) ? calcCloseProb(c) : '',
+      c.contractStatus || '',
+      c.dealAmount || '',
+      c.seminarAttended || '',
+      c.consult2026 || c.viewingStatus || '',
+      c.creationDate || '',
+      c.updatedAt || '',
+      c.painPoints || '',
+      c.notes || ''
+    ]);
+  });
+  downloadCSV('富時代客戶名單_' + _todayStr() + '.csv', rows);
+  showToast('✅ 已匯出 ' + list.length + ' 筆客戶');
+}
+
+function exportLeaderboardCSV() {
+  var tab = (typeof _lbCurrentTab !== 'undefined') ? _lbCurrentTab : 'week';
+  if (tab === 'total') {
+    var t = _lastTotalRank;
+    if (!t) { renderTotalLeaderboard(); t = _lastTotalRank || []; }
+    if (!t.length) { showToast('⚠️ 尚無排名資料'); return; }
+    var rowsT = [['名次','業務','累積積分','累積客戶數']];
+    t.forEach(function(r,i){ rowsT.push([i+1, r.name, r.score, r.count]); });
+    downloadCSV('富時代積分排行_累積_' + _todayStr() + '.csv', rowsT);
+    showToast('✅ 已匯出累積排行');
+  } else {
+    var w = _lastWeekRank;
+    if (!w) { renderLeaderboard(); w = _lastWeekRank || []; }
+    if (!w.length) { showToast('⚠️ 尚無排名資料'); return; }
+    var label = _lastWeekRankLabel || (typeof getCurrentWeekLabel === 'function' ? getCurrentWeekLabel() : '');
+    var rowsW = [['名次','業務','本週積分','本週客戶數','週期']];
+    w.forEach(function(r,i){ rowsW.push([i+1, r.name, r.score, r.count, label]); });
+    downloadCSV('富時代積分排行_本週_' + (label || _todayStr()) + '.csv', rowsW);
+    showToast('✅ 已匯出本週排行');
+  }
 }
 
 // ── Claude 匯出 ──
