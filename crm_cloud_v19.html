@@ -1911,6 +1911,20 @@ function saveSalesList() {
   try { localStorage.setItem(STAFF_KEY, JSON.stringify(SALES)); } catch(e) {}
 }
 
+// ── v23：從後端讀取在職名單（全裝置共用的唯一真相）──
+function syncStaffFromBackend() {
+  try {
+    callAPI({ action: 'getStaffList' }, function(res) {
+      if (res && res.success && res.sales) {
+        SALES = res.sales.filter(function(s){ return BUILTIN_REMOVED.indexOf(s) === -1; });
+        saveSalesList();
+        rebuildSalesSelects();
+        renderStaffList();
+      }
+    });
+  } catch(e) {}
+}
+
 // ── 業務管理功能 ──
 function addStaff() {
   var name = (document.getElementById('newStaffName').value || '').trim();
@@ -1918,30 +1932,30 @@ function addStaff() {
   if (!name) { showToast('⚠️ 請輸入業務姓名'); return; }
   if (!pwd || pwd.length < 4) { showToast('⚠️ 請輸入至少4碼的初始密碼'); return; }
   if (SALES.indexOf(name) !== -1) { showToast('⚠️ 此姓名已存在'); return; }
-  SALES.push(name);
-  PASSWORDS[name] = pwd;
-  var _rm = getRemovedStaff().filter(function(s){ return s !== name; });
-  saveRemovedStaff(_rm);
-  saveSalesList();
+  // v23：新增 → 寫入後端（密碼 + 在職狀態），全裝置同步
   callAPI({ action: 'setPassword', user: name, password: pwd }, function(res){
-    if (!(res && res.success)) { showToast('⚠️ 名單已加，但密碼寫入後端失敗，請用改密碼重設'); }
+    if (res && res.success) {
+      callAPI({ action: 'setStaffStatus', user: name, status: '在職' }, function(){ syncStaffFromBackend(); });
+      document.getElementById('newStaffName').value = '';
+      document.getElementById('newStaffPwd').value = '';
+      showToast('✅ 已新增：'+name+'（密碼：'+pwd+'，已同步後端）');
+    } else {
+      showToast('❌ 新增失敗：'+(res && res.error ? res.error : '請確認雲端連線'));
+    }
   });
-  document.getElementById('newStaffName').value = '';
-  document.getElementById('newStaffPwd').value = '';
-  renderStaffList();
-  rebuildSalesSelects();
-  showToast('✅ 已新增：'+name+'（密碼：'+pwd+'）');
 }
 
 function removeStaff(name) {
-  if (!confirm('確定要移除「'+name+'」？\n（此業務的客戶資料不會被刪除）')) return;
-  SALES = SALES.filter(function(s){ return s !== name; });
-  var _rm = getRemovedStaff();
-  if (_rm.indexOf(name) === -1) { _rm.push(name); saveRemovedStaff(_rm); }
-  saveSalesList();
-  renderStaffList();
-  rebuildSalesSelects();
-  showToast('已移除：'+name);
+  if (!confirm('確定要將「'+name+'」設為離職？\n（客戶資料會保留；此動作會同步到所有裝置）')) return;
+  // v23：移除 → 寫入後端離職狀態，全裝置同步（不再只改本機）
+  callAPI({ action: 'setStaffStatus', user: name, status: '離職' }, function(res){
+    if (res && res.success) {
+      showToast('✅ 已將「'+name+'」設為離職（全裝置同步）');
+      syncStaffFromBackend();
+    } else {
+      showToast('❌ 失敗：'+(res && res.error ? res.error : '請確認雲端連線'));
+    }
+  });
 }
 
 function renderStaffList() {
@@ -7205,6 +7219,7 @@ function showToast(msg) {
 (function(){
   loadSalesList();
   rebuildSalesSelects();
+  syncStaffFromBackend();   // v23：載入後立即向後端要最新在職名單
 
   // ── 安卓下拉重整：嘗試從 localStorage 恢復登入狀態 ──
   // session 有效期：24小時（86400000ms）
