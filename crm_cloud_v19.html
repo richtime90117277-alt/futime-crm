@@ -1040,27 +1040,30 @@ select:focus,input:focus,textarea:focus {
 .status-已確認{background:#E8F5E9;color:#2E7D32}
 .status-已完成{background:#E3F2FD;color:#1565C0}
 .status-取消{background:#FFEBEE;color:#C62828}
-/* 預約卡片（手機友善） */
-.bk-list{display:grid;grid-template-columns:1fr;gap:.75rem}
-@media(min-width:720px){.bk-list{grid-template-columns:repeat(2,1fr)}}
-@media(min-width:1100px){.bk-list{grid-template-columns:repeat(3,1fr)}}
-.bk-card{background:#fff;border:1px solid var(--cream2);border-radius:var(--radius);box-shadow:var(--shadow);padding:.875rem 1rem;min-width:0}
-.bk-card.bk-cancel{opacity:.55}
-.bk-top{display:flex;align-items:center;gap:.5rem;margin-bottom:.625rem}
-.bk-no{font-size:11px;color:var(--text-muted);font-weight:700;flex-shrink:0}
-.bk-name{font-size:16px;font-weight:800;color:var(--navy);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.bk-top .status-badge{flex-shrink:0}
-.bk-meta{display:grid;grid-template-columns:1fr 1fr;gap:.375rem .75rem;font-size:13px}
-.bk-meta>div{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bk-k{display:block;font-size:10px;color:var(--text-muted);font-weight:700;letter-spacing:.5px}
-.bk-v{font-weight:700;color:var(--navy)}
+/* 預約列表（橫式，一筆一列） */
+.bk-list{background:#fff;border:1px solid var(--cream2);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.bk-row{display:grid;grid-template-columns:96px minmax(80px,1.2fr) 112px minmax(70px,1fr) 80px 72px 200px;align-items:center;gap:.5rem;padding:.6rem 1rem;border-bottom:1px solid var(--cream2);font-size:13px}
+.bk-row:last-child{border-bottom:none}
+.bk-row>div{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bk-head{background:linear-gradient(135deg,var(--navy),var(--navy-light));color:#fff;font-size:12px;font-weight:700}
+.bk-row.bk-cancel{opacity:.5}
+.bk-c-name{font-weight:800;color:var(--navy);font-size:14px}
+.bk-c-time{color:var(--text-muted);font-size:12px}
+.bk-c-phone a{color:var(--navy);text-decoration:none;font-weight:700}
 .bk-sp{color:var(--gold);font-weight:800}
 .bk-sp-none{color:#C62828;font-weight:800}
 .bk-sp-guess{font-size:10px;color:var(--text-muted);font-weight:400}
-.bk-meta a{color:var(--navy);text-decoration:none;font-weight:700}
-.bk-extra{margin-top:.5rem;padding-top:.5rem;border-top:1px dashed var(--cream2);font-size:12px;color:var(--text-muted);line-height:1.6}
-.bk-actions{display:flex;gap:.375rem;margin-top:.75rem}
-.bk-actions .b-action-btn{flex:1;padding:.45rem 0;font-size:12px;margin:0}
+.bk-c-act{display:flex;gap:4px;justify-content:flex-end}
+.bk-c-act .b-action-btn{margin:0;padding:4px 8px}
+.bk-bad{font-size:11px;color:#C62828;font-weight:700;white-space:normal!important}
+@media(max-width:719px){
+  .bk-head{display:none}
+  .bk-row{grid-template-columns:1fr 1fr auto;grid-template-areas:"name name st" "time sp act" "phone slot act";gap:.2rem .5rem;padding:.55rem .75rem}
+  .bk-c-name{grid-area:name}.bk-c-st{grid-area:st;text-align:right}.bk-c-time{grid-area:time}
+  .bk-c-sp{grid-area:sp}.bk-c-phone{grid-area:phone}.bk-c-slot{grid-area:slot;font-size:12px;color:var(--text-muted)}
+  .bk-c-act{grid-area:act;align-self:center}
+  .bk-c-act .b-action-btn{padding:6px 7px;font-size:11px}
+}
 /* 操作按鈕 */
 .b-action-btn{padding:3px 8px;border-radius:6px;border:1px solid #dde3ea;background:#fff;font-size:11px;cursor:pointer;margin-right:3px;font-family:inherit}
 .b-action-btn:hover{background:var(--cream2)}
@@ -6400,34 +6403,38 @@ function renderBookingTable() {
     return;
   }
 
-  wrap.innerHTML = '<div class="bk-list">' + filtered.map(function(b, i) {
+  _bkView = [];
+  var head = '<div class="bk-row bk-head"><div>填表時間</div><div>姓名</div><div>手機</div><div>負責業務</div><div>諮詢時段</div><div>狀態</div><div style="text-align:right">操作</div></div>';
+  wrap.innerHTML = '<div class="bk-list">' + head + filtered.map(function(b, i) {
     var st = b['狀態'] || '';
     var sp = bkSales(b);
     var phone = bkPhone(b);
-    var id = String(b['編號'] || '').replace(/'/g,'');
+    var hasRow = !!b._row;
+    var rawId = String(b['編號'] == null ? '' : b['編號']);
+    var idOk = hasRow || /^\d+$/.test(rawId);
+    var vi = _bkView.push(b) - 1;
     var spHtml = sp.name
-      ? '<span class="bk-sp">' + bkEsc(sp.name) + '</span>' + (sp.guess ? ' <span class="bk-sp-guess">(名單比對)</span>' : '')
+      ? '<span class="bk-sp">' + bkEsc(sp.name) + '</span>' + (sp.guess ? ' <span class="bk-sp-guess">(比對)</span>' : '')
       : '<span class="bk-sp-none">未指定</span>';
     var extras = [];
-    var budget = b['預算'] || b['budget']; if (budget && budget!=='未填') extras.push('預算 ' + bkEsc(budget));
-    var living = b['居住狀況'] || b['living']; if (living && living!=='未填') extras.push(bkEsc(living));
-    var note = b['關注方向'] || b['備註'] || b['note']; if (note && note!=='—') extras.push('想了解：' + bkEsc(note));
-    return '<div class="bk-card' + (st==='取消' ? ' bk-cancel' : '') + '">'
-      + '<div class="bk-top"><span class="bk-no">#' + bkEsc(b['編號'] || i+1) + '</span>'
-      + '<span class="bk-name">' + bkEsc(b['姓名'] || '（未填姓名）') + '</span>'
-      + '<span class="status-badge status-' + bkEsc(st) + '">' + bkEsc(st || '—') + '</span></div>'
-      + '<div class="bk-meta">'
-      + '<div><span class="bk-k">📅 填表時間</span><span class="bk-v">' + bkTimeLabel(b) + '</span></div>'
-      + '<div><span class="bk-k">👤 負責業務</span>' + spHtml + '</div>'
-      + '<div><span class="bk-k">📞 手機</span>' + (phone ? '<a href="tel:' + phone + '">' + phone + '</a>' : '—') + '</div>'
-      + '<div><span class="bk-k">🕐 諮詢時段</span><span class="bk-v">' + bkEsc(b['時段'] || '待確認') + '</span></div>'
-      + '</div>'
-      + (extras.length ? '<div class="bk-extra">' + extras.join('｜') + '</div>' : '')
-      + '<div class="bk-actions">'
-      + '<button class="b-action-btn" onclick="updateBookingStatus(\'' + id + '\',\'已確認\')">✓ 確認</button>'
-      + '<button class="b-action-btn" onclick="updateBookingStatus(\'' + id + '\',\'已完成\')">完成</button>'
-      + '<button class="b-action-btn" onclick="updateBookingStatus(\'' + id + '\',\'取消\')">取消</button>'
-      + '</div></div>';
+    var budget = b['預算'] || b['budget']; if (budget && budget!=='未填') extras.push('預算 ' + budget);
+    var living = b['居住狀況'] || b['living']; if (living && living!=='未填') extras.push(living);
+    var note = b['關注方向'] || b['備註'] || b['note']; if (note && note!=='—') extras.push(note);
+    var act = idOk
+      ? '<button class="b-action-btn" title="確認" onclick="bkSetStatus(' + vi + ',\'已確認\')">✓ 確認</button>'
+        + '<button class="b-action-btn" title="完成" onclick="bkSetStatus(' + vi + ',\'已完成\')">完成</button>'
+        + '<button class="b-action-btn" title="取消" onclick="bkSetStatus(' + vi + ',\'取消\')">取消</button>'
+        + (hasRow && currentRole === 'manager' ? '<button class="b-action-btn" title="刪除" style="color:#C62828" onclick="bkDelete(' + vi + ')">🗑</button>' : '')
+      : '<span class="bk-bad">編號異常<br>請到試算表處理</span>';
+    return '<div class="bk-row' + (st==='取消' ? ' bk-cancel' : '') + '">'
+      + '<div class="bk-c-time">' + bkTimeLabel(b) + '</div>'
+      + '<div class="bk-c-name" title="' + bkEsc(extras.join('｜')) + '">' + bkEsc(b['姓名'] || '（未填）') + '</div>'
+      + '<div class="bk-c-phone">' + (phone ? '<a href="tel:' + phone + '">' + phone + '</a>' : '—') + '</div>'
+      + '<div class="bk-c-sp">' + spHtml + '</div>'
+      + '<div class="bk-c-slot">' + bkEsc(b['時段'] || '待確認') + '</div>'
+      + '<div class="bk-c-st"><span class="status-badge status-' + bkEsc(st) + '">' + bkEsc(st || '—') + '</span></div>'
+      + '<div class="bk-c-act">' + act + '</div>'
+      + '</div>';
   }).join('') + '</div>';
 }
 
@@ -6573,6 +6580,25 @@ function renderDashboardBookingSummary() {
       + '<span class="bsc-item-time">' + bkTimeLabel(b) + ' · ' + bkPhone(b) + '</span>'
       + '</div>';
   }).join('');
+}
+
+var _bkView = [];
+// 用「試算表列號＋姓名」更新，編號壞掉也能用（後端需新版）
+function bkSetStatus(vi, newStatus) {
+  var b = _bkView[vi]; if (!b) return;
+  if (!confirm('確認將「' + (b['姓名']||'') + '」改為「' + newStatus + '」？')) return;
+  callAPI({ action: 'updateBookingStatus', bookingId: String(b['編號']), row: b._row || '', name: b['姓名'] || '', newStatus: newStatus }, function(res) {
+    if (res && res.success) loadBookings();
+    else alert('更新失敗：' + (res && res.error ? res.error : '未知錯誤'));
+  });
+}
+function bkDelete(vi) {
+  var b = _bkView[vi]; if (!b || !b._row) return;
+  if (!confirm('確定要「永久刪除」這筆預約？\n\n' + (b['姓名']||'') + '　' + bkPhone(b) + '\n\n刪除後無法復原（只是不來的話，請用「取消」）')) return;
+  callAPI({ action: 'deleteBooking', row: b._row, name: b['姓名'] || '' }, function(res) {
+    if (res && res.success) loadBookings();
+    else alert('刪除失敗：' + (res && res.error ? res.error : '未知錯誤'));
+  });
 }
 
 // 更新預約狀態（CRM 操作按鈕）
