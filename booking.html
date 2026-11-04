@@ -184,6 +184,33 @@ html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'PingFang TC'
           </select>
         </div>
       </div>
+      <div class="form-field" id="spField">
+        <label>邀請您來的業務顧問 <span style="color:var(--o)">*</span></label>
+        <div class="sel-wrap">
+          <select id="salesPerson">
+            <option value="">── 請選擇 ──</option>
+            <option value="阮智偉">阮智偉</option>
+            <option value="廖一龍">廖一龍</option>
+            <option value="鄭采崴">鄭采崴</option>
+            <option value="張書菡">張書菡</option>
+            <option value="王鈞志">王鈞志</option>
+            <option value="吳玉如">吳玉如</option>
+            <option value="商國泰">商國泰</option>
+            <option value="郭淑真">郭淑真</option>
+            <option value="高亞琦">高亞琦</option>
+            <option value="陳淑美">陳淑美</option>
+            <option value="侯明智">侯明智</option>
+            <option value="許亞茵">許亞茵</option>
+            <option value="林紫君">林紫君</option>
+            <option value="黃中興">黃中興</option>
+            <option value="黃彥程">黃彥程</option>
+            <option value="劉常裕">劉常裕</option>
+            <option value="莊環蔭">莊環蔭</option>
+            <option value="廉海桃">廉海桃</option>
+            <option value="不確定">不確定／現場認識</option>
+          </select>
+        </div>
+      </div>
       <div class="form-field" style="padding-bottom:4px;border-bottom:none">
         <label>想了解的方向 <span style="color:var(--dim);font-weight:400;letter-spacing:0">（可複選）</span></label>
       </div>
@@ -234,15 +261,31 @@ const GAS_URL = "https://script.google.com/macros/s/AKfycbweNfo2dUBvgPV5cFGlU6Z6
 
 function toggleFn(el){el.classList.toggle('active');}
 
+// 業務專屬 QR：網址加 ?sp=業務姓名，自動帶入並隱藏欄位
+(function(){
+  try {
+    var sp = new URLSearchParams(location.search).get('sp');
+    if (!sp) return;
+    var sel = document.getElementById('salesPerson');
+    if (!Array.from(sel.options).some(function(o){ return o.value === sp; })) {
+      var o = document.createElement('option'); o.value = sp; o.textContent = sp; sel.appendChild(o);
+    }
+    sel.value = sp;
+    document.getElementById('spField').style.display = 'none';
+  } catch(e) {}
+})();
+
 async function submitForm() {
   const name   = document.getElementById('name').value.trim();
   const phone  = document.getElementById('phone').value.trim();
   const budget = document.getElementById('budget').value;
   const living = document.getElementById('living').value;
+  const sp     = document.getElementById('salesPerson').value;
   const note   = Array.from(document.querySelectorAll('.fn-btn.active')).map(b=>b.dataset.val).join('、') || '—';
 
   if (!name) { alert('請填寫姓名'); return; }
   if (!phone) { alert('請填寫手機號碼'); return; }
+  if (!sp) { alert('請選擇邀請您來的業務顧問'); return; }
   if (!/^09\d{8}$/.test(phone.replace(/[-\s]/g,''))) {
     alert('手機號碼格式不正確\n請輸入 09 開頭共 10 碼');
     return;
@@ -258,7 +301,8 @@ async function submitForm() {
     name, phone,
     budget:     budget || '未填',
     living:     living || '未填',
-    consultant: '待安排',
+    consultant: (sp && sp !== '不確定') ? sp : '待安排',
+    salesPerson: sp || '未填',
     timeslot:   '待確認',
     note:       note || '—',
     source:     '研討會QRCode',

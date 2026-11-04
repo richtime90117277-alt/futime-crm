@@ -1040,6 +1040,27 @@ select:focus,input:focus,textarea:focus {
 .status-已確認{background:#E8F5E9;color:#2E7D32}
 .status-已完成{background:#E3F2FD;color:#1565C0}
 .status-取消{background:#FFEBEE;color:#C62828}
+/* 預約卡片（手機友善） */
+.bk-list{display:grid;grid-template-columns:1fr;gap:.75rem}
+@media(min-width:720px){.bk-list{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1100px){.bk-list{grid-template-columns:repeat(3,1fr)}}
+.bk-card{background:#fff;border:1px solid var(--cream2);border-radius:var(--radius);box-shadow:var(--shadow);padding:.875rem 1rem;min-width:0}
+.bk-card.bk-cancel{opacity:.55}
+.bk-top{display:flex;align-items:center;gap:.5rem;margin-bottom:.625rem}
+.bk-no{font-size:11px;color:var(--text-muted);font-weight:700;flex-shrink:0}
+.bk-name{font-size:16px;font-weight:800;color:var(--navy);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bk-top .status-badge{flex-shrink:0}
+.bk-meta{display:grid;grid-template-columns:1fr 1fr;gap:.375rem .75rem;font-size:13px}
+.bk-meta>div{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bk-k{display:block;font-size:10px;color:var(--text-muted);font-weight:700;letter-spacing:.5px}
+.bk-v{font-weight:700;color:var(--navy)}
+.bk-sp{color:var(--gold);font-weight:800}
+.bk-sp-none{color:#C62828;font-weight:800}
+.bk-sp-guess{font-size:10px;color:var(--text-muted);font-weight:400}
+.bk-meta a{color:var(--navy);text-decoration:none;font-weight:700}
+.bk-extra{margin-top:.5rem;padding-top:.5rem;border-top:1px dashed var(--cream2);font-size:12px;color:var(--text-muted);line-height:1.6}
+.bk-actions{display:flex;gap:.375rem;margin-top:.75rem}
+.bk-actions .b-action-btn{flex:1;padding:.45rem 0;font-size:12px;margin:0}
 /* 操作按鈕 */
 .b-action-btn{padding:3px 8px;border-radius:6px;border:1px solid #dde3ea;background:#fff;font-size:11px;cursor:pointer;margin-right:3px;font-family:inherit}
 .b-action-btn:hover{background:var(--cream2)}
@@ -1276,7 +1297,7 @@ function claimSeminarLead() {}
       <!-- 篩選列 -->
       <div class="booking-filters">
         <select id="filterConsultant" onchange="renderBookingTable()">
-          <option value="">全部顧問</option>
+          <option value="">全部業務</option>
         </select>
         <select id="filterStatus" onchange="renderBookingTable()">
           <option value="">全部狀態</option>
@@ -6301,21 +6322,73 @@ function loadBookings() {
   });
 }
 
-// 渲染篩選後的預約表格
+// ── 預約資料欄位工具 ──
+function bkEsc(v){ return String(v==null?'':v).replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch];}); }
+// 手機：Sheets 會吃掉開頭 0，補回來
+function bkPhone(b){
+  var p = String(b['手機'] || b['phone'] || '').replace(/[^\d]/g,'');
+  if (/^9\d{8}$/.test(p)) p = '0' + p;
+  return p;
+}
+// 填表時間：相容不同欄名
+function bkRawTime(b){
+  var keys = ['預約時間','填表時間','時間戳記','建立時間','提交時間','timestamp','Timestamp','日期'];
+  for (var i=0;i<keys.length;i++){ if (b[keys[i]]) return b[keys[i]]; }
+  for (var k in b){ if (k!=='時段' && /時間|日期|time|date/i.test(k) && b[k]) return b[k]; }
+  return '';
+}
+function bkTimeMs(b){
+  var r = bkRawTime(b); if (!r) return 0;
+  var t = Date.parse(r);
+  if (isNaN(t)) { // 例：2026/11/3 下午2:05:00
+    var m = String(r).match(/(\d{4})\/(\d{1,2})\/(\d{1,2})\s*(上午|下午)?\s*(\d{1,2})?:?(\d{2})?/);
+    if (!m) return 0;
+    var h = +(m[5]||0); if (m[4]==='下午' && h<12) h+=12; if (m[4]==='上午' && h===12) h=0;
+    t = new Date(+m[1], +m[2]-1, +m[3], h, +(m[6]||0)).getTime();
+  }
+  return t;
+}
+function bkTimeLabel(b){
+  var t = bkTimeMs(b);
+  if (!t) return bkRawTime(b) ? bkEsc(bkRawTime(b)) : '<span style="color:var(--text-muted)">未記錄</span>';
+  var d = new Date(t), now = new Date();
+  var hm = ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);
+  var md = (d.getMonth()+1)+'/'+d.getDate();
+  if (d.getFullYear() !== now.getFullYear()) md = d.getFullYear()+'/'+md;
+  return md + ' ' + hm;
+}
+// 負責業務：表單填的 → 顧問欄 → 用手機比對 CRM 客戶
+function bkSales(b){
+  var direct = b['業務'] || b['邀約業務'] || b['salesPerson'] || '';
+  if (direct && direct!=='未填' && direct!=='不確定') return { name: direct, guess: false };
+  var c = b['顧問'] || '';
+  if (c && c!=='待安排' && c!=='未指定') return { name: c, guess: false };
+  var p = bkPhone(b);
+  if (p && typeof customers !== 'undefined') {
+    for (var i=0;i<customers.length;i++){
+      var cp = String(customers[i].contactInfo||'').replace(/[^\d]/g,'');
+      if (cp && (cp===p || cp.slice(-9)===p.slice(-9)) && customers[i].salesPerson) return { name: customers[i].salesPerson, guess: true };
+    }
+  }
+  return { name: '', guess: false };
+}
+
+// 渲染篩選後的預約（卡片式，手機好讀）
 function renderBookingTable() {
   var filterC = (document.getElementById('filterConsultant') || {}).value || '';
   var filterS = (document.getElementById('filterStatus') || {}).value || '';
 
-  // 動態建立顧問篩選選項（去重）
   buildConsultantFilter();
 
   var filtered = allBookings.filter(function(b) {
-    if (filterC && b['顧問'] !== filterC) return false;
+    var sp = bkSales(b).name || '未指定';
+    if (filterC && sp !== filterC) return false;
     if (filterS && b['狀態'] !== filterS) return false;
     return true;
   });
+  // 最新的排最上面
+  filtered.sort(function(a,b){ return (bkTimeMs(b) - bkTimeMs(a)) || ((+b['編號']||0) - (+a['編號']||0)); });
 
-  // 統計數字
   renderBookingStats();
 
   var wrap = document.getElementById('bookingTableWrap');
@@ -6326,27 +6399,35 @@ function renderBookingTable() {
     return;
   }
 
-  var rows = filtered.map(function(b, i) {
-    var statusClass = 'status-' + (b['狀態'] || '');
-    return '<tr>'
-      + '<td>' + (b['編號'] || i+1) + '</td>'
-      + '<td>' + (b['預約時間'] || '') + '</td>'
-      + '<td style="font-weight:700">' + (b['姓名'] || '') + '</td>'
-      + '<td>' + (b['手機'] || '') + '</td>'
-      + '<td style="color:var(--gold);font-weight:700">' + (b['顧問'] || '') + '</td>'
-      + '<td>' + (b['時段'] || '') + '</td>'
-      + '<td><span class="status-badge ' + statusClass + '">' + (b['狀態'] || '—') + '</span></td>'
-      + '<td>'
-      + '<button class="b-action-btn" onclick="updateBookingStatus(\'' + b['編號'] + '\',\'已確認\')">✓ 確認</button>'
-      + '<button class="b-action-btn" onclick="updateBookingStatus(\'' + b['編號'] + '\',\'已完成\')">完成</button>'
-      + '<button class="b-action-btn" onclick="updateBookingStatus(\'' + b['編號'] + '\',\'取消\')">取消</button>'
-      + '</td></tr>';
-  }).join('');
-
-  wrap.innerHTML = '<table class="booking-table">'
-    + '<thead><tr><th>#</th><th>預約時間</th><th>姓名</th><th>手機</th>'
-    + '<th>顧問</th><th>時段</th><th>狀態</th><th>操作</th></tr></thead>'
-    + '<tbody>' + rows + '</tbody></table>';
+  wrap.innerHTML = '<div class="bk-list">' + filtered.map(function(b, i) {
+    var st = b['狀態'] || '';
+    var sp = bkSales(b);
+    var phone = bkPhone(b);
+    var id = String(b['編號'] || '').replace(/'/g,'');
+    var spHtml = sp.name
+      ? '<span class="bk-sp">' + bkEsc(sp.name) + '</span>' + (sp.guess ? ' <span class="bk-sp-guess">(名單比對)</span>' : '')
+      : '<span class="bk-sp-none">未指定</span>';
+    var extras = [];
+    var budget = b['預算'] || b['budget']; if (budget && budget!=='未填') extras.push('預算 ' + bkEsc(budget));
+    var living = b['居住狀況'] || b['living']; if (living && living!=='未填') extras.push(bkEsc(living));
+    var note = b['關注方向'] || b['備註'] || b['note']; if (note && note!=='—') extras.push('想了解：' + bkEsc(note));
+    return '<div class="bk-card' + (st==='取消' ? ' bk-cancel' : '') + '">'
+      + '<div class="bk-top"><span class="bk-no">#' + bkEsc(b['編號'] || i+1) + '</span>'
+      + '<span class="bk-name">' + bkEsc(b['姓名'] || '（未填姓名）') + '</span>'
+      + '<span class="status-badge status-' + bkEsc(st) + '">' + bkEsc(st || '—') + '</span></div>'
+      + '<div class="bk-meta">'
+      + '<div><span class="bk-k">📅 填表時間</span><span class="bk-v">' + bkTimeLabel(b) + '</span></div>'
+      + '<div><span class="bk-k">👤 負責業務</span>' + spHtml + '</div>'
+      + '<div><span class="bk-k">📞 手機</span>' + (phone ? '<a href="tel:' + phone + '">' + phone + '</a>' : '—') + '</div>'
+      + '<div><span class="bk-k">🕐 諮詢時段</span><span class="bk-v">' + bkEsc(b['時段'] || '待確認') + '</span></div>'
+      + '</div>'
+      + (extras.length ? '<div class="bk-extra">' + extras.join('｜') + '</div>' : '')
+      + '<div class="bk-actions">'
+      + '<button class="b-action-btn" onclick="updateBookingStatus(\'' + id + '\',\'已確認\')">✓ 確認</button>'
+      + '<button class="b-action-btn" onclick="updateBookingStatus(\'' + id + '\',\'已完成\')">完成</button>'
+      + '<button class="b-action-btn" onclick="updateBookingStatus(\'' + id + '\',\'取消\')">取消</button>'
+      + '</div></div>';
+  }).join('') + '</div>';
 }
 
 // 渲染統計徽章
@@ -6367,8 +6448,8 @@ function buildConsultantFilter() {
   var sel = document.getElementById('filterConsultant');
   if (!sel) return;
   var current = sel.value;
-  var consultants = [...new Set(allBookings.map(function(b){ return b['顧問']; }).filter(Boolean))];
-  sel.innerHTML = '<option value="">全部顧問</option>'
+  var consultants = [...new Set(allBookings.map(function(b){ return bkSales(b).name || '未指定'; }))];
+  sel.innerHTML = '<option value="">全部業務</option>'
     + consultants.map(function(c){ return '<option value="' + c + '">' + c + '</option>'; }).join('');
   sel.value = current; // 保留選取狀態
 }
@@ -6485,9 +6566,9 @@ function renderDashboardBookingSummary() {
   }
   listEl.innerHTML = pending.slice(0, 5).map(function(b) {
     return '<div class="bsc-item">'
-      + '<span class="bsc-item-name">' + b['姓名'] + '</span>'
-      + '<span class="bsc-item-consultant">' + b['顧問'] + '</span>'
-      + '<span class="bsc-item-time">' + b['時段'] + ' · ' + b['手機'] + '</span>'
+      + '<span class="bsc-item-name">' + bkEsc(b['姓名']) + '</span>'
+      + '<span class="bsc-item-consultant">' + bkEsc(bkSales(b).name || '未指定業務') + '</span>'
+      + '<span class="bsc-item-time">' + bkTimeLabel(b) + ' · ' + bkPhone(b) + '</span>'
       + '</div>';
   }).join('');
 }
