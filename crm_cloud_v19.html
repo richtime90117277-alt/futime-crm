@@ -1046,8 +1046,10 @@ select:focus,input:focus,textarea:focus {
 .bk-row:last-child{border-bottom:none}
 .bk-row>div{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bk-head{background:linear-gradient(135deg,var(--navy),var(--navy-light));color:#fff;font-size:12px;font-weight:700}
-.bk-row.bk-cancel{background:#EFEDEA}
-.bk-row.bk-cancel .bk-c-name{color:#6b6b6b}
+.bk-row.bk-cancel{background:#EFEDEA;box-shadow:inset 4px 0 0 #BDBDBD}
+.bk-row.bk-st-confirm{background:#EEF7EF;box-shadow:inset 4px 0 0 #2E7D32}
+.bk-row.bk-st-done{background:#EDF4FC;box-shadow:inset 4px 0 0 #1565C0}
+.bk-row.bk-st-pending{box-shadow:inset 4px 0 0 #E8692A}
 .bk-restore{color:#1565C0!important;font-weight:700}
 .bk-c-name{font-weight:800;color:var(--navy);font-size:14px}
 .bk-c-time{color:var(--text-muted);font-size:12px}
@@ -6444,7 +6446,8 @@ function renderBookingTable() {
         + '<button class="b-action-btn" title="取消" onclick="bkSetStatus(' + vi + ',\'取消\')">取消</button>'
         + (hasRow && currentRole === 'manager' ? '<button class="b-action-btn" title="刪除" style="color:#C62828" onclick="bkDelete(' + vi + ')">🗑</button>' : '')
       : '<span class="bk-bad">編號異常<br>請到試算表處理</span>';
-    return '<div class="bk-row' + (st==='取消' ? ' bk-cancel' : '') + '">'
+    var stCls = st==='取消' ? ' bk-cancel' : st==='已確認' ? ' bk-st-confirm' : st==='已完成' ? ' bk-st-done' : ' bk-st-pending';
+    return '<div class="bk-row' + stCls + '">'
       + '<div class="bk-c-time">' + bkTimeLabel(b) + '</div>'
       + '<div class="bk-c-name">' + bkEsc(b['姓名'] || '（未填）') + crmTag + '</div>'
       + '<div class="bk-c-phone">' + (phone ? '<a href="tel:' + phone + '">' + phone + '</a>' : '—') + '</div>'
