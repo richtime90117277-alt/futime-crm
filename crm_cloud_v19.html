@@ -1046,7 +1046,9 @@ select:focus,input:focus,textarea:focus {
 .bk-row:last-child{border-bottom:none}
 .bk-row>div{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bk-head{background:linear-gradient(135deg,var(--navy),var(--navy-light));color:#fff;font-size:12px;font-weight:700}
-.bk-row.bk-cancel{opacity:.5}
+.bk-row.bk-cancel{background:#EFEDEA}
+.bk-row.bk-cancel .bk-c-name{color:#6b6b6b}
+.bk-restore{color:#1565C0!important;font-weight:700}
 .bk-c-name{font-weight:800;color:var(--navy);font-size:14px}
 .bk-c-time{color:var(--text-muted);font-size:12px}
 .bk-c-phone a{color:var(--navy);text-decoration:none;font-weight:700}
@@ -6433,7 +6435,10 @@ function renderBookingTable() {
     var crmTag = crm
       ? '<span class="bk-crm-yes" title="點我看客戶資料" onclick="showDetail(\'' + String(crm.id).replace(/'/g,'') + '\')">✅ 已建CRM</span>'
       : '<span class="bk-crm-no">' + (currentRole === 'sales' ? '不在我的名單' : '未建CRM') + '</span>';
-    var act = idOk
+    var act = (idOk && st === '取消')
+      ? '<button class="b-action-btn bk-restore" title="恢復為待聯繫" onclick="bkSetStatus(' + vi + ',\'待聯繫\')">↩ 恢復</button>'
+        + (hasRow && currentRole === 'manager' ? '<button class="b-action-btn" title="刪除" style="color:#C62828" onclick="bkDelete(' + vi + ')">🗑</button>' : '')
+      : idOk
       ? '<button class="b-action-btn" title="確認" onclick="bkSetStatus(' + vi + ',\'已確認\')">✓ 確認</button>'
         + '<button class="b-action-btn" title="完成" onclick="bkSetStatus(' + vi + ',\'已完成\')">完成</button>'
         + '<button class="b-action-btn" title="取消" onclick="bkSetStatus(' + vi + ',\'取消\')">取消</button>'
