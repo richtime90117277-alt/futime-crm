@@ -6386,8 +6386,9 @@ function renderBookingTable() {
     if (filterS && b['狀態'] !== filterS) return false;
     return true;
   });
-  // 最新的排最上面
-  filtered.sort(function(a,b){ return (bkTimeMs(b) - bkTimeMs(a)) || ((+b['編號']||0) - (+a['編號']||0)); });
+  // 排序：未確認 → 已確認 → 已完成 → 已取消；同一組內最新的在上面
+  var bkRank = function(b){ var st=b['狀態']||''; return st==='取消'?3 : st==='已完成'?2 : st==='已確認'?1 : 0; };
+  filtered.sort(function(a,b){ return (bkRank(a)-bkRank(b)) || (bkTimeMs(b) - bkTimeMs(a)) || ((+b['編號']||0) - (+a['編號']||0)); });
 
   renderBookingStats();
 
@@ -6564,6 +6565,7 @@ function renderDashboardBookingSummary() {
     listEl.innerHTML = '<div class="bsc-item" style="color:var(--text-muted)">✅ 目前無待確認預約</div>';
     return;
   }
+  pending.sort(function(a,b){ return (bkTimeMs(b) - bkTimeMs(a)) || ((+b['編號']||0) - (+a['編號']||0)); });
   listEl.innerHTML = pending.slice(0, 5).map(function(b) {
     return '<div class="bsc-item">'
       + '<span class="bsc-item-name">' + bkEsc(b['姓名']) + '</span>'
