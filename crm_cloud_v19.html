@@ -1055,6 +1055,9 @@ select:focus,input:focus,textarea:focus {
 .bk-sp-guess{font-size:10px;color:var(--text-muted);font-weight:400}
 .bk-c-act{display:flex;gap:4px;justify-content:flex-end}
 .bk-c-act .b-action-btn{margin:0;padding:4px 8px}
+.bk-info{grid-column:1/-1;font-size:11px;color:var(--text-muted);white-space:normal!important;margin-top:-2px}
+.bk-crm-yes{display:inline-block;font-size:10px;font-weight:700;color:#2E7D32;background:#E8F5E9;border-radius:10px;padding:1px 7px;margin-left:6px;cursor:pointer;vertical-align:middle}
+.bk-crm-no{display:inline-block;font-size:10px;font-weight:700;color:#8a8a8a;background:#f0f0f0;border-radius:10px;padding:1px 7px;margin-left:6px;vertical-align:middle}
 .bk-bad{font-size:11px;color:#C62828;font-weight:700;white-space:normal!important}
 @media(max-width:719px){
   .bk-head{display:none}
@@ -1062,6 +1065,7 @@ select:focus,input:focus,textarea:focus {
   .bk-c-name{grid-area:name}.bk-c-st{grid-area:st;text-align:right}.bk-c-time{grid-area:time}
   .bk-c-sp{grid-area:sp}.bk-c-phone{grid-area:phone}.bk-c-slot{grid-area:slot;font-size:12px;color:var(--text-muted)}
   .bk-c-act{grid-area:act;align-self:center}
+  .bk-info{grid-area:auto;grid-column:1/-1}
   .bk-c-act .b-action-btn{padding:6px 7px;font-size:11px}
 }
 /* 操作按鈕 */
@@ -6366,14 +6370,19 @@ function bkSales(b){
   if (direct && direct!=='未填' && direct!=='不確定') return { name: direct, guess: false };
   var c = b['顧問'] || '';
   if (c && c!=='待安排' && c!=='未指定') return { name: c, guess: false };
-  var p = bkPhone(b);
-  if (p && typeof customers !== 'undefined') {
-    for (var i=0;i<customers.length;i++){
-      var cp = String(customers[i].contactInfo||'').replace(/[^\d]/g,'');
-      if (cp && (cp===p || cp.slice(-9)===p.slice(-9)) && customers[i].salesPerson) return { name: customers[i].salesPerson, guess: true };
-    }
-  }
+  var m = bkCrmMatch(b);
+  if (m && m.salesPerson) return { name: m.salesPerson, guess: true };
   return { name: '', guess: false };
+}
+// 用手機比對 CRM 客戶名單（找到＝已建檔）
+function bkCrmMatch(b){
+  var p = bkPhone(b);
+  if (!p || p.length < 9 || typeof customers === 'undefined') return null;
+  for (var i=0;i<customers.length;i++){
+    var cp = String(customers[i].contactInfo||'').replace(/[^\d]/g,'');
+    if (cp && cp.length >= 9 && cp.slice(-9) === p.slice(-9)) return customers[i];
+  }
+  return null;
 }
 
 // 渲染篩選後的預約（卡片式，手機好讀）
@@ -6420,6 +6429,10 @@ function renderBookingTable() {
     var budget = b['預算'] || b['budget']; if (budget && budget!=='未填') extras.push('預算 ' + budget);
     var living = b['居住狀況'] || b['living']; if (living && living!=='未填') extras.push(living);
     var note = b['關注方向'] || b['備註'] || b['note']; if (note && note!=='—') extras.push(note);
+    var crm = bkCrmMatch(b);
+    var crmTag = crm
+      ? '<span class="bk-crm-yes" title="點我看客戶資料" onclick="showDetail(\'' + String(crm.id).replace(/'/g,'') + '\')">✅ 已建CRM</span>'
+      : '<span class="bk-crm-no">' + (currentRole === 'sales' ? '不在我的名單' : '未建CRM') + '</span>';
     var act = idOk
       ? '<button class="b-action-btn" title="確認" onclick="bkSetStatus(' + vi + ',\'已確認\')">✓ 確認</button>'
         + '<button class="b-action-btn" title="完成" onclick="bkSetStatus(' + vi + ',\'已完成\')">完成</button>'
@@ -6428,12 +6441,13 @@ function renderBookingTable() {
       : '<span class="bk-bad">編號異常<br>請到試算表處理</span>';
     return '<div class="bk-row' + (st==='取消' ? ' bk-cancel' : '') + '">'
       + '<div class="bk-c-time">' + bkTimeLabel(b) + '</div>'
-      + '<div class="bk-c-name" title="' + bkEsc(extras.join('｜')) + '">' + bkEsc(b['姓名'] || '（未填）') + '</div>'
+      + '<div class="bk-c-name">' + bkEsc(b['姓名'] || '（未填）') + crmTag + '</div>'
       + '<div class="bk-c-phone">' + (phone ? '<a href="tel:' + phone + '">' + phone + '</a>' : '—') + '</div>'
       + '<div class="bk-c-sp">' + spHtml + '</div>'
       + '<div class="bk-c-slot">' + bkEsc(b['時段'] || '待確認') + '</div>'
       + '<div class="bk-c-st"><span class="status-badge status-' + bkEsc(st) + '">' + bkEsc(st || '—') + '</span></div>'
       + '<div class="bk-c-act">' + act + '</div>'
+      + (extras.length ? '<div class="bk-info">📝 問卷：' + bkEsc(extras.join('｜')) + '</div>' : '')
       + '</div>';
   }).join('') + '</div>';
 }

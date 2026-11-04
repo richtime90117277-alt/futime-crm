@@ -304,7 +304,7 @@ async function submitForm() {
     consultant: (sp && sp !== '不確定') ? sp : '待安排',
     salesPerson: sp || '未填',
     timeslot:   '待確認',
-    note:       note || '—',
+    note:       ['方向：' + (note || '—'), '預算：' + (budget || '未填'), '居住：' + (living || '未填'), '邀約業務：' + (sp || '未填')].join('｜'),
     source:     '研討會QRCode',
     timestamp:  new Date().toLocaleString('zh-TW', {timeZone:'Asia/Taipei'}),
   };
