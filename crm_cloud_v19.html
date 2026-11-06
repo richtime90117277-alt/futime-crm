@@ -4,6 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>富時代地產 CRM</title>
+<!-- 加到主畫面：App 圖示 -->
+<link rel="apple-touch-icon" href="crm-icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="crm-icon-192.png">
+<link rel="manifest" href="crm-manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="富時代CRM">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#F7F3EA">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Noto+Serif+TC:wght@400;600;700&family=Playfair+Display:wght@400;600;700&family=DM+Mono&display=swap" rel="stylesheet" onerror="this.remove()">
 <style>
 /* 備用字體（Google Fonts 載入失敗時使用）*/
@@ -1175,7 +1184,10 @@ function claimSeminarLead() {}
           </div>
         </div>
       </div>
-      <button class="logout-btn" onclick="logout()">登出</button>
+      <div style="display:flex;gap:.4rem;align-items:center">
+        <button class="logout-btn" id="pushBtn" style="display:none" onclick="pushEnable()">🔔 開啟通知</button>
+        <button class="logout-btn" onclick="logout()">登出</button>
+      </div>
     </div>
   </div>
   <nav class="nav-tabs">
@@ -2244,9 +2256,69 @@ function enterApp() {
   loadBookings();
   // 登入後初始化智偉哥浮動按鈕
   if (typeof zwInit === 'function') zwInit();
+  pushSync();
+}
+
+// ══ 手機推播通知（後端：Apps Script 推播通知.gs，不需外部服務）══
+function pushEnv() {
+  var ua = navigator.userAgent || '';
+  var ios = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  var sa = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+  var sup = ('serviceWorker' in navigator) && ('PushManager' in window) && ('Notification' in window);
+  return { ios: ios, standalone: sa, sup: sup, perm: sup ? Notification.permission : 'na', inApp: /Line\/|FBAN|FBAV|Instagram/i.test(ua) };
+}
+function pushBtnShow(show) { var b = document.getElementById('pushBtn'); if (b) b.style.display = show ? '' : 'none'; }
+function pushApi(payload) { return new Promise(function (ok, no) { callAPI(payload, function (r) { (r && r.success) ? ok(r) : no(new Error((r && r.error) || '連線失敗')); }); }); }
+function pushB64(s) { var p = '='.repeat((4 - s.length % 4) % 4), b = atob((s + p).replace(/-/g, '+').replace(/_/g, '/')), a = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) a[i] = b.charCodeAt(i); return a; }
+async function pushSubscribe(manual) {
+  var reg = await navigator.serviceWorker.register('crm-sw.js');
+  await navigator.serviceWorker.ready;
+  var sub = await reg.pushManager.getSubscription();
+  if (!sub) {
+    var k = await pushApi({ action: 'pushVapidKey' });
+    sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: pushB64(String(k.key)) });
+  }
+  await pushApi({ action: 'pushSubscribe', user: currentUser, sub: sub.toJSON(), ua: navigator.userAgent });
+  return sub;
+}
+// 登入時：這台已允許過通知，就把訂閱掛到目前登入的人
+async function pushSync() {
+  var v = pushEnv();
+  if (v.sup && v.perm === 'granted') {
+    try { await pushSubscribe(false); pushBtnShow(false); return; } catch (e) { console.warn('push sync', e); }
+  }
+  pushBtnShow(true);
+}
+async function pushEnable() {
+  var v = pushEnv();
+  if (v.inApp) { alert('你現在是在 LINE 裡面打開，這裡收不到通知。\n請按右上角「⋯」→「用瀏覽器開啟」（iPhone 選 Safari）。'); return; }
+  if (!v.sup && v.ios && !v.standalone) {
+    alert('iPhone 要先把富時代加到主畫面才能收通知：\n\n1. 用 Safari 打開\n2. 按下方「分享」→「加入主畫面」\n3. 從桌面的富時代圖示打開、進 CRM 登入\n4. 再按一次「🔔 開啟通知」');
+    return;
+  }
+  if (!v.sup) { alert('這個瀏覽器收不到通知，請用 iPhone 的 Safari 或 Android 的 Chrome。'); return; }
+  if (v.perm === 'denied') { alert('這台手機把通知關掉了。\niPhone：設定 → 通知 → 富時代 → 允許通知\nAndroid：Chrome 網站設定 → 通知'); return; }
+  try {
+    var perm = await Notification.requestPermission();
+    if (perm !== 'granted') { alert('沒有允許通知，之後可以再按一次「🔔 開啟通知」。'); return; }
+    await pushSubscribe(true);
+    pushBtnShow(false);
+    if (confirm('✅ 通知已開啟！有新預約會通知你。\n\n要現在送一則測試通知到這台手機嗎？')) {
+      pushApi({ action: 'pushTest', user: currentUser }).catch(function (e) { alert('測試通知失敗：' + e.message); });
+    }
+  } catch (e) {
+    alert('通知沒有開成功：' + (e && e.message ? e.message : e));
+  }
 }
 
 function logout() {
+  // 登出時解除這台手機和帳號的綁定，避免下一個人收到前一個人的通知
+  try {
+    if (pushEnv().sup && navigator.serviceWorker.controller) {
+      navigator.serviceWorker.ready.then(function (reg) { return reg.pushManager.getSubscription(); })
+        .then(function (sub) { if (sub) callAPI({ action: 'pushUnsubscribe', endpoint: sub.endpoint }, function () {}); });
+    }
+  } catch (e) {}
   currentUser = null; currentRole = null; customers = [];
   _rescueAlertShownThisSession = false;
   // ── 清除持久化登入狀態 ──

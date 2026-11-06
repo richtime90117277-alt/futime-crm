@@ -1,0 +1,13 @@
+{
+  "name": "富時代",
+  "short_name": "富時代",
+  "start_url": "./futime-hub%20(1).html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F7F3EA",
+  "theme_color": "#F7F3EA",
+  "icons": [
+    { "src": "crm-icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "crm-icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
