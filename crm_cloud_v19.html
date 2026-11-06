@@ -2268,7 +2268,13 @@ function pushEnv() {
   return { ios: ios, standalone: sa, sup: sup, perm: sup ? Notification.permission : 'na', inApp: /Line\/|FBAN|FBAV|Instagram/i.test(ua) };
 }
 function pushBtnShow(show) { var b = document.getElementById('pushBtn'); if (b) b.style.display = show ? '' : 'none'; }
-function pushApi(payload) { return new Promise(function (ok, no) { callAPI(payload, function (r) { (r && r.success) ? ok(r) : no(new Error((r && r.error) || '連線失敗')); }); }); }
+// 通知功能固定走這個部署（推播通知.gs 所在的最新版本）
+var PUSH_API_URL = 'https://script.google.com/macros/s/AKfycbyb5-1foZAesaWrwdRxVI48LCfBuBeNVBOx2Zp0Pgf2BesALrvqyhR2Ymwd4cT1EKs/exec';
+function pushApi(payload) {
+  return fetch(PUSH_API_URL, { method: 'POST', body: JSON.stringify(payload), headers: { 'Content-Type': 'text/plain' } })
+    .then(function (r) { return r.json(); })
+    .then(function (r) { if (r && r.success) return r; throw new Error((r && r.error) || '連線失敗'); });
+}
 function pushB64(s) { var p = '='.repeat((4 - s.length % 4) % 4), b = atob((s + p).replace(/-/g, '+').replace(/_/g, '/')), a = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) a[i] = b.charCodeAt(i); return a; }
 async function pushSubscribe(manual) {
   var reg = await navigator.serviceWorker.register('crm-sw.js');
@@ -2316,7 +2322,7 @@ function logout() {
   try {
     if (pushEnv().sup && navigator.serviceWorker.controller) {
       navigator.serviceWorker.ready.then(function (reg) { return reg.pushManager.getSubscription(); })
-        .then(function (sub) { if (sub) callAPI({ action: 'pushUnsubscribe', endpoint: sub.endpoint }, function () {}); });
+        .then(function (sub) { if (sub) pushApi({ action: 'pushUnsubscribe', endpoint: sub.endpoint }).catch(function () {}); });
     }
   } catch (e) {}
   currentUser = null; currentRole = null; customers = [];
